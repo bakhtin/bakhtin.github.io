@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/optional/detail/optional_reference_spec.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/optional/detail</a> - optional_reference_spec.hpp<span style="font-size: 80%;"> (source / <a href="optional_reference_spec.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:30:07</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">45</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (C) 2015-2016 Andrzej Krzemienski.</a>
+<span class="lineNum">       2 </span>            : //
+<span class="lineNum">       3 </span>            : // Use, modification, and distribution is subject to the Boost Software
+<span class="lineNum">       4 </span>            : // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       5 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       6 </span>            : //
+<span class="lineNum">       7 </span>            : // See http://www.boost.org/libs/optional for documentation.
+<span class="lineNum">       8 </span>            : //
+<span class="lineNum">       9 </span>            : // You are welcome to contact the author at:
+<span class="lineNum">      10 </span>            : //  akrzemi1@gmail.com
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef BOOST_OPTIONAL_DETAIL_OPTIONAL_REFERENCE_SPEC_AJK_03OCT2015_HPP
+<span class="lineNum">      13 </span>            : #define BOOST_OPTIONAL_DETAIL_OPTIONAL_REFERENCE_SPEC_AJK_03OCT2015_HPP
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #ifdef BOOST_OPTIONAL_CONFIG_NO_PROPER_ASSIGN_FROM_CONST_INT
+<span class="lineNum">      16 </span>            : #include &lt;boost/type_traits/is_integral.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/type_traits/is_const.hpp&gt;
+<span class="lineNum">      18 </span>            : #endif
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : # if 1
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace boost {
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : namespace detail {
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #ifndef BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+<a name="27"><span class="lineNum">      27 </span>            : </a>
+<span class="lineNum">      28 </span>            : template &lt;class From&gt;
+<span class="lineNum">      29 </span><span class="lineNoCov">          0 : void prevent_binding_rvalue()</span>
+<span class="lineNum">      30 </span>            : {
+<span class="lineNum">      31 </span>            : #ifndef BOOST_OPTIONAL_CONFIG_ALLOW_BINDING_TO_RVALUES
+<span class="lineNum">      32 </span>            :     BOOST_STATIC_ASSERT_MSG(boost::is_lvalue_reference&lt;From&gt;::value, 
+<span class="lineNum">      33 </span>            :                             &quot;binding rvalue references to optional lvalue references is disallowed&quot;);
+<span class="lineNum">      34 </span>            : #endif    
+<span class="lineNum">      35 </span><span class="lineNoCov">          0 : }</span>
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : template &lt;class T&gt;
+<span class="lineNum">      38 </span>            : BOOST_DEDUCED_TYPENAME boost::remove_reference&lt;T&gt;::type&amp; forward_reference(T&amp;&amp; r)
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span>            :     BOOST_STATIC_ASSERT_MSG(boost::is_lvalue_reference&lt;T&gt;::value, 
+<span class="lineNum">      41 </span>            :                             &quot;binding rvalue references to optional lvalue references is disallowed&quot;);
+<span class="lineNum">      42 </span>            :     return boost::forward&lt;T&gt;(r);
+<span class="lineNum">      43 </span>            : }
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : #endif // BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : template &lt;class T&gt;
+<span class="lineNum">      49 </span>            : struct is_const_integral
+<span class="lineNum">      50 </span>            : {
+<span class="lineNum">      51 </span>            :   static const bool value = boost::is_const&lt;T&gt;::value &amp;&amp; boost::is_integral&lt;T&gt;::value;
+<span class="lineNum">      52 </span>            : };
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : template &lt;class T&gt;
+<span class="lineNum">      55 </span>            : struct is_const_integral_bad_for_conversion
+<span class="lineNum">      56 </span>            : {
+<span class="lineNum">      57 </span>            : #if (!defined BOOST_OPTIONAL_CONFIG_ALLOW_BINDING_TO_RVALUES) &amp;&amp; (defined BOOST_OPTIONAL_CONFIG_NO_PROPER_CONVERT_FROM_CONST_INT)
+<span class="lineNum">      58 </span>            :   static const bool value = boost::is_const&lt;T&gt;::value &amp;&amp; boost::is_integral&lt;T&gt;::value;
+<span class="lineNum">      59 </span>            : #else
+<span class="lineNum">      60 </span>            :   static const bool value = false;
+<span class="lineNum">      61 </span>            : #endif
+<span class="lineNum">      62 </span>            : };
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : template &lt;class From&gt;
+<span class="lineNum">      65 </span>            : void prevent_assignment_from_false_const_integral()
+<span class="lineNum">      66 </span>            : {
+<span class="lineNum">      67 </span>            : #ifndef BOOST_OPTIONAL_CONFIG_ALLOW_BINDING_TO_RVALUES
+<span class="lineNum">      68 </span>            : #ifdef BOOST_OPTIONAL_CONFIG_NO_PROPER_ASSIGN_FROM_CONST_INT
+<span class="lineNum">      69 </span>            :     // MSVC compiler without rvalue refernces: we need to disable the asignment from
+<span class="lineNum">      70 </span>            :     // const integral lvalue reference, as it may be an invalid temporary
+<span class="lineNum">      71 </span>            :     BOOST_STATIC_ASSERT_MSG(!is_const_integral&lt;From&gt;::value, 
+<span class="lineNum">      72 </span>            :                             &quot;binding const lvalue references to integral types is disabled in this compiler&quot;);
+<span class="lineNum">      73 </span>            : #endif
+<span class="lineNum">      74 </span>            : #endif   
+<span class="lineNum">      75 </span>            : }
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : template &lt;class T&gt;
+<span class="lineNum">      79 </span>            : struct is_optional_
+<span class="lineNum">      80 </span>            : {
+<span class="lineNum">      81 </span>            :   static const bool value = false;
+<span class="lineNum">      82 </span>            : };
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : template &lt;class U&gt;
+<span class="lineNum">      85 </span>            : struct is_optional_&lt; ::boost::optional&lt;U&gt; &gt;
+<span class="lineNum">      86 </span>            : {
+<span class="lineNum">      87 </span>            :   static const bool value = true;
+<span class="lineNum">      88 </span>            : };
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            : template &lt;class T&gt;
+<span class="lineNum">      91 </span>            : struct is_no_optional
+<span class="lineNum">      92 </span>            : {
+<span class="lineNum">      93 </span>            :   static const bool value = !is_optional_&lt;BOOST_DEDUCED_TYPENAME boost::decay&lt;T&gt;::type&gt;::value;
+<span class="lineNum">      94 </span>            : };
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : template &lt;class T, class U&gt;
+<span class="lineNum">      98 </span>            :   struct is_same_decayed
+<span class="lineNum">      99 </span>            :   {
+<span class="lineNum">     100 </span>            :     static const bool value = ::boost::is_same&lt;T, BOOST_DEDUCED_TYPENAME ::boost::remove_reference&lt;U&gt;::type&gt;::value
+<span class="lineNum">     101 </span>            :                            || ::boost::is_same&lt;T, const BOOST_DEDUCED_TYPENAME ::boost::remove_reference&lt;U&gt;::type&gt;::value;
+<span class="lineNum">     102 </span>            :   };
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : template &lt;class T, class U&gt;
+<span class="lineNum">     105 </span>            : struct no_unboxing_cond
+<span class="lineNum">     106 </span>            : {
+<span class="lineNum">     107 </span>            :   static const bool value = is_no_optional&lt;U&gt;::value &amp;&amp; !is_same_decayed&lt;T, U&gt;::value;
+<span class="lineNum">     108 </span>            : };
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : } // namespace detail
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : template &lt;class T&gt;
+<span class="lineNum">     114 </span>            : class optional&lt;T&amp;&gt; : public optional_detail::optional_tag
+<span class="lineNum">     115 </span>            : {
+<span class="lineNum">     116 </span>            :     T* ptr_;
+<span class="lineNum">     117 </span>            :     
+<span class="lineNum">     118 </span>            : public:
+<span class="lineNum">     119 </span>            :     typedef T&amp; value_type;
+<span class="lineNum">     120 </span>            :     typedef T&amp; reference_type;
+<span class="lineNum">     121 </span>            :     typedef T&amp; reference_const_type;
+<span class="lineNum">     122 </span>            :     typedef T&amp; rval_reference_type;
+<span class="lineNum">     123 </span>            :     typedef T* pointer_type;
+<a name="124"><span class="lineNum">     124 </span>            :     typedef T* pointer_const_type;</a>
+<span class="lineNum">     125 </span>            :     
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :     optional() BOOST_NOEXCEPT : ptr_() {}</span>
+<span class="lineNum">     127 </span>            :     optional(none_t) BOOST_NOEXCEPT : ptr_() {}  
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     130 </span>            :         explicit optional(const optional&lt;U&amp;&gt;&amp; rhs) BOOST_NOEXCEPT : ptr_(rhs.get_ptr()) {}
+<span class="lineNum">     131 </span>            :     optional(const optional&amp; rhs) BOOST_NOEXCEPT : ptr_(rhs.get_ptr()) {}
+<span class="lineNum">     132 </span>            :     
+<span class="lineNum">     133 </span>            :     // the following two implement a 'conditionally explicit' constructor: condition is a hack for buggy compilers with srewed conversion construction from const int
+<span class="lineNum">     134 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     135 </span>            :       explicit optional(U&amp; rhs, BOOST_DEDUCED_TYPENAME boost::enable_if_c&lt;detail::is_same_decayed&lt;T, U&gt;::value &amp;&amp; detail::is_const_integral_bad_for_conversion&lt;U&gt;::value&gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     136 </span>            :       : ptr_(boost::addressof(rhs)) {}
+<span class="lineNum">     137 </span>            :       
+<span class="lineNum">     138 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     139 </span>            :       optional(U&amp; rhs, BOOST_DEDUCED_TYPENAME boost::enable_if_c&lt;detail::is_same_decayed&lt;T, U&gt;::value &amp;&amp; !detail::is_const_integral_bad_for_conversion&lt;U&gt;::value&gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     140 </span>            :       : ptr_(boost::addressof(rhs)) {}
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :     optional&amp; operator=(const optional&amp; rhs) BOOST_NOEXCEPT { ptr_ = rhs.get_ptr(); return *this; }
+<span class="lineNum">     143 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     144 </span>            :         optional&amp; operator=(const optional&lt;U&amp;&gt;&amp; rhs) BOOST_NOEXCEPT { ptr_ = rhs.get_ptr(); return *this; }
+<span class="lineNum">     145 </span>            :     optional&amp; operator=(none_t) BOOST_NOEXCEPT { ptr_ = 0; return *this; }
+<span class="lineNum">     146 </span>            :     
+<span class="lineNum">     147 </span>            :     
+<span class="lineNum">     148 </span>            :     void swap(optional&amp; rhs) BOOST_NOEXCEPT { std::swap(ptr_, rhs.ptr_); }
+<a name="149"><span class="lineNum">     149 </span>            :     T&amp; get() const { BOOST_ASSERT(ptr_); return   *ptr_; }</a>
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span><span class="lineNoCov">          0 :     T* get_ptr() const BOOST_NOEXCEPT { return ptr_; }</span>
+<span class="lineNum">     152 </span>            :     T* operator-&gt;() const { BOOST_ASSERT(ptr_); return ptr_; }
+<span class="lineNum">     153 </span>            :     T&amp; operator*() const { BOOST_ASSERT(ptr_); return *ptr_; }
+<a name="154"><span class="lineNum">     154 </span>            :     T&amp; value() const { return ptr_ ? *ptr_ : (throw_exception(bad_optional_access()), *ptr_); }</a>
+<span class="lineNum">     155 </span>            :     
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     bool operator!() const BOOST_NOEXCEPT { return ptr_ == 0; }  </span>
+<span class="lineNum">     157 </span>            :     BOOST_EXPLICIT_OPERATOR_BOOL_NOEXCEPT()
+<span class="lineNum">     158 </span>            :       
+<span class="lineNum">     159 </span>            :     void reset() BOOST_NOEXCEPT { ptr_ = 0; }
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :     bool is_initialized() const BOOST_NOEXCEPT { return ptr_ != 0; }
+<span class="lineNum">     162 </span>            :     
+<span class="lineNum">     163 </span>            : #ifndef BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES   
+<span class="lineNum">     164 </span>            :  
+<span class="lineNum">     165 </span>            :     optional(T&amp;&amp; /* rhs */) BOOST_NOEXCEPT { detail::prevent_binding_rvalue&lt;T&amp;&amp;&gt;(); }
+<span class="lineNum">     166 </span>            :     
+<span class="lineNum">     167 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     168 </span>            :         optional(R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::no_unboxing_cond&lt;T, R&gt; &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     169 </span>            :         : ptr_(boost::addressof(r)) { detail::prevent_binding_rvalue&lt;R&gt;(); }
+<span class="lineNum">     170 </span>            :         
+<span class="lineNum">     171 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     172 </span>            :         optional(bool cond, R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt; &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     173 </span>            :         : ptr_(cond ? boost::addressof(r) : 0) { detail::prevent_binding_rvalue&lt;R&gt;(); }
+<span class="lineNum">     174 </span>            :         
+<span class="lineNum">     175 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     176 </span>            :         BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt;, optional&lt;T&amp;&gt;&amp;&gt;::type
+<span class="lineNum">     177 </span>            :         operator=(R&amp;&amp; r) BOOST_NOEXCEPT { detail::prevent_binding_rvalue&lt;R&gt;(); ptr_ = boost::addressof(r); return *this; }
+<a name="178"><span class="lineNum">     178 </span>            :         </a>
+<span class="lineNum">     179 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     180 </span><span class="lineNoCov">          0 :         void emplace(R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt; &gt;::type* = 0) BOOST_NOEXCEPT</span>
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :         { detail::prevent_binding_rvalue&lt;R&gt;(); ptr_ = boost::addressof(r); }</span>
+<span class="lineNum">     182 </span>            :         
+<span class="lineNum">     183 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     184 </span>            :       T&amp; get_value_or(R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt; &gt;::type* = 0) const BOOST_NOEXCEPT
+<span class="lineNum">     185 </span>            :       { detail::prevent_binding_rvalue&lt;R&gt;(); return ptr_ ? *ptr_ : r; }
+<span class="lineNum">     186 </span>            :       
+<span class="lineNum">     187 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     188 </span>            :         T&amp; value_or(R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt; &gt;::type* = 0) const BOOST_NOEXCEPT
+<span class="lineNum">     189 </span>            :         { detail::prevent_binding_rvalue&lt;R&gt;(); return ptr_ ? *ptr_ : r; }
+<span class="lineNum">     190 </span>            :         
+<span class="lineNum">     191 </span>            :     template &lt;class R&gt;
+<span class="lineNum">     192 </span>            :       void reset(R&amp;&amp; r, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;R&gt; &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     193 </span>            :       { detail::prevent_binding_rvalue&lt;R&gt;(); ptr_ = boost::addressof(r); }
+<span class="lineNum">     194 </span>            :       
+<span class="lineNum">     195 </span>            :     template &lt;class F&gt;
+<span class="lineNum">     196 </span>            :         T&amp; value_or_eval(F f) const { return ptr_ ? *ptr_ : detail::forward_reference(f()); }
+<span class="lineNum">     197 </span>            :       
+<span class="lineNum">     198 </span>            : #else  // BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :     
+<span class="lineNum">     201 </span>            :     // the following two implement a 'conditionally explicit' constructor
+<span class="lineNum">     202 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     203 </span>            :       explicit optional(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if_c&lt;detail::no_unboxing_cond&lt;T, U&gt;::value &amp;&amp; detail::is_const_integral_bad_for_conversion&lt;U&gt;::value &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     204 </span>            :       : ptr_(boost::addressof(v)) { }
+<span class="lineNum">     205 </span>            :       
+<span class="lineNum">     206 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     207 </span>            :       optional(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if_c&lt;detail::no_unboxing_cond&lt;T, U&gt;::value &amp;&amp; !detail::is_const_integral_bad_for_conversion&lt;U&gt;::value &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     208 </span>            :       : ptr_(boost::addressof(v)) { }
+<span class="lineNum">     209 </span>            :         
+<span class="lineNum">     210 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     211 </span>            :       optional(bool cond, U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt; &gt;::type* = 0) BOOST_NOEXCEPT : ptr_(cond ? boost::addressof(v) : 0) {}
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     214 </span>            :       BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt;, optional&lt;T&amp;&gt;&amp;&gt;::type
+<span class="lineNum">     215 </span>            :       operator=(U&amp; v) BOOST_NOEXCEPT
+<span class="lineNum">     216 </span>            :       {
+<span class="lineNum">     217 </span>            :         detail::prevent_assignment_from_false_const_integral&lt;U&gt;();
+<span class="lineNum">     218 </span>            :         ptr_ = boost::addressof(v); return *this;
+<span class="lineNum">     219 </span>            :       }
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     222 </span>            :         void emplace(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt; &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     223 </span>            :         { ptr_ = boost::addressof(v); }
+<span class="lineNum">     224 </span>            :         
+<span class="lineNum">     225 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     226 </span>            :       T&amp; get_value_or(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt; &gt;::type* = 0) const BOOST_NOEXCEPT
+<span class="lineNum">     227 </span>            :       { return ptr_ ? *ptr_ : v; }
+<span class="lineNum">     228 </span>            :       
+<span class="lineNum">     229 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     230 </span>            :         T&amp; value_or(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt; &gt;::type* = 0) const BOOST_NOEXCEPT
+<span class="lineNum">     231 </span>            :         { return ptr_ ? *ptr_ : v; }
+<span class="lineNum">     232 </span>            :         
+<span class="lineNum">     233 </span>            :     template &lt;class U&gt;
+<span class="lineNum">     234 </span>            :       void reset(U&amp; v, BOOST_DEDUCED_TYPENAME boost::enable_if&lt;detail::is_no_optional&lt;U&gt; &gt;::type* = 0) BOOST_NOEXCEPT
+<span class="lineNum">     235 </span>            :       { ptr_ = boost::addressof(v); }
+<span class="lineNum">     236 </span>            :       
+<span class="lineNum">     237 </span>            :     template &lt;class F&gt;
+<span class="lineNum">     238 </span>            :       T&amp; value_or_eval(F f) const { return ptr_ ? *ptr_ : f(); }
+<span class="lineNum">     239 </span>            :       
+<span class="lineNum">     240 </span>            : #endif // BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+<span class="lineNum">     241 </span>            : };
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : template &lt;class T&gt; 
+<span class="lineNum">     244 </span>            :   void swap ( optional&lt;T&amp;&gt;&amp; x, optional&lt;T&amp;&gt;&amp; y) BOOST_NOEXCEPT
+<span class="lineNum">     245 </span>            : {
+<span class="lineNum">     246 </span>            :   x.swap(y);
+<span class="lineNum">     247 </span>            : }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            : } // namespace boost
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : #endif // 1/0
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            : #endif // header guard
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

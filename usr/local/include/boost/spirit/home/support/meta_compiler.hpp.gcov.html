@@ -1,0 +1,396 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/support/meta_compiler.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/support</a> - meta_compiler.hpp<span style="font-size: 80%;"> (source / <a href="meta_compiler.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :   Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :   http://spirit.sourceforge.net/
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :   Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       6 </span>            :   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>            : =============================================================================*/
+<span class="lineNum">       8 </span>            : #ifndef BOOST_SPIRIT_META_COMPILER_OCTOBER_16_2008_1258PM
+<span class="lineNum">       9 </span>            : #define BOOST_SPIRIT_META_COMPILER_OCTOBER_16_2008_1258PM
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      12 </span>            : #pragma once
+<span class="lineNum">      13 </span>            : #endif
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/spirit/include/phoenix_limits.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/detail/workaround.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/include/phoenix_limits.hpp&gt;      // needs to be included before proto
+<span class="lineNum">      19 </span>            : #include &lt;boost/proto/proto.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/make_component.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/spirit/home/support/modify.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/spirit/home/support/detail/make_cons.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/spirit/home/support/unused.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/spirit/home/support/assert_msg.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/utility/enable_if.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/type_traits/remove_reference.hpp&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span>            :     // Some defaults...
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            :     template &lt;typename Domain, typename Tag, typename Enable = void&gt;
+<span class="lineNum">      33 </span>            :     struct use_operator : mpl::false_ {};
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            :     template &lt;typename Domain, typename T, typename Enable = void&gt;
+<span class="lineNum">      36 </span>            :     struct use_function : mpl::false_ {};
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :     template &lt;typename Domain, typename T, typename Enable = void&gt;
+<span class="lineNum">      39 </span>            :     struct use_directive : mpl::false_ {};
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :     template &lt;typename Domain, typename T, typename Enable /* = void */&gt;
+<span class="lineNum">      42 </span>            :     struct is_modifier_directive : mpl::false_ {};
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            :     template &lt;typename Domain, typename T, typename Enable = void&gt;
+<span class="lineNum">      45 </span>            :     struct use_terminal : mpl::false_ {};
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :     template &lt;typename Domain, typename T, typename Enable /*= void*/&gt;
+<span class="lineNum">      48 </span>            :     struct flatten_tree : mpl::false_ {};
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :     // Our meta-compiler. This is the main engine that hooks Spirit
+<span class="lineNum">      51 </span>            :     // to the proto expression template engine.
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            :     template &lt;typename Domain&gt;
+<span class="lineNum">      54 </span>            :     struct meta_compiler
+<span class="lineNum">      55 </span>            :     {
+<span class="lineNum">      56 </span>            :         struct meta_grammar;
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            :         BOOST_SPIRIT_ASSERT_MSG((
+<span class="lineNum">      59 </span>            :             !use_operator&lt;Domain, proto::tag::subscript&gt;::value
+<span class="lineNum">      60 </span>            :         ), error_proto_tag_subscript_cannot_be_used, ());
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : #if !BOOST_WORKAROUND(BOOST_MSVC, &lt; 1400)
+<span class="lineNum">      63 </span>            :         // this is the non-broken part for compilers properly supporting 
+<span class="lineNum">      64 </span>            :         // partial template specialization (VC7.1 does not)
+<span class="lineNum">      65 </span>            :         struct cases
+<span class="lineNum">      66 </span>            :         {
+<span class="lineNum">      67 </span>            :             template &lt;typename Tag, typename Enable = void&gt;
+<span class="lineNum">      68 </span>            :             struct case_
+<span class="lineNum">      69 </span>            :               : proto::not_&lt;proto::_&gt;
+<span class="lineNum">      70 </span>            :             {};
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      73 </span>            :             // terminals
+<span class="lineNum">      74 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      75 </span>            :             template &lt;typename Enable&gt;
+<span class="lineNum">      76 </span>            :             struct case_&lt;proto::tag::terminal, Enable&gt;
+<span class="lineNum">      77 </span>            :               : proto::when&lt;
+<span class="lineNum">      78 </span>            :                     proto::if_&lt;use_terminal&lt;Domain, proto::_value&gt;()&gt;,
+<span class="lineNum">      79 </span>            :                     detail::make_terminal&lt;Domain&gt;
+<span class="lineNum">      80 </span>            :                 &gt;
+<span class="lineNum">      81 </span>            :             {};
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :             template &lt;typename Tag&gt;
+<span class="lineNum">      84 </span>            :             struct case_&lt;Tag, typename enable_if&lt;use_operator&lt;Domain, Tag&gt; &gt;::type&gt;
+<span class="lineNum">      85 </span>            :               : proto::or_&lt;
+<span class="lineNum">      86 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      87 </span>            :             // binary operators
+<span class="lineNum">      88 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      89 </span>            :                     proto::when&lt;proto::binary_expr&lt;Tag, meta_grammar, meta_grammar&gt;,
+<span class="lineNum">      90 </span>            :                         detail::make_binary&lt;Domain, Tag, meta_grammar&gt;
+<span class="lineNum">      91 </span>            :                     &gt;,
+<span class="lineNum">      92 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      93 </span>            :             // unary operators
+<span class="lineNum">      94 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">      95 </span>            :                     proto::when&lt;proto::unary_expr&lt;Tag, meta_grammar&gt;,
+<span class="lineNum">      96 </span>            :                         detail::make_unary&lt;Domain, Tag, meta_grammar&gt;
+<span class="lineNum">      97 </span>            :                     &gt;
+<span class="lineNum">      98 </span>            :                 &gt;
+<span class="lineNum">      99 </span>            :             {};
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            :             template &lt;typename Enable&gt;
+<span class="lineNum">     102 </span>            :             struct case_&lt;proto::tag::subscript, Enable&gt;
+<span class="lineNum">     103 </span>            :               : proto::or_&lt;
+<span class="lineNum">     104 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     105 </span>            :             // directives
+<span class="lineNum">     106 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     107 </span>            :                     proto::when&lt;proto::binary_expr&lt;proto::tag::subscript
+<span class="lineNum">     108 </span>            :                       , proto::and_&lt;
+<span class="lineNum">     109 </span>            :                             proto::terminal&lt;proto::_&gt;
+<span class="lineNum">     110 </span>            :                           , proto::if_&lt;use_directive&lt;Domain, proto::_value &gt;()&gt; &gt;
+<span class="lineNum">     111 </span>            :                       , meta_grammar&gt;,
+<span class="lineNum">     112 </span>            :                         detail::make_directive&lt;Domain, meta_grammar&gt;
+<span class="lineNum">     113 </span>            :                     &gt;,
+<span class="lineNum">     114 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     115 </span>            :             // semantic actions
+<span class="lineNum">     116 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     117 </span>            :                     proto::when&lt;proto::binary_expr&lt;proto::tag::subscript
+<span class="lineNum">     118 </span>            :                       , meta_grammar, proto::_&gt;,
+<span class="lineNum">     119 </span>            :                         detail::make_action&lt;Domain, meta_grammar&gt;
+<span class="lineNum">     120 </span>            :                     &gt;
+<span class="lineNum">     121 </span>            :                 &gt;
+<span class="lineNum">     122 </span>            :             {};
+<span class="lineNum">     123 </span>            :         };
+<span class="lineNum">     124 </span>            : #else
+<span class="lineNum">     125 </span>            :         // this part actually constitutes invalid C++ code, but it allows us to
+<span class="lineNum">     126 </span>            :         // convince VC7.1 to do what we want
+<span class="lineNum">     127 </span>            :         struct cases
+<span class="lineNum">     128 </span>            :         {
+<span class="lineNum">     129 </span>            :             template &lt;typename Tag, typename Enable = void&gt;
+<span class="lineNum">     130 </span>            :             struct case_
+<span class="lineNum">     131 </span>            :               : proto::not_&lt;proto::_&gt;
+<span class="lineNum">     132 </span>            :             {};
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     135 </span>            :             // terminals
+<span class="lineNum">     136 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     137 </span>            :             template &lt;&gt;
+<span class="lineNum">     138 </span>            :             struct case_&lt;proto::tag::terminal&gt;
+<span class="lineNum">     139 </span>            :               : proto::when&lt;
+<span class="lineNum">     140 </span>            :                     proto::if_&lt;use_terminal&lt;Domain, proto::_value&gt;()&gt;,
+<span class="lineNum">     141 </span>            :                     detail::make_terminal&lt;Domain&gt;
+<span class="lineNum">     142 </span>            :                 &gt;
+<span class="lineNum">     143 </span>            :             {};
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            :             template &lt;typename Tag&gt;
+<span class="lineNum">     146 </span>            :             struct case_&lt;Tag&gt;
+<span class="lineNum">     147 </span>            :               : proto::or_&lt;
+<span class="lineNum">     148 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     149 </span>            :             // binary operators
+<span class="lineNum">     150 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     151 </span>            :                     proto::when&lt;proto::binary_expr&lt;
+<span class="lineNum">     152 </span>            :                         typename enable_if&lt;use_operator&lt;Domain, Tag&gt;, Tag&gt;::type
+<span class="lineNum">     153 </span>            :                           , meta_grammar, meta_grammar&gt;
+<span class="lineNum">     154 </span>            :                       , detail::make_binary&lt;Domain, Tag, meta_grammar&gt;
+<span class="lineNum">     155 </span>            :                     &gt;,
+<span class="lineNum">     156 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     157 </span>            :             // unary operators
+<span class="lineNum">     158 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     159 </span>            :                     proto::when&lt;proto::unary_expr&lt;
+<span class="lineNum">     160 </span>            :                         typename enable_if&lt;use_operator&lt;Domain, Tag&gt;, Tag&gt;::type
+<span class="lineNum">     161 </span>            :                           , meta_grammar&gt;
+<span class="lineNum">     162 </span>            :                       , detail::make_unary&lt;Domain, Tag, meta_grammar&gt;
+<span class="lineNum">     163 </span>            :                     &gt;
+<span class="lineNum">     164 </span>            :                 &gt;
+<span class="lineNum">     165 </span>            :             {};
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :             template &lt;&gt;
+<span class="lineNum">     168 </span>            :             struct case_&lt;proto::tag::subscript&gt;
+<span class="lineNum">     169 </span>            :               : proto::or_&lt;
+<span class="lineNum">     170 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     171 </span>            :             // directives
+<span class="lineNum">     172 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     173 </span>            :                     proto::when&lt;proto::binary_expr&lt;proto::tag::subscript
+<span class="lineNum">     174 </span>            :                       , proto::and_&lt;
+<span class="lineNum">     175 </span>            :                             proto::terminal&lt;proto::_&gt;
+<span class="lineNum">     176 </span>            :                           , proto::if_&lt;use_directive&lt;Domain, proto::_value &gt;()&gt; &gt;
+<span class="lineNum">     177 </span>            :                       , meta_grammar&gt;,
+<span class="lineNum">     178 </span>            :                         detail::make_directive&lt;Domain, meta_grammar&gt;
+<span class="lineNum">     179 </span>            :                     &gt;,
+<span class="lineNum">     180 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     181 </span>            :             // semantic actions
+<span class="lineNum">     182 </span>            :             ///////////////////////////////////////////////////////////////////
+<span class="lineNum">     183 </span>            :                     proto::when&lt;proto::binary_expr&lt;proto::tag::subscript
+<span class="lineNum">     184 </span>            :                       , meta_grammar, proto::_&gt;,
+<span class="lineNum">     185 </span>            :                         detail::make_action&lt;Domain, meta_grammar&gt;
+<span class="lineNum">     186 </span>            :                     &gt;
+<span class="lineNum">     187 </span>            :                 &gt;
+<span class="lineNum">     188 </span>            :             {};
+<span class="lineNum">     189 </span>            :         };
+<span class="lineNum">     190 </span>            : #endif
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :         struct meta_grammar
+<span class="lineNum">     193 </span>            :           : proto::switch_&lt;cases&gt;
+<span class="lineNum">     194 </span>            :         {};
+<span class="lineNum">     195 </span>            :     };
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :     namespace result_of
+<span class="lineNum">     198 </span>            :     {
+<span class="lineNum">     199 </span>            :         // Default case
+<span class="lineNum">     200 </span>            :         template &lt;typename Domain, typename Expr
+<span class="lineNum">     201 </span>            :           , typename Modifiers = unused_type, typename Enable = void&gt;
+<span class="lineNum">     202 </span>            :         struct compile
+<span class="lineNum">     203 </span>            :         {
+<span class="lineNum">     204 </span>            :             typedef typename meta_compiler&lt;Domain&gt;::meta_grammar meta_grammar;
+<span class="lineNum">     205 </span>            :             typedef typename meta_grammar::
+<span class="lineNum">     206 </span>            :                 template result&lt;meta_grammar(Expr, mpl::void_, Modifiers)&gt;::type
+<span class="lineNum">     207 </span>            :             type;
+<span class="lineNum">     208 </span>            :         };
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :         // If Expr is not a proto expression, make it a terminal
+<span class="lineNum">     211 </span>            :         template &lt;typename Domain, typename Expr, typename Modifiers&gt;
+<span class="lineNum">     212 </span>            :         struct compile&lt;Domain, Expr, Modifiers,
+<span class="lineNum">     213 </span>            :             typename disable_if&lt;proto::is_expr&lt;Expr&gt; &gt;::type&gt;
+<span class="lineNum">     214 </span>            :           : compile&lt;Domain, typename proto::terminal&lt;Expr&gt;::type, Modifiers&gt; {};
+<span class="lineNum">     215 </span>            :     }
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :     namespace traits
+<span class="lineNum">     218 </span>            :     {
+<span class="lineNum">     219 </span>            :         // Check if Expr matches the domain's grammar
+<span class="lineNum">     220 </span>            :         template &lt;typename Domain, typename Expr&gt;
+<span class="lineNum">     221 </span>            :         struct matches :
+<span class="lineNum">     222 </span>            :             proto::matches&lt;
+<span class="lineNum">     223 </span>            :                 typename proto::result_of::as_expr&lt;
+<span class="lineNum">     224 </span>            :                     typename remove_reference&lt;Expr&gt;::type&gt;::type,
+<span class="lineNum">     225 </span>            :                 typename meta_compiler&lt;Domain&gt;::meta_grammar
+<span class="lineNum">     226 </span>            :             &gt;
+<span class="lineNum">     227 </span>            :         {
+<span class="lineNum">     228 </span>            :         };
+<span class="lineNum">     229 </span>            :     }
+<span class="lineNum">     230 </span>            : 
+<span class="lineNum">     231 </span>            :     namespace detail
+<span class="lineNum">     232 </span>            :     {
+<span class="lineNum">     233 </span>            :         template &lt;typename Domain&gt;
+<span class="lineNum">     234 </span>            :         struct compiler
+<span class="lineNum">     235 </span>            :         {
+<span class="lineNum">     236 </span>            :             // Default case
+<a name="237"><span class="lineNum">     237 </span>            :             template &lt;typename Expr, typename Modifiers&gt;</a>
+<span class="lineNum">     238 </span>            :             static typename spirit::result_of::compile&lt;Domain, Expr, Modifiers&gt;::type
+<span class="lineNum">     239 </span><span class="lineCov">        138 :             compile(Expr const&amp; expr, Modifiers modifiers, mpl::true_)</span>
+<span class="lineNum">     240 </span>            :             {
+<span class="lineNum">     241 </span>            :                 typename meta_compiler&lt;Domain&gt;::meta_grammar compiler;
+<span class="lineNum">     242 </span><span class="lineCov">        138 :                 return compiler(expr, mpl::void_(), modifiers);</span>
+<span class="lineNum">     243 </span>            :             }
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :             // If Expr is not a proto expression, make it a terminal
+<span class="lineNum">     246 </span>            :             template &lt;typename Expr, typename Modifiers&gt;
+<span class="lineNum">     247 </span>            :             static typename spirit::result_of::compile&lt;Domain, Expr, Modifiers&gt;::type
+<span class="lineNum">     248 </span>            :             compile(Expr const&amp; expr, Modifiers modifiers, mpl::false_)
+<span class="lineNum">     249 </span>            :             {
+<span class="lineNum">     250 </span>            :                 typename meta_compiler&lt;Domain&gt;::meta_grammar compiler;
+<span class="lineNum">     251 </span>            :                 typedef typename detail::as_meta_element&lt;Expr&gt;::type expr_;
+<span class="lineNum">     252 </span>            :                 typename proto::terminal&lt;expr_&gt;::type term = {expr};
+<span class="lineNum">     253 </span>            :                 return compiler(term, mpl::void_(), modifiers);
+<span class="lineNum">     254 </span>            :             }
+<span class="lineNum">     255 </span>            :         };
+<span class="lineNum">     256 </span>            :     }
+<span class="lineNum">     257 </span>            : 
+<a name="258"><span class="lineNum">     258 </span>            :     template &lt;typename Domain, typename Expr&gt;</a>
+<span class="lineNum">     259 </span>            :     inline typename result_of::compile&lt;Domain, Expr, unused_type&gt;::type
+<span class="lineNum">     260 </span><span class="lineCov">         23 :     compile(Expr const&amp; expr)</span>
+<span class="lineNum">     261 </span>            :     {
+<span class="lineNum">     262 </span>            :         typedef typename proto::is_expr&lt;Expr&gt;::type is_expr;
+<span class="lineNum">     263 </span><span class="lineCov">         23 :         return detail::compiler&lt;Domain&gt;::compile(expr, unused, is_expr());</span>
+<span class="lineNum">     264 </span>            :     }
+<span class="lineNum">     265 </span>            : 
+<a name="266"><span class="lineNum">     266 </span>            :     template &lt;typename Domain, typename Expr, typename Modifiers&gt;</a>
+<span class="lineNum">     267 </span>            :     inline typename result_of::compile&lt;Domain, Expr, Modifiers&gt;::type
+<span class="lineNum">     268 </span><span class="lineCov">        115 :     compile(Expr const&amp; expr, Modifiers modifiers)</span>
+<span class="lineNum">     269 </span>            :     {
+<span class="lineNum">     270 </span>            :         typedef typename proto::is_expr&lt;Expr&gt;::type is_expr;
+<span class="lineNum">     271 </span><span class="lineCov">        115 :         return detail::compiler&lt;Domain&gt;::compile(expr, modifiers, is_expr());</span>
+<span class="lineNum">     272 </span>            :     }
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     275 </span>            :     template &lt;typename Elements, template &lt;typename Subject&gt; class generator&gt;
+<span class="lineNum">     276 </span>            :     struct make_unary_composite
+<span class="lineNum">     277 </span>            :     {
+<span class="lineNum">     278 </span>            :         typedef typename
+<span class="lineNum">     279 </span>            :             fusion::result_of::value_at_c&lt;Elements, 0&gt;::type
+<span class="lineNum">     280 </span>            :         element_type;
+<span class="lineNum">     281 </span>            :         typedef generator&lt;element_type&gt; result_type;
+<span class="lineNum">     282 </span>            :         result_type operator()(Elements const&amp; elements, unused_type) const
+<span class="lineNum">     283 </span>            :         {
+<span class="lineNum">     284 </span>            :             return result_type(fusion::at_c&lt;0&gt;(elements));
+<span class="lineNum">     285 </span>            :         }
+<span class="lineNum">     286 </span>            :     };
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            :     template &lt;typename Elements, template &lt;typename Left, typename Right&gt; class generator&gt;
+<span class="lineNum">     289 </span>            :     struct make_binary_composite
+<span class="lineNum">     290 </span>            :     {
+<span class="lineNum">     291 </span>            :         typedef typename
+<span class="lineNum">     292 </span>            :             fusion::result_of::value_at_c&lt;Elements, 0&gt;::type
+<span class="lineNum">     293 </span>            :         left_type;
+<span class="lineNum">     294 </span>            :         typedef typename
+<span class="lineNum">     295 </span>            :             fusion::result_of::value_at_c&lt;Elements, 1&gt;::type
+<span class="lineNum">     296 </span>            :         right_type;
+<a name="297"><span class="lineNum">     297 </span>            :         typedef generator&lt;left_type, right_type&gt; result_type;</a>
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineCov">         46 :         result_type operator()(Elements const&amp; elements, unused_type) const</span>
+<span class="lineNum">     300 </span>            :         {
+<span class="lineNum">     301 </span>            :             return result_type(
+<span class="lineNum">     302 </span><span class="lineCov">         46 :                 fusion::at_c&lt;0&gt;(elements)</span>
+<span class="lineNum">     303 </span><span class="lineCov">         46 :               , fusion::at_c&lt;1&gt;(elements)</span>
+<span class="lineNum">     304 </span><span class="lineCov">         46 :             );</span>
+<span class="lineNum">     305 </span>            :         }
+<span class="lineNum">     306 </span>            :     };
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            :     template &lt;typename Elements, template &lt;typename Elements_&gt; class generator&gt;
+<span class="lineNum">     309 </span>            :     struct make_nary_composite
+<a name="310"><span class="lineNum">     310 </span>            :     {</a>
+<span class="lineNum">     311 </span>            :         typedef generator&lt;Elements&gt; result_type;
+<span class="lineNum">     312 </span><span class="lineCov">        138 :         result_type operator()(Elements const&amp; elements, unused_type) const</span>
+<span class="lineNum">     313 </span>            :         {
+<span class="lineNum">     314 </span><span class="lineCov">        138 :             return result_type(elements);</span>
+<span class="lineNum">     315 </span>            :         }
+<span class="lineNum">     316 </span>            :     };
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : }}
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

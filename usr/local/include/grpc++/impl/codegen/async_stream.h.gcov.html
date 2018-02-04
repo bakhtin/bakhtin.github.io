@@ -1,0 +1,1017 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/async_stream.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - async_stream.h<span style="font-size: 80%;"> (source / <a href="async_stream.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 13:10:54</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">17</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_ASYNC_STREAM_H
+<span class="lineNum">      20 </span>            : #define GRPCXX_IMPL_CODEGEN_ASYNC_STREAM_H
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;grpc++/impl/codegen/call.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;grpc++/impl/codegen/channel_interface.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;grpc++/impl/codegen/core_codegen_interface.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;grpc++/impl/codegen/server_context.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;grpc++/impl/codegen/service_type.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;grpc++/impl/codegen/status.h&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace grpc {
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : class CompletionQueue;
+<a name="32"><span class="lineNum">      32 </span>            : </a>
+<span class="lineNum">      33 </span>            : /// Common interface for all client side asynchronous streaming.
+<a name="34"><span class="lineNum">      34 </span><span class="lineNoCov">          0 : class ClientAsyncStreamingInterface {</span></a>
+<span class="lineNum">      35 </span>            :  public:
+<span class="lineNum">      36 </span><span class="lineNoCov">          0 :   virtual ~ClientAsyncStreamingInterface() {}</span>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :   /// Request notification of the reading of the initial metadata. Completion
+<span class="lineNum">      39 </span>            :   /// will be notified by \a tag on the associated completion queue.
+<span class="lineNum">      40 </span>            :   /// This call is optional, but if it is used, it cannot be used concurrently
+<span class="lineNum">      41 </span>            :   /// with or after the \a AsyncReaderInterface::Read method.
+<span class="lineNum">      42 </span>            :   ///
+<span class="lineNum">      43 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">      44 </span>            :   virtual void ReadInitialMetadata(void* tag) = 0;
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            :   /// Indicate that the stream is to be finished and request notification for
+<span class="lineNum">      47 </span>            :   /// when the call has been ended.
+<span class="lineNum">      48 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">      49 </span>            :   ///
+<span class="lineNum">      50 </span>            :   /// It is appropriate to call this method when both:
+<span class="lineNum">      51 </span>            :   ///   * the client side has no more message to send
+<span class="lineNum">      52 </span>            :   ///     (this can be declared implicitly by calling this method, or
+<span class="lineNum">      53 </span>            :   ///     explicitly through an earlier call to the &lt;i&gt;WritesDone&lt;/i&gt; method
+<span class="lineNum">      54 </span>            :   ///     of the class in use, e.g. \a ClientAsyncWriterInterface::WritesDone or
+<span class="lineNum">      55 </span>            :   ///     \a ClientAsyncReaderWriterInterface::WritesDone).
+<span class="lineNum">      56 </span>            :   ///   * there are no more messages to be received from the server (this can
+<span class="lineNum">      57 </span>            :   ///     be known implicitly by the calling code, or explicitly from an
+<span class="lineNum">      58 </span>            :   ///     earlier call to \a AsyncReaderInterface::Read that yielded a failed
+<span class="lineNum">      59 </span>            :   ///     result, e.g. cq-&gt;Next(&amp;read_tag, &amp;ok) filled in 'ok' with 'false').
+<span class="lineNum">      60 </span>            :   ///
+<span class="lineNum">      61 </span>            :   /// This function will return when either:
+<span class="lineNum">      62 </span>            :   /// - all incoming messages have been read and the server has returned
+<span class="lineNum">      63 </span>            :   ///   a status.
+<span class="lineNum">      64 </span>            :   /// - the server has returned a non-OK status.
+<span class="lineNum">      65 </span>            :   /// - the call failed for some reason and the library generated a
+<span class="lineNum">      66 </span>            :   ///   status.
+<span class="lineNum">      67 </span>            :   ///
+<span class="lineNum">      68 </span>            :   /// Note that implementations of this method attempt to receive initial
+<span class="lineNum">      69 </span>            :   /// metadata from the server if initial metadata hasn't yet been received.
+<span class="lineNum">      70 </span>            :   ///
+<span class="lineNum">      71 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">      72 </span>            :   /// \param[out] status To be updated with the operation status.
+<span class="lineNum">      73 </span>            :   virtual void Finish(Status* status, void* tag) = 0;
+<span class="lineNum">      74 </span>            : };
+<span class="lineNum">      75 </span>            : 
+<a name="76"><span class="lineNum">      76 </span>            : /// An interface that yields a sequence of messages of type \a R.</a>
+<span class="lineNum">      77 </span>            : template &lt;class R&gt;
+<a name="78"><span class="lineNum">      78 </span><span class="lineNoCov">          0 : class AsyncReaderInterface {</span></a>
+<span class="lineNum">      79 </span>            :  public:
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :   virtual ~AsyncReaderInterface() {}</span>
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :   /// Read a message of type \a R into \a msg. Completion will be notified by \a
+<span class="lineNum">      83 </span>            :   /// tag on the associated completion queue.
+<span class="lineNum">      84 </span>            :   /// This is thread-safe with respect to \a Write or \a WritesDone methods. It
+<span class="lineNum">      85 </span>            :   /// should not be called concurrently with other streaming APIs
+<span class="lineNum">      86 </span>            :   /// on the same stream. It is not meaningful to call it concurrently
+<span class="lineNum">      87 </span>            :   /// with another \a AsyncReaderInterface::Read on the same stream since reads
+<span class="lineNum">      88 </span>            :   /// on the same stream are delivered in order.
+<span class="lineNum">      89 </span>            :   ///
+<span class="lineNum">      90 </span>            :   /// \param[out] msg Where to eventually store the read message.
+<span class="lineNum">      91 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">      92 </span>            :   ///
+<span class="lineNum">      93 </span>            :   /// Side effect: note that this method attempt to receive initial metadata for
+<span class="lineNum">      94 </span>            :   /// a stream if it hasn't yet been received.
+<span class="lineNum">      95 </span>            :   virtual void Read(R* msg, void* tag) = 0;
+<span class="lineNum">      96 </span>            : };
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : /// An interface that can be fed a sequence of messages of type \a W.
+<span class="lineNum">      99 </span>            : template &lt;class W&gt;
+<span class="lineNum">     100 </span>            : class AsyncWriterInterface {
+<span class="lineNum">     101 </span>            :  public:
+<span class="lineNum">     102 </span>            :   virtual ~AsyncWriterInterface() {}
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :   /// Request the writing of \a msg with identifying tag \a tag.
+<span class="lineNum">     105 </span>            :   ///
+<span class="lineNum">     106 </span>            :   /// Only one write may be outstanding at any given time. This means that
+<span class="lineNum">     107 </span>            :   /// after calling Write, one must wait to receive \a tag from the completion
+<span class="lineNum">     108 </span>            :   /// queue BEFORE calling Write again.
+<span class="lineNum">     109 </span>            :   /// This is thread-safe with respect to \a AsyncReaderInterface::Read
+<span class="lineNum">     110 </span>            :   ///
+<span class="lineNum">     111 </span>            :   /// \param[in] msg The message to be written.
+<span class="lineNum">     112 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     113 </span>            :   virtual void Write(const W&amp; msg, void* tag) = 0;
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            :   /// Request the writing of \a msg using WriteOptions \a options with
+<span class="lineNum">     116 </span>            :   /// identifying tag \a tag.
+<span class="lineNum">     117 </span>            :   ///
+<span class="lineNum">     118 </span>            :   /// Only one write may be outstanding at any given time. This means that
+<span class="lineNum">     119 </span>            :   /// after calling Write, one must wait to receive \a tag from the completion
+<span class="lineNum">     120 </span>            :   /// queue BEFORE calling Write again.
+<span class="lineNum">     121 </span>            :   /// WriteOptions \a options is used to set the write options of this message.
+<span class="lineNum">     122 </span>            :   /// This is thread-safe with respect to \a AsyncReaderInterface::Read
+<span class="lineNum">     123 </span>            :   ///
+<span class="lineNum">     124 </span>            :   /// \param[in] msg The message to be written.
+<span class="lineNum">     125 </span>            :   /// \param[in] options The WriteOptions to be used to write this message.
+<span class="lineNum">     126 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     127 </span>            :   virtual void Write(const W&amp; msg, WriteOptions options, void* tag) = 0;
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :   /// Request the writing of \a msg and coalesce it with the writing
+<span class="lineNum">     130 </span>            :   /// of trailing metadata, using WriteOptions \a options with
+<span class="lineNum">     131 </span>            :   /// identifying tag \a tag.
+<span class="lineNum">     132 </span>            :   ///
+<span class="lineNum">     133 </span>            :   /// For client, WriteLast is equivalent of performing Write and
+<span class="lineNum">     134 </span>            :   /// WritesDone in a single step.
+<span class="lineNum">     135 </span>            :   /// For server, WriteLast buffers the \a msg. The writing of \a msg is held
+<span class="lineNum">     136 </span>            :   /// until Finish is called, where \a msg and trailing metadata are coalesced
+<span class="lineNum">     137 </span>            :   /// and write is initiated. Note that WriteLast can only buffer \a msg up to
+<span class="lineNum">     138 </span>            :   /// the flow control window size. If \a msg size is larger than the window
+<span class="lineNum">     139 </span>            :   /// size, it will be sent on wire without buffering.
+<span class="lineNum">     140 </span>            :   ///
+<span class="lineNum">     141 </span>            :   /// \param[in] msg The message to be written.
+<span class="lineNum">     142 </span>            :   /// \param[in] options The WriteOptions to be used to write this message.
+<span class="lineNum">     143 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     144 </span>            :   void WriteLast(const W&amp; msg, WriteOptions options, void* tag) {
+<span class="lineNum">     145 </span>            :     Write(msg, options.set_last_message(), tag);
+<span class="lineNum">     146 </span>            :   }
+<span class="lineNum">     147 </span>            : };
+<a name="148"><span class="lineNum">     148 </span>            : </a>
+<span class="lineNum">     149 </span>            : template &lt;class R&gt;
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 : class ClientAsyncReaderInterface : public ClientAsyncStreamingInterface,</span>
+<span class="lineNum">     151 </span>            :                                    public AsyncReaderInterface&lt;R&gt; {};
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : /// Async client-side API for doing server-streaming RPCs,
+<span class="lineNum">     154 </span>            : /// where the incoming message stream coming from the server has
+<a name="155"><span class="lineNum">     155 </span>            : /// messages of type \a R.</a>
+<span class="lineNum">     156 </span>            : template &lt;class R&gt;
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 : class ClientAsyncReader final : public ClientAsyncReaderInterface&lt;R&gt; {</span>
+<span class="lineNum">     158 </span>            :  public:
+<span class="lineNum">     159 </span>            :   /// Create a stream and write the first request out.
+<span class="lineNum">     160 </span>            :   /// \a tag will be notified on \a cq when the call has been started and
+<span class="lineNum">     161 </span>            :   /// \a request has been written out.
+<span class="lineNum">     162 </span>            :   /// Note that \a context will be used to fill in custom initial metadata
+<a name="163"><span class="lineNum">     163 </span>            :   /// used to send to the server when starting the call.</a>
+<span class="lineNum">     164 </span>            :   template &lt;class W&gt;
+<span class="lineNum">     165 </span><span class="lineNoCov">          0 :   static ClientAsyncReader* Create(ChannelInterface* channel,</span>
+<span class="lineNum">     166 </span>            :                                    CompletionQueue* cq, const RpcMethod&amp; method,
+<span class="lineNum">     167 </span>            :                                    ClientContext* context, const W&amp; request,
+<span class="lineNum">     168 </span>            :                                    void* tag) {
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     Call call = channel-&gt;CreateCall(method, context, cq);</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :     return new (g_core_codegen_interface-&gt;grpc_call_arena_alloc(</span>
+<span class="lineNum">     171 </span>            :         call.call(), sizeof(ClientAsyncReader)))
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :         ClientAsyncReader(call, context, request, tag);</span>
+<span class="lineNum">     173 </span>            :   }
+<a name="174"><span class="lineNum">     174 </span>            : </a>
+<span class="lineNum">     175 </span>            :   // always allocated against a call arena, no memory free required
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :   static void operator delete(void* ptr, std::size_t size) {</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :     assert(size == sizeof(ClientAsyncReader));</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            :   /// See the \a ClientAsyncStreamingInterface.ReadInitialMetadata
+<span class="lineNum">     181 </span>            :   /// method for semantics.
+<span class="lineNum">     182 </span>            :   ///
+<span class="lineNum">     183 </span>            :   /// Side effect:
+<span class="lineNum">     184 </span>            :   ///   - upon receiving initial metadata from the server,
+<span class="lineNum">     185 </span>            :   ///     the \a ClientContext associated with this call is updated, and the
+<a name="186"><span class="lineNum">     186 </span>            :   ///     calling code can access the received metadata through the</a>
+<span class="lineNum">     187 </span>            :   ///     \a ClientContext.
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :   void ReadInitialMetadata(void* tag) override {</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :     GPR_CODEGEN_ASSERT(!context_-&gt;initial_metadata_received_);</span>
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :     meta_ops_.set_output_tag(tag);</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :     meta_ops_.RecvInitialMetadata(context_);</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :     call_.PerformOps(&amp;meta_ops_);</span>
+<a name="194"><span class="lineNum">     194 </span><span class="lineNoCov">          0 :   }</span></a>
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :   void Read(R* msg, void* tag) override {</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :     read_ops_.set_output_tag(tag);</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :     if (!context_-&gt;initial_metadata_received_) {</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :       read_ops_.RecvInitialMetadata(context_);</span>
+<span class="lineNum">     200 </span>            :     }
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :     read_ops_.RecvMessage(msg);</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :     call_.PerformOps(&amp;read_ops_);</span>
+<span class="lineNum">     203 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            :   /// See the \a ClientAsyncStreamingInterface.Finish method for semantics.
+<span class="lineNum">     206 </span>            :   ///
+<span class="lineNum">     207 </span>            :   /// Side effect:
+<a name="208"><span class="lineNum">     208 </span>            :   ///   - the \a ClientContext associated with this call is updated with</a>
+<span class="lineNum">     209 </span>            :   ///     possible initial and trailing metadata received from the server.
+<span class="lineNum">     210 </span><span class="lineNoCov">          0 :   void Finish(Status* status, void* tag) override {</span>
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :     finish_ops_.set_output_tag(tag);</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :     if (!context_-&gt;initial_metadata_received_) {</span>
+<span class="lineNum">     213 </span><span class="lineNoCov">          0 :       finish_ops_.RecvInitialMetadata(context_);</span>
+<span class="lineNum">     214 </span>            :     }
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :     finish_ops_.ClientRecvStatus(context_, status);</span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :     call_.PerformOps(&amp;finish_ops_);</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     218 </span>            : 
+<a name="219"><span class="lineNum">     219 </span>            :  private:</a>
+<span class="lineNum">     220 </span>            :   template &lt;class W&gt;
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :   ClientAsyncReader(Call call, ClientContext* context, const W&amp; request,</span>
+<span class="lineNum">     222 </span>            :                     void* tag)
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :       : context_(context), call_(call) {</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :     init_ops_.set_output_tag(tag);</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :     init_ops_.SendInitialMetadata(context-&gt;send_initial_metadata_,</span>
+<span class="lineNum">     226 </span>            :                                   context-&gt;initial_metadata_flags());
+<span class="lineNum">     227 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :     GPR_CODEGEN_ASSERT(init_ops_.SendMessage(request).ok());</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :     init_ops_.ClientSendClose();</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     call_.PerformOps(&amp;init_ops_);</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            :   ClientContext* context_;
+<span class="lineNum">     234 </span>            :   Call call_;
+<span class="lineNum">     235 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage, CallOpClientSendClose&gt;
+<span class="lineNum">     236 </span>            :       init_ops_;
+<span class="lineNum">     237 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     238 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpRecvMessage&lt;R&gt;&gt; read_ops_;
+<span class="lineNum">     239 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpClientRecvStatus&gt; finish_ops_;
+<span class="lineNum">     240 </span>            : };
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : /// Common interface for client side asynchronous writing.
+<span class="lineNum">     243 </span>            : template &lt;class W&gt;
+<span class="lineNum">     244 </span>            : class ClientAsyncWriterInterface : public ClientAsyncStreamingInterface,
+<span class="lineNum">     245 </span>            :                                    public AsyncWriterInterface&lt;W&gt; {
+<span class="lineNum">     246 </span>            :  public:
+<span class="lineNum">     247 </span>            :   /// Signal the client is done with the writes (half-close the client stream).
+<span class="lineNum">     248 </span>            :   /// Thread-safe with respect to \a AsyncReaderInterface::Read
+<span class="lineNum">     249 </span>            :   ///
+<span class="lineNum">     250 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     251 </span>            :   virtual void WritesDone(void* tag) = 0;
+<span class="lineNum">     252 </span>            : };
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : /// Async API on the client side for doing client-streaming RPCs,
+<span class="lineNum">     255 </span>            : /// where the outgoing message stream going to the server contains
+<span class="lineNum">     256 </span>            : /// messages of type \a W.
+<span class="lineNum">     257 </span>            : template &lt;class W&gt;
+<span class="lineNum">     258 </span>            : class ClientAsyncWriter final : public ClientAsyncWriterInterface&lt;W&gt; {
+<span class="lineNum">     259 </span>            :  public:
+<span class="lineNum">     260 </span>            :   /// Create a stream and write the first request out.
+<span class="lineNum">     261 </span>            :   /// \a tag will be notified on \a cq when the call has been started (i.e.
+<span class="lineNum">     262 </span>            :   /// intitial metadata sent) and \a request has been written out.
+<span class="lineNum">     263 </span>            :   /// Note that \a context will be used to fill in custom initial metadata
+<span class="lineNum">     264 </span>            :   /// used to send to the server when starting the call.
+<span class="lineNum">     265 </span>            :   /// \a response will be filled in with the single expected response
+<span class="lineNum">     266 </span>            :   /// message from the server upon a successful call to the \a Finish
+<span class="lineNum">     267 </span>            :   /// method of this instance.
+<span class="lineNum">     268 </span>            :   template &lt;class R&gt;
+<span class="lineNum">     269 </span>            :   static ClientAsyncWriter* Create(ChannelInterface* channel,
+<span class="lineNum">     270 </span>            :                                    CompletionQueue* cq, const RpcMethod&amp; method,
+<span class="lineNum">     271 </span>            :                                    ClientContext* context, R* response,
+<span class="lineNum">     272 </span>            :                                    void* tag) {
+<span class="lineNum">     273 </span>            :     Call call = channel-&gt;CreateCall(method, context, cq);
+<span class="lineNum">     274 </span>            :     return new (g_core_codegen_interface-&gt;grpc_call_arena_alloc(
+<span class="lineNum">     275 </span>            :         call.call(), sizeof(ClientAsyncWriter)))
+<span class="lineNum">     276 </span>            :         ClientAsyncWriter(call, context, response, tag);
+<span class="lineNum">     277 </span>            :   }
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            :   // always allocated against a call arena, no memory free required
+<span class="lineNum">     280 </span>            :   static void operator delete(void* ptr, std::size_t size) {
+<span class="lineNum">     281 </span>            :     assert(size == sizeof(ClientAsyncWriter));
+<span class="lineNum">     282 </span>            :   }
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :   /// See the \a ClientAsyncStreamingInterface.ReadInitialMetadata method for
+<span class="lineNum">     285 </span>            :   /// semantics.
+<span class="lineNum">     286 </span>            :   ///
+<span class="lineNum">     287 </span>            :   /// Side effect:
+<span class="lineNum">     288 </span>            :   ///   - upon receiving initial metadata from the server, the \a ClientContext
+<span class="lineNum">     289 </span>            :   ///     associated with this call is updated, and the calling code can access
+<span class="lineNum">     290 </span>            :   ///     the received metadata through the \a ClientContext.
+<span class="lineNum">     291 </span>            :   void ReadInitialMetadata(void* tag) override {
+<span class="lineNum">     292 </span>            :     GPR_CODEGEN_ASSERT(!context_-&gt;initial_metadata_received_);
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            :     meta_ops_.set_output_tag(tag);
+<span class="lineNum">     295 </span>            :     meta_ops_.RecvInitialMetadata(context_);
+<span class="lineNum">     296 </span>            :     call_.PerformOps(&amp;meta_ops_);
+<span class="lineNum">     297 </span>            :   }
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :   void Write(const W&amp; msg, void* tag) override {
+<span class="lineNum">     300 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     301 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     302 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg).ok());
+<span class="lineNum">     303 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     304 </span>            :   }
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            :   void Write(const W&amp; msg, WriteOptions options, void* tag) override {
+<span class="lineNum">     307 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     308 </span>            :     if (options.is_last_message()) {
+<span class="lineNum">     309 </span>            :       options.set_buffer_hint();
+<span class="lineNum">     310 </span>            :       write_ops_.ClientSendClose();
+<span class="lineNum">     311 </span>            :     }
+<span class="lineNum">     312 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     313 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     314 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     315 </span>            :   }
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            :   void WritesDone(void* tag) override {
+<span class="lineNum">     318 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     319 </span>            :     write_ops_.ClientSendClose();
+<span class="lineNum">     320 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     321 </span>            :   }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            :   /// See the \a ClientAsyncStreamingInterface.Finish method for semantics.
+<span class="lineNum">     324 </span>            :   ///
+<span class="lineNum">     325 </span>            :   /// Side effect:
+<span class="lineNum">     326 </span>            :   ///   - the \a ClientContext associated with this call is updated with
+<span class="lineNum">     327 </span>            :   ///     possible initial and trailing metadata received from the server.
+<span class="lineNum">     328 </span>            :   ///   - attempts to fill in the \a response parameter passed to this class's
+<span class="lineNum">     329 </span>            :   ///     constructor with the server's response message.
+<span class="lineNum">     330 </span>            :   void Finish(Status* status, void* tag) override {
+<span class="lineNum">     331 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     332 </span>            :     if (!context_-&gt;initial_metadata_received_) {
+<span class="lineNum">     333 </span>            :       finish_ops_.RecvInitialMetadata(context_);
+<span class="lineNum">     334 </span>            :     }
+<span class="lineNum">     335 </span>            :     finish_ops_.ClientRecvStatus(context_, status);
+<span class="lineNum">     336 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     337 </span>            :   }
+<span class="lineNum">     338 </span>            : 
+<span class="lineNum">     339 </span>            :  private:
+<span class="lineNum">     340 </span>            :   template &lt;class R&gt;
+<span class="lineNum">     341 </span>            :   ClientAsyncWriter(Call call, ClientContext* context, R* response, void* tag)
+<span class="lineNum">     342 </span>            :       : context_(context), call_(call) {
+<span class="lineNum">     343 </span>            :     finish_ops_.RecvMessage(response);
+<span class="lineNum">     344 </span>            :     finish_ops_.AllowNoMessage();
+<span class="lineNum">     345 </span>            :     // if corked bit is set in context, we buffer up the initial metadata to
+<span class="lineNum">     346 </span>            :     // coalesce with later message to be sent. No op is performed.
+<span class="lineNum">     347 </span>            :     if (context_-&gt;initial_metadata_corked_) {
+<span class="lineNum">     348 </span>            :       write_ops_.SendInitialMetadata(context-&gt;send_initial_metadata_,
+<span class="lineNum">     349 </span>            :                                      context-&gt;initial_metadata_flags());
+<span class="lineNum">     350 </span>            :     } else {
+<span class="lineNum">     351 </span>            :       write_ops_.set_output_tag(tag);
+<span class="lineNum">     352 </span>            :       write_ops_.SendInitialMetadata(context-&gt;send_initial_metadata_,
+<span class="lineNum">     353 </span>            :                                      context-&gt;initial_metadata_flags());
+<span class="lineNum">     354 </span>            :       call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     355 </span>            :     }
+<span class="lineNum">     356 </span>            :   }
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :   ClientContext* context_;
+<span class="lineNum">     359 </span>            :   Call call_;
+<span class="lineNum">     360 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     361 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage, CallOpClientSendClose&gt;
+<span class="lineNum">     362 </span>            :       write_ops_;
+<span class="lineNum">     363 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpGenericRecvMessage,
+<span class="lineNum">     364 </span>            :             CallOpClientRecvStatus&gt;
+<span class="lineNum">     365 </span>            :       finish_ops_;
+<span class="lineNum">     366 </span>            : };
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            : /// Async client-side interface for bi-directional streaming,
+<span class="lineNum">     369 </span>            : /// where the client-to-server message stream has messages of type \a W,
+<span class="lineNum">     370 </span>            : /// and the server-to-client message stream has messages of type \a R.
+<span class="lineNum">     371 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     372 </span>            : class ClientAsyncReaderWriterInterface : public ClientAsyncStreamingInterface,
+<span class="lineNum">     373 </span>            :                                          public AsyncWriterInterface&lt;W&gt;,
+<span class="lineNum">     374 </span>            :                                          public AsyncReaderInterface&lt;R&gt; {
+<span class="lineNum">     375 </span>            :  public:
+<span class="lineNum">     376 </span>            :   /// Signal the client is done with the writes (half-close the client stream).
+<span class="lineNum">     377 </span>            :   /// Thread-safe with respect to \a AsyncReaderInterface::Read
+<span class="lineNum">     378 </span>            :   ///
+<span class="lineNum">     379 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     380 </span>            :   virtual void WritesDone(void* tag) = 0;
+<span class="lineNum">     381 </span>            : };
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            : /// Async client-side interface for bi-directional streaming,
+<span class="lineNum">     384 </span>            : /// where the outgoing message stream going to the server
+<span class="lineNum">     385 </span>            : /// has messages of type \a W,  and the incoming message stream coming
+<span class="lineNum">     386 </span>            : /// from the server has messages of type \a R.
+<span class="lineNum">     387 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     388 </span>            : class ClientAsyncReaderWriter final
+<span class="lineNum">     389 </span>            :     : public ClientAsyncReaderWriterInterface&lt;W, R&gt; {
+<span class="lineNum">     390 </span>            :  public:
+<span class="lineNum">     391 </span>            :   /// Create a stream and write the first request out.
+<span class="lineNum">     392 </span>            :   /// \a tag will be notified on \a cq when the call has been started (i.e.
+<span class="lineNum">     393 </span>            :   /// intitial metadata sent).
+<span class="lineNum">     394 </span>            :   /// Note that \a context will be used to fill in custom initial metadata
+<span class="lineNum">     395 </span>            :   /// used to send to the server when starting the call.
+<span class="lineNum">     396 </span>            :   static ClientAsyncReaderWriter* Create(ChannelInterface* channel,
+<span class="lineNum">     397 </span>            :                                          CompletionQueue* cq,
+<span class="lineNum">     398 </span>            :                                          const RpcMethod&amp; method,
+<span class="lineNum">     399 </span>            :                                          ClientContext* context, void* tag) {
+<span class="lineNum">     400 </span>            :     Call call = channel-&gt;CreateCall(method, context, cq);
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :     return new (g_core_codegen_interface-&gt;grpc_call_arena_alloc(
+<span class="lineNum">     403 </span>            :         call.call(), sizeof(ClientAsyncReaderWriter)))
+<span class="lineNum">     404 </span>            :         ClientAsyncReaderWriter(call, context, tag);
+<span class="lineNum">     405 </span>            :   }
+<span class="lineNum">     406 </span>            : 
+<span class="lineNum">     407 </span>            :   // always allocated against a call arena, no memory free required
+<span class="lineNum">     408 </span>            :   static void operator delete(void* ptr, std::size_t size) {
+<span class="lineNum">     409 </span>            :     assert(size == sizeof(ClientAsyncReaderWriter));
+<span class="lineNum">     410 </span>            :   }
+<span class="lineNum">     411 </span>            : 
+<span class="lineNum">     412 </span>            :   /// See the \a ClientAsyncStreamingInterface.ReadInitialMetadata method
+<span class="lineNum">     413 </span>            :   /// for semantics of this method.
+<span class="lineNum">     414 </span>            :   ///
+<span class="lineNum">     415 </span>            :   /// Side effect:
+<span class="lineNum">     416 </span>            :   ///   - upon receiving initial metadata from the server, the \a ClientContext
+<span class="lineNum">     417 </span>            :   ///     is updated with it, and then the receiving initial metadata can
+<span class="lineNum">     418 </span>            :   ///     be accessed through this \a ClientContext.
+<span class="lineNum">     419 </span>            :   void ReadInitialMetadata(void* tag) override {
+<span class="lineNum">     420 </span>            :     GPR_CODEGEN_ASSERT(!context_-&gt;initial_metadata_received_);
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :     meta_ops_.set_output_tag(tag);
+<span class="lineNum">     423 </span>            :     meta_ops_.RecvInitialMetadata(context_);
+<span class="lineNum">     424 </span>            :     call_.PerformOps(&amp;meta_ops_);
+<span class="lineNum">     425 </span>            :   }
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            :   void Read(R* msg, void* tag) override {
+<span class="lineNum">     428 </span>            :     read_ops_.set_output_tag(tag);
+<span class="lineNum">     429 </span>            :     if (!context_-&gt;initial_metadata_received_) {
+<span class="lineNum">     430 </span>            :       read_ops_.RecvInitialMetadata(context_);
+<span class="lineNum">     431 </span>            :     }
+<span class="lineNum">     432 </span>            :     read_ops_.RecvMessage(msg);
+<span class="lineNum">     433 </span>            :     call_.PerformOps(&amp;read_ops_);
+<span class="lineNum">     434 </span>            :   }
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            :   void Write(const W&amp; msg, void* tag) override {
+<span class="lineNum">     437 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     438 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     439 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg).ok());
+<span class="lineNum">     440 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     441 </span>            :   }
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            :   void Write(const W&amp; msg, WriteOptions options, void* tag) override {
+<span class="lineNum">     444 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     445 </span>            :     if (options.is_last_message()) {
+<span class="lineNum">     446 </span>            :       options.set_buffer_hint();
+<span class="lineNum">     447 </span>            :       write_ops_.ClientSendClose();
+<span class="lineNum">     448 </span>            :     }
+<span class="lineNum">     449 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     450 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     451 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     452 </span>            :   }
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            :   void WritesDone(void* tag) override {
+<span class="lineNum">     455 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     456 </span>            :     write_ops_.ClientSendClose();
+<span class="lineNum">     457 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     458 </span>            :   }
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            :   /// See the \a ClientAsyncStreamingInterface.Finish method for semantics.
+<span class="lineNum">     461 </span>            :   /// Side effect
+<span class="lineNum">     462 </span>            :   ///   - the \a ClientContext associated with this call is updated with
+<span class="lineNum">     463 </span>            :   ///     possible initial and trailing metadata sent from the server.
+<span class="lineNum">     464 </span>            :   void Finish(Status* status, void* tag) override {
+<span class="lineNum">     465 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     466 </span>            :     if (!context_-&gt;initial_metadata_received_) {
+<span class="lineNum">     467 </span>            :       finish_ops_.RecvInitialMetadata(context_);
+<span class="lineNum">     468 </span>            :     }
+<span class="lineNum">     469 </span>            :     finish_ops_.ClientRecvStatus(context_, status);
+<span class="lineNum">     470 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     471 </span>            :   }
+<span class="lineNum">     472 </span>            : 
+<span class="lineNum">     473 </span>            :  private:
+<span class="lineNum">     474 </span>            :   ClientAsyncReaderWriter(Call call, ClientContext* context, void* tag)
+<span class="lineNum">     475 </span>            :       : context_(context), call_(call) {
+<span class="lineNum">     476 </span>            :     if (context_-&gt;initial_metadata_corked_) {
+<span class="lineNum">     477 </span>            :       // if corked bit is set in context, we buffer up the initial metadata to
+<span class="lineNum">     478 </span>            :       // coalesce with later message to be sent. No op is performed.
+<span class="lineNum">     479 </span>            :       write_ops_.SendInitialMetadata(context-&gt;send_initial_metadata_,
+<span class="lineNum">     480 </span>            :                                      context-&gt;initial_metadata_flags());
+<span class="lineNum">     481 </span>            :     } else {
+<span class="lineNum">     482 </span>            :       write_ops_.set_output_tag(tag);
+<span class="lineNum">     483 </span>            :       write_ops_.SendInitialMetadata(context-&gt;send_initial_metadata_,
+<span class="lineNum">     484 </span>            :                                      context-&gt;initial_metadata_flags());
+<span class="lineNum">     485 </span>            :       call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     486 </span>            :     }
+<span class="lineNum">     487 </span>            :   }
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            :   ClientContext* context_;
+<span class="lineNum">     490 </span>            :   Call call_;
+<span class="lineNum">     491 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     492 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpRecvMessage&lt;R&gt;&gt; read_ops_;
+<span class="lineNum">     493 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage, CallOpClientSendClose&gt;
+<span class="lineNum">     494 </span>            :       write_ops_;
+<span class="lineNum">     495 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpClientRecvStatus&gt; finish_ops_;
+<span class="lineNum">     496 </span>            : };
+<span class="lineNum">     497 </span>            : 
+<span class="lineNum">     498 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     499 </span>            : class ServerAsyncReaderInterface : public ServerAsyncStreamingInterface,
+<span class="lineNum">     500 </span>            :                                    public AsyncReaderInterface&lt;R&gt; {
+<span class="lineNum">     501 </span>            :  public:
+<span class="lineNum">     502 </span>            :   /// Indicate that the stream is to be finished with a certain status code
+<span class="lineNum">     503 </span>            :   /// and also send out \a msg response to the client.
+<span class="lineNum">     504 </span>            :   /// Request notification for when the server has sent the response and the
+<span class="lineNum">     505 </span>            :   /// appropriate signals to the client to end the call.
+<span class="lineNum">     506 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">     507 </span>            :   ///
+<span class="lineNum">     508 </span>            :   /// It is appropriate to call this method when:
+<span class="lineNum">     509 </span>            :   ///   * all messages from the client have been received (either known
+<span class="lineNum">     510 </span>            :   ///     implictly, or explicitly because a previous
+<span class="lineNum">     511 </span>            :   ///     \a AsyncReaderInterface::Read operation with a non-ok result,
+<span class="lineNum">     512 </span>            :   ///     e.g., cq-&gt;Next(&amp;read_tag, &amp;ok) filled in 'ok' with 'false').
+<span class="lineNum">     513 </span>            :   ///
+<span class="lineNum">     514 </span>            :   /// This operation will end when the server has finished sending out initial
+<span class="lineNum">     515 </span>            :   /// metadata (if not sent already), response message, and status, or if
+<span class="lineNum">     516 </span>            :   /// some failure occurred when trying to do so.
+<span class="lineNum">     517 </span>            :   ///
+<span class="lineNum">     518 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     519 </span>            :   /// \param[in] status To be sent to the client as the result of this call.
+<span class="lineNum">     520 </span>            :   /// \param[in] msg To be sent to the client as the response for this call.
+<span class="lineNum">     521 </span>            :   virtual void Finish(const W&amp; msg, const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     522 </span>            : 
+<span class="lineNum">     523 </span>            :   /// Indicate that the stream is to be finished with a certain
+<span class="lineNum">     524 </span>            :   /// non-OK status code.
+<span class="lineNum">     525 </span>            :   /// Request notification for when the server has sent the appropriate
+<span class="lineNum">     526 </span>            :   /// signals to the client to end the call.
+<span class="lineNum">     527 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">     528 </span>            :   ///
+<span class="lineNum">     529 </span>            :   /// This call is meant to end the call with some error, and can be called at
+<span class="lineNum">     530 </span>            :   /// any point that the server would like to &quot;fail&quot; the call (though note
+<span class="lineNum">     531 </span>            :   /// this shouldn't be called concurrently with any other &quot;sending&quot; call, like
+<span class="lineNum">     532 </span>            :   /// \a AsyncWriterInterface::Write).
+<span class="lineNum">     533 </span>            :   ///
+<span class="lineNum">     534 </span>            :   /// This operation will end when the server has finished sending out initial
+<span class="lineNum">     535 </span>            :   /// metadata (if not sent already), and status, or if some failure occurred
+<span class="lineNum">     536 </span>            :   /// when trying to do so.
+<span class="lineNum">     537 </span>            :   ///
+<span class="lineNum">     538 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     539 </span>            :   /// \param[in] status To be sent to the client as the result of this call.
+<span class="lineNum">     540 </span>            :   ///     - Note: \a status must have a non-OK code.
+<span class="lineNum">     541 </span>            :   virtual void FinishWithError(const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     542 </span>            : };
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            : /// Async server-side API for doing client-streaming RPCs,
+<span class="lineNum">     545 </span>            : /// where the incoming message stream from the client has messages of type \a R,
+<span class="lineNum">     546 </span>            : /// and the single response message sent from the server is type \a W.
+<span class="lineNum">     547 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     548 </span>            : class ServerAsyncReader final : public ServerAsyncReaderInterface&lt;W, R&gt; {
+<span class="lineNum">     549 </span>            :  public:
+<span class="lineNum">     550 </span>            :   explicit ServerAsyncReader(ServerContext* ctx)
+<span class="lineNum">     551 </span>            :       : call_(nullptr, nullptr, nullptr), ctx_(ctx) {}
+<span class="lineNum">     552 </span>            : 
+<span class="lineNum">     553 </span>            :   /// See \a ServerAsyncStreamingInterface::SendInitialMetadata for semantics.
+<span class="lineNum">     554 </span>            :   ///
+<span class="lineNum">     555 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     556 </span>            :   ///   - The initial metadata that will be sent to the client from this op will
+<span class="lineNum">     557 </span>            :   ///     be taken from the \a ServerContext associated with the call.
+<span class="lineNum">     558 </span>            :   void SendInitialMetadata(void* tag) override {
+<span class="lineNum">     559 </span>            :     GPR_CODEGEN_ASSERT(!ctx_-&gt;sent_initial_metadata_);
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span>            :     meta_ops_.set_output_tag(tag);
+<span class="lineNum">     562 </span>            :     meta_ops_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     563 </span>            :                                   ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     564 </span>            :     if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     565 </span>            :       meta_ops_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     566 </span>            :     }
+<span class="lineNum">     567 </span>            :     ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     568 </span>            :     call_.PerformOps(&amp;meta_ops_);
+<span class="lineNum">     569 </span>            :   }
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span>            :   void Read(R* msg, void* tag) override {
+<span class="lineNum">     572 </span>            :     read_ops_.set_output_tag(tag);
+<span class="lineNum">     573 </span>            :     read_ops_.RecvMessage(msg);
+<span class="lineNum">     574 </span>            :     call_.PerformOps(&amp;read_ops_);
+<span class="lineNum">     575 </span>            :   }
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span>            :   /// See the \a ServerAsyncReaderInterface.Read method for semantics
+<span class="lineNum">     578 </span>            :   ///
+<span class="lineNum">     579 </span>            :   /// Side effect:
+<span class="lineNum">     580 </span>            :   ///   - also sends initial metadata if not alreay sent.
+<span class="lineNum">     581 </span>            :   ///   - uses the \a ServerContext associated with this call to send possible
+<span class="lineNum">     582 </span>            :   ///     initial and trailing metadata.
+<span class="lineNum">     583 </span>            :   ///
+<span class="lineNum">     584 </span>            :   /// Note: \a msg is not sent if \a status has a non-OK code.
+<span class="lineNum">     585 </span>            :   void Finish(const W&amp; msg, const Status&amp; status, void* tag) override {
+<span class="lineNum">     586 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     587 </span>            :     if (!ctx_-&gt;sent_initial_metadata_) {
+<span class="lineNum">     588 </span>            :       finish_ops_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     589 </span>            :                                       ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     590 </span>            :       if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     591 </span>            :         finish_ops_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     592 </span>            :       }
+<span class="lineNum">     593 </span>            :       ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     594 </span>            :     }
+<span class="lineNum">     595 </span>            :     // The response is dropped if the status is not OK.
+<span class="lineNum">     596 </span>            :     if (status.ok()) {
+<span class="lineNum">     597 </span>            :       finish_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_,
+<span class="lineNum">     598 </span>            :                                    finish_ops_.SendMessage(msg));
+<span class="lineNum">     599 </span>            :     } else {
+<span class="lineNum">     600 </span>            :       finish_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     601 </span>            :     }
+<span class="lineNum">     602 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     603 </span>            :   }
+<span class="lineNum">     604 </span>            : 
+<span class="lineNum">     605 </span>            :   /// See the \a ServerAsyncReaderInterface.Read method for semantics
+<span class="lineNum">     606 </span>            :   ///
+<span class="lineNum">     607 </span>            :   /// Side effect:
+<span class="lineNum">     608 </span>            :   ///   - also sends initial metadata if not alreay sent.
+<span class="lineNum">     609 </span>            :   ///   - uses the \a ServerContext associated with this call to send possible
+<span class="lineNum">     610 </span>            :   ///     initial and trailing metadata.
+<span class="lineNum">     611 </span>            :   void FinishWithError(const Status&amp; status, void* tag) override {
+<span class="lineNum">     612 </span>            :     GPR_CODEGEN_ASSERT(!status.ok());
+<span class="lineNum">     613 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     614 </span>            :     if (!ctx_-&gt;sent_initial_metadata_) {
+<span class="lineNum">     615 </span>            :       finish_ops_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     616 </span>            :                                       ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     617 </span>            :       if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     618 </span>            :         finish_ops_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     619 </span>            :       }
+<span class="lineNum">     620 </span>            :       ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     621 </span>            :     }
+<span class="lineNum">     622 </span>            :     finish_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     623 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     624 </span>            :   }
+<span class="lineNum">     625 </span>            : 
+<span class="lineNum">     626 </span>            :  private:
+<span class="lineNum">     627 </span>            :   void BindCall(Call* call) override { call_ = *call; }
+<span class="lineNum">     628 </span>            : 
+<span class="lineNum">     629 </span>            :   Call call_;
+<span class="lineNum">     630 </span>            :   ServerContext* ctx_;
+<span class="lineNum">     631 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     632 </span>            :   CallOpSet&lt;CallOpRecvMessage&lt;R&gt;&gt; read_ops_;
+<span class="lineNum">     633 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">     634 </span>            :             CallOpServerSendStatus&gt;
+<span class="lineNum">     635 </span>            :       finish_ops_;
+<span class="lineNum">     636 </span>            : };
+<span class="lineNum">     637 </span>            : 
+<span class="lineNum">     638 </span>            : template &lt;class W&gt;
+<span class="lineNum">     639 </span>            : class ServerAsyncWriterInterface : public ServerAsyncStreamingInterface,
+<span class="lineNum">     640 </span>            :                                    public AsyncWriterInterface&lt;W&gt; {
+<span class="lineNum">     641 </span>            :  public:
+<span class="lineNum">     642 </span>            :   /// Indicate that the stream is to be finished with a certain status code.
+<span class="lineNum">     643 </span>            :   /// Request notification for when the server has sent the appropriate
+<span class="lineNum">     644 </span>            :   /// signals to the client to end the call.
+<span class="lineNum">     645 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">     646 </span>            :   ///
+<span class="lineNum">     647 </span>            :   /// It is appropriate to call this method when either:
+<span class="lineNum">     648 </span>            :   ///   * all messages from the client have been received (either known
+<span class="lineNum">     649 </span>            :   ///     implictly, or explicitly because a previous \a
+<span class="lineNum">     650 </span>            :   ///     AsyncReaderInterface::Read operation with a non-ok
+<span class="lineNum">     651 </span>            :   ///     result (e.g., cq-&gt;Next(&amp;read_tag, &amp;ok) filled in 'ok' with 'false'.
+<span class="lineNum">     652 </span>            :   ///   * it is desired to end the call early with some non-OK status code.
+<span class="lineNum">     653 </span>            :   ///
+<span class="lineNum">     654 </span>            :   /// This operation will end when the server has finished sending out initial
+<span class="lineNum">     655 </span>            :   /// metadata (if not sent already), response message, and status, or if
+<span class="lineNum">     656 </span>            :   /// some failure occurred when trying to do so.
+<span class="lineNum">     657 </span>            :   ///
+<span class="lineNum">     658 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     659 </span>            :   /// \param[in] status To be sent to the client as the result of this call.
+<span class="lineNum">     660 </span>            :   virtual void Finish(const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     661 </span>            : 
+<span class="lineNum">     662 </span>            :   /// Request the writing of \a msg and coalesce it with trailing metadata which
+<span class="lineNum">     663 </span>            :   /// contains \a status, using WriteOptions options with
+<span class="lineNum">     664 </span>            :   /// identifying tag \a tag.
+<span class="lineNum">     665 </span>            :   ///
+<span class="lineNum">     666 </span>            :   /// WriteAndFinish is equivalent of performing WriteLast and Finish
+<span class="lineNum">     667 </span>            :   /// in a single step.
+<span class="lineNum">     668 </span>            :   ///
+<span class="lineNum">     669 </span>            :   /// \param[in] msg The message to be written.
+<span class="lineNum">     670 </span>            :   /// \param[in] options The WriteOptions to be used to write this message.
+<span class="lineNum">     671 </span>            :   /// \param[in] status The Status that server returns to client.
+<span class="lineNum">     672 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     673 </span>            :   virtual void WriteAndFinish(const W&amp; msg, WriteOptions options,
+<span class="lineNum">     674 </span>            :                               const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     675 </span>            : };
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            : /// Async server-side API for doing server streaming RPCs,
+<span class="lineNum">     678 </span>            : /// where the outgoing message stream from the server has messages of type \a W.
+<span class="lineNum">     679 </span>            : template &lt;class W&gt;
+<span class="lineNum">     680 </span>            : class ServerAsyncWriter final : public ServerAsyncWriterInterface&lt;W&gt; {
+<span class="lineNum">     681 </span>            :  public:
+<span class="lineNum">     682 </span>            :   explicit ServerAsyncWriter(ServerContext* ctx)
+<span class="lineNum">     683 </span>            :       : call_(nullptr, nullptr, nullptr), ctx_(ctx) {}
+<span class="lineNum">     684 </span>            : 
+<span class="lineNum">     685 </span>            :   /// See \a ServerAsyncStreamingInterface::SendInitialMetadata for semantics.
+<span class="lineNum">     686 </span>            :   ///
+<span class="lineNum">     687 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     688 </span>            :   ///   - The initial metadata that will be sent to the client from this op will
+<span class="lineNum">     689 </span>            :   ///     be taken from the \a ServerContext associated with the call.
+<span class="lineNum">     690 </span>            :   ///
+<span class="lineNum">     691 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     692 </span>            :   void SendInitialMetadata(void* tag) override {
+<span class="lineNum">     693 </span>            :     GPR_CODEGEN_ASSERT(!ctx_-&gt;sent_initial_metadata_);
+<span class="lineNum">     694 </span>            : 
+<span class="lineNum">     695 </span>            :     meta_ops_.set_output_tag(tag);
+<span class="lineNum">     696 </span>            :     meta_ops_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     697 </span>            :                                   ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     698 </span>            :     if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     699 </span>            :       meta_ops_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     700 </span>            :     }
+<span class="lineNum">     701 </span>            :     ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     702 </span>            :     call_.PerformOps(&amp;meta_ops_);
+<span class="lineNum">     703 </span>            :   }
+<span class="lineNum">     704 </span>            : 
+<span class="lineNum">     705 </span>            :   void Write(const W&amp; msg, void* tag) override {
+<span class="lineNum">     706 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     707 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     708 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     709 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg).ok());
+<span class="lineNum">     710 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     711 </span>            :   }
+<span class="lineNum">     712 </span>            : 
+<span class="lineNum">     713 </span>            :   void Write(const W&amp; msg, WriteOptions options, void* tag) override {
+<span class="lineNum">     714 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     715 </span>            :     if (options.is_last_message()) {
+<span class="lineNum">     716 </span>            :       options.set_buffer_hint();
+<span class="lineNum">     717 </span>            :     }
+<span class="lineNum">     718 </span>            : 
+<span class="lineNum">     719 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     720 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     721 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     722 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     723 </span>            :   }
+<span class="lineNum">     724 </span>            : 
+<span class="lineNum">     725 </span>            :   /// See the \a ServerAsyncWriterInterface.WriteAndFinish method for semantics.
+<span class="lineNum">     726 </span>            :   ///
+<span class="lineNum">     727 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     728 </span>            :   ///   - the \a ServerContext associated with this call is used
+<span class="lineNum">     729 </span>            :   ///     for sending trailing (and initial) metadata to the client.
+<span class="lineNum">     730 </span>            :   ///
+<span class="lineNum">     731 </span>            :   /// Note: \a status must have an OK code.
+<span class="lineNum">     732 </span>            :   void WriteAndFinish(const W&amp; msg, WriteOptions options, const Status&amp; status,
+<span class="lineNum">     733 </span>            :                       void* tag) override {
+<span class="lineNum">     734 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     735 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     736 </span>            :     options.set_buffer_hint();
+<span class="lineNum">     737 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     738 </span>            :     write_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     739 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     740 </span>            :   }
+<span class="lineNum">     741 </span>            : 
+<span class="lineNum">     742 </span>            :   /// See the \a ServerAsyncWriterInterface.Finish method for semantics.
+<span class="lineNum">     743 </span>            :   ///
+<span class="lineNum">     744 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     745 </span>            :   ///   - the \a ServerContext associated with this call is used for sending
+<span class="lineNum">     746 </span>            :   ///     trailing (and initial if not already sent) metadata to the client.
+<span class="lineNum">     747 </span>            :   ///
+<span class="lineNum">     748 </span>            :   /// Note: there are no restrictions are the code of
+<span class="lineNum">     749 </span>            :   /// \a status,it may be non-OK
+<span class="lineNum">     750 </span>            :   void Finish(const Status&amp; status, void* tag) override {
+<span class="lineNum">     751 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     752 </span>            :     EnsureInitialMetadataSent(&amp;finish_ops_);
+<span class="lineNum">     753 </span>            :     finish_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     754 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     755 </span>            :   }
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span>            :  private:
+<span class="lineNum">     758 </span>            :   void BindCall(Call* call) override { call_ = *call; }
+<span class="lineNum">     759 </span>            : 
+<span class="lineNum">     760 </span>            :   template &lt;class T&gt;
+<span class="lineNum">     761 </span>            :   void EnsureInitialMetadataSent(T* ops) {
+<span class="lineNum">     762 </span>            :     if (!ctx_-&gt;sent_initial_metadata_) {
+<span class="lineNum">     763 </span>            :       ops-&gt;SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     764 </span>            :                                ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     765 </span>            :       if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     766 </span>            :         ops-&gt;set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     767 </span>            :       }
+<span class="lineNum">     768 </span>            :       ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     769 </span>            :     }
+<span class="lineNum">     770 </span>            :   }
+<span class="lineNum">     771 </span>            : 
+<span class="lineNum">     772 </span>            :   Call call_;
+<span class="lineNum">     773 </span>            :   ServerContext* ctx_;
+<span class="lineNum">     774 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     775 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">     776 </span>            :             CallOpServerSendStatus&gt;
+<span class="lineNum">     777 </span>            :       write_ops_;
+<span class="lineNum">     778 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpServerSendStatus&gt; finish_ops_;
+<span class="lineNum">     779 </span>            : };
+<span class="lineNum">     780 </span>            : 
+<span class="lineNum">     781 </span>            : /// Server-side interface for asynchronous bi-directional streaming.
+<span class="lineNum">     782 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     783 </span>            : class ServerAsyncReaderWriterInterface : public ServerAsyncStreamingInterface,
+<span class="lineNum">     784 </span>            :                                          public AsyncWriterInterface&lt;W&gt;,
+<span class="lineNum">     785 </span>            :                                          public AsyncReaderInterface&lt;R&gt; {
+<span class="lineNum">     786 </span>            :  public:
+<span class="lineNum">     787 </span>            :   /// Indicate that the stream is to be finished with a certain status code.
+<span class="lineNum">     788 </span>            :   /// Request notification for when the server has sent the appropriate
+<span class="lineNum">     789 </span>            :   /// signals to the client to end the call.
+<span class="lineNum">     790 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">     791 </span>            :   ///
+<span class="lineNum">     792 </span>            :   /// It is appropriate to call this method when either:
+<span class="lineNum">     793 </span>            :   ///   * all messages from the client have been received (either known
+<span class="lineNum">     794 </span>            :   ///     implictly, or explicitly because a previous \a
+<span class="lineNum">     795 </span>            :   ///     AsyncReaderInterface::Read operation
+<span class="lineNum">     796 </span>            :   ///     with a non-ok result (e.g., cq-&gt;Next(&amp;read_tag, &amp;ok) filled in 'ok'
+<span class="lineNum">     797 </span>            :   ///     with 'false'.
+<span class="lineNum">     798 </span>            :   ///   * it is desired to end the call early with some non-OK status code.
+<span class="lineNum">     799 </span>            :   ///
+<span class="lineNum">     800 </span>            :   /// This operation will end when the server has finished sending out initial
+<span class="lineNum">     801 </span>            :   /// metadata (if not sent already), response message, and status, or if some
+<span class="lineNum">     802 </span>            :   /// failure occurred when trying to do so.
+<span class="lineNum">     803 </span>            :   ///
+<span class="lineNum">     804 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     805 </span>            :   /// \param[in] status To be sent to the client as the result of this call.
+<span class="lineNum">     806 </span>            :   virtual void Finish(const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     807 </span>            : 
+<span class="lineNum">     808 </span>            :   /// Request the writing of \a msg and coalesce it with trailing metadata which
+<span class="lineNum">     809 </span>            :   /// contains \a status, using WriteOptions options with
+<span class="lineNum">     810 </span>            :   /// identifying tag \a tag.
+<span class="lineNum">     811 </span>            :   ///
+<span class="lineNum">     812 </span>            :   /// WriteAndFinish is equivalent of performing WriteLast and Finish in a
+<span class="lineNum">     813 </span>            :   /// single step.
+<span class="lineNum">     814 </span>            :   ///
+<span class="lineNum">     815 </span>            :   /// \param[in] msg The message to be written.
+<span class="lineNum">     816 </span>            :   /// \param[in] options The WriteOptions to be used to write this message.
+<span class="lineNum">     817 </span>            :   /// \param[in] status The Status that server returns to client.
+<span class="lineNum">     818 </span>            :   /// \param[in] tag The tag identifying the operation.
+<span class="lineNum">     819 </span>            :   virtual void WriteAndFinish(const W&amp; msg, WriteOptions options,
+<span class="lineNum">     820 </span>            :                               const Status&amp; status, void* tag) = 0;
+<span class="lineNum">     821 </span>            : };
+<span class="lineNum">     822 </span>            : 
+<span class="lineNum">     823 </span>            : /// Async server-side API for doing bidirectional streaming RPCs,
+<span class="lineNum">     824 </span>            : /// where the incoming message stream coming from the client has messages of
+<span class="lineNum">     825 </span>            : /// type \a R, and the outgoing message stream coming from the server has
+<span class="lineNum">     826 </span>            : /// messages of type \a W.
+<span class="lineNum">     827 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">     828 </span>            : class ServerAsyncReaderWriter final
+<span class="lineNum">     829 </span>            :     : public ServerAsyncReaderWriterInterface&lt;W, R&gt; {
+<span class="lineNum">     830 </span>            :  public:
+<span class="lineNum">     831 </span>            :   explicit ServerAsyncReaderWriter(ServerContext* ctx)
+<span class="lineNum">     832 </span>            :       : call_(nullptr, nullptr, nullptr), ctx_(ctx) {}
+<span class="lineNum">     833 </span>            : 
+<span class="lineNum">     834 </span>            :   /// See \a ServerAsyncStreamingInterface::SendInitialMetadata for semantics.
+<span class="lineNum">     835 </span>            :   ///
+<span class="lineNum">     836 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     837 </span>            :   ///   - The initial metadata that will be sent to the client from this op will
+<span class="lineNum">     838 </span>            :   ///     be taken from the \a ServerContext associated with the call.
+<span class="lineNum">     839 </span>            :   ///
+<span class="lineNum">     840 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     841 </span>            :   void SendInitialMetadata(void* tag) override {
+<span class="lineNum">     842 </span>            :     GPR_CODEGEN_ASSERT(!ctx_-&gt;sent_initial_metadata_);
+<span class="lineNum">     843 </span>            : 
+<span class="lineNum">     844 </span>            :     meta_ops_.set_output_tag(tag);
+<span class="lineNum">     845 </span>            :     meta_ops_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     846 </span>            :                                   ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     847 </span>            :     if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     848 </span>            :       meta_ops_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     849 </span>            :     }
+<span class="lineNum">     850 </span>            :     ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     851 </span>            :     call_.PerformOps(&amp;meta_ops_);
+<span class="lineNum">     852 </span>            :   }
+<span class="lineNum">     853 </span>            : 
+<span class="lineNum">     854 </span>            :   void Read(R* msg, void* tag) override {
+<span class="lineNum">     855 </span>            :     read_ops_.set_output_tag(tag);
+<span class="lineNum">     856 </span>            :     read_ops_.RecvMessage(msg);
+<span class="lineNum">     857 </span>            :     call_.PerformOps(&amp;read_ops_);
+<span class="lineNum">     858 </span>            :   }
+<span class="lineNum">     859 </span>            : 
+<span class="lineNum">     860 </span>            :   void Write(const W&amp; msg, void* tag) override {
+<span class="lineNum">     861 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     862 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     863 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     864 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg).ok());
+<span class="lineNum">     865 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     866 </span>            :   }
+<span class="lineNum">     867 </span>            : 
+<span class="lineNum">     868 </span>            :   void Write(const W&amp; msg, WriteOptions options, void* tag) override {
+<span class="lineNum">     869 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     870 </span>            :     if (options.is_last_message()) {
+<span class="lineNum">     871 </span>            :       options.set_buffer_hint();
+<span class="lineNum">     872 </span>            :     }
+<span class="lineNum">     873 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     874 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     875 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     876 </span>            :   }
+<span class="lineNum">     877 </span>            : 
+<span class="lineNum">     878 </span>            :   /// See the \a ServerAsyncReaderWriterInterface.WriteAndFinish
+<span class="lineNum">     879 </span>            :   /// method for semantics.
+<span class="lineNum">     880 </span>            :   ///
+<span class="lineNum">     881 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     882 </span>            :   ///   - the \a ServerContext associated with this call is used
+<span class="lineNum">     883 </span>            :   ///     for sending trailing (and initial) metadata to the client.
+<span class="lineNum">     884 </span>            :   ///
+<span class="lineNum">     885 </span>            :   /// Note: \a status must have an OK code.
+<span class="lineNum">     886 </span>            :   void WriteAndFinish(const W&amp; msg, WriteOptions options, const Status&amp; status,
+<span class="lineNum">     887 </span>            :                       void* tag) override {
+<span class="lineNum">     888 </span>            :     write_ops_.set_output_tag(tag);
+<span class="lineNum">     889 </span>            :     EnsureInitialMetadataSent(&amp;write_ops_);
+<span class="lineNum">     890 </span>            :     options.set_buffer_hint();
+<span class="lineNum">     891 </span>            :     GPR_CODEGEN_ASSERT(write_ops_.SendMessage(msg, options).ok());
+<span class="lineNum">     892 </span>            :     write_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     893 </span>            :     call_.PerformOps(&amp;write_ops_);
+<span class="lineNum">     894 </span>            :   }
+<span class="lineNum">     895 </span>            : 
+<span class="lineNum">     896 </span>            :   /// See the \a ServerAsyncReaderWriterInterface.Finish method for semantics.
+<span class="lineNum">     897 </span>            :   ///
+<span class="lineNum">     898 </span>            :   /// Implicit input parameter:
+<span class="lineNum">     899 </span>            :   ///   - the \a ServerContext associated with this call is used for sending
+<span class="lineNum">     900 </span>            :   ///     trailing (and initial if not already sent) metadata to the client.
+<span class="lineNum">     901 </span>            :   ///
+<span class="lineNum">     902 </span>            :   /// Note: there are no restrictions are the code of \a status,
+<span class="lineNum">     903 </span>            :   /// it may be non-OK
+<span class="lineNum">     904 </span>            :   void Finish(const Status&amp; status, void* tag) override {
+<span class="lineNum">     905 </span>            :     finish_ops_.set_output_tag(tag);
+<span class="lineNum">     906 </span>            :     EnsureInitialMetadataSent(&amp;finish_ops_);
+<span class="lineNum">     907 </span>            : 
+<span class="lineNum">     908 </span>            :     finish_ops_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     909 </span>            :     call_.PerformOps(&amp;finish_ops_);
+<span class="lineNum">     910 </span>            :   }
+<span class="lineNum">     911 </span>            : 
+<span class="lineNum">     912 </span>            :  private:
+<span class="lineNum">     913 </span>            :   friend class ::grpc::Server;
+<span class="lineNum">     914 </span>            : 
+<span class="lineNum">     915 </span>            :   void BindCall(Call* call) override { call_ = *call; }
+<span class="lineNum">     916 </span>            : 
+<span class="lineNum">     917 </span>            :   template &lt;class T&gt;
+<span class="lineNum">     918 </span>            :   void EnsureInitialMetadataSent(T* ops) {
+<span class="lineNum">     919 </span>            :     if (!ctx_-&gt;sent_initial_metadata_) {
+<span class="lineNum">     920 </span>            :       ops-&gt;SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     921 </span>            :                                ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     922 </span>            :       if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     923 </span>            :         ops-&gt;set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     924 </span>            :       }
+<span class="lineNum">     925 </span>            :       ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     926 </span>            :     }
+<span class="lineNum">     927 </span>            :   }
+<span class="lineNum">     928 </span>            : 
+<span class="lineNum">     929 </span>            :   Call call_;
+<span class="lineNum">     930 </span>            :   ServerContext* ctx_;
+<span class="lineNum">     931 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata&gt; meta_ops_;
+<span class="lineNum">     932 </span>            :   CallOpSet&lt;CallOpRecvMessage&lt;R&gt;&gt; read_ops_;
+<span class="lineNum">     933 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">     934 </span>            :             CallOpServerSendStatus&gt;
+<span class="lineNum">     935 </span>            :       write_ops_;
+<span class="lineNum">     936 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpServerSendStatus&gt; finish_ops_;
+<span class="lineNum">     937 </span>            : };
+<span class="lineNum">     938 </span>            : 
+<span class="lineNum">     939 </span>            : }  // namespace grpc
+<span class="lineNum">     940 </span>            : 
+<span class="lineNum">     941 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_ASYNC_STREAM_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/atomic.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb</a> - atomic.h<span style="font-size: 80%;"> (source / <a href="atomic.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">35</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryMed">89.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryHi">93.8 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #ifndef __TBB_atomic_H
+<span class="lineNum">      22 </span>            : #define __TBB_atomic_H
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &lt;cstddef&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #if _MSC_VER
+<span class="lineNum">      27 </span>            : #define __TBB_LONG_LONG __int64
+<span class="lineNum">      28 </span>            : #else
+<span class="lineNum">      29 </span>            : #define __TBB_LONG_LONG long long
+<span class="lineNum">      30 </span>            : #endif /* _MSC_VER */
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : #include &quot;tbb_machine.h&quot;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #if _MSC_VER &amp;&amp; !__INTEL_COMPILER
+<span class="lineNum">      35 </span>            :     // Suppress overzealous compiler warnings till the end of the file
+<span class="lineNum">      36 </span>            :     #pragma warning (push)
+<span class="lineNum">      37 </span>            :     #pragma warning (disable: 4244 4267 4512)
+<span class="lineNum">      38 </span>            : #endif
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace tbb {
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : //! Specifies memory semantics.
+<span class="lineNum">      43 </span>            : enum memory_semantics {
+<span class="lineNum">      44 </span>            :     //! Sequential consistency
+<span class="lineNum">      45 </span>            :     full_fence,
+<span class="lineNum">      46 </span>            :     //! Acquire
+<span class="lineNum">      47 </span>            :     acquire,
+<span class="lineNum">      48 </span>            :     //! Release
+<span class="lineNum">      49 </span>            :     release,
+<span class="lineNum">      50 </span>            :     //! No ordering
+<span class="lineNum">      51 </span>            :     relaxed
+<span class="lineNum">      52 </span>            : };
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : //! @cond INTERNAL
+<span class="lineNum">      55 </span>            : namespace internal {
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : #if __TBB_ALIGNAS_PRESENT
+<span class="lineNum">      58 </span>            :     #define __TBB_DECL_ATOMIC_FIELD(t,f,a) alignas(a) t f;
+<span class="lineNum">      59 </span>            : #elif __TBB_ATTRIBUTE_ALIGNED_PRESENT
+<span class="lineNum">      60 </span>            :     #define __TBB_DECL_ATOMIC_FIELD(t,f,a) t f  __attribute__ ((aligned(a)));
+<span class="lineNum">      61 </span>            : #elif __TBB_DECLSPEC_ALIGN_PRESENT
+<span class="lineNum">      62 </span>            :     #define __TBB_DECL_ATOMIC_FIELD(t,f,a) __declspec(align(a)) t f;
+<span class="lineNum">      63 </span>            : #else
+<span class="lineNum">      64 </span>            :     #error Do not know syntax for forcing alignment.
+<span class="lineNum">      65 </span>            : #endif
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : template&lt;size_t S&gt;
+<span class="lineNum">      68 </span>            : struct atomic_rep;           // Primary template declared, but never defined.
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : template&lt;&gt;
+<span class="lineNum">      71 </span>            : struct atomic_rep&lt;1&gt; {       // Specialization
+<span class="lineNum">      72 </span>            :     typedef int8_t word;
+<span class="lineNum">      73 </span>            : };
+<span class="lineNum">      74 </span>            : template&lt;&gt;
+<span class="lineNum">      75 </span>            : struct atomic_rep&lt;2&gt; {       // Specialization
+<span class="lineNum">      76 </span>            :     typedef int16_t word;
+<span class="lineNum">      77 </span>            : };
+<span class="lineNum">      78 </span>            : template&lt;&gt;
+<span class="lineNum">      79 </span>            : struct atomic_rep&lt;4&gt; {       // Specialization
+<span class="lineNum">      80 </span>            : #if _MSC_VER &amp;&amp; !_WIN64
+<span class="lineNum">      81 </span>            :     // Work-around that avoids spurious /Wp64 warnings
+<span class="lineNum">      82 </span>            :     typedef intptr_t word;
+<span class="lineNum">      83 </span>            : #else
+<span class="lineNum">      84 </span>            :     typedef int32_t word;
+<span class="lineNum">      85 </span>            : #endif
+<span class="lineNum">      86 </span>            : };
+<span class="lineNum">      87 </span>            : #if __TBB_64BIT_ATOMICS
+<span class="lineNum">      88 </span>            : template&lt;&gt;
+<span class="lineNum">      89 </span>            : struct atomic_rep&lt;8&gt; {       // Specialization
+<span class="lineNum">      90 </span>            :     typedef int64_t word;
+<span class="lineNum">      91 </span>            : };
+<span class="lineNum">      92 </span>            : #endif
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : template&lt;typename value_type, size_t size&gt;
+<span class="lineNum">      95 </span>            : struct aligned_storage;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : //the specializations are needed to please MSVC syntax of __declspec(align()) which accept _literal_ constants only
+<span class="lineNum">      98 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">      99 </span>            :     #define ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(S)                  \
+<span class="lineNum">     100 </span>            :     template&lt;typename value_type&gt;                                     \
+<span class="lineNum">     101 </span>            :     struct aligned_storage&lt;value_type,S&gt; {                            \
+<span class="lineNum">     102 </span>            :         __TBB_DECL_ATOMIC_FIELD(value_type,my_value,S)                \
+<span class="lineNum">     103 </span>            :         aligned_storage() = default ;                                 \
+<span class="lineNum">     104 </span>            :         constexpr aligned_storage(value_type value):my_value(value){} \
+<span class="lineNum">     105 </span>            :     };                                                                \
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : #else
+<span class="lineNum">     108 </span>            :     #define ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(S)                  \
+<span class="lineNum">     109 </span>            :     template&lt;typename value_type&gt;                                     \
+<span class="lineNum">     110 </span>            :     struct aligned_storage&lt;value_type,S&gt; {                            \
+<span class="lineNum">     111 </span>            :         __TBB_DECL_ATOMIC_FIELD(value_type,my_value,S)                \
+<span class="lineNum">     112 </span>            :     };                                                                \
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : #endif
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : template&lt;typename value_type&gt;
+<span class="lineNum">     117 </span>            : struct aligned_storage&lt;value_type,1&gt; {
+<span class="lineNum">     118 </span>            :     value_type my_value;
+<span class="lineNum">     119 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     120 </span>            :     aligned_storage() = default ;
+<span class="lineNum">     121 </span>            :     constexpr aligned_storage(value_type value):my_value(value){}
+<span class="lineNum">     122 </span>            : #endif
+<span class="lineNum">     123 </span>            : };
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            : ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(2)
+<span class="lineNum">     126 </span>            : ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(4)
+<span class="lineNum">     127 </span>            : #if __TBB_64BIT_ATOMICS
+<span class="lineNum">     128 </span>            : ATOMIC_STORAGE_PARTIAL_SPECIALIZATION(8)
+<span class="lineNum">     129 </span>            : #endif
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : template&lt;size_t Size, memory_semantics M&gt;
+<span class="lineNum">     132 </span>            : struct atomic_traits;        // Primary template declared, but not defined.
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            : #define __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(S,M)                                                         \
+<span class="lineNum">     135 </span>            :     template&lt;&gt; struct atomic_traits&lt;S,M&gt; {                                                               \
+<span class="lineNum">     136 </span>            :         typedef atomic_rep&lt;S&gt;::word word;                                                                \
+<span class="lineNum">     137 </span>            :         inline static word compare_and_swap( volatile void* location, word new_value, word comparand ) { \
+<span class="lineNum">     138 </span>            :             return __TBB_machine_cmpswp##S##M(location,new_value,comparand);                             \
+<span class="lineNum">     139 </span>            :         }                                                                                                \
+<span class="lineNum">     140 </span>            :         inline static word fetch_and_add( volatile void* location, word addend ) {                       \
+<span class="lineNum">     141 </span>            :             return __TBB_machine_fetchadd##S##M(location,addend);                                        \
+<span class="lineNum">     142 </span>            :         }                                                                                                \
+<span class="lineNum">     143 </span>            :         inline static word fetch_and_store( volatile void* location, word value ) {                      \
+<span class="lineNum">     144 </span>            :             return __TBB_machine_fetchstore##S##M(location,value);                                       \
+<span class="lineNum">     145 </span>            :         }                                                                                                \
+<span class="lineNum">     146 </span>            :     };
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            : #define __TBB_DECL_ATOMIC_PRIMITIVES(S)                                                                  \
+<span class="lineNum">     149 </span>            :     template&lt;memory_semantics M&gt;                                                                         \
+<span class="lineNum">     150 </span>            :     struct atomic_traits&lt;S,M&gt; {                                                                          \
+<span class="lineNum">     151 </span>            :         typedef atomic_rep&lt;S&gt;::word word;                                                                \
+<span class="lineNum">     152 </span>            :         inline static word compare_and_swap( volatile void* location, word new_value, word comparand ) { \
+<span class="lineNum">     153 </span>            :             return __TBB_machine_cmpswp##S(location,new_value,comparand);                                \
+<span class="lineNum">     154 </span>            :         }                                                                                                \
+<span class="lineNum">     155 </span>            :         inline static word fetch_and_add( volatile void* location, word addend ) {                       \
+<span class="lineNum">     156 </span>            :             return __TBB_machine_fetchadd##S(location,addend);                                           \
+<span class="lineNum">     157 </span>            :         }                                                                                                \
+<span class="lineNum">     158 </span>            :         inline static word fetch_and_store( volatile void* location, word value ) {                      \
+<span class="lineNum">     159 </span>            :             return __TBB_machine_fetchstore##S(location,value);                                          \
+<span class="lineNum">     160 </span>            :         }                                                                                                \
+<span class="lineNum">     161 </span>            :     };
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : template&lt;memory_semantics M&gt;
+<span class="lineNum">     164 </span>            : struct atomic_load_store_traits;    // Primary template declaration
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : #define __TBB_DECL_ATOMIC_LOAD_STORE_PRIMITIVES(M)                      \
+<span class="lineNum">     167 </span>            :     template&lt;&gt; struct atomic_load_store_traits&lt;M&gt; {                     \
+<span class="lineNum">     168 </span>            :         template &lt;typename T&gt;                                           \
+<span class="lineNum">     169 </span>            :         inline static T load( const volatile T&amp; location ) {            \
+<span class="lineNum">     170 </span>            :             return __TBB_load_##M( location );                          \
+<span class="lineNum">     171 </span>            :         }                                                               \
+<span class="lineNum">     172 </span>            :         template &lt;typename T&gt;                                           \
+<span class="lineNum">     173 </span>            :         inline static void store( volatile T&amp; location, T value ) {     \
+<span class="lineNum">     174 </span>            :             __TBB_store_##M( location, value );                         \
+<span class="lineNum">     175 </span>            :         }                                                               \
+<span class="lineNum">     176 </span>            :     }
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            : #if __TBB_USE_FENCED_ATOMICS
+<span class="lineNum">     179 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(1,full_fence)
+<span class="lineNum">     180 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(2,full_fence)
+<span class="lineNum">     181 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(4,full_fence)
+<span class="lineNum">     182 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(1,acquire)
+<span class="lineNum">     183 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(2,acquire)
+<span class="lineNum">     184 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(4,acquire)
+<span class="lineNum">     185 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(1,release)
+<span class="lineNum">     186 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(2,release)
+<span class="lineNum">     187 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(4,release)
+<span class="lineNum">     188 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(1,relaxed)
+<span class="lineNum">     189 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(2,relaxed)
+<span class="lineNum">     190 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(4,relaxed)
+<span class="lineNum">     191 </span>            : #if __TBB_64BIT_ATOMICS
+<span class="lineNum">     192 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(8,full_fence)
+<span class="lineNum">     193 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(8,acquire)
+<span class="lineNum">     194 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(8,release)
+<span class="lineNum">     195 </span>            : __TBB_DECL_FENCED_ATOMIC_PRIMITIVES(8,relaxed)
+<span class="lineNum">     196 </span>            : #endif
+<span class="lineNum">     197 </span>            : #else /* !__TBB_USE_FENCED_ATOMICS */
+<span class="lineNum">     198 </span>            : __TBB_DECL_ATOMIC_PRIMITIVES(1)
+<span class="lineNum">     199 </span>            : __TBB_DECL_ATOMIC_PRIMITIVES(2)
+<a name="200"><span class="lineNum">     200 </span>            : __TBB_DECL_ATOMIC_PRIMITIVES(4)</a>
+<span class="lineNum">     201 </span>            : #if __TBB_64BIT_ATOMICS
+<span class="lineNum">     202 </span><span class="lineCov">        330 : __TBB_DECL_ATOMIC_PRIMITIVES(8)</span>
+<span class="lineNum">     203 </span>            : #endif
+<span class="lineNum">     204 </span>            : #endif /* !__TBB_USE_FENCED_ATOMICS */
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            : __TBB_DECL_ATOMIC_LOAD_STORE_PRIMITIVES(full_fence);
+<span class="lineNum">     207 </span>            : __TBB_DECL_ATOMIC_LOAD_STORE_PRIMITIVES(acquire);
+<span class="lineNum">     208 </span>            : __TBB_DECL_ATOMIC_LOAD_STORE_PRIMITIVES(release);
+<span class="lineNum">     209 </span>            : __TBB_DECL_ATOMIC_LOAD_STORE_PRIMITIVES(relaxed);
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            : //! Additive inverse of 1 for type T.
+<span class="lineNum">     212 </span>            : /** Various compilers issue various warnings if -1 is used with various integer types.
+<span class="lineNum">     213 </span>            :     The baroque expression below avoids all the warnings (we hope). */
+<span class="lineNum">     214 </span>            : #define __TBB_MINUS_ONE(T) (T(T(0)-T(1)))
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : //! Base class that provides basic functionality for atomic&lt;T&gt; without fetch_and_add.
+<span class="lineNum">     217 </span>            : /** Works for any type T that has the same size as an integral type, has a trivial constructor/destructor,
+<span class="lineNum">     218 </span>            :     and can be copied/compared by memcpy/memcmp. */
+<span class="lineNum">     219 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     220 </span>            : struct atomic_impl {
+<span class="lineNum">     221 </span>            : protected:
+<span class="lineNum">     222 </span>            :     aligned_storage&lt;T,sizeof(T)&gt; my_storage;
+<span class="lineNum">     223 </span>            : private:
+<span class="lineNum">     224 </span>            :     //TODO: rechecks on recent versions of gcc if union is still the _only_ way to do a conversion without warnings
+<span class="lineNum">     225 </span>            :     //! Union type used to convert type T to underlying integral type.
+<span class="lineNum">     226 </span>            :     template&lt;typename value_type&gt;
+<a name="227"><span class="lineNum">     227 </span>            :     union converter {</a>
+<a name="228"><span class="lineNum">     228 </span>            :         typedef typename atomic_rep&lt;sizeof(value_type)&gt;::word bits_type;</a>
+<span class="lineNum">     229 </span><span class="lineCov">        853 :         converter(){}</span>
+<span class="lineNum">     230 </span><span class="lineCov">        308 :         converter(value_type a_value) : value(a_value) {}</span>
+<span class="lineNum">     231 </span>            :         value_type value;
+<span class="lineNum">     232 </span>            :         bits_type bits;
+<span class="lineNum">     233 </span>            :     };
+<a name="234"><span class="lineNum">     234 </span>            : </a>
+<span class="lineNum">     235 </span>            :     template&lt;typename value_t&gt;
+<span class="lineNum">     236 </span><span class="lineCov">        308 :     static typename converter&lt;value_t&gt;::bits_type to_bits(value_t value){</span>
+<span class="lineNum">     237 </span><span class="lineCov">        308 :         return converter&lt;value_t&gt;(value).bits;</span>
+<a name="238"><span class="lineNum">     238 </span>            :     }</a>
+<span class="lineNum">     239 </span>            :     template&lt;typename value_t&gt;
+<span class="lineNum">     240 </span><span class="lineCov">        853 :     static value_t to_value(typename converter&lt;value_t&gt;::bits_type bits){</span>
+<span class="lineNum">     241 </span><span class="lineCov">        853 :         converter&lt;value_t&gt; u;</span>
+<span class="lineNum">     242 </span><span class="lineCov">        853 :         u.bits = bits;</span>
+<span class="lineNum">     243 </span><span class="lineCov">        853 :         return u.value;</span>
+<span class="lineNum">     244 </span>            :     }
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span>            :     template&lt;typename value_t&gt;
+<span class="lineNum">     247 </span>            :     union ptr_converter;            //Primary template declared, but never defined.
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     template&lt;typename value_t&gt;
+<a name="250"><span class="lineNum">     250 </span>            :     union ptr_converter&lt;value_t *&gt; {</a>
+<span class="lineNum">     251 </span>            :         ptr_converter(){}
+<span class="lineNum">     252 </span><span class="lineCov">        996 :         ptr_converter(value_t* a_value) : value(a_value) {}</span>
+<span class="lineNum">     253 </span>            :         value_t* value;
+<span class="lineNum">     254 </span>            :         uintptr_t bits;
+<span class="lineNum">     255 </span>            :     };
+<span class="lineNum">     256 </span>            :     //TODO: check if making to_bits accepting reference (thus unifying it with to_bits_ref)
+<a name="257"><span class="lineNum">     257 </span>            :     //does not hurt performance</a>
+<span class="lineNum">     258 </span>            :     template&lt;typename value_t&gt;
+<span class="lineNum">     259 </span><span class="lineCov">        996 :     static typename converter&lt;value_t&gt;::bits_type &amp; to_bits_ref(value_t&amp; value){</span>
+<span class="lineNum">     260 </span>            :         //TODO: this #ifdef is temporary workaround, as union conversion seems to fail
+<span class="lineNum">     261 </span>            :         //on suncc for 64 bit types for 32 bit target
+<span class="lineNum">     262 </span>            :         #if !__SUNPRO_CC
+<span class="lineNum">     263 </span><span class="lineCov">        996 :             return *(typename converter&lt;value_t&gt;::bits_type*)ptr_converter&lt;value_t*&gt;(&amp;value).bits;</span>
+<span class="lineNum">     264 </span>            :         #else
+<span class="lineNum">     265 </span>            :             return *(typename converter&lt;value_t&gt;::bits_type*)(&amp;value);
+<span class="lineNum">     266 </span>            :         #endif
+<span class="lineNum">     267 </span>            :     }
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : public:
+<span class="lineNum">     271 </span>            :     typedef T value_type;
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     274 </span>            :     atomic_impl() = default ;
+<span class="lineNum">     275 </span>            :     constexpr atomic_impl(value_type value):my_storage(value){}
+<span class="lineNum">     276 </span>            : #endif
+<span class="lineNum">     277 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     278 </span>            :     value_type fetch_and_store( value_type value ) {
+<span class="lineNum">     279 </span>            :           return to_value&lt;value_type&gt;(
+<span class="lineNum">     280 </span>            :                   internal::atomic_traits&lt;sizeof(value_type),M&gt;::fetch_and_store( &amp;my_storage.my_value, to_bits(value) )
+<span class="lineNum">     281 </span>            :           );
+<span class="lineNum">     282 </span>            :     }
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :     value_type fetch_and_store( value_type value ) {
+<span class="lineNum">     285 </span>            :         return fetch_and_store&lt;full_fence&gt;(value);
+<span class="lineNum">     286 </span>            :     }
+<a name="287"><span class="lineNum">     287 </span>            : </a>
+<span class="lineNum">     288 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     289 </span><span class="lineCov">         55 :     value_type compare_and_swap( value_type value, value_type comparand ) {</span>
+<span class="lineNum">     290 </span><span class="lineCov">         55 :         return to_value&lt;value_type&gt;(</span>
+<span class="lineNum">     291 </span>            :                 internal::atomic_traits&lt;sizeof(value_type),M&gt;::compare_and_swap( &amp;my_storage.my_value, to_bits(value), to_bits(comparand) )
+<span class="lineNum">     292 </span><span class="lineCov">         55 :         );</span>
+<a name="293"><span class="lineNum">     293 </span>            :     }</a>
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span><span class="lineCov">         55 :     value_type compare_and_swap( value_type value, value_type comparand ) {</span>
+<span class="lineNum">     296 </span><span class="lineCov">         55 :         return compare_and_swap&lt;full_fence&gt;(value,comparand);</span>
+<a name="297"><span class="lineNum">     297 </span>            :     }</a>
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span><span class="lineCov">        798 :     operator value_type() const volatile {                // volatile qualifier here for backwards compatibility</span>
+<span class="lineNum">     300 </span><span class="lineCov">        798 :         return  to_value&lt;value_type&gt;(</span>
+<span class="lineNum">     301 </span><span class="lineCov">        798 :                 __TBB_load_with_acquire( to_bits_ref(my_storage.my_value) )</span>
+<span class="lineNum">     302 </span><span class="lineCov">        798 :         );</span>
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     306 </span>            :     value_type load () const {
+<span class="lineNum">     307 </span>            :         return to_value&lt;value_type&gt;(
+<span class="lineNum">     308 </span>            :                 internal::atomic_load_store_traits&lt;M&gt;::load( to_bits_ref(my_storage.my_value) )
+<span class="lineNum">     309 </span>            :         );
+<span class="lineNum">     310 </span>            :     }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :     value_type load () const {
+<span class="lineNum">     313 </span>            :         return load&lt;acquire&gt;();
+<span class="lineNum">     314 </span>            :     }
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     317 </span>            :     void store ( value_type value ) {
+<span class="lineNum">     318 </span>            :         internal::atomic_load_store_traits&lt;M&gt;::store( to_bits_ref(my_storage.my_value), to_bits(value));
+<span class="lineNum">     319 </span>            :     }
+<span class="lineNum">     320 </span>            : 
+<span class="lineNum">     321 </span>            :     void store ( value_type value ) {
+<span class="lineNum">     322 </span>            :         store&lt;release&gt;( value );
+<span class="lineNum">     323 </span>            :     }
+<a name="324"><span class="lineNum">     324 </span>            : </a>
+<span class="lineNum">     325 </span>            : protected:
+<span class="lineNum">     326 </span><span class="lineCov">        198 :     value_type store_with_release( value_type rhs ) {</span>
+<span class="lineNum">     327 </span>            :        //TODO: unify with store&lt;release&gt;
+<span class="lineNum">     328 </span><span class="lineCov">        198 :         __TBB_store_with_release( to_bits_ref(my_storage.my_value), to_bits(rhs) );</span>
+<span class="lineNum">     329 </span><span class="lineCov">        198 :         return rhs;</span>
+<span class="lineNum">     330 </span>            :     }
+<span class="lineNum">     331 </span>            : };
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : //! Base class that provides basic functionality for atomic&lt;T&gt; with fetch_and_add.
+<span class="lineNum">     334 </span>            : /** I is the underlying type.
+<span class="lineNum">     335 </span>            :     D is the difference type.
+<span class="lineNum">     336 </span>            :     StepType should be char if I is an integral type, and T if I is a T*. */
+<span class="lineNum">     337 </span>            : template&lt;typename I, typename D, typename StepType&gt;
+<span class="lineNum">     338 </span>            : struct atomic_impl_with_arithmetic: atomic_impl&lt;I&gt; {
+<span class="lineNum">     339 </span>            : public:
+<span class="lineNum">     340 </span>            :     typedef I value_type;
+<span class="lineNum">     341 </span>            : #if    __TBB_ATOMIC_CTORS
+<span class="lineNum">     342 </span>            :     atomic_impl_with_arithmetic() = default ;
+<span class="lineNum">     343 </span>            :     constexpr atomic_impl_with_arithmetic(value_type value): atomic_impl&lt;I&gt;(value){}
+<a name="344"><span class="lineNum">     344 </span>            : #endif</a>
+<span class="lineNum">     345 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     346 </span><span class="lineCov">        110 :     value_type fetch_and_add( D addend ) {</span>
+<span class="lineNum">     347 </span><span class="lineCov">        110 :         return value_type(internal::atomic_traits&lt;sizeof(value_type),M&gt;::fetch_and_add( &amp;this-&gt;my_storage.my_value, addend*sizeof(StepType) ));</span>
+<a name="348"><span class="lineNum">     348 </span>            :     }</a>
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span><span class="lineCov">        110 :     value_type fetch_and_add( D addend ) {</span>
+<span class="lineNum">     351 </span><span class="lineCov">        110 :         return fetch_and_add&lt;full_fence&gt;(addend);</span>
+<span class="lineNum">     352 </span>            :     }
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     355 </span>            :     value_type fetch_and_increment() {
+<span class="lineNum">     356 </span>            :         return fetch_and_add&lt;M&gt;(1);
+<span class="lineNum">     357 </span>            :     }
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            :     value_type fetch_and_increment() {
+<span class="lineNum">     360 </span>            :         return fetch_and_add(1);
+<span class="lineNum">     361 </span>            :     }
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            :     template&lt;memory_semantics M&gt;
+<span class="lineNum">     364 </span>            :     value_type fetch_and_decrement() {
+<span class="lineNum">     365 </span>            :         return fetch_and_add&lt;M&gt;(__TBB_MINUS_ONE(D));
+<span class="lineNum">     366 </span>            :     }
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            :     value_type fetch_and_decrement() {
+<span class="lineNum">     369 </span>            :         return fetch_and_add(__TBB_MINUS_ONE(D));
+<span class="lineNum">     370 </span>            :     }
+<a name="371"><span class="lineNum">     371 </span>            : </a>
+<span class="lineNum">     372 </span>            : public:
+<span class="lineNum">     373 </span><span class="lineCov">         55 :     value_type operator+=( D value ) {</span>
+<span class="lineNum">     374 </span><span class="lineCov">         55 :         return fetch_and_add(value)+value;</span>
+<span class="lineNum">     375 </span>            :     }
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            :     value_type operator-=( D value ) {
+<span class="lineNum">     378 </span>            :         // Additive inverse of value computed using binary minus,
+<span class="lineNum">     379 </span>            :         // instead of unary minus, for sake of avoiding compiler warnings.
+<span class="lineNum">     380 </span>            :         return operator+=(D(0)-value);
+<a name="381"><span class="lineNum">     381 </span>            :     }</a>
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span><span class="lineNoCov">          0 :     value_type operator++() {</span>
+<span class="lineNum">     384 </span><span class="lineNoCov">          0 :         return fetch_and_add(1)+1;</span>
+<a name="385"><span class="lineNum">     385 </span>            :     }</a>
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span><span class="lineNoCov">          0 :     value_type operator--() {</span>
+<span class="lineNum">     388 </span><span class="lineNoCov">          0 :         return fetch_and_add(__TBB_MINUS_ONE(D))-1;</span>
+<a name="389"><span class="lineNum">     389 </span>            :     }</a>
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span><span class="lineCov">         55 :     value_type operator++(int) {</span>
+<span class="lineNum">     392 </span><span class="lineCov">         55 :         return fetch_and_add(1);</span>
+<span class="lineNum">     393 </span>            :     }
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span>            :     value_type operator--(int) {
+<span class="lineNum">     396 </span>            :         return fetch_and_add(__TBB_MINUS_ONE(D));
+<span class="lineNum">     397 </span>            :     }
+<span class="lineNum">     398 </span>            : };
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : } /* Internal */
+<span class="lineNum">     401 </span>            : //! @endcond
+<span class="lineNum">     402 </span>            : 
+<span class="lineNum">     403 </span>            : //! Primary template for atomic.
+<span class="lineNum">     404 </span>            : /** See the Reference for details.
+<span class="lineNum">     405 </span>            :     @ingroup synchronization */
+<span class="lineNum">     406 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     407 </span>            : struct atomic: internal::atomic_impl&lt;T&gt; {
+<span class="lineNum">     408 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     409 </span>            :     atomic() = default;
+<span class="lineNum">     410 </span>            :     constexpr atomic(T arg): internal::atomic_impl&lt;T&gt;(arg) {}
+<span class="lineNum">     411 </span>            : #endif
+<span class="lineNum">     412 </span>            :     T operator=( T rhs ) {
+<span class="lineNum">     413 </span>            :         // &quot;this&quot; required here in strict ISO C++ because store_with_release is a dependent name
+<span class="lineNum">     414 </span>            :         return this-&gt;store_with_release(rhs);
+<span class="lineNum">     415 </span>            :     }
+<span class="lineNum">     416 </span>            :     atomic&lt;T&gt;&amp; operator=( const atomic&lt;T&gt;&amp; rhs ) {this-&gt;store_with_release(rhs); return *this;}
+<span class="lineNum">     417 </span>            : };
+<span class="lineNum">     418 </span>            : 
+<span class="lineNum">     419 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     420 </span>            :     #define __TBB_DECL_ATOMIC(T)                                                                    \
+<span class="lineNum">     421 </span>            :         template&lt;&gt; struct atomic&lt;T&gt;: internal::atomic_impl_with_arithmetic&lt;T,T,char&gt; {              \
+<span class="lineNum">     422 </span>            :             atomic() = default;                                                                     \
+<span class="lineNum">     423 </span>            :             constexpr atomic(T arg): internal::atomic_impl_with_arithmetic&lt;T,T,char&gt;(arg) {}        \
+<span class="lineNum">     424 </span>            :                                                                                                     \
+<span class="lineNum">     425 </span>            :             T operator=( T rhs ) {return store_with_release(rhs);}                                  \
+<span class="lineNum">     426 </span>            :             atomic&lt;T&gt;&amp; operator=( const atomic&lt;T&gt;&amp; rhs ) {store_with_release(rhs); return *this;}   \
+<span class="lineNum">     427 </span>            :         };
+<span class="lineNum">     428 </span>            : #else
+<span class="lineNum">     429 </span>            :     #define __TBB_DECL_ATOMIC(T)                                                                    \
+<span class="lineNum">     430 </span>            :         template&lt;&gt; struct atomic&lt;T&gt;: internal::atomic_impl_with_arithmetic&lt;T,T,char&gt; {              \
+<span class="lineNum">     431 </span>            :             T operator=( T rhs ) {return store_with_release(rhs);}                                  \
+<span class="lineNum">     432 </span>            :             atomic&lt;T&gt;&amp; operator=( const atomic&lt;T&gt;&amp; rhs ) {store_with_release(rhs); return *this;}   \
+<span class="lineNum">     433 </span>            :         };
+<span class="lineNum">     434 </span>            : #endif
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            : #if __TBB_64BIT_ATOMICS
+<span class="lineNum">     437 </span>            : //TODO: consider adding non-default (and atomic) copy constructor for 32bit platform
+<span class="lineNum">     438 </span>            : __TBB_DECL_ATOMIC(__TBB_LONG_LONG)
+<span class="lineNum">     439 </span>            : __TBB_DECL_ATOMIC(unsigned __TBB_LONG_LONG)
+<span class="lineNum">     440 </span>            : #else
+<span class="lineNum">     441 </span>            : // test_atomic will verify that sizeof(long long)==8
+<a name="442"><span class="lineNum">     442 </span>            : #endif</a>
+<span class="lineNum">     443 </span>            : __TBB_DECL_ATOMIC(long)
+<span class="lineNum">     444 </span><span class="lineCov">        110 : __TBB_DECL_ATOMIC(unsigned long)</span>
+<span class="lineNum">     445 </span>            : 
+<span class="lineNum">     446 </span>            : #if _MSC_VER &amp;&amp; !_WIN64
+<span class="lineNum">     447 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     448 </span>            : /* Special version of __TBB_DECL_ATOMIC that avoids gratuitous warnings from cl /Wp64 option.
+<span class="lineNum">     449 </span>            :    It is identical to __TBB_DECL_ATOMIC(unsigned) except that it replaces operator=(T)
+<span class="lineNum">     450 </span>            :    with an operator=(U) that explicitly converts the U to a T.  Types T and U should be
+<span class="lineNum">     451 </span>            :    type synonyms on the platform.  Type U should be the wider variant of T from the
+<span class="lineNum">     452 </span>            :    perspective of /Wp64. */
+<span class="lineNum">     453 </span>            : #define __TBB_DECL_ATOMIC_ALT(T,U) \
+<span class="lineNum">     454 </span>            :     template&lt;&gt; struct atomic&lt;T&gt;: internal::atomic_impl_with_arithmetic&lt;T,T,char&gt; {             \
+<span class="lineNum">     455 </span>            :         atomic() = default ;                                                                   \
+<span class="lineNum">     456 </span>            :         constexpr atomic(T arg): internal::atomic_impl_with_arithmetic&lt;T,T,char&gt;(arg) {}       \
+<span class="lineNum">     457 </span>            :         T operator=( U rhs ) {return store_with_release(T(rhs));}                              \
+<span class="lineNum">     458 </span>            :         atomic&lt;T&gt;&amp; operator=( const atomic&lt;T&gt;&amp; rhs ) {store_with_release(rhs); return *this;}  \
+<span class="lineNum">     459 </span>            :     };
+<span class="lineNum">     460 </span>            : #else
+<span class="lineNum">     461 </span>            : #define __TBB_DECL_ATOMIC_ALT(T,U) \
+<span class="lineNum">     462 </span>            :     template&lt;&gt; struct atomic&lt;T&gt;: internal::atomic_impl_with_arithmetic&lt;T,T,char&gt; {             \
+<span class="lineNum">     463 </span>            :         T operator=( U rhs ) {return store_with_release(T(rhs));}                              \
+<span class="lineNum">     464 </span>            :         atomic&lt;T&gt;&amp; operator=( const atomic&lt;T&gt;&amp; rhs ) {store_with_release(rhs); return *this;}  \
+<span class="lineNum">     465 </span>            :     };
+<span class="lineNum">     466 </span>            : #endif
+<span class="lineNum">     467 </span>            : __TBB_DECL_ATOMIC_ALT(unsigned,size_t)
+<span class="lineNum">     468 </span>            : __TBB_DECL_ATOMIC_ALT(int,ptrdiff_t)
+<span class="lineNum">     469 </span>            : #else
+<span class="lineNum">     470 </span>            : __TBB_DECL_ATOMIC(unsigned)
+<span class="lineNum">     471 </span>            : __TBB_DECL_ATOMIC(int)
+<span class="lineNum">     472 </span>            : #endif /* _MSC_VER &amp;&amp; !_WIN64 */
+<span class="lineNum">     473 </span>            : 
+<span class="lineNum">     474 </span>            : __TBB_DECL_ATOMIC(unsigned short)
+<span class="lineNum">     475 </span>            : __TBB_DECL_ATOMIC(short)
+<span class="lineNum">     476 </span>            : __TBB_DECL_ATOMIC(char)
+<span class="lineNum">     477 </span>            : __TBB_DECL_ATOMIC(signed char)
+<span class="lineNum">     478 </span>            : __TBB_DECL_ATOMIC(unsigned char)
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            : #if !_MSC_VER || defined(_NATIVE_WCHAR_T_DEFINED)
+<span class="lineNum">     481 </span>            : __TBB_DECL_ATOMIC(wchar_t)
+<span class="lineNum">     482 </span>            : #endif /* _MSC_VER||!defined(_NATIVE_WCHAR_T_DEFINED) */
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            : //! Specialization for atomic&lt;T*&gt; with arithmetic and operator-&gt;.
+<span class="lineNum">     485 </span>            : template&lt;typename T&gt; struct atomic&lt;T*&gt;: internal::atomic_impl_with_arithmetic&lt;T*,ptrdiff_t,T&gt; {
+<span class="lineNum">     486 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     487 </span>            :     atomic() = default ;
+<a name="488"><span class="lineNum">     488 </span>            :     constexpr atomic(T* arg): internal::atomic_impl_with_arithmetic&lt;T*,ptrdiff_t,T&gt;(arg) {}</a>
+<span class="lineNum">     489 </span>            : #endif
+<span class="lineNum">     490 </span><span class="lineCov">        143 :     T* operator=( T* rhs ) {</span>
+<span class="lineNum">     491 </span>            :         // &quot;this&quot; required here in strict ISO C++ because store_with_release is a dependent name
+<span class="lineNum">     492 </span><span class="lineCov">        143 :         return this-&gt;store_with_release(rhs);</span>
+<span class="lineNum">     493 </span>            :     }
+<span class="lineNum">     494 </span>            :     atomic&lt;T*&gt;&amp; operator=( const atomic&lt;T*&gt;&amp; rhs ) {
+<span class="lineNum">     495 </span>            :         this-&gt;store_with_release(rhs); return *this;
+<span class="lineNum">     496 </span>            :     }
+<span class="lineNum">     497 </span>            :     T* operator-&gt;() const {
+<span class="lineNum">     498 </span>            :         return (*this);
+<span class="lineNum">     499 </span>            :     }
+<span class="lineNum">     500 </span>            : };
+<span class="lineNum">     501 </span>            : 
+<span class="lineNum">     502 </span>            : //! Specialization for atomic&lt;void*&gt;, for sake of not allowing arithmetic or operator-&gt;.
+<span class="lineNum">     503 </span>            : template&lt;&gt; struct atomic&lt;void*&gt;: internal::atomic_impl&lt;void*&gt; {
+<span class="lineNum">     504 </span>            : #if __TBB_ATOMIC_CTORS
+<span class="lineNum">     505 </span>            :     atomic() = default ;
+<span class="lineNum">     506 </span>            :     constexpr atomic(void* arg): internal::atomic_impl&lt;void*&gt;(arg) {}
+<span class="lineNum">     507 </span>            : #endif
+<span class="lineNum">     508 </span>            :     void* operator=( void* rhs ) {
+<span class="lineNum">     509 </span>            :         // &quot;this&quot; required here in strict ISO C++ because store_with_release is a dependent name
+<span class="lineNum">     510 </span>            :         return this-&gt;store_with_release(rhs);
+<span class="lineNum">     511 </span>            :     }
+<span class="lineNum">     512 </span>            :     atomic&lt;void*&gt;&amp; operator=( const atomic&lt;void*&gt;&amp; rhs ) {
+<span class="lineNum">     513 </span>            :         this-&gt;store_with_release(rhs); return *this;
+<span class="lineNum">     514 </span>            :     }
+<span class="lineNum">     515 </span>            : };
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            : // Helpers to workaround ugly syntax of calling template member function of a
+<span class="lineNum">     518 </span>            : // template class with template argument dependent on template parameters.
+<span class="lineNum">     519 </span>            : 
+<span class="lineNum">     520 </span>            : template &lt;memory_semantics M, typename T&gt;
+<span class="lineNum">     521 </span>            : T load ( const atomic&lt;T&gt;&amp; a ) { return a.template load&lt;M&gt;(); }
+<span class="lineNum">     522 </span>            : 
+<span class="lineNum">     523 </span>            : template &lt;memory_semantics M, typename T&gt;
+<span class="lineNum">     524 </span>            : void store ( atomic&lt;T&gt;&amp; a, T value ) { a.template store&lt;M&gt;(value); }
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span>            : namespace interface6{
+<span class="lineNum">     527 </span>            : //! Make an atomic for use in an initialization (list), as an alternative to zero-initialization or normal assignment.
+<span class="lineNum">     528 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     529 </span>            : atomic&lt;T&gt; make_atomic(T t) {
+<span class="lineNum">     530 </span>            :     atomic&lt;T&gt; a;
+<span class="lineNum">     531 </span>            :     store&lt;relaxed&gt;(a,t);
+<span class="lineNum">     532 </span>            :     return a;
+<span class="lineNum">     533 </span>            : }
+<span class="lineNum">     534 </span>            : }
+<span class="lineNum">     535 </span>            : using interface6::make_atomic;
+<span class="lineNum">     536 </span>            : 
+<span class="lineNum">     537 </span>            : namespace internal {
+<span class="lineNum">     538 </span>            : template&lt;memory_semantics M, typename T &gt;
+<span class="lineNum">     539 </span>            : void swap(atomic&lt;T&gt; &amp; lhs, atomic&lt;T&gt; &amp; rhs){
+<span class="lineNum">     540 </span>            :     T tmp = load&lt;M&gt;(lhs);
+<span class="lineNum">     541 </span>            :     store&lt;M&gt;(lhs,load&lt;M&gt;(rhs));
+<span class="lineNum">     542 </span>            :     store&lt;M&gt;(rhs,tmp);
+<span class="lineNum">     543 </span>            : }
+<span class="lineNum">     544 </span>            : 
+<span class="lineNum">     545 </span>            : // only to aid in the gradual conversion of ordinary variables to proper atomics
+<span class="lineNum">     546 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     547 </span>            : inline atomic&lt;T&gt;&amp; as_atomic( T&amp; t ) {
+<span class="lineNum">     548 </span>            :     return (atomic&lt;T&gt;&amp;)t;
+<span class="lineNum">     549 </span>            : }
+<span class="lineNum">     550 </span>            : } // namespace tbb::internal
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            : } // namespace tbb
+<span class="lineNum">     553 </span>            : 
+<span class="lineNum">     554 </span>            : #if _MSC_VER &amp;&amp; !__INTEL_COMPILER
+<span class="lineNum">     555 </span>            :     #pragma warning (pop)
+<span class="lineNum">     556 </span>            : #endif // warnings are restored
+<span class="lineNum">     557 </span>            : 
+<span class="lineNum">     558 </span>            : #endif /* __TBB_atomic_H */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

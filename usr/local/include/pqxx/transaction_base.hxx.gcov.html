@@ -1,0 +1,579 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/pqxx/transaction_base.hxx</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/pqxx</a> - transaction_base.hxx<span style="font-size: 80%;"> (source / <a href="transaction_base.hxx.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*-------------------------------------------------------------------------</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  *   FILE
+<span class="lineNum">       4 </span>            :  *      pqxx/transaction_base.hxx
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  *   DESCRIPTION
+<span class="lineNum">       7 </span>            :  *      common code and definitions for the transaction classes.
+<span class="lineNum">       8 </span>            :  *   pqxx::transaction_base defines the interface for any abstract class that
+<span class="lineNum">       9 </span>            :  *   represents a database transaction
+<span class="lineNum">      10 </span>            :  *   DO NOT INCLUDE THIS FILE DIRECTLY; include pqxx/transaction_base instead.
+<span class="lineNum">      11 </span>            :  *
+<span class="lineNum">      12 </span>            :  * Copyright (c) 2001-2017, Jeroen T. Vermeulen &lt;jtv@xs4all.nl&gt;
+<span class="lineNum">      13 </span>            :  *
+<span class="lineNum">      14 </span>            :  * See COPYING for copyright license.  If you did not receive a file called
+<span class="lineNum">      15 </span>            :  * COPYING with this source code, please notify the distributor of this mistake,
+<span class="lineNum">      16 </span>            :  * or contact the author.
+<span class="lineNum">      17 </span>            :  *
+<span class="lineNum">      18 </span>            :  *-------------------------------------------------------------------------
+<span class="lineNum">      19 </span>            :  */
+<span class="lineNum">      20 </span>            : #ifndef PQXX_H_TRANSACTION_BASE
+<span class="lineNum">      21 </span>            : #define PQXX_H_TRANSACTION_BASE
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #include &quot;pqxx/compiler-public.hxx&quot;
+<span class="lineNum">      24 </span>            : #include &quot;pqxx/compiler-internal-pre.hxx&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : /* End-user programs need not include this file, unless they define their own
+<span class="lineNum">      27 </span>            :  * transaction classes.  This is not something the typical program should want
+<span class="lineNum">      28 </span>            :  * to do.
+<span class="lineNum">      29 </span>            :  *
+<span class="lineNum">      30 </span>            :  * However, reading this file is worthwhile because it defines the public
+<span class="lineNum">      31 </span>            :  * interface for the available transaction classes such as transaction and
+<span class="lineNum">      32 </span>            :  * nontransaction.
+<span class="lineNum">      33 </span>            :  */
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : #include &quot;pqxx/connection_base&quot;
+<span class="lineNum">      36 </span>            : #include &quot;pqxx/isolation&quot;
+<span class="lineNum">      37 </span>            : #include &quot;pqxx/result&quot;
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : /* Methods tested in eg. self-test program test001 are marked with &quot;//[t1]&quot;
+<span class="lineNum">      40 </span>            :  */
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : namespace pqxx
+<span class="lineNum">      43 </span>            : {
+<span class="lineNum">      44 </span>            : namespace internal
+<span class="lineNum">      45 </span>            : {
+<span class="lineNum">      46 </span>            : class sql_cursor;
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : class PQXX_LIBEXPORT transactionfocus : public virtual namedclass
+<span class="lineNum">      49 </span>            : {
+<span class="lineNum">      50 </span>            : public:
+<span class="lineNum">      51 </span>            :   explicit transactionfocus(transaction_base &amp;t) :
+<span class="lineNum">      52 </span>            :     namedclass(&quot;transactionfocus&quot;),
+<span class="lineNum">      53 </span>            :     m_Trans(t),
+<span class="lineNum">      54 </span>            :     m_registered(false)
+<span class="lineNum">      55 </span>            :   {
+<span class="lineNum">      56 </span>            :   }
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            : protected:
+<span class="lineNum">      59 </span>            :   void register_me();
+<span class="lineNum">      60 </span>            :   void unregister_me() PQXX_NOEXCEPT;
+<span class="lineNum">      61 </span>            :   void reg_pending_error(const std::string &amp;) PQXX_NOEXCEPT;
+<span class="lineNum">      62 </span>            :   bool registered() const PQXX_NOEXCEPT { return m_registered; }
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :   transaction_base &amp;m_Trans;
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : private:
+<span class="lineNum">      67 </span>            :   bool m_registered;
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :   /// Not allowed
+<span class="lineNum">      70 </span>            :   transactionfocus();
+<span class="lineNum">      71 </span>            :   /// Not allowed
+<span class="lineNum">      72 </span>            :   transactionfocus(const transactionfocus &amp;);
+<span class="lineNum">      73 </span>            :   /// Not allowed
+<span class="lineNum">      74 </span>            :   transactionfocus &amp;operator=(const transactionfocus &amp;);
+<span class="lineNum">      75 </span>            : };
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : class PQXX_LIBEXPORT parameterized_invocation : statement_parameters
+<span class="lineNum">      79 </span>            : {
+<span class="lineNum">      80 </span>            : public:
+<span class="lineNum">      81 </span>            :   parameterized_invocation(connection_base &amp;, const std::string &amp;query);
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :   parameterized_invocation &amp;operator()() { add_param(); return *this; }
+<span class="lineNum">      84 </span>            :   parameterized_invocation &amp;operator()(const binarystring &amp;v)
+<span class="lineNum">      85 </span>            :         { add_binary_param(v, true); return *this; }
+<span class="lineNum">      86 </span>            :   template&lt;typename T&gt; parameterized_invocation &amp;operator()(const T &amp;v)
+<span class="lineNum">      87 </span>            :         { add_param(v, true); return *this; }
+<span class="lineNum">      88 </span>            :   parameterized_invocation &amp;operator()(const binarystring &amp;v, bool nonnull)
+<span class="lineNum">      89 </span>            :         { add_binary_param(v, nonnull); return *this; }
+<span class="lineNum">      90 </span>            :   template&lt;typename T&gt;
+<span class="lineNum">      91 </span>            :         parameterized_invocation &amp;operator()(const T &amp;v, bool nonnull)
+<span class="lineNum">      92 </span>            :         { add_param(v, nonnull); return *this; }
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :   result exec();
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : private:
+<span class="lineNum">      97 </span>            :   /// Not allowed
+<span class="lineNum">      98 </span>            :   parameterized_invocation &amp;operator=(const parameterized_invocation &amp;);
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :   connection_base &amp;m_home;
+<span class="lineNum">     101 </span>            :   const std::string m_query;
+<span class="lineNum">     102 </span>            : };
+<span class="lineNum">     103 </span>            : } // namespace internal
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : namespace internal
+<span class="lineNum">     107 </span>            : {
+<span class="lineNum">     108 </span>            : namespace gate
+<span class="lineNum">     109 </span>            : {
+<span class="lineNum">     110 </span>            : class transaction_subtransaction;
+<span class="lineNum">     111 </span>            : class transaction_tablereader;
+<span class="lineNum">     112 </span>            : class transaction_tablewriter;
+<span class="lineNum">     113 </span>            : class transaction_transactionfocus;
+<span class="lineNum">     114 </span>            : } // namespace internal::gate
+<span class="lineNum">     115 </span>            : } // namespace internal
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : /// Interface definition (and common code) for &quot;transaction&quot; classes.
+<span class="lineNum">     119 </span>            : /**
+<span class="lineNum">     120 </span>            :  * @addtogroup transaction Transaction classes
+<span class="lineNum">     121 </span>            :  * All database access must be channeled through one of these classes for
+<span class="lineNum">     122 </span>            :  * safety, although not all implementations of this interface need to provide
+<span class="lineNum">     123 </span>            :  * full transactional integrity.
+<span class="lineNum">     124 </span>            :  *
+<span class="lineNum">     125 </span>            :  * Several implementations of this interface are shipped with libpqxx, including
+<span class="lineNum">     126 </span>            :  * the plain transaction class, the entirely unprotected nontransaction, and the
+<span class="lineNum">     127 </span>            :  * more cautions robusttransaction.
+<span class="lineNum">     128 </span>            :  */
+<span class="lineNum">     129 </span>            : class PQXX_LIBEXPORT PQXX_NOVTABLE transaction_base :
+<span class="lineNum">     130 </span>            :   public virtual internal::namedclass
+<span class="lineNum">     131 </span>            : {
+<span class="lineNum">     132 </span>            : public:
+<span class="lineNum">     133 </span>            :   /// If nothing else is known, our isolation level is at least read_committed
+<span class="lineNum">     134 </span>            :   typedef isolation_traits&lt;read_committed&gt; isolation_tag;
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            :   virtual ~transaction_base() =0;                                       //[t1]
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :   /// Commit the transaction
+<span class="lineNum">     139 </span>            :   /** Unless this function is called explicitly, the transaction will not be
+<span class="lineNum">     140 </span>            :    * committed (actually the nontransaction implementation breaks this rule,
+<span class="lineNum">     141 </span>            :    * hence the name).
+<span class="lineNum">     142 </span>            :    *
+<span class="lineNum">     143 </span>            :    * Once this function returns, the whole transaction will typically be
+<span class="lineNum">     144 </span>            :    * irrevocably completed in the database.  There is also, however, a minute
+<span class="lineNum">     145 </span>            :    * risk that the connection to the database may be lost at just the wrong
+<span class="lineNum">     146 </span>            :    * moment.  In that case, libpqxx may be unable to determine whether the
+<span class="lineNum">     147 </span>            :    * transaction was completed or aborted and an in_doubt_error will be thrown
+<span class="lineNum">     148 </span>            :    * to make this fact known to the caller.  The robusttransaction
+<span class="lineNum">     149 </span>            :    * implementation takes some special precautions to reduce this risk.
+<span class="lineNum">     150 </span>            :    */
+<span class="lineNum">     151 </span>            :   void commit();                                                        //[t1]
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            :   /// Abort the transaction
+<span class="lineNum">     154 </span>            :   /** No special effort is required to call this function; it will be called
+<span class="lineNum">     155 </span>            :    * implicitly when the transaction is destructed.
+<span class="lineNum">     156 </span>            :    */
+<span class="lineNum">     157 </span>            :   void abort();                                                         //[t10]
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :   /**
+<span class="lineNum">     160 </span>            :    * @addtogroup escaping String escaping
+<span class="lineNum">     161 </span>            :    */
+<span class="lineNum">     162 </span>            :   //@{
+<span class="lineNum">     163 </span>            :   /// Escape string for use as SQL string literal in this transaction
+<span class="lineNum">     164 </span>            :   std::string esc(const char str[]) const            { return conn().esc(str); }
+<span class="lineNum">     165 </span>            :   /// Escape string for use as SQL string literal in this transaction
+<span class="lineNum">     166 </span>            :   std::string esc(const char str[], size_t maxlen) const
+<span class="lineNum">     167 </span>            :                                              { return conn().esc(str, maxlen); }
+<span class="lineNum">     168 </span>            :   /// Escape string for use as SQL string literal in this transaction
+<span class="lineNum">     169 </span>            :   std::string esc(const std::string &amp;str) const      { return conn().esc(str); }
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :   /// Escape binary data for use as SQL string literal in this transaction
+<span class="lineNum">     172 </span>            :   /** Raw, binary data is treated differently from regular strings.  Binary
+<span class="lineNum">     173 </span>            :    * strings are never interpreted as text, so they may safely include byte
+<span class="lineNum">     174 </span>            :    * values or byte sequences that don't happen to represent valid characters in
+<span class="lineNum">     175 </span>            :    * the character encoding being used.
+<span class="lineNum">     176 </span>            :    *
+<span class="lineNum">     177 </span>            :    * The binary string does not stop at the first zero byte, as is the case with
+<span class="lineNum">     178 </span>            :    * textual strings.  Instead, they may contain zero bytes anywhere.  If it
+<span class="lineNum">     179 </span>            :    * happens to contain bytes that look like quote characters, or other things
+<span class="lineNum">     180 </span>            :    * that can disrupt their use in SQL queries, they will be replaced with
+<span class="lineNum">     181 </span>            :    * special escape sequences.
+<span class="lineNum">     182 </span>            :    */
+<span class="lineNum">     183 </span>            :   std::string esc_raw(const unsigned char data[], size_t len) const     //[t62]
+<span class="lineNum">     184 </span>            :                                            { return conn().esc_raw(data, len); }
+<span class="lineNum">     185 </span>            :   /// Escape binary data for use as SQL string literal in this transaction
+<span class="lineNum">     186 </span>            :   std::string esc_raw(const std::string &amp;) const;                   //[t62]
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span>            :   /// Unescape binary data, e.g. from a table field or notification payload.
+<span class="lineNum">     189 </span>            :   /** Takes a binary string as escaped by PostgreSQL, and returns a restored
+<span class="lineNum">     190 </span>            :    * copy of the original binary data.
+<span class="lineNum">     191 </span>            :    */
+<span class="lineNum">     192 </span>            :   std::string unesc_raw(const std::string &amp;text) const
+<span class="lineNum">     193 </span>            :                                               { return conn().unesc_raw(text); }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            :   /// Unescape binary data, e.g. from a table field or notification payload.
+<span class="lineNum">     196 </span>            :   /** Takes a binary string as escaped by PostgreSQL, and returns a restored
+<span class="lineNum">     197 </span>            :    * copy of the original binary data.
+<span class="lineNum">     198 </span>            :    */
+<span class="lineNum">     199 </span>            :   std::string unesc_raw(const char *text) const
+<span class="lineNum">     200 </span>            :                                               { return conn().unesc_raw(text); }
+<span class="lineNum">     201 </span>            : 
+<a name="202"><span class="lineNum">     202 </span>            :   /// Represent object as SQL string, including quoting &amp; escaping.</a>
+<span class="lineNum">     203 </span>            :   /** Nulls are recognized and represented as SQL nulls. */
+<span class="lineNum">     204 </span><span class="lineCov">       1113 :   template&lt;typename T&gt; std::string quote(const T &amp;t) const</span>
+<span class="lineNum">     205 </span><span class="lineCov">       1113 :                                                      { return conn().quote(t); }</span>
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :   /// Binary-escape and quote a binarystring for use as an SQL constant.
+<span class="lineNum">     208 </span>            :   std::string quote_raw(const unsigned char str[], size_t len) const
+<span class="lineNum">     209 </span>            :                                           { return conn().quote_raw(str, len); }
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :   std::string quote_raw(const std::string &amp;str) const;
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :   /// Escape an SQL identifier for use in a query.
+<span class="lineNum">     214 </span>            :   std::string quote_name(const std::string &amp;identifier) const
+<span class="lineNum">     215 </span>            :                                        { return conn().quote_name(identifier); }
+<span class="lineNum">     216 </span>            :   //@}
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :   /// Execute query
+<span class="lineNum">     219 </span>            :   /** Perform a query in this transaction.
+<span class="lineNum">     220 </span>            :    *
+<span class="lineNum">     221 </span>            :    * This is one of the most important functions in libpqxx.
+<span class="lineNum">     222 </span>            :    *
+<span class="lineNum">     223 </span>            :    * Most libpqxx exceptions can be thrown from here, including sql_error,
+<span class="lineNum">     224 </span>            :    * broken_connection, and many sql_error subtypes such as
+<span class="lineNum">     225 </span>            :    * feature_not_supported or insufficient_privilege.  But any exception thrown
+<span class="lineNum">     226 </span>            :    * by the C++ standard library may also occur here.  All exceptions will be
+<span class="lineNum">     227 </span>            :    * derived from std::exception, however, and all libpqxx-specific exception
+<span class="lineNum">     228 </span>            :    * types are derived from pqxx::pqxx_exception.
+<span class="lineNum">     229 </span>            :    *
+<span class="lineNum">     230 </span>            :    * @param Query Query or command to execute
+<span class="lineNum">     231 </span>            :    * @param Desc Optional identifier for query, to help pinpoint SQL errors
+<span class="lineNum">     232 </span>            :    * @return A result set describing the query's or command's result
+<span class="lineNum">     233 </span>            :    */
+<span class="lineNum">     234 </span>            :   result exec(
+<span class="lineNum">     235 </span>            :         const std::string &amp;Query,
+<span class="lineNum">     236 </span>            :         const std::string &amp;Desc=std::string());                             //[t1]
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :   result exec(
+<span class="lineNum">     239 </span>            :         const std::stringstream &amp;Query,
+<span class="lineNum">     240 </span>            :         const std::string &amp;Desc=std::string())
+<span class="lineNum">     241 </span>            :         { return exec(Query.str(), Desc); }
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :   /// Execute query, which should zero rows of data.
+<span class="lineNum">     244 </span>            :   /** Works like exec, but fails if the result contains data.  It still returns
+<span class="lineNum">     245 </span>            :    * a result, however, which may contain useful metadata.
+<span class="lineNum">     246 </span>            :    *
+<span class="lineNum">     247 </span>            :    * @throw unexpected_rows If the query returned the wrong number of rows.
+<span class="lineNum">     248 </span>            :    */
+<span class="lineNum">     249 </span>            :   result exec0(
+<span class="lineNum">     250 </span>            :         const std::string &amp;Query,
+<span class="lineNum">     251 </span>            :         const std::string &amp;Desc=std::string())
+<span class="lineNum">     252 </span>            :         { return exec_n(0, Query, Desc); }
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :   /// Execute query returning a single row of data.
+<span class="lineNum">     255 </span>            :   /** Works like exec, but requires the result to contain exactly one row.
+<span class="lineNum">     256 </span>            :    * The row can be addressed directly, without the need to find the first row
+<span class="lineNum">     257 </span>            :    * in a result set.
+<span class="lineNum">     258 </span>            :    *
+<span class="lineNum">     259 </span>            :    * @throw unexpected_rows If the query returned the wrong number of rows.
+<span class="lineNum">     260 </span>            :    */
+<span class="lineNum">     261 </span>            :   row exec1(const std::string &amp;Query, const std::string &amp;Desc=std::string())
+<span class="lineNum">     262 </span>            :         { return exec_n(1, Query, Desc).front(); }
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :   /// Execute query, expect given number of rows.
+<span class="lineNum">     265 </span>            :   /** Works like exec, but checks that the number of rows is exactly what's
+<span class="lineNum">     266 </span>            :    * expected.
+<span class="lineNum">     267 </span>            :    *
+<span class="lineNum">     268 </span>            :    * @throw unexpected_rows If the query returned the wrong number of rows.
+<span class="lineNum">     269 </span>            :    */
+<span class="lineNum">     270 </span>            :   result exec_n(
+<span class="lineNum">     271 </span>            :         size_t rows,
+<span class="lineNum">     272 </span>            :         const std::string &amp;Query,
+<span class="lineNum">     273 </span>            :         const std::string &amp;Desc=std::string());
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :   /// Parameterize a statement.
+<span class="lineNum">     276 </span>            :   /* Use this to build up a parameterized statement invocation, then invoke it
+<span class="lineNum">     277 </span>            :    * using @c exec()
+<span class="lineNum">     278 </span>            :    *
+<span class="lineNum">     279 </span>            :    * Example: @c trans.parameterized(&quot;SELECT $1 + 1&quot;)(1).exec();
+<span class="lineNum">     280 </span>            :    */
+<span class="lineNum">     281 </span>            :   internal::parameterized_invocation parameterized(const std::string &amp;query);
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            :   /**
+<span class="lineNum">     284 </span>            :    * @name Prepared statements
+<span class="lineNum">     285 </span>            :    */
+<span class="lineNum">     286 </span>            :   //@{
+<span class="lineNum">     287 </span>            :   /// Execute prepared statement.
+<span class="lineNum">     288 </span>            :   /** Prepared statements are defined using the connection classes' prepare()
+<span class="lineNum">     289 </span>            :    * function, and continue to live on in the ongoing session regardless of
+<span class="lineNum">     290 </span>            :    * the context they were defined in (unless explicitly dropped using the
+<span class="lineNum">     291 </span>            :    * connection's unprepare() function).  Their execution however, like other
+<span class="lineNum">     292 </span>            :    * forms of query execution, requires a transaction object.
+<span class="lineNum">     293 </span>            :    *
+<span class="lineNum">     294 </span>            :    * Just like param_declaration is a helper class that lets you tag parameter
+<span class="lineNum">     295 </span>            :    * declarations onto the statement declaration, the invocation class returned
+<span class="lineNum">     296 </span>            :    * here lets you tag parameter values onto the call:
+<span class="lineNum">     297 </span>            :    *
+<span class="lineNum">     298 </span>            :    * @code
+<span class="lineNum">     299 </span>            :    * result run_mystatement(transaction_base &amp;T)
+<span class="lineNum">     300 </span>            :    * {
+<span class="lineNum">     301 </span>            :    *   return T.prepared(&quot;mystatement&quot;)(&quot;param1&quot;)(2)()(4).exec();
+<span class="lineNum">     302 </span>            :    * }
+<span class="lineNum">     303 </span>            :    * @endcode
+<span class="lineNum">     304 </span>            :    *
+<span class="lineNum">     305 </span>            :    * Here, parameter 1 (written as &quot;&lt;tt&gt;$1&lt;/tt&gt;&quot; in the statement's body) is a
+<span class="lineNum">     306 </span>            :    * string that receives the value &quot;param1&quot;; the second parameter is an integer
+<span class="lineNum">     307 </span>            :    * with the value 2; the third receives a null, making its type irrelevant;
+<span class="lineNum">     308 </span>            :    * and number 4 again is an integer.  The ultimate invocation of exec() is
+<span class="lineNum">     309 </span>            :    * essential; if you forget this, nothing happens.
+<span class="lineNum">     310 </span>            :    *
+<span class="lineNum">     311 </span>            :    * To see whether any prepared statement has been defined under a given name,
+<span class="lineNum">     312 </span>            :    * use:
+<span class="lineNum">     313 </span>            :    *
+<span class="lineNum">     314 </span>            :    * @code
+<span class="lineNum">     315 </span>            :    * T.prepared(&quot;mystatement&quot;).exists()
+<span class="lineNum">     316 </span>            :    * @endcode
+<span class="lineNum">     317 </span>            :    *
+<span class="lineNum">     318 </span>            :    * @warning Do not try to execute a prepared statement manually through direct
+<span class="lineNum">     319 </span>            :    * SQL statements.  This is likely not to work, and even if it does, is likely
+<span class="lineNum">     320 </span>            :    * to be slower than using the proper libpqxx functions.  Also, libpqxx knows
+<span class="lineNum">     321 </span>            :    * how to emulate prepared statements if some part of the infrastructure does
+<span class="lineNum">     322 </span>            :    * not support them.
+<span class="lineNum">     323 </span>            :    *
+<span class="lineNum">     324 </span>            :    * @warning Actual definition of the prepared statement on the backend may be
+<span class="lineNum">     325 </span>            :    * deferred until its first use, which means that any errors in the prepared
+<span class="lineNum">     326 </span>            :    * statement may not show up until it is executed--and perhaps abort the
+<span class="lineNum">     327 </span>            :    * ongoing transaction in the process.
+<span class="lineNum">     328 </span>            :    *
+<span class="lineNum">     329 </span>            :    * If you leave out the statement name, the call refers to the nameless
+<span class="lineNum">     330 </span>            :    * statement instead.
+<span class="lineNum">     331 </span>            :    */
+<span class="lineNum">     332 </span>            :   prepare::invocation prepared(const std::string &amp;statement=std::string());
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            :   //@}
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            :   /**
+<span class="lineNum">     337 </span>            :    * @name Error/warning output
+<span class="lineNum">     338 </span>            :    */
+<span class="lineNum">     339 </span>            :   //@{
+<span class="lineNum">     340 </span>            :   /// Have connection process warning message
+<span class="lineNum">     341 </span>            :   void process_notice(const char Msg[]) const                           //[t14]
+<span class="lineNum">     342 </span>            :         { m_Conn.process_notice(Msg); }
+<span class="lineNum">     343 </span>            :   /// Have connection process warning message
+<span class="lineNum">     344 </span>            :   void process_notice(const std::string &amp;Msg) const                 //[t14]
+<span class="lineNum">     345 </span>            :         { m_Conn.process_notice(Msg); }
+<span class="lineNum">     346 </span>            :   //@}
+<a name="347"><span class="lineNum">     347 </span>            : </a>
+<span class="lineNum">     348 </span>            :   /// Connection this transaction is running in
+<span class="lineNum">     349 </span><span class="lineCov">       2226 :   connection_base &amp;conn() const { return m_Conn; }                  //[t4]</span>
+<span class="lineNum">     350 </span>            : 
+<span class="lineNum">     351 </span>            :   /// Set session variable in this connection
+<span class="lineNum">     352 </span>            :   /** The new value is typically forgotten if the transaction aborts.
+<span class="lineNum">     353 </span>            :    * However nontransaction is an exception to this rule: in that case the set
+<span class="lineNum">     354 </span>            :    * value will be kept regardless.  Also, if the connection ever needs to be
+<span class="lineNum">     355 </span>            :    * recovered, a value you set in a nontransaction will not be restored.
+<span class="lineNum">     356 </span>            :    * @param Var The variable to set
+<span class="lineNum">     357 </span>            :    * @param Val The new value to store in the variable
+<span class="lineNum">     358 </span>            :    */
+<span class="lineNum">     359 </span>            :   void set_variable(const std::string &amp;Var, const std::string &amp;Val);    //[t61]
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            :   /// Get currently applicable value of variable
+<span class="lineNum">     362 </span>            :   /** First consults an internal cache of variables that have been set (whether
+<span class="lineNum">     363 </span>            :    * in the ongoing transaction or in the connection) using the set_variable
+<span class="lineNum">     364 </span>            :    * functions.  If it is not found there, the database is queried.
+<span class="lineNum">     365 </span>            :    *
+<span class="lineNum">     366 </span>            :    * @warning Do not mix the set_variable with raw &quot;SET&quot; queries, and do not
+<span class="lineNum">     367 </span>            :    * try to set or get variables while a pipeline or table stream is active.
+<span class="lineNum">     368 </span>            :    *
+<span class="lineNum">     369 </span>            :    * @warning This function used to be declared as @c const but isn't anymore.
+<span class="lineNum">     370 </span>            :    */
+<span class="lineNum">     371 </span>            :   std::string get_variable(const std::string &amp;);                    //[t61]
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            : protected:
+<span class="lineNum">     375 </span>            :   /// Create a transaction (to be called by implementation classes only)
+<span class="lineNum">     376 </span>            :   /** The optional name, if nonempty, must begin with a letter and may contain
+<span class="lineNum">     377 </span>            :    * letters and digits only.
+<span class="lineNum">     378 </span>            :    *
+<span class="lineNum">     379 </span>            :    * @param c The connection that this transaction is to act on.
+<span class="lineNum">     380 </span>            :    * @param direct Running directly in connection context (i.e. not nested)?
+<span class="lineNum">     381 </span>            :    */
+<span class="lineNum">     382 </span>            :   explicit transaction_base(connection_base &amp;c, bool direct=true);
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span>            :   /// Begin transaction (to be called by implementing class)
+<span class="lineNum">     385 </span>            :   /** Will typically be called from implementing class' constructor.
+<span class="lineNum">     386 </span>            :    */
+<span class="lineNum">     387 </span>            :   void Begin();
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span>            :   /// End transaction.  To be called by implementing class' destructor
+<span class="lineNum">     390 </span>            :   void End() PQXX_NOEXCEPT;
+<span class="lineNum">     391 </span>            : 
+<span class="lineNum">     392 </span>            :   /// To be implemented by derived implementation class: start transaction
+<span class="lineNum">     393 </span>            :   virtual void do_begin() =0;
+<span class="lineNum">     394 </span>            :   /// To be implemented by derived implementation class: perform query
+<span class="lineNum">     395 </span>            :   virtual result do_exec(const char Query[]) =0;
+<span class="lineNum">     396 </span>            :   /// To be implemented by derived implementation class: commit transaction
+<span class="lineNum">     397 </span>            :   virtual void do_commit() =0;
+<span class="lineNum">     398 </span>            :   /// To be implemented by derived implementation class: abort transaction
+<span class="lineNum">     399 </span>            :   virtual void do_abort() =0;
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            :   // For use by implementing class:
+<span class="lineNum">     402 </span>            : 
+<span class="lineNum">     403 </span>            :   /// Execute query on connection directly
+<span class="lineNum">     404 </span>            :   /**
+<span class="lineNum">     405 </span>            :    * @param C Query or command to execute
+<span class="lineNum">     406 </span>            :    * @param Retries Number of times to retry the query if it fails.  Be
+<span class="lineNum">     407 </span>            :    * extremely careful with this option; if you retry in the middle of a
+<span class="lineNum">     408 </span>            :    * transaction, you may be setting up a new connection transparently and
+<span class="lineNum">     409 </span>            :    * executing the latter part of the transaction without a backend transaction
+<span class="lineNum">     410 </span>            :    * being active (and with the former part aborted).
+<span class="lineNum">     411 </span>            :    */
+<span class="lineNum">     412 </span>            :   result DirectExec(const char C[], int Retries=0);
+<span class="lineNum">     413 </span>            : 
+<span class="lineNum">     414 </span>            :   /// Forget about any reactivation-blocking resources we tried to allocate
+<span class="lineNum">     415 </span>            :   void reactivation_avoidance_clear() PQXX_NOEXCEPT
+<span class="lineNum">     416 </span>            :         {m_reactivation_avoidance.clear();}
+<span class="lineNum">     417 </span>            : 
+<span class="lineNum">     418 </span>            : protected:
+<span class="lineNum">     419 </span>            :   /// Resources allocated in this transaction that make reactivation impossible
+<span class="lineNum">     420 </span>            :   /** This number may be negative!
+<span class="lineNum">     421 </span>            :    */
+<span class="lineNum">     422 </span>            :   internal::reactivation_avoidance_counter m_reactivation_avoidance;
+<span class="lineNum">     423 </span>            : 
+<span class="lineNum">     424 </span>            : private:
+<span class="lineNum">     425 </span>            :   /* A transaction goes through the following stages in its lifecycle:
+<span class="lineNum">     426 </span>            :    * &lt;ul&gt;
+<span class="lineNum">     427 </span>            :    * &lt;li&gt; nascent: the transaction hasn't actually begun yet.  If our connection
+<span class="lineNum">     428 </span>            :    *    fails at this stage, it may recover and the transaction can attempt to
+<span class="lineNum">     429 </span>            :    *    establish itself again.
+<span class="lineNum">     430 </span>            :    * &lt;li&gt; active: the transaction has begun.  Since no commit command has been
+<span class="lineNum">     431 </span>            :    *    issued, abortion is implicit if the connection fails now.
+<span class="lineNum">     432 </span>            :    * &lt;li&gt; aborted: an abort has been issued; the transaction is terminated and
+<span class="lineNum">     433 </span>            :    *    its changes to the database rolled back.  It will accept no further
+<span class="lineNum">     434 </span>            :    *    commands.
+<span class="lineNum">     435 </span>            :    * &lt;li&gt; committed: the transaction has completed successfully, meaning that a
+<span class="lineNum">     436 </span>            :    *    commit has been issued.  No further commands are accepted.
+<span class="lineNum">     437 </span>            :    * &lt;li&gt; in_doubt: the connection was lost at the exact wrong time, and there
+<span class="lineNum">     438 </span>            :    *    is no way of telling whether the transaction was committed or aborted.
+<span class="lineNum">     439 </span>            :    * &lt;/ul&gt;
+<span class="lineNum">     440 </span>            :    *
+<span class="lineNum">     441 </span>            :    * Checking and maintaining state machine logic is the responsibility of the
+<span class="lineNum">     442 </span>            :    * base class (ie., this one).
+<span class="lineNum">     443 </span>            :    */
+<span class="lineNum">     444 </span>            :   enum Status
+<span class="lineNum">     445 </span>            :   {
+<span class="lineNum">     446 </span>            :     st_nascent,
+<span class="lineNum">     447 </span>            :     st_active,
+<span class="lineNum">     448 </span>            :     st_aborted,
+<span class="lineNum">     449 </span>            :     st_committed,
+<span class="lineNum">     450 </span>            :     st_in_doubt
+<span class="lineNum">     451 </span>            :   };
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            :   /// Make sure transaction is opened on backend, if appropriate
+<span class="lineNum">     454 </span>            :   PQXX_PRIVATE void activate();
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span>            :   PQXX_PRIVATE void CheckPendingError();
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            :   template&lt;typename T&gt; bool parm_is_null(T *p) const PQXX_NOEXCEPT
+<span class="lineNum">     459 </span>            :         { return !p; }
+<span class="lineNum">     460 </span>            :   template&lt;typename T&gt; bool parm_is_null(T) const PQXX_NOEXCEPT
+<span class="lineNum">     461 </span>            :         { return false; }
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span>            :   friend class pqxx::internal::gate::transaction_transactionfocus;
+<span class="lineNum">     464 </span>            :   PQXX_PRIVATE void RegisterFocus(internal::transactionfocus *);
+<span class="lineNum">     465 </span>            :   PQXX_PRIVATE void UnregisterFocus(internal::transactionfocus *) PQXX_NOEXCEPT;
+<span class="lineNum">     466 </span>            :   PQXX_PRIVATE void RegisterPendingError(const std::string &amp;) PQXX_NOEXCEPT;
+<span class="lineNum">     467 </span>            : 
+<span class="lineNum">     468 </span>            :   friend class pqxx::internal::gate::transaction_tablereader;
+<span class="lineNum">     469 </span>            :   PQXX_PRIVATE void BeginCopyRead(const std::string &amp;, const std::string &amp;);
+<span class="lineNum">     470 </span>            :   bool ReadCopyLine(std::string &amp;);
+<span class="lineNum">     471 </span>            : 
+<span class="lineNum">     472 </span>            :   friend class pqxx::internal::gate::transaction_tablewriter;
+<span class="lineNum">     473 </span>            :   PQXX_PRIVATE void BeginCopyWrite(
+<span class="lineNum">     474 </span>            :         const std::string &amp;Table,
+<span class="lineNum">     475 </span>            :         const std::string &amp;Columns);
+<span class="lineNum">     476 </span>            :   void WriteCopyLine(const std::string &amp;);
+<span class="lineNum">     477 </span>            :   void EndCopyWrite();
+<span class="lineNum">     478 </span>            : 
+<span class="lineNum">     479 </span>            :   friend class pqxx::internal::gate::transaction_subtransaction;
+<span class="lineNum">     480 </span>            : 
+<span class="lineNum">     481 </span>            :   connection_base &amp;m_Conn;
+<span class="lineNum">     482 </span>            : 
+<span class="lineNum">     483 </span>            :   internal::unique&lt;internal::transactionfocus&gt; m_Focus;
+<span class="lineNum">     484 </span>            :   Status m_Status;
+<span class="lineNum">     485 </span>            :   bool m_Registered;
+<span class="lineNum">     486 </span>            :   std::map&lt;std::string, std::string&gt; m_Vars;
+<span class="lineNum">     487 </span>            :   std::string m_PendingError;
+<span class="lineNum">     488 </span>            : 
+<span class="lineNum">     489 </span>            :   /// Not allowed
+<span class="lineNum">     490 </span>            :   transaction_base();
+<span class="lineNum">     491 </span>            :   /// Not allowed
+<span class="lineNum">     492 </span>            :   transaction_base(const transaction_base &amp;);
+<span class="lineNum">     493 </span>            :   /// Not allowed
+<span class="lineNum">     494 </span>            :   transaction_base &amp;operator=(const transaction_base &amp;);
+<span class="lineNum">     495 </span>            : };
+<span class="lineNum">     496 </span>            : 
+<span class="lineNum">     497 </span>            : } // namespace pqxx
+<span class="lineNum">     498 </span>            : 
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span>            : #include &quot;pqxx/compiler-internal-post.hxx&quot;
+<span class="lineNum">     501 </span>            : 
+<span class="lineNum">     502 </span>            : #endif
+<span class="lineNum">     503 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

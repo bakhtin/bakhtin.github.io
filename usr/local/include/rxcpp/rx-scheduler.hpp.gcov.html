@@ -1,0 +1,1030 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/rx-scheduler.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp</a> - rx-scheduler.hpp<span style="font-size: 80%;"> (source / <a href="rx-scheduler.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">181</td>
+            <td class="headerCovTableEntry">228</td>
+            <td class="headerCovTableEntryMed">79.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">252</td>
+            <td class="headerCovTableEntry">320</td>
+            <td class="headerCovTableEntryMed">78.8 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #if !defined(RXCPP_RX_SCHEDULER_HPP)
+<span class="lineNum">       6 </span>            : #define RXCPP_RX_SCHEDULER_HPP
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;rx-includes.hpp&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : namespace rxcpp {
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : namespace schedulers {
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : class worker_interface;
+<span class="lineNum">      15 </span>            : class scheduler_interface;
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : namespace detail {
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : class action_type;
+<span class="lineNum">      20 </span>            : typedef std::shared_ptr&lt;action_type&gt; action_ptr;
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : typedef std::shared_ptr&lt;worker_interface&gt; worker_interface_ptr;
+<span class="lineNum">      23 </span>            : typedef std::shared_ptr&lt;const worker_interface&gt; const_worker_interface_ptr;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : typedef std::weak_ptr&lt;worker_interface&gt; worker_interface_weak_ptr;
+<span class="lineNum">      26 </span>            : typedef std::weak_ptr&lt;const worker_interface&gt; const_worker_interface_weak_ptr;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : typedef std::shared_ptr&lt;scheduler_interface&gt; scheduler_interface_ptr;
+<span class="lineNum">      29 </span>            : typedef std::shared_ptr&lt;const scheduler_interface&gt; const_scheduler_interface_ptr;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : inline action_ptr shared_empty() {
+<span class="lineNum">      32 </span>            :     static action_ptr shared_empty = std::make_shared&lt;detail::action_type&gt;();
+<span class="lineNum">      33 </span>            :     return shared_empty;
+<span class="lineNum">      34 </span>            : }
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : }
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : // It is essential to keep virtual function calls out of an inner loop.
+<span class="lineNum">      39 </span>            : // To make tail-recursion work efficiently the recursion objects create
+<span class="lineNum">      40 </span>            : // a space on the stack inside the virtual function call in the actor that
+<span class="lineNum">      41 </span>            : // allows the callback and the scheduler to share stack space that records
+<span class="lineNum">      42 </span>            : // the request and the allowance without any virtual calls in the loop.
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : /// recursed is set on a schedulable by the action to allow the called
+<span class="lineNum">      45 </span>            : /// function to request to be rescheduled.
+<span class="lineNum">      46 </span>            : class recursed
+<span class="lineNum">      47 </span>            : {
+<span class="lineNum">      48 </span>            :     bool&amp; isrequested;
+<a name="49"><span class="lineNum">      49 </span>            :     recursed operator=(const recursed&amp;);</a>
+<span class="lineNum">      50 </span>            : public:
+<span class="lineNum">      51 </span><span class="lineCov">        457 :     explicit recursed(bool&amp; r)</span>
+<span class="lineNum">      52 </span><span class="lineCov">        457 :         : isrequested(r)</span>
+<span class="lineNum">      53 </span>            :     {
+<a name="54"><span class="lineNum">      54 </span><span class="lineCov">        457 :     }</span></a>
+<span class="lineNum">      55 </span>            :     /// request to be rescheduled
+<span class="lineNum">      56 </span><span class="lineCov">         26 :     inline void operator()() const {</span>
+<span class="lineNum">      57 </span><span class="lineCov">         26 :         isrequested = true;</span>
+<span class="lineNum">      58 </span><span class="lineCov">         26 :     }</span>
+<span class="lineNum">      59 </span>            : };
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            : /// recurse is passed to the action by the scheduler.
+<span class="lineNum">      62 </span>            : /// the action uses recurse to coordinate the scheduler and the function.
+<span class="lineNum">      63 </span>            : class recurse
+<span class="lineNum">      64 </span>            : {
+<span class="lineNum">      65 </span>            :     bool&amp; isallowed;
+<span class="lineNum">      66 </span>            :     mutable bool isrequested;
+<span class="lineNum">      67 </span>            :     recursed requestor;
+<a name="68"><span class="lineNum">      68 </span>            :     recurse operator=(const recurse&amp;);</a>
+<span class="lineNum">      69 </span>            : public:
+<span class="lineNum">      70 </span><span class="lineCov">        457 :     explicit recurse(bool&amp; a)</span>
+<span class="lineNum">      71 </span>            :         : isallowed(a)
+<span class="lineNum">      72 </span>            :         , isrequested(true)
+<span class="lineNum">      73 </span><span class="lineCov">        457 :         , requestor(isrequested)</span>
+<span class="lineNum">      74 </span>            :     {
+<a name="75"><span class="lineNum">      75 </span><span class="lineCov">        457 :     }</span></a>
+<span class="lineNum">      76 </span>            :     /// does the scheduler allow tail-recursion now?
+<span class="lineNum">      77 </span><span class="lineCov">        496 :     inline bool is_allowed() const {</span>
+<span class="lineNum">      78 </span><span class="lineCov">        496 :         return isallowed;</span>
+<a name="79"><span class="lineNum">      79 </span>            :     }</a>
+<span class="lineNum">      80 </span>            :     /// did the function request to be recursed?
+<span class="lineNum">      81 </span><span class="lineCov">        853 :     inline bool is_requested() const {</span>
+<span class="lineNum">      82 </span><span class="lineCov">        853 :         return isrequested;</span>
+<a name="83"><span class="lineNum">      83 </span>            :     }</a>
+<span class="lineNum">      84 </span>            :     /// reset the function request. call before each call to the function.
+<span class="lineNum">      85 </span><span class="lineCov">        496 :     inline void reset() const {</span>
+<span class="lineNum">      86 </span><span class="lineCov">        496 :         isrequested = false;</span>
+<a name="87"><span class="lineNum">      87 </span><span class="lineCov">        496 :     }</span></a>
+<span class="lineNum">      88 </span>            :     /// get the recursed to set into the schedulable for the function to use to request recursion
+<span class="lineNum">      89 </span><span class="lineCov">        470 :     inline const recursed&amp; get_recursed() const {</span>
+<span class="lineNum">      90 </span><span class="lineCov">        470 :         return requestor;</span>
+<span class="lineNum">      91 </span>            :     }
+<span class="lineNum">      92 </span>            : };
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : /// recursion is used by the scheduler to signal to each action whether tail recursion is allowed.
+<span class="lineNum">      95 </span>            : class recursion
+<span class="lineNum">      96 </span>            : {
+<span class="lineNum">      97 </span>            :     mutable bool isallowed;
+<span class="lineNum">      98 </span>            :     recurse recursor;
+<a name="99"><span class="lineNum">      99 </span>            :     recursion operator=(const recursion&amp;);</a>
+<span class="lineNum">     100 </span>            : public:
+<span class="lineNum">     101 </span><span class="lineCov">        402 :     recursion()</span>
+<span class="lineNum">     102 </span>            :         : isallowed(true)
+<span class="lineNum">     103 </span><span class="lineCov">        402 :         , recursor(isallowed)</span>
+<a name="104"><span class="lineNum">     104 </span>            :     {</a>
+<span class="lineNum">     105 </span><span class="lineCov">        402 :     }</span>
+<span class="lineNum">     106 </span><span class="lineCov">         55 :     explicit recursion(bool b)</span>
+<span class="lineNum">     107 </span>            :         : isallowed(b)
+<span class="lineNum">     108 </span><span class="lineCov">         55 :         , recursor(isallowed)</span>
+<span class="lineNum">     109 </span>            :     {
+<a name="110"><span class="lineNum">     110 </span><span class="lineCov">         55 :     }</span></a>
+<span class="lineNum">     111 </span>            :     /// set whether tail-recursion is allowed
+<span class="lineNum">     112 </span><span class="lineCov">        304 :     inline void reset(bool b = true) const {</span>
+<span class="lineNum">     113 </span><span class="lineCov">        304 :         isallowed = b;</span>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">        304 :     }</span></a>
+<span class="lineNum">     115 </span>            :     /// get the recurse to pass into each action being called
+<span class="lineNum">     116 </span><span class="lineCov">        440 :     inline const recurse&amp; get_recurse() const {</span>
+<span class="lineNum">     117 </span><span class="lineCov">        440 :         return recursor;</span>
+<span class="lineNum">     118 </span>            :     }
+<span class="lineNum">     119 </span>            : };
+<a name="120"><span class="lineNum">     120 </span>            : </a>
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span><span class="lineCov">       1054 : struct action_base</span>
+<span class="lineNum">     123 </span>            : {
+<span class="lineNum">     124 </span>            :     typedef tag_action action_tag;
+<span class="lineNum">     125 </span>            : };
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : class schedulable;
+<a name="128"><span class="lineNum">     128 </span>            : </a>
+<span class="lineNum">     129 </span>            : /// action provides type-forgetting for a potentially recursive set of calls to a function that takes a schedulable
+<span class="lineNum">     130 </span><span class="lineCov">       8528 : class action : public action_base</span>
+<span class="lineNum">     131 </span>            : {
+<span class="lineNum">     132 </span>            :     typedef action this_type;
+<span class="lineNum">     133 </span>            :     detail::action_ptr inner;
+<span class="lineNum">     134 </span>            : public:
+<span class="lineNum">     135 </span>            :     action()
+<a name="136"><span class="lineNum">     136 </span>            :     {</a>
+<span class="lineNum">     137 </span>            :     }
+<span class="lineNum">     138 </span><span class="lineCov">        527 :     explicit action(detail::action_ptr i)</span>
+<span class="lineNum">     139 </span><span class="lineCov">        527 :     : inner(std::move(i))</span>
+<span class="lineNum">     140 </span>            :     {
+<span class="lineNum">     141 </span><span class="lineCov">        527 :     }</span>
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :     /// return the empty action
+<span class="lineNum">     144 </span>            :     inline static action empty() {
+<span class="lineNum">     145 </span>            :         return action(detail::shared_empty());
+<span class="lineNum">     146 </span>            :     }
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            :     /// call the function
+<span class="lineNum">     149 </span>            :     inline void operator()(const schedulable&amp; s, const recurse&amp; r) const;
+<a name="150"><span class="lineNum">     150 </span>            : };</a>
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span><span class="lineCov">        261 : struct scheduler_base</span>
+<span class="lineNum">     153 </span>            : {
+<span class="lineNum">     154 </span>            :     typedef std::chrono::steady_clock clock_type;
+<span class="lineNum">     155 </span>            :     typedef tag_scheduler scheduler_tag;
+<a name="156"><span class="lineNum">     156 </span>            : };</a>
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span><span class="lineCov">       2056 : struct worker_base : public subscription_base</span>
+<span class="lineNum">     159 </span>            : {
+<span class="lineNum">     160 </span>            :     typedef tag_worker worker_tag;
+<a name="161"><span class="lineNum">     161 </span>            : };</a>
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span><span class="lineCov">        888 : class worker_interface</span>
+<span class="lineNum">     164 </span>            :     : public std::enable_shared_from_this&lt;worker_interface&gt;
+<span class="lineNum">     165 </span>            : {
+<span class="lineNum">     166 </span>            :     typedef worker_interface this_type;
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            : public:
+<a name="169"><span class="lineNum">     169 </span>            :     typedef scheduler_base::clock_type clock_type;</a>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineCov">        884 :     virtual ~worker_interface() {}</span>
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :     virtual clock_type::time_point now() const = 0;
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :     virtual void schedule(const schedulable&amp; scbl) const = 0;
+<span class="lineNum">     176 </span>            :     virtual void schedule(clock_type::time_point when, const schedulable&amp; scbl) const = 0;
+<span class="lineNum">     177 </span>            : };
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : namespace detail {
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            : template&lt;class F&gt;
+<span class="lineNum">     182 </span>            : struct is_action_function
+<span class="lineNum">     183 </span>            : {
+<span class="lineNum">     184 </span>            :     struct not_void {};
+<span class="lineNum">     185 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     186 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)(*(schedulable*)nullptr));
+<span class="lineNum">     187 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     188 </span>            :     static not_void check(...);
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :     static const bool value = std::is_same&lt;decltype(check&lt;rxu::decay_t&lt;F&gt;&gt;(0)), void&gt;::value;
+<span class="lineNum">     191 </span>            : };
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            : }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            : class weak_worker;
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : /// a worker ensures that all scheduled actions on the same instance are executed in-order with no overlap
+<a name="198"><span class="lineNum">     198 </span>            : /// a worker ensures that all scheduled actions are unsubscribed when it is unsubscribed</a>
+<span class="lineNum">     199 </span>            : /// some inner implementations will impose additional constraints on the execution of items.
+<span class="lineNum">     200 </span><span class="lineCov">       9537 : class worker : public worker_base</span>
+<span class="lineNum">     201 </span>            : {
+<span class="lineNum">     202 </span>            :     typedef worker this_type;
+<span class="lineNum">     203 </span>            :     detail::worker_interface_ptr inner;
+<span class="lineNum">     204 </span>            :     composite_subscription lifetime;
+<span class="lineNum">     205 </span>            :     friend bool operator==(const worker&amp;, const worker&amp;);
+<span class="lineNum">     206 </span>            :     friend class weak_worker;
+<span class="lineNum">     207 </span>            : public:
+<span class="lineNum">     208 </span>            :     typedef scheduler_base::clock_type clock_type;
+<span class="lineNum">     209 </span>            :     typedef composite_subscription::weak_subscription weak_subscription;
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :     worker()
+<a name="212"><span class="lineNum">     212 </span>            :     {</a>
+<span class="lineNum">     213 </span>            :     }
+<span class="lineNum">     214 </span><span class="lineCov">        501 :     worker(composite_subscription cs, detail::const_worker_interface_ptr i)</span>
+<span class="lineNum">     215 </span>            :         : inner(std::const_pointer_cast&lt;worker_interface&gt;(i))
+<span class="lineNum">     216 </span><span class="lineCov">        501 :         , lifetime(std::move(cs))</span>
+<a name="217"><span class="lineNum">     217 </span>            :     {</a>
+<span class="lineNum">     218 </span><span class="lineCov">        501 :     }</span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :     worker(composite_subscription cs, worker o)</span>
+<span class="lineNum">     220 </span>            :         : inner(o.inner)
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :         , lifetime(std::move(cs))</span>
+<span class="lineNum">     222 </span>            :     {
+<a name="223"><span class="lineNum">     223 </span><span class="lineNoCov">          0 :     }</span></a>
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :     inline const composite_subscription&amp; get_subscription() const {</span>
+<a name="226"><span class="lineNum">     226 </span><span class="lineNoCov">          0 :         return lifetime;</span></a>
+<span class="lineNum">     227 </span>            :     }
+<span class="lineNum">     228 </span><span class="lineCov">        527 :     inline composite_subscription&amp; get_subscription() {</span>
+<span class="lineNum">     229 </span><span class="lineCov">        527 :         return lifetime;</span>
+<span class="lineNum">     230 </span>            :     }
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            :     // composite_subscription
+<span class="lineNum">     233 </span>            :     //
+<span class="lineNum">     234 </span>            :     inline bool is_subscribed() const {
+<a name="235"><span class="lineNum">     235 </span>            :         return lifetime.is_subscribed();</a>
+<span class="lineNum">     236 </span>            :     }
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :     inline weak_subscription add(subscription s) const {</span>
+<a name="238"><span class="lineNum">     238 </span><span class="lineNoCov">          0 :         return lifetime.add(std::move(s));</span></a>
+<span class="lineNum">     239 </span>            :     }
+<span class="lineNum">     240 </span><span class="lineNoCov">          0 :     inline void remove(weak_subscription w) const {</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :         return lifetime.remove(std::move(w));</span>
+<span class="lineNum">     242 </span>            :     }
+<span class="lineNum">     243 </span>            :     inline void clear() const {
+<a name="244"><span class="lineNum">     244 </span>            :         return lifetime.clear();</a>
+<span class="lineNum">     245 </span>            :     }
+<span class="lineNum">     246 </span><span class="lineCov">          1 :     inline void unsubscribe() const {</span>
+<span class="lineNum">     247 </span><span class="lineCov">          1 :         return lifetime.unsubscribe();</span>
+<span class="lineNum">     248 </span>            :     }
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     // worker_interface
+<a name="251"><span class="lineNum">     251 </span>            :     //</a>
+<span class="lineNum">     252 </span>            :     /// return the current time for this worker
+<span class="lineNum">     253 </span><span class="lineCov">          4 :     inline clock_type::time_point now() const {</span>
+<span class="lineNum">     254 </span><span class="lineCov">          4 :         return inner-&gt;now();</span>
+<span class="lineNum">     255 </span>            :     }
+<a name="256"><span class="lineNum">     256 </span>            : </a>
+<span class="lineNum">     257 </span>            :     /// insert the supplied schedulable to be run as soon as possible
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 :     inline void schedule(const schedulable&amp; scbl) const {</span>
+<span class="lineNum">     259 </span>            :         // force rebinding scbl to this worker
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :         schedule_rebind(scbl);</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :     /// insert the supplied schedulable to be run at the time specified
+<span class="lineNum">     264 </span>            :     inline void schedule(clock_type::time_point when, const schedulable&amp; scbl) const {
+<span class="lineNum">     265 </span>            :         // force rebinding scbl to this worker
+<span class="lineNum">     266 </span>            :         schedule_rebind(when, scbl);
+<span class="lineNum">     267 </span>            :     }
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :     // helpers
+<span class="lineNum">     270 </span>            :     //
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            :     /// insert the supplied schedulable to be run at now() + the delay specified
+<span class="lineNum">     273 </span>            :     inline void schedule(clock_type::duration when, const schedulable&amp; scbl) const {
+<span class="lineNum">     274 </span>            :         // force rebinding scbl to this worker
+<span class="lineNum">     275 </span>            :         schedule_rebind(now() + when, scbl);
+<span class="lineNum">     276 </span>            :     }
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :     /// insert the supplied schedulable to be run at the initial time specified and then again at initial + (N * period)
+<span class="lineNum">     279 </span>            :     /// this will continue until the worker or schedulable is unsubscribed.
+<span class="lineNum">     280 </span>            :     inline void schedule_periodically(clock_type::time_point initial, clock_type::duration period, const schedulable&amp; scbl) const {
+<span class="lineNum">     281 </span>            :         // force rebinding scbl to this worker
+<span class="lineNum">     282 </span>            :         schedule_periodically_rebind(initial, period, scbl);
+<span class="lineNum">     283 </span>            :     }
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :     /// insert the supplied schedulable to be run at now() + the initial delay specified and then again at now() + initial + (N * period)
+<span class="lineNum">     286 </span>            :     /// this will continue until the worker or schedulable is unsubscribed.
+<span class="lineNum">     287 </span>            :     inline void schedule_periodically(clock_type::duration initial, clock_type::duration period, const schedulable&amp; scbl) const {
+<span class="lineNum">     288 </span>            :         // force rebinding scbl to this worker
+<span class="lineNum">     289 </span>            :         schedule_periodically_rebind(now() + initial, period, scbl);
+<span class="lineNum">     290 </span>            :     }
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     293 </span>            :     template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     294 </span>            :     auto schedule(Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const
+<span class="lineNum">     295 </span>            :         -&gt; typename std::enable_if&lt;
+<span class="lineNum">     296 </span>            :             (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     297 </span>            :             is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     298 </span>            :             !is_schedulable&lt;Arg0&gt;::value&gt;::type;
+<span class="lineNum">     299 </span>            :     template&lt;class... ArgN&gt;
+<span class="lineNum">     300 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     301 </span>            :     void schedule_rebind(const schedulable&amp; scbl, ArgN&amp;&amp;... an) const;
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     304 </span>            :     template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     305 </span>            :     auto schedule(clock_type::time_point when, Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const
+<span class="lineNum">     306 </span>            :         -&gt; typename std::enable_if&lt;
+<span class="lineNum">     307 </span>            :             (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     308 </span>            :             is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     309 </span>            :             !is_schedulable&lt;Arg0&gt;::value&gt;::type;
+<span class="lineNum">     310 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     311 </span>            :     template&lt;class... ArgN&gt;
+<span class="lineNum">     312 </span>            :     void schedule_rebind(clock_type::time_point when, const schedulable&amp; scbl, ArgN&amp;&amp;... an) const;
+<span class="lineNum">     313 </span>            : 
+<span class="lineNum">     314 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     315 </span>            :     template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     316 </span>            :     auto schedule_periodically(clock_type::time_point initial, clock_type::duration period, Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const
+<span class="lineNum">     317 </span>            :         -&gt; typename std::enable_if&lt;
+<span class="lineNum">     318 </span>            :             (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     319 </span>            :             is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     320 </span>            :             !is_schedulable&lt;Arg0&gt;::value&gt;::type;
+<span class="lineNum">     321 </span>            :     /// use the supplied arguments to make a schedulable and then insert it to be run
+<span class="lineNum">     322 </span>            :     template&lt;class... ArgN&gt;
+<span class="lineNum">     323 </span>            :     void schedule_periodically_rebind(clock_type::time_point initial, clock_type::duration period, const schedulable&amp; scbl, ArgN&amp;&amp;... an) const;
+<span class="lineNum">     324 </span>            : };
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : inline bool operator==(const worker&amp; lhs, const worker&amp; rhs) {
+<span class="lineNum">     327 </span>            :     return lhs.inner == rhs.inner &amp;&amp; lhs.lifetime == rhs.lifetime;
+<span class="lineNum">     328 </span>            : }
+<span class="lineNum">     329 </span>            : inline bool operator!=(const worker&amp; lhs, const worker&amp; rhs) {
+<span class="lineNum">     330 </span>            :     return !(lhs == rhs);
+<a name="331"><span class="lineNum">     331 </span>            : }</a>
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span><span class="lineCov">       4977 : class weak_worker</span>
+<span class="lineNum">     334 </span>            : {
+<span class="lineNum">     335 </span>            :     detail::worker_interface_weak_ptr inner;
+<span class="lineNum">     336 </span>            :     composite_subscription lifetime;
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            : public:
+<span class="lineNum">     339 </span>            :     weak_worker()
+<a name="340"><span class="lineNum">     340 </span>            :     {</a>
+<span class="lineNum">     341 </span>            :     }
+<span class="lineNum">     342 </span><span class="lineCov">        527 :     explicit weak_worker(worker&amp; owner)</span>
+<span class="lineNum">     343 </span>            :         : inner(owner.inner)
+<span class="lineNum">     344 </span><span class="lineCov">        527 :         , lifetime(owner.lifetime)</span>
+<span class="lineNum">     345 </span>            :     {
+<a name="346"><span class="lineNum">     346 </span><span class="lineCov">        527 :     }</span></a>
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span><span class="lineNoCov">          0 :     worker lock() const {</span>
+<span class="lineNum">     349 </span><span class="lineNoCov">          0 :         return worker(lifetime, inner.lock());</span>
+<span class="lineNum">     350 </span>            :     }
+<a name="351"><span class="lineNum">     351 </span>            : };</a>
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span><span class="lineCov">        522 : class scheduler_interface</span>
+<span class="lineNum">     354 </span>            :     : public std::enable_shared_from_this&lt;scheduler_interface&gt;
+<span class="lineNum">     355 </span>            : {
+<span class="lineNum">     356 </span>            :     typedef scheduler_interface this_type;
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            : public:
+<a name="359"><span class="lineNum">     359 </span>            :     typedef scheduler_base::clock_type clock_type;</a>
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span><span class="lineCov">        512 :     virtual ~scheduler_interface() {}</span>
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            :     virtual clock_type::time_point now() const = 0;
+<span class="lineNum">     364 </span>            : 
+<span class="lineNum">     365 </span>            :     virtual worker create_worker(composite_subscription cs) const = 0;
+<span class="lineNum">     366 </span>            : };
+<a name="367"><span class="lineNum">     367 </span>            : </a>
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span><span class="lineCov">       1054 : struct schedulable_base :</span>
+<span class="lineNum">     370 </span>            :     // public subscription_base, &lt;- already in worker base
+<span class="lineNum">     371 </span>            :     public worker_base,
+<span class="lineNum">     372 </span>            :     public action_base
+<span class="lineNum">     373 </span>            : {
+<span class="lineNum">     374 </span>            :     typedef tag_schedulable schedulable_tag;
+<span class="lineNum">     375 </span>            : };
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : /*!
+<span class="lineNum">     378 </span>            :     \brief allows functions to be called at specified times and possibly in other contexts.
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            :     \ingroup group-core
+<a name="381"><span class="lineNum">     381 </span>            : </a>
+<span class="lineNum">     382 </span>            : */
+<span class="lineNum">     383 </span><span class="lineCov">      18638 : class scheduler : public scheduler_base</span>
+<span class="lineNum">     384 </span>            : {
+<span class="lineNum">     385 </span>            :     typedef scheduler this_type;
+<span class="lineNum">     386 </span>            :     detail::scheduler_interface_ptr inner;
+<span class="lineNum">     387 </span>            :     friend bool operator==(const scheduler&amp;, const scheduler&amp;);
+<span class="lineNum">     388 </span>            : public:
+<span class="lineNum">     389 </span>            :     typedef scheduler_base::clock_type clock_type;
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span>            :     scheduler()
+<a name="392"><span class="lineNum">     392 </span>            :     {</a>
+<span class="lineNum">     393 </span>            :     }
+<span class="lineNum">     394 </span><span class="lineCov">        261 :     explicit scheduler(detail::scheduler_interface_ptr i)</span>
+<span class="lineNum">     395 </span><span class="lineCov">        261 :         : inner(std::move(i))</span>
+<span class="lineNum">     396 </span>            :     {
+<span class="lineNum">     397 </span><span class="lineCov">        261 :     }</span>
+<span class="lineNum">     398 </span>            :     explicit scheduler(detail::const_scheduler_interface_ptr i)
+<span class="lineNum">     399 </span>            :         : inner(std::const_pointer_cast&lt;scheduler_interface&gt;(i))
+<span class="lineNum">     400 </span>            :     {
+<span class="lineNum">     401 </span>            :     }
+<a name="402"><span class="lineNum">     402 </span>            : </a>
+<span class="lineNum">     403 </span>            :     /// return the current time for this scheduler
+<span class="lineNum">     404 </span><span class="lineCov">         27 :     inline clock_type::time_point now() const {</span>
+<span class="lineNum">     405 </span><span class="lineCov">         27 :         return inner-&gt;now();</span>
+<span class="lineNum">     406 </span>            :     }
+<span class="lineNum">     407 </span>            :     /// create a worker with a lifetime.
+<span class="lineNum">     408 </span>            :     /// when the worker is unsubscribed all scheduled items will be unsubscribed.
+<span class="lineNum">     409 </span>            :     /// items scheduled to a worker will be run one at a time.
+<a name="410"><span class="lineNum">     410 </span>            :     /// scheduling order is preserved: when more than one item is scheduled for</a>
+<span class="lineNum">     411 </span>            :     /// time T then at time T they will be run in the order that they were scheduled.
+<span class="lineNum">     412 </span><span class="lineCov">        501 :     inline worker create_worker(composite_subscription cs = composite_subscription()) const {</span>
+<span class="lineNum">     413 </span><span class="lineCov">        501 :         return inner-&gt;create_worker(cs);</span>
+<span class="lineNum">     414 </span>            :     }
+<span class="lineNum">     415 </span>            : };
+<a name="416"><span class="lineNum">     416 </span>            : </a>
+<span class="lineNum">     417 </span>            : template&lt;class Scheduler, class... ArgN&gt;
+<span class="lineNum">     418 </span><span class="lineCov">        261 : inline scheduler make_scheduler(ArgN&amp;&amp;... an) {</span>
+<span class="lineNum">     419 </span><span class="lineCov">        261 :     return scheduler(std::static_pointer_cast&lt;scheduler_interface&gt;(std::make_shared&lt;Scheduler&gt;(std::forward&lt;ArgN&gt;(an)...)));</span>
+<span class="lineNum">     420 </span>            : }
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            : inline scheduler make_scheduler(std::shared_ptr&lt;scheduler_interface&gt; si) {
+<span class="lineNum">     423 </span>            :     return scheduler(si);
+<a name="424"><span class="lineNum">     424 </span>            : }</a>
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span><span class="lineCov">       1443 : class schedulable : public schedulable_base</span>
+<span class="lineNum">     427 </span>            : {
+<span class="lineNum">     428 </span>            :     typedef schedulable this_type;
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            :     composite_subscription lifetime;
+<span class="lineNum">     431 </span>            :     weak_worker controller;
+<span class="lineNum">     432 </span>            :     action activity;
+<span class="lineNum">     433 </span>            :     bool scoped;
+<span class="lineNum">     434 </span>            :     composite_subscription::weak_subscription action_scope;
+<span class="lineNum">     435 </span>            : 
+<a name="436"><span class="lineNum">     436 </span>            :     struct detacher</a>
+<span class="lineNum">     437 </span>            :     {
+<span class="lineNum">     438 </span><span class="lineCov">        470 :         ~detacher()</span>
+<span class="lineNum">     439 </span><span class="lineCov">        470 :         {</span>
+<span class="lineNum">     440 </span><span class="lineCov">        470 :             if (that) {</span>
+<span class="lineNum">     441 </span><span class="lineNoCov">          0 :                 that-&gt;unsubscribe();</span>
+<a name="442"><span class="lineNum">     442 </span>            :             }</a>
+<span class="lineNum">     443 </span><span class="lineCov">        470 :         }</span>
+<span class="lineNum">     444 </span><span class="lineCov">        470 :         detacher(const this_type* that)</span>
+<span class="lineNum">     445 </span><span class="lineCov">        470 :             : that(that)</span>
+<span class="lineNum">     446 </span>            :         {
+<span class="lineNum">     447 </span><span class="lineCov">        470 :         }</span>
+<span class="lineNum">     448 </span>            :         const this_type* that;
+<span class="lineNum">     449 </span>            :     };
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            :     class recursed_scope_type
+<span class="lineNum">     452 </span>            :     {
+<span class="lineNum">     453 </span>            :         mutable const recursed* requestor;
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span>            :         class exit_recursed_scope_type
+<span class="lineNum">     456 </span>            :         {
+<a name="457"><span class="lineNum">     457 </span>            :             const recursed_scope_type* that;</a>
+<span class="lineNum">     458 </span>            :         public:
+<span class="lineNum">     459 </span><span class="lineCov">        470 :             ~exit_recursed_scope_type()</span>
+<span class="lineNum">     460 </span><span class="lineCov">        470 :             {</span>
+<a name="461"><span class="lineNum">     461 </span><span class="lineCov">        470 :                     that-&gt;requestor = nullptr;</span></a>
+<span class="lineNum">     462 </span><span class="lineCov">        470 :             }</span>
+<span class="lineNum">     463 </span><span class="lineCov">        470 :             exit_recursed_scope_type(const recursed_scope_type* that)</span>
+<span class="lineNum">     464 </span><span class="lineCov">        470 :                 : that(that)</span>
+<span class="lineNum">     465 </span>            :             {
+<span class="lineNum">     466 </span><span class="lineCov">        470 :             }</span>
+<a name="467"><span class="lineNum">     467 </span>            :         };</a>
+<span class="lineNum">     468 </span>            :     public:
+<span class="lineNum">     469 </span><span class="lineCov">        527 :         recursed_scope_type()</span>
+<span class="lineNum">     470 </span><span class="lineCov">        527 :             : requestor(nullptr)</span>
+<a name="471"><span class="lineNum">     471 </span>            :         {</a>
+<span class="lineNum">     472 </span><span class="lineCov">        527 :         }</span>
+<span class="lineNum">     473 </span><span class="lineCov">       1240 :         recursed_scope_type(const recursed_scope_type&amp;)</span>
+<span class="lineNum">     474 </span><span class="lineCov">       1240 :             : requestor(nullptr)</span>
+<span class="lineNum">     475 </span>            :         {
+<a name="476"><span class="lineNum">     476 </span>            :             // does not aquire recursion scope</a>
+<span class="lineNum">     477 </span><span class="lineCov">       1240 :         }</span>
+<span class="lineNum">     478 </span><span class="lineCov">        203 :         recursed_scope_type&amp; operator=(const recursed_scope_type&amp; )</span>
+<span class="lineNum">     479 </span>            :         {
+<span class="lineNum">     480 </span>            :             // no change in recursion scope
+<a name="481"><span class="lineNum">     481 </span><span class="lineCov">        203 :             return *this;</span></a>
+<span class="lineNum">     482 </span>            :         }
+<span class="lineNum">     483 </span><span class="lineCov">        470 :         exit_recursed_scope_type reset(const recurse&amp; r) const {</span>
+<span class="lineNum">     484 </span><span class="lineCov">        470 :             requestor = std::addressof(r.get_recursed());</span>
+<span class="lineNum">     485 </span><span class="lineCov">        470 :             return exit_recursed_scope_type(this);</span>
+<span class="lineNum">     486 </span>            :         }
+<span class="lineNum">     487 </span>            :         bool is_recursed() const {
+<a name="488"><span class="lineNum">     488 </span>            :             return !!requestor;</a>
+<span class="lineNum">     489 </span>            :         }
+<span class="lineNum">     490 </span><span class="lineCov">         26 :         void operator()() const {</span>
+<span class="lineNum">     491 </span><span class="lineCov">         26 :             (*requestor)();</span>
+<span class="lineNum">     492 </span><span class="lineCov">         26 :         }</span>
+<span class="lineNum">     493 </span>            :     };
+<span class="lineNum">     494 </span>            :     recursed_scope_type recursed_scope;
+<span class="lineNum">     495 </span>            : 
+<span class="lineNum">     496 </span>            : public:
+<span class="lineNum">     497 </span>            :     typedef composite_subscription::weak_subscription weak_subscription;
+<a name="498"><span class="lineNum">     498 </span>            :     typedef scheduler_base::clock_type clock_type;</a>
+<span class="lineNum">     499 </span>            : 
+<span class="lineNum">     500 </span><span class="lineCov">       1767 :     ~schedulable()</span>
+<span class="lineNum">     501 </span><span class="lineCov">       1767 :     {</span>
+<span class="lineNum">     502 </span><span class="lineCov">       1767 :         if (scoped) {</span>
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :             controller.lock().remove(action_scope);</span>
+<span class="lineNum">     504 </span>            :         }
+<span class="lineNum">     505 </span><span class="lineCov">       1767 :     }</span>
+<span class="lineNum">     506 </span>            :     schedulable()
+<span class="lineNum">     507 </span>            :         : scoped(false)
+<span class="lineNum">     508 </span>            :     {
+<span class="lineNum">     509 </span>            :     }
+<a name="510"><span class="lineNum">     510 </span>            : </a>
+<span class="lineNum">     511 </span>            :     /// action and worker share lifetime
+<span class="lineNum">     512 </span><span class="lineCov">        527 :     schedulable(worker q, action a)</span>
+<span class="lineNum">     513 </span><span class="lineCov">        527 :         : lifetime(q.get_subscription())</span>
+<span class="lineNum">     514 </span>            :         , controller(q)
+<span class="lineNum">     515 </span><span class="lineCov">        527 :         , activity(std::move(a))</span>
+<span class="lineNum">     516 </span><span class="lineCov">       1581 :         , scoped(false)</span>
+<span class="lineNum">     517 </span>            :     {
+<span class="lineNum">     518 </span><span class="lineCov">        527 :     }</span>
+<span class="lineNum">     519 </span>            :     /// action and worker have independent lifetimes
+<span class="lineNum">     520 </span>            :     schedulable(composite_subscription cs, worker q, action a)
+<span class="lineNum">     521 </span>            :         : lifetime(std::move(cs))
+<span class="lineNum">     522 </span>            :         , controller(q)
+<span class="lineNum">     523 </span>            :         , activity(std::move(a))
+<span class="lineNum">     524 </span>            :         , scoped(true)
+<span class="lineNum">     525 </span>            :         , action_scope(controller.lock().add(lifetime))
+<span class="lineNum">     526 </span>            :     {
+<a name="527"><span class="lineNum">     527 </span>            :     }</a>
+<span class="lineNum">     528 </span>            :     /// inherit lifetimes
+<span class="lineNum">     529 </span><span class="lineNoCov">          0 :     schedulable(schedulable scbl, worker q, action a)</span>
+<span class="lineNum">     530 </span><span class="lineNoCov">          0 :         : lifetime(scbl.get_subscription())</span>
+<span class="lineNum">     531 </span>            :         , controller(q)
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :         , activity(std::move(a))</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :         , scoped(scbl.scoped)</span>
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :         , action_scope(scbl.scoped ? controller.lock().add(lifetime) : weak_subscription())</span>
+<span class="lineNum">     535 </span>            :     {
+<span class="lineNum">     536 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     537 </span>            : 
+<span class="lineNum">     538 </span>            :     inline const composite_subscription&amp; get_subscription() const {
+<a name="539"><span class="lineNum">     539 </span>            :         return lifetime;</a>
+<span class="lineNum">     540 </span>            :     }
+<span class="lineNum">     541 </span><span class="lineNoCov">          0 :     inline composite_subscription&amp; get_subscription() {</span>
+<a name="542"><span class="lineNum">     542 </span><span class="lineNoCov">          0 :         return lifetime;</span></a>
+<span class="lineNum">     543 </span>            :     }
+<span class="lineNum">     544 </span><span class="lineNoCov">          0 :     inline const worker get_worker() const {</span>
+<span class="lineNum">     545 </span><span class="lineNoCov">          0 :         return controller.lock();</span>
+<span class="lineNum">     546 </span>            :     }
+<span class="lineNum">     547 </span>            :     inline worker get_worker() {
+<span class="lineNum">     548 </span>            :         return controller.lock();
+<span class="lineNum">     549 </span>            :     }
+<span class="lineNum">     550 </span>            :     inline const action&amp; get_action() const {
+<a name="551"><span class="lineNum">     551 </span>            :         return activity;</a>
+<span class="lineNum">     552 </span>            :     }
+<span class="lineNum">     553 </span><span class="lineNoCov">          0 :     inline action&amp; get_action() {</span>
+<span class="lineNum">     554 </span><span class="lineNoCov">          0 :         return activity;</span>
+<span class="lineNum">     555 </span>            :     }
+<span class="lineNum">     556 </span>            : 
+<span class="lineNum">     557 </span>            :     inline static schedulable empty(worker sc) {
+<span class="lineNum">     558 </span>            :         return schedulable(composite_subscription::empty(), sc, action::empty());
+<a name="559"><span class="lineNum">     559 </span>            :     }</a>
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span><span class="lineCov">        470 :     inline auto set_recursed(const recurse&amp; r) const</span>
+<span class="lineNum">     562 </span>            :         -&gt; decltype(recursed_scope.reset(r)) {
+<span class="lineNum">     563 </span><span class="lineCov">        470 :         return      recursed_scope.reset(r);</span>
+<span class="lineNum">     564 </span>            :     }
+<span class="lineNum">     565 </span>            : 
+<span class="lineNum">     566 </span>            :     // recursed
+<span class="lineNum">     567 </span>            :     //
+<span class="lineNum">     568 </span>            :     bool is_recursed() const {
+<span class="lineNum">     569 </span>            :         return recursed_scope.is_recursed();
+<span class="lineNum">     570 </span>            :     }
+<span class="lineNum">     571 </span>            :     /// requests tail-recursion of the same action
+<span class="lineNum">     572 </span>            :     /// this will exit the process if called when
+<span class="lineNum">     573 </span>            :     /// is_recursed() is false.
+<span class="lineNum">     574 </span>            :     /// Note: to improve perf it is not required
+<span class="lineNum">     575 </span>            :     /// to call is_recursed() before calling this
+<span class="lineNum">     576 </span>            :     /// operator. Context is sufficient. The schedulable
+<a name="577"><span class="lineNum">     577 </span>            :     /// passed to the action by the scheduler will return</a>
+<span class="lineNum">     578 </span>            :     /// true from is_recursed()
+<span class="lineNum">     579 </span><span class="lineCov">         26 :     inline void operator()() const {</span>
+<span class="lineNum">     580 </span><span class="lineCov">         26 :         recursed_scope();</span>
+<span class="lineNum">     581 </span><span class="lineCov">         26 :     }</span>
+<span class="lineNum">     582 </span>            : 
+<a name="583"><span class="lineNum">     583 </span>            :     // composite_subscription</a>
+<span class="lineNum">     584 </span>            :     //
+<span class="lineNum">     585 </span><span class="lineCov">       2003 :     inline bool is_subscribed() const {</span>
+<span class="lineNum">     586 </span><span class="lineCov">       2003 :         return lifetime.is_subscribed();</span>
+<span class="lineNum">     587 </span>            :     }
+<span class="lineNum">     588 </span>            :     inline weak_subscription add(subscription s) const {
+<span class="lineNum">     589 </span>            :         return lifetime.add(std::move(s));
+<span class="lineNum">     590 </span>            :     }
+<span class="lineNum">     591 </span>            :     template&lt;class F&gt;
+<span class="lineNum">     592 </span>            :     auto add(F f) const
+<span class="lineNum">     593 </span>            :     -&gt; typename std::enable_if&lt;rxcpp::detail::is_unsubscribe_function&lt;F&gt;::value, weak_subscription&gt;::type {
+<span class="lineNum">     594 </span>            :         return lifetime.add(make_subscription(std::move(f)));
+<span class="lineNum">     595 </span>            :     }
+<span class="lineNum">     596 </span>            :     inline void remove(weak_subscription w) const {
+<span class="lineNum">     597 </span>            :         return lifetime.remove(std::move(w));
+<span class="lineNum">     598 </span>            :     }
+<span class="lineNum">     599 </span>            :     inline void clear() const {
+<a name="600"><span class="lineNum">     600 </span>            :         return lifetime.clear();</a>
+<span class="lineNum">     601 </span>            :     }
+<span class="lineNum">     602 </span><span class="lineNoCov">          0 :     inline void unsubscribe() const {</span>
+<span class="lineNum">     603 </span><span class="lineNoCov">          0 :         return lifetime.unsubscribe();</span>
+<span class="lineNum">     604 </span>            :     }
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            :     // scheduler
+<span class="lineNum">     607 </span>            :     //
+<span class="lineNum">     608 </span>            :     inline clock_type::time_point now() const {
+<span class="lineNum">     609 </span>            :         return controller.lock().now();
+<a name="610"><span class="lineNum">     610 </span>            :     }</a>
+<span class="lineNum">     611 </span>            :     /// put this on the queue of the stored scheduler to run asap
+<span class="lineNum">     612 </span><span class="lineNoCov">          0 :     inline void schedule() const {</span>
+<span class="lineNum">     613 </span><span class="lineNoCov">          0 :         if (is_subscribed()) {</span>
+<span class="lineNum">     614 </span><span class="lineNoCov">          0 :             get_worker().schedule(*this);</span>
+<span class="lineNum">     615 </span>            :         }
+<span class="lineNum">     616 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     617 </span>            :     /// put this on the queue of the stored scheduler to run at the specified time
+<span class="lineNum">     618 </span>            :     inline void schedule(clock_type::time_point when) const {
+<span class="lineNum">     619 </span>            :         if (is_subscribed()) {
+<span class="lineNum">     620 </span>            :             get_worker().schedule(when, *this);
+<span class="lineNum">     621 </span>            :         }
+<span class="lineNum">     622 </span>            :     }
+<span class="lineNum">     623 </span>            :     /// put this on the queue of the stored scheduler to run after a delay from now
+<span class="lineNum">     624 </span>            :     inline void schedule(clock_type::duration when) const {
+<span class="lineNum">     625 </span>            :         if (is_subscribed()) {
+<span class="lineNum">     626 </span>            :             get_worker().schedule(when, *this);
+<span class="lineNum">     627 </span>            :         }
+<span class="lineNum">     628 </span>            :     }
+<span class="lineNum">     629 </span>            : 
+<span class="lineNum">     630 </span>            :     // action
+<a name="631"><span class="lineNum">     631 </span>            :     //</a>
+<span class="lineNum">     632 </span>            :     /// invokes the action
+<span class="lineNum">     633 </span><span class="lineCov">        470 :     inline void operator()(const recurse&amp; r) const {</span>
+<span class="lineNum">     634 </span><span class="lineCov">        470 :         if (!is_subscribed()) {</span>
+<span class="lineNum">     635 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">     636 </span>            :         }
+<span class="lineNum">     637 </span><span class="lineCov">        940 :         detacher protect(this);</span>
+<span class="lineNum">     638 </span><span class="lineCov">        470 :         activity(*this, r);</span>
+<span class="lineNum">     639 </span><span class="lineCov">        470 :         protect.that = nullptr;</span>
+<span class="lineNum">     640 </span>            :     }
+<span class="lineNum">     641 </span>            : };
+<span class="lineNum">     642 </span>            : 
+<span class="lineNum">     643 </span>            : struct current_thread;
+<span class="lineNum">     644 </span>            : 
+<a name="645"><span class="lineNum">     645 </span>            : namespace detail {</a>
+<span class="lineNum">     646 </span>            : 
+<span class="lineNum">     647 </span><span class="lineCov">       1053 : class action_type</span>
+<span class="lineNum">     648 </span>            :     : public std::enable_shared_from_this&lt;action_type&gt;
+<span class="lineNum">     649 </span>            : {
+<span class="lineNum">     650 </span>            :     typedef action_type this_type;
+<span class="lineNum">     651 </span>            : 
+<span class="lineNum">     652 </span>            : public:
+<span class="lineNum">     653 </span>            :     typedef std::function&lt;void(const schedulable&amp;, const recurse&amp;)&gt; function_type;
+<span class="lineNum">     654 </span>            : 
+<span class="lineNum">     655 </span>            : private:
+<span class="lineNum">     656 </span>            :     function_type f;
+<span class="lineNum">     657 </span>            : 
+<span class="lineNum">     658 </span>            : public:
+<span class="lineNum">     659 </span>            :     action_type()
+<span class="lineNum">     660 </span>            :     {
+<a name="661"><span class="lineNum">     661 </span>            :     }</a>
+<span class="lineNum">     662 </span>            : 
+<span class="lineNum">     663 </span><span class="lineCov">        527 :     action_type(function_type f)</span>
+<span class="lineNum">     664 </span><span class="lineCov">        527 :         : f(std::move(f))</span>
+<span class="lineNum">     665 </span>            :     {
+<a name="666"><span class="lineNum">     666 </span><span class="lineCov">        527 :     }</span></a>
+<span class="lineNum">     667 </span>            : 
+<span class="lineNum">     668 </span><span class="lineCov">        470 :     inline void operator()(const schedulable&amp; s, const recurse&amp; r) {</span>
+<span class="lineNum">     669 </span><span class="lineCov">        470 :         if (!f) {</span>
+<span class="lineNum">     670 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">     671 </span>            :         }
+<span class="lineNum">     672 </span><span class="lineCov">        470 :         f(s, r);</span>
+<span class="lineNum">     673 </span><span class="lineCov">        470 :     }</span>
+<a name="674"><span class="lineNum">     674 </span>            : };</a>
+<span class="lineNum">     675 </span>            : 
+<span class="lineNum">     676 </span><span class="lineCov">       4215 : class action_tailrecurser</span>
+<span class="lineNum">     677 </span>            :     : public std::enable_shared_from_this&lt;action_type&gt;
+<span class="lineNum">     678 </span>            : {
+<span class="lineNum">     679 </span>            :     typedef action_type this_type;
+<span class="lineNum">     680 </span>            : 
+<span class="lineNum">     681 </span>            : public:
+<span class="lineNum">     682 </span>            :     typedef std::function&lt;void(const schedulable&amp;)&gt; function_type;
+<span class="lineNum">     683 </span>            : 
+<span class="lineNum">     684 </span>            : private:
+<span class="lineNum">     685 </span>            :     function_type f;
+<span class="lineNum">     686 </span>            : 
+<span class="lineNum">     687 </span>            : public:
+<span class="lineNum">     688 </span>            :     action_tailrecurser()
+<span class="lineNum">     689 </span>            :     {
+<a name="690"><span class="lineNum">     690 </span>            :     }</a>
+<span class="lineNum">     691 </span>            : 
+<span class="lineNum">     692 </span><span class="lineCov">        527 :     action_tailrecurser(function_type f)</span>
+<span class="lineNum">     693 </span><span class="lineCov">        527 :         : f(std::move(f))</span>
+<span class="lineNum">     694 </span>            :     {
+<a name="695"><span class="lineNum">     695 </span><span class="lineCov">        527 :     }</span></a>
+<span class="lineNum">     696 </span>            : 
+<span class="lineNum">     697 </span><span class="lineCov">        470 :     inline void operator()(const schedulable&amp; s, const recurse&amp; r) {</span>
+<span class="lineNum">     698 </span><span class="lineCov">        470 :         if (!f) {</span>
+<span class="lineNum">     699 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">     700 </span>            :         }
+<span class="lineNum">     701 </span><span class="lineCov">        470 :         trace_activity().action_enter(s);</span>
+<span class="lineNum">     702 </span><span class="lineCov">        940 :         auto scope = s.set_recursed(r);</span>
+<span class="lineNum">     703 </span><span class="lineCov">        496 :         while (s.is_subscribed()) {</span>
+<span class="lineNum">     704 </span><span class="lineCov">        496 :             r.reset();</span>
+<span class="lineNum">     705 </span><span class="lineCov">        496 :             f(s);</span>
+<span class="lineNum">     706 </span><span class="lineCov">        496 :             if (!r.is_allowed() || !r.is_requested()) {</span>
+<span class="lineNum">     707 </span><span class="lineCov">        470 :                 if (r.is_requested()) {</span>
+<span class="lineNum">     708 </span><span class="lineNoCov">          0 :                     s.schedule();</span>
+<span class="lineNum">     709 </span>            :                 }
+<span class="lineNum">     710 </span><span class="lineCov">        470 :                 break;</span>
+<span class="lineNum">     711 </span>            :             }
+<span class="lineNum">     712 </span><span class="lineCov">         26 :             trace_activity().action_recurse(s);</span>
+<span class="lineNum">     713 </span>            :         }
+<span class="lineNum">     714 </span><span class="lineCov">        470 :         trace_activity().action_return(s);</span>
+<span class="lineNum">     715 </span><span class="lineCov">        470 :     }</span>
+<span class="lineNum">     716 </span>            : };
+<a name="717"><span class="lineNum">     717 </span>            : }</a>
+<span class="lineNum">     718 </span>            : 
+<span class="lineNum">     719 </span><span class="lineCov">        470 : inline void action::operator()(const schedulable&amp; s, const recurse&amp; r) const {</span>
+<span class="lineNum">     720 </span><span class="lineCov">        470 :     (*inner)(s, r);</span>
+<span class="lineNum">     721 </span><span class="lineCov">        470 : }</span>
+<span class="lineNum">     722 </span>            : 
+<span class="lineNum">     723 </span>            : inline action make_action_empty() {
+<span class="lineNum">     724 </span>            :     return action::empty();
+<span class="lineNum">     725 </span>            : }
+<a name="726"><span class="lineNum">     726 </span>            : </a>
+<span class="lineNum">     727 </span>            : template&lt;class F&gt;
+<span class="lineNum">     728 </span><span class="lineCov">        527 : inline action make_action(F&amp;&amp; f) {</span>
+<span class="lineNum">     729 </span>            :     static_assert(detail::is_action_function&lt;F&gt;::value, &quot;action function must be void(schedulable)&quot;);
+<span class="lineNum">     730 </span><span class="lineCov">        764 :     auto fn = std::forward&lt;F&gt;(f);</span>
+<span class="lineNum">     731 </span><span class="lineCov">        764 :     return action(std::make_shared&lt;detail::action_type&gt;(detail::action_tailrecurser(fn)));</span>
+<span class="lineNum">     732 </span>            : }
+<span class="lineNum">     733 </span>            : 
+<span class="lineNum">     734 </span>            : // copy
+<span class="lineNum">     735 </span>            : inline auto make_schedulable(
+<span class="lineNum">     736 </span>            :     const   schedulable&amp; scbl)
+<span class="lineNum">     737 </span>            :     -&gt;      schedulable {
+<span class="lineNum">     738 </span>            :     return  schedulable(scbl);
+<span class="lineNum">     739 </span>            : }
+<span class="lineNum">     740 </span>            : // move
+<span class="lineNum">     741 </span>            : inline auto make_schedulable(
+<span class="lineNum">     742 </span>            :             schedulable&amp;&amp; scbl)
+<span class="lineNum">     743 </span>            :     -&gt;      schedulable {
+<span class="lineNum">     744 </span>            :     return  schedulable(std::move(scbl));
+<span class="lineNum">     745 </span>            : }
+<span class="lineNum">     746 </span>            : 
+<span class="lineNum">     747 </span>            : inline schedulable make_schedulable(worker sc, action a) {
+<span class="lineNum">     748 </span>            :     return schedulable(sc, a);
+<span class="lineNum">     749 </span>            : }
+<span class="lineNum">     750 </span>            : inline schedulable make_schedulable(worker sc, composite_subscription cs, action a) {
+<span class="lineNum">     751 </span>            :     return schedulable(cs, sc, a);
+<span class="lineNum">     752 </span>            : }
+<a name="753"><span class="lineNum">     753 </span>            : </a>
+<span class="lineNum">     754 </span>            : template&lt;class F&gt;
+<span class="lineNum">     755 </span><span class="lineCov">        527 : auto make_schedulable(worker sc, F&amp;&amp; f)</span>
+<span class="lineNum">     756 </span>            :     -&gt; typename std::enable_if&lt;detail::is_action_function&lt;F&gt;::value, schedulable&gt;::type {
+<span class="lineNum">     757 </span><span class="lineCov">        527 :     return schedulable(sc, make_action(std::forward&lt;F&gt;(f)));</span>
+<span class="lineNum">     758 </span>            : }
+<span class="lineNum">     759 </span>            : template&lt;class F&gt;
+<span class="lineNum">     760 </span>            : auto make_schedulable(worker sc, composite_subscription cs, F&amp;&amp; f)
+<span class="lineNum">     761 </span>            :     -&gt; typename std::enable_if&lt;detail::is_action_function&lt;F&gt;::value, schedulable&gt;::type {
+<span class="lineNum">     762 </span>            :     return schedulable(cs, sc, make_action(std::forward&lt;F&gt;(f)));
+<span class="lineNum">     763 </span>            : }
+<span class="lineNum">     764 </span>            : template&lt;class F&gt;
+<span class="lineNum">     765 </span>            : auto make_schedulable(schedulable scbl, composite_subscription cs, F&amp;&amp; f)
+<span class="lineNum">     766 </span>            :     -&gt; typename std::enable_if&lt;detail::is_action_function&lt;F&gt;::value, schedulable&gt;::type {
+<span class="lineNum">     767 </span>            :     return schedulable(cs, scbl.get_worker(), make_action(std::forward&lt;F&gt;(f)));
+<span class="lineNum">     768 </span>            : }
+<span class="lineNum">     769 </span>            : template&lt;class F&gt;
+<span class="lineNum">     770 </span>            : auto make_schedulable(schedulable scbl, worker sc, F&amp;&amp; f)
+<span class="lineNum">     771 </span>            :     -&gt; typename std::enable_if&lt;detail::is_action_function&lt;F&gt;::value, schedulable&gt;::type {
+<span class="lineNum">     772 </span>            :     return schedulable(scbl, sc, make_action(std::forward&lt;F&gt;(f)));
+<span class="lineNum">     773 </span>            : }
+<span class="lineNum">     774 </span>            : template&lt;class F&gt;
+<span class="lineNum">     775 </span>            : auto make_schedulable(schedulable scbl, F&amp;&amp; f)
+<span class="lineNum">     776 </span>            :     -&gt; typename std::enable_if&lt;detail::is_action_function&lt;F&gt;::value, schedulable&gt;::type {
+<span class="lineNum">     777 </span>            :     return schedulable(scbl, scbl.get_worker(), make_action(std::forward&lt;F&gt;(f)));
+<span class="lineNum">     778 </span>            : }
+<span class="lineNum">     779 </span>            : 
+<span class="lineNum">     780 </span>            : inline auto make_schedulable(schedulable scbl, composite_subscription cs)
+<span class="lineNum">     781 </span>            :     -&gt; schedulable {
+<span class="lineNum">     782 </span>            :     return schedulable(cs, scbl.get_worker(), scbl.get_action());
+<span class="lineNum">     783 </span>            : }
+<span class="lineNum">     784 </span>            : inline auto make_schedulable(schedulable scbl, worker sc, composite_subscription cs)
+<span class="lineNum">     785 </span>            :     -&gt; schedulable {
+<a name="786"><span class="lineNum">     786 </span>            :     return schedulable(cs, sc, scbl.get_action());</a>
+<span class="lineNum">     787 </span>            : }
+<span class="lineNum">     788 </span><span class="lineNoCov">          0 : inline auto make_schedulable(schedulable scbl, worker sc)</span>
+<span class="lineNum">     789 </span>            :     -&gt; schedulable {
+<span class="lineNum">     790 </span><span class="lineNoCov">          0 :     return schedulable(scbl, sc, scbl.get_action());</span>
+<span class="lineNum">     791 </span>            : }
+<a name="792"><span class="lineNum">     792 </span>            : </a>
+<span class="lineNum">     793 </span>            : template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     794 </span><span class="lineCov">        498 : auto worker::schedule(Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const</span>
+<span class="lineNum">     795 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     796 </span>            :         (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     797 </span>            :         is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     798 </span>            :         !is_schedulable&lt;Arg0&gt;::value&gt;::type {
+<span class="lineNum">     799 </span><span class="lineCov">        996 :     auto scbl = make_schedulable(*this, std::forward&lt;Arg0&gt;(a0), std::forward&lt;ArgN&gt;(an)...);</span>
+<span class="lineNum">     800 </span><span class="lineCov">        498 :     trace_activity().schedule_enter(*inner.get(), scbl);</span>
+<span class="lineNum">     801 </span><span class="lineCov">        498 :     inner-&gt;schedule(std::move(scbl));</span>
+<span class="lineNum">     802 </span><span class="lineCov">        498 :     trace_activity().schedule_return(*inner.get());</span>
+<a name="803"><span class="lineNum">     803 </span><span class="lineCov">        498 : }</span></a>
+<span class="lineNum">     804 </span>            : template&lt;class... ArgN&gt;
+<span class="lineNum">     805 </span><span class="lineNoCov">          0 : void worker::schedule_rebind(const schedulable&amp; scbl, ArgN&amp;&amp;... an) const {</span>
+<span class="lineNum">     806 </span><span class="lineNoCov">          0 :     auto rescbl = make_schedulable(scbl, *this, std::forward&lt;ArgN&gt;(an)...);</span>
+<span class="lineNum">     807 </span><span class="lineNoCov">          0 :     trace_activity().schedule_enter(*inner.get(), rescbl);</span>
+<span class="lineNum">     808 </span><span class="lineNoCov">          0 :     inner-&gt;schedule(std::move(rescbl));</span>
+<span class="lineNum">     809 </span><span class="lineNoCov">          0 :     trace_activity().schedule_return(*inner.get());</span>
+<span class="lineNum">     810 </span><span class="lineNoCov">          0 : }</span>
+<a name="811"><span class="lineNum">     811 </span>            : </a>
+<span class="lineNum">     812 </span>            : template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     813 </span><span class="lineCov">         29 : auto worker::schedule(clock_type::time_point when, Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const</span>
+<span class="lineNum">     814 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     815 </span>            :         (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     816 </span>            :         is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     817 </span>            :         !is_schedulable&lt;Arg0&gt;::value&gt;::type {
+<span class="lineNum">     818 </span><span class="lineCov">         58 :     auto scbl = make_schedulable(*this, std::forward&lt;Arg0&gt;(a0), std::forward&lt;ArgN&gt;(an)...);</span>
+<span class="lineNum">     819 </span><span class="lineCov">         29 :     trace_activity().schedule_when_enter(*inner.get(), when, scbl);</span>
+<span class="lineNum">     820 </span><span class="lineCov">         29 :     inner-&gt;schedule(when, std::move(scbl));</span>
+<span class="lineNum">     821 </span><span class="lineCov">         29 :     trace_activity().schedule_when_return(*inner.get());</span>
+<span class="lineNum">     822 </span><span class="lineCov">         29 : }</span>
+<span class="lineNum">     823 </span>            : template&lt;class... ArgN&gt;
+<span class="lineNum">     824 </span>            : void worker::schedule_rebind(clock_type::time_point when, const schedulable&amp; scbl, ArgN&amp;&amp;... an) const {
+<span class="lineNum">     825 </span>            :     auto rescbl = make_schedulable(scbl, *this, std::forward&lt;ArgN&gt;(an)...);
+<span class="lineNum">     826 </span>            :     trace_activity().schedule_when_enter(*inner.get(), when, rescbl);
+<span class="lineNum">     827 </span>            :     inner-&gt;schedule(when, std::move(rescbl));
+<span class="lineNum">     828 </span>            :     trace_activity().schedule_when_return(*inner.get());
+<span class="lineNum">     829 </span>            : }
+<span class="lineNum">     830 </span>            : 
+<span class="lineNum">     831 </span>            : template&lt;class Arg0, class... ArgN&gt;
+<span class="lineNum">     832 </span>            : auto worker::schedule_periodically(clock_type::time_point initial, clock_type::duration period, Arg0&amp;&amp; a0, ArgN&amp;&amp;... an) const
+<span class="lineNum">     833 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     834 </span>            :         (detail::is_action_function&lt;Arg0&gt;::value ||
+<span class="lineNum">     835 </span>            :         is_subscription&lt;Arg0&gt;::value) &amp;&amp;
+<span class="lineNum">     836 </span>            :         !is_schedulable&lt;Arg0&gt;::value&gt;::type {
+<span class="lineNum">     837 </span>            :     schedule_periodically_rebind(initial, period, make_schedulable(*this, std::forward&lt;Arg0&gt;(a0), std::forward&lt;ArgN&gt;(an)...));
+<span class="lineNum">     838 </span>            : }
+<span class="lineNum">     839 </span>            : template&lt;class... ArgN&gt;
+<span class="lineNum">     840 </span>            : void worker::schedule_periodically_rebind(clock_type::time_point initial, clock_type::duration period, const schedulable&amp; scbl, ArgN&amp;&amp;... an) const {
+<span class="lineNum">     841 </span>            :     auto keepAlive = *this;
+<span class="lineNum">     842 </span>            :     auto target = std::make_shared&lt;clock_type::time_point&gt;(initial);
+<span class="lineNum">     843 </span>            :     auto activity = make_schedulable(scbl, keepAlive, std::forward&lt;ArgN&gt;(an)...);
+<span class="lineNum">     844 </span>            :     auto periodic = make_schedulable(
+<span class="lineNum">     845 </span>            :         activity,
+<span class="lineNum">     846 </span>            :         [keepAlive, target, period, activity](schedulable self) {
+<span class="lineNum">     847 </span>            :             // any recursion requests will be pushed to the scheduler queue
+<span class="lineNum">     848 </span>            :             recursion r(false);
+<span class="lineNum">     849 </span>            :             // call action
+<span class="lineNum">     850 </span>            :             activity(r.get_recurse());
+<span class="lineNum">     851 </span>            : 
+<span class="lineNum">     852 </span>            :             // schedule next occurance (if the action took longer than 'period' target will be in the past)
+<span class="lineNum">     853 </span>            :             *target += period;
+<span class="lineNum">     854 </span>            :             self.schedule(*target);
+<span class="lineNum">     855 </span>            :         });
+<span class="lineNum">     856 </span>            :     trace_activity().schedule_when_enter(*inner.get(), *target, periodic);
+<span class="lineNum">     857 </span>            :     inner-&gt;schedule(*target, periodic);
+<span class="lineNum">     858 </span>            :     trace_activity().schedule_when_return(*inner.get());
+<span class="lineNum">     859 </span>            : }
+<span class="lineNum">     860 </span>            : 
+<span class="lineNum">     861 </span>            : namespace detail {
+<a name="862"><span class="lineNum">     862 </span>            : </a>
+<span class="lineNum">     863 </span>            : template&lt;class TimePoint&gt;
+<span class="lineNum">     864 </span><span class="lineCov">       3776 : struct time_schedulable</span>
+<span class="lineNum">     865 </span>            : {
+<a name="866"><span class="lineNum">     866 </span>            :     typedef TimePoint time_point_type;</a>
+<span class="lineNum">     867 </span>            : 
+<span class="lineNum">     868 </span><span class="lineCov">        181 :     time_schedulable(TimePoint when, schedulable a)</span>
+<span class="lineNum">     869 </span>            :         : when(when)
+<span class="lineNum">     870 </span><span class="lineCov">        181 :         , what(std::move(a))</span>
+<span class="lineNum">     871 </span>            :     {
+<span class="lineNum">     872 </span><span class="lineCov">        181 :     }</span>
+<span class="lineNum">     873 </span>            :     TimePoint when;
+<span class="lineNum">     874 </span>            :     schedulable what;
+<span class="lineNum">     875 </span>            : };
+<span class="lineNum">     876 </span>            : 
+<span class="lineNum">     877 </span>            : 
+<span class="lineNum">     878 </span>            : // Sorts time_schedulable items in priority order sorted
+<span class="lineNum">     879 </span>            : // on value of time_schedulable.when. Items with equal
+<a name="880"><span class="lineNum">     880 </span>            : // values for when are sorted in fifo order.</a>
+<span class="lineNum">     881 </span>            : template&lt;class TimePoint&gt;
+<span class="lineNum">     882 </span><span class="lineCov">       1028 : class schedulable_queue {</span>
+<span class="lineNum">     883 </span>            : public:
+<span class="lineNum">     884 </span>            :     typedef time_schedulable&lt;TimePoint&gt; item_type;
+<span class="lineNum">     885 </span>            :     typedef std::pair&lt;item_type, int64_t&gt; elem_type;
+<span class="lineNum">     886 </span>            :     typedef std::vector&lt;elem_type&gt; container_type;
+<span class="lineNum">     887 </span>            :     typedef const item_type&amp; const_reference;
+<span class="lineNum">     888 </span>            : 
+<span class="lineNum">     889 </span>            : private:
+<a name="890"><span class="lineNum">     890 </span>            :     struct compare_elem</a>
+<span class="lineNum">     891 </span>            :     {
+<span class="lineNum">     892 </span><span class="lineCov">         18 :         bool operator()(const elem_type&amp; lhs, const elem_type&amp; rhs) const {</span>
+<span class="lineNum">     893 </span><span class="lineCov">         18 :             if (lhs.first.when == rhs.first.when) {</span>
+<span class="lineNum">     894 </span><span class="lineNoCov">          0 :                 return lhs.second &gt; rhs.second;</span>
+<span class="lineNum">     895 </span>            :             }
+<span class="lineNum">     896 </span>            :             else {
+<span class="lineNum">     897 </span><span class="lineCov">         18 :                 return lhs.first.when &gt; rhs.first.when;</span>
+<span class="lineNum">     898 </span>            :             }
+<span class="lineNum">     899 </span>            :         }
+<span class="lineNum">     900 </span>            :     };
+<span class="lineNum">     901 </span>            : 
+<span class="lineNum">     902 </span>            :     typedef std::priority_queue&lt;
+<span class="lineNum">     903 </span>            :         elem_type,
+<span class="lineNum">     904 </span>            :         container_type,
+<span class="lineNum">     905 </span>            :         compare_elem
+<span class="lineNum">     906 </span>            :     &gt; queue_type;
+<span class="lineNum">     907 </span>            : 
+<span class="lineNum">     908 </span>            :     queue_type q;
+<span class="lineNum">     909 </span>            : 
+<span class="lineNum">     910 </span>            :     int64_t ordinal;
+<a name="911"><span class="lineNum">     911 </span>            : public:</a>
+<span class="lineNum">     912 </span>            : 
+<span class="lineNum">     913 </span><span class="lineCov">        402 :     schedulable_queue() </span>
+<span class="lineNum">     914 </span><span class="lineCov">        402 :         : ordinal(0) </span>
+<span class="lineNum">     915 </span>            :     {
+<a name="916"><span class="lineNum">     916 </span><span class="lineCov">        402 :     }</span></a>
+<span class="lineNum">     917 </span>            : 
+<span class="lineNum">     918 </span><span class="lineCov">        182 :     const_reference top() const {</span>
+<span class="lineNum">     919 </span><span class="lineCov">        182 :         return q.top().first;</span>
+<a name="920"><span class="lineNum">     920 </span>            :     }</a>
+<span class="lineNum">     921 </span>            : 
+<span class="lineNum">     922 </span><span class="lineCov">        126 :     void pop() {</span>
+<span class="lineNum">     923 </span><span class="lineCov">        126 :         q.pop();</span>
+<a name="924"><span class="lineNum">     924 </span><span class="lineCov">        126 :     }</span></a>
+<span class="lineNum">     925 </span>            : 
+<span class="lineNum">     926 </span><span class="lineCov">        742 :     bool empty() const {</span>
+<span class="lineNum">     927 </span><span class="lineCov">        742 :         return q.empty();</span>
+<span class="lineNum">     928 </span>            :     }
+<span class="lineNum">     929 </span>            : 
+<span class="lineNum">     930 </span>            :     void push(const item_type&amp; value) {
+<span class="lineNum">     931 </span>            :         q.push(elem_type(value, ordinal++));
+<a name="932"><span class="lineNum">     932 </span>            :     }</a>
+<span class="lineNum">     933 </span>            : 
+<span class="lineNum">     934 </span><span class="lineCov">        181 :     void push(item_type&amp;&amp; value) {</span>
+<span class="lineNum">     935 </span><span class="lineCov">        181 :         q.push(elem_type(std::move(value), ordinal++));</span>
+<span class="lineNum">     936 </span><span class="lineCov">        181 :     }</span>
+<span class="lineNum">     937 </span>            : };
+<span class="lineNum">     938 </span>            : 
+<span class="lineNum">     939 </span>            : }
+<span class="lineNum">     940 </span>            : 
+<span class="lineNum">     941 </span>            : }
+<span class="lineNum">     942 </span>            : namespace rxsc=schedulers;
+<span class="lineNum">     943 </span>            : 
+<span class="lineNum">     944 </span>            : }
+<span class="lineNum">     945 </span>            : 
+<span class="lineNum">     946 </span>            : #include &quot;schedulers/rx-currentthread.hpp&quot;
+<span class="lineNum">     947 </span>            : #include &quot;schedulers/rx-runloop.hpp&quot;
+<span class="lineNum">     948 </span>            : #include &quot;schedulers/rx-newthread.hpp&quot;
+<span class="lineNum">     949 </span>            : #include &quot;schedulers/rx-eventloop.hpp&quot;
+<span class="lineNum">     950 </span>            : #include &quot;schedulers/rx-immediate.hpp&quot;
+<span class="lineNum">     951 </span>            : #include &quot;schedulers/rx-virtualtime.hpp&quot;
+<span class="lineNum">     952 </span>            : #include &quot;schedulers/rx-sameworker.hpp&quot;
+<span class="lineNum">     953 </span>            : 
+<span class="lineNum">     954 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

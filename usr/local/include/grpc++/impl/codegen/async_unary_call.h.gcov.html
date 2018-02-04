@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/async_unary_call.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - async_unary_call.h<span style="font-size: 80%;"> (source / <a href="async_unary_call.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntryLo">67.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryMed">75.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_ASYNC_UNARY_CALL_H
+<span class="lineNum">      20 </span>            : #define GRPCXX_IMPL_CODEGEN_ASYNC_UNARY_CALL_H
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;assert.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;grpc++/impl/codegen/call.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;grpc++/impl/codegen/channel_interface.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;grpc++/impl/codegen/client_context.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;grpc++/impl/codegen/server_context.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;grpc++/impl/codegen/service_type.h&gt;
+<span class="lineNum">      28 </span>            : #include &lt;grpc++/impl/codegen/status.h&gt;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace grpc {
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : class CompletionQueue;
+<span class="lineNum">      33 </span>            : extern CoreCodegenInterface* g_core_codegen_interface;
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : /// An interface relevant for async client side unary RPCS (which send
+<span class="lineNum">      36 </span>            : /// one request message to a server and receive one response message).
+<span class="lineNum">      37 </span>            : template &lt;class R&gt;
+<span class="lineNum">      38 </span>            : class ClientAsyncResponseReaderInterface {
+<span class="lineNum">      39 </span>            :  public:
+<span class="lineNum">      40 </span>            :   virtual ~ClientAsyncResponseReaderInterface() {}
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            :   /// Request notification of the reading of initial metadata. Completion
+<span class="lineNum">      43 </span>            :   /// will be notified by \a tag on the associated completion queue.
+<span class="lineNum">      44 </span>            :   /// This call is optional, but if it is used, it cannot be used concurrently
+<span class="lineNum">      45 </span>            :   /// with or after the \a Finish method.
+<span class="lineNum">      46 </span>            :   ///
+<span class="lineNum">      47 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">      48 </span>            :   virtual void ReadInitialMetadata(void* tag) = 0;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :   /// Request to receive the server's response \a msg and final \a status for
+<span class="lineNum">      51 </span>            :   /// the call, and to notify \a tag on this call's completion queue when
+<span class="lineNum">      52 </span>            :   /// finished.
+<span class="lineNum">      53 </span>            :   ///
+<span class="lineNum">      54 </span>            :   /// This function will return when either:
+<span class="lineNum">      55 </span>            :   /// - when the server's response message and status have been received.
+<span class="lineNum">      56 </span>            :   /// - when the server has returned a non-OK status (no message expected in
+<span class="lineNum">      57 </span>            :   ///   this case).
+<span class="lineNum">      58 </span>            :   /// - when the call failed for some reason and the library generated a
+<span class="lineNum">      59 </span>            :   ///   non-OK status.
+<span class="lineNum">      60 </span>            :   ///
+<span class="lineNum">      61 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">      62 </span>            :   /// \param[out] status To be updated with the operation status.
+<span class="lineNum">      63 </span>            :   /// \param[out] msg To be filled in with the server's response message.
+<span class="lineNum">      64 </span>            :   virtual void Finish(R* msg, Status* status, void* tag) = 0;
+<span class="lineNum">      65 </span>            : };
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : /// Async API for client-side unary RPCs, where the message response
+<span class="lineNum">      68 </span>            : /// received from the server is of type \a R.
+<span class="lineNum">      69 </span>            : template &lt;class R&gt;
+<span class="lineNum">      70 </span>            : class ClientAsyncResponseReader final
+<span class="lineNum">      71 </span>            :     : public ClientAsyncResponseReaderInterface&lt;R&gt; {
+<span class="lineNum">      72 </span>            :  public:
+<span class="lineNum">      73 </span>            :   /// Start a call and write the request out.
+<span class="lineNum">      74 </span>            :   /// \a tag will be notified on \a cq when the call has been started (i.e.
+<span class="lineNum">      75 </span>            :   /// intitial metadata sent) and \a request has been written out.
+<span class="lineNum">      76 </span>            :   /// Note that \a context will be used to fill in custom initial metadata
+<span class="lineNum">      77 </span>            :   /// used to send to the server when starting the call.
+<span class="lineNum">      78 </span>            :   template &lt;class W&gt;
+<span class="lineNum">      79 </span>            :   static ClientAsyncResponseReader* Create(ChannelInterface* channel,
+<span class="lineNum">      80 </span>            :                                            CompletionQueue* cq,
+<span class="lineNum">      81 </span>            :                                            const RpcMethod&amp; method,
+<span class="lineNum">      82 </span>            :                                            ClientContext* context,
+<span class="lineNum">      83 </span>            :                                            const W&amp; request) {
+<span class="lineNum">      84 </span>            :     Call call = channel-&gt;CreateCall(method, context, cq);
+<span class="lineNum">      85 </span>            :     return new (g_core_codegen_interface-&gt;grpc_call_arena_alloc(
+<span class="lineNum">      86 </span>            :         call.call(), sizeof(ClientAsyncResponseReader)))
+<span class="lineNum">      87 </span>            :         ClientAsyncResponseReader(call, context, request);
+<span class="lineNum">      88 </span>            :   }
+<span class="lineNum">      89 </span>            : 
+<span class="lineNum">      90 </span>            :   // always allocated against a call arena, no memory free required
+<span class="lineNum">      91 </span>            :   static void operator delete(void* ptr, std::size_t size) {
+<span class="lineNum">      92 </span>            :     assert(size == sizeof(ClientAsyncResponseReader));
+<span class="lineNum">      93 </span>            :   }
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            :   /// See \a ClientAsyncResponseReaderInterface::ReadInitialMetadata for
+<span class="lineNum">      96 </span>            :   /// semantics.
+<span class="lineNum">      97 </span>            :   ///
+<span class="lineNum">      98 </span>            :   /// Side effect:
+<span class="lineNum">      99 </span>            :   ///   - the \a ClientContext associated with this call is updated with
+<span class="lineNum">     100 </span>            :   ///     possible initial and trailing metadata sent from the server.
+<span class="lineNum">     101 </span>            :   void ReadInitialMetadata(void* tag) {
+<span class="lineNum">     102 </span>            :     GPR_CODEGEN_ASSERT(!context_-&gt;initial_metadata_received_);
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :     meta_buf.set_output_tag(tag);
+<span class="lineNum">     105 </span>            :     meta_buf.RecvInitialMetadata(context_);
+<span class="lineNum">     106 </span>            :     call_.PerformOps(&amp;meta_buf);
+<span class="lineNum">     107 </span>            :   }
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            :   /// See \a ClientAysncResponseReaderInterface::Finish for semantics.
+<span class="lineNum">     110 </span>            :   ///
+<span class="lineNum">     111 </span>            :   /// Side effect:
+<a name="112"><span class="lineNum">     112 </span>            :   ///   - the \a ClientContext associated with this call is updated with</a>
+<span class="lineNum">     113 </span>            :   ///     possible initial and trailing metadata sent from the server.
+<span class="lineNum">     114 </span><span class="lineCov">        122 :   void Finish(R* msg, Status* status, void* tag) {</span>
+<span class="lineNum">     115 </span><span class="lineCov">        122 :     finish_buf.set_output_tag(tag);</span>
+<span class="lineNum">     116 </span><span class="lineCov">        122 :     if (!context_-&gt;initial_metadata_received_) {</span>
+<span class="lineNum">     117 </span><span class="lineCov">        122 :       finish_buf.RecvInitialMetadata(context_);</span>
+<span class="lineNum">     118 </span>            :     }
+<span class="lineNum">     119 </span><span class="lineCov">        122 :     finish_buf.RecvMessage(msg);</span>
+<span class="lineNum">     120 </span><span class="lineCov">        122 :     finish_buf.AllowNoMessage();</span>
+<span class="lineNum">     121 </span><span class="lineCov">        122 :     finish_buf.ClientRecvStatus(context_, status);</span>
+<span class="lineNum">     122 </span><span class="lineCov">        122 :     call_.PerformOps(&amp;finish_buf);</span>
+<span class="lineNum">     123 </span><span class="lineCov">        122 :   }</span>
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :  private:
+<span class="lineNum">     126 </span>            :   ClientContext* const context_;
+<span class="lineNum">     127 </span>            :   Call call_;
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :   template &lt;class W&gt;
+<span class="lineNum">     130 </span>            :   ClientAsyncResponseReader(Call call, ClientContext* context, const W&amp; request)
+<span class="lineNum">     131 </span>            :       : context_(context), call_(call) {
+<span class="lineNum">     132 </span>            :     init_buf.SendInitialMetadata(context-&gt;send_initial_metadata_,
+<span class="lineNum">     133 </span>            :                                  context-&gt;initial_metadata_flags());
+<span class="lineNum">     134 </span>            :     // TODO(ctiller): don't assert
+<span class="lineNum">     135 </span>            :     GPR_CODEGEN_ASSERT(init_buf.SendMessage(request).ok());
+<span class="lineNum">     136 </span>            :     init_buf.ClientSendClose();
+<span class="lineNum">     137 </span>            :     call_.PerformOps(&amp;init_buf);
+<span class="lineNum">     138 </span>            :   }
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :   // disable operator new
+<span class="lineNum">     141 </span>            :   static void* operator new(std::size_t size);
+<span class="lineNum">     142 </span>            :   static void* operator new(std::size_t size, void* p) { return p; }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :   SneakyCallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">     145 </span>            :                   CallOpClientSendClose&gt;
+<span class="lineNum">     146 </span>            :       init_buf;
+<span class="lineNum">     147 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata&gt; meta_buf;
+<span class="lineNum">     148 </span>            :   CallOpSet&lt;CallOpRecvInitialMetadata, CallOpRecvMessage&lt;R&gt;,
+<span class="lineNum">     149 </span>            :             CallOpClientRecvStatus&gt;
+<span class="lineNum">     150 </span>            :       finish_buf;
+<span class="lineNum">     151 </span>            : };
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : /// Async server-side API for handling unary calls, where the single
+<a name="154"><span class="lineNum">     154 </span>            : /// response message sent to the client is of type \a W.</a>
+<span class="lineNum">     155 </span>            : template &lt;class W&gt;
+<a name="156"><span class="lineNum">     156 </span><span class="lineCov">        266 : class ServerAsyncResponseWriter final : public ServerAsyncStreamingInterface {</span></a>
+<span class="lineNum">     157 </span>            :  public:
+<span class="lineNum">     158 </span><span class="lineCov">        133 :   explicit ServerAsyncResponseWriter(ServerContext* ctx)</span>
+<span class="lineNum">     159 </span><span class="lineCov">        133 :       : call_(nullptr, nullptr, nullptr), ctx_(ctx) {}</span>
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :   /// See \a ServerAsyncStreamingInterface::SendInitialMetadata for semantics.
+<span class="lineNum">     162 </span>            :   ///
+<span class="lineNum">     163 </span>            :   /// Side effect:
+<span class="lineNum">     164 </span>            :   ///   The initial metadata that will be sent to the client from this op will
+<span class="lineNum">     165 </span>            :   ///   be taken from the \a ServerContext associated with the call.
+<a name="166"><span class="lineNum">     166 </span>            :   ///</a>
+<span class="lineNum">     167 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     168 </span><span class="lineNoCov">          0 :   void SendInitialMetadata(void* tag) override {</span>
+<span class="lineNum">     169 </span><span class="lineNoCov">          0 :     GPR_CODEGEN_ASSERT(!ctx_-&gt;sent_initial_metadata_);</span>
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :     meta_buf_.set_output_tag(tag);</span>
+<span class="lineNum">     172 </span><span class="lineNoCov">          0 :     meta_buf_.SendInitialMetadata(ctx_-&gt;initial_metadata_,</span>
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :                                   ctx_-&gt;initial_metadata_flags());</span>
+<span class="lineNum">     174 </span><span class="lineNoCov">          0 :     if (ctx_-&gt;compression_level_set()) {</span>
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :       meta_buf_.set_compression_level(ctx_-&gt;compression_level());</span>
+<span class="lineNum">     176 </span>            :     }
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :     ctx_-&gt;sent_initial_metadata_ = true;</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :     call_.PerformOps(&amp;meta_buf_);</span>
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :   /// Indicate that the stream is to be finished and request notification
+<span class="lineNum">     182 </span>            :   /// when the server has sent the appropriate signals to the client to
+<span class="lineNum">     183 </span>            :   /// end the call. Should not be used concurrently with other operations.
+<span class="lineNum">     184 </span>            :   ///
+<span class="lineNum">     185 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     186 </span>            :   /// \param[in] status To be sent to the client as the result of the call.
+<span class="lineNum">     187 </span>            :   /// \param[in] msg Message to be sent to the client.
+<span class="lineNum">     188 </span>            :   ///
+<span class="lineNum">     189 </span>            :   /// Side effect:
+<span class="lineNum">     190 </span>            :   ///   - also sends initial metadata if not already sent (using the
+<span class="lineNum">     191 </span>            :   ///     \a ServerContext associated with this call).
+<span class="lineNum">     192 </span>            :   ///
+<span class="lineNum">     193 </span>            :   /// Note: if \a status has a non-OK code, then \a msg will not be sent,
+<a name="194"><span class="lineNum">     194 </span>            :   /// and the client will receive only the status with possible trailing</a>
+<span class="lineNum">     195 </span>            :   /// metadata.
+<span class="lineNum">     196 </span><span class="lineCov">         70 :   void Finish(const W&amp; msg, const Status&amp; status, void* tag) {</span>
+<span class="lineNum">     197 </span><span class="lineCov">         70 :     finish_buf_.set_output_tag(tag);</span>
+<span class="lineNum">     198 </span><span class="lineCov">         70 :     if (!ctx_-&gt;sent_initial_metadata_) {</span>
+<span class="lineNum">     199 </span><span class="lineCov">         70 :       finish_buf_.SendInitialMetadata(ctx_-&gt;initial_metadata_,</span>
+<span class="lineNum">     200 </span><span class="lineCov">         70 :                                       ctx_-&gt;initial_metadata_flags());</span>
+<span class="lineNum">     201 </span><span class="lineCov">         70 :       if (ctx_-&gt;compression_level_set()) {</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :         finish_buf_.set_compression_level(ctx_-&gt;compression_level());</span>
+<span class="lineNum">     203 </span>            :       }
+<span class="lineNum">     204 </span><span class="lineCov">         70 :       ctx_-&gt;sent_initial_metadata_ = true;</span>
+<span class="lineNum">     205 </span>            :     }
+<span class="lineNum">     206 </span>            :     // The response is dropped if the status is not OK.
+<span class="lineNum">     207 </span><span class="lineCov">         70 :     if (status.ok()) {</span>
+<span class="lineNum">     208 </span><span class="lineCov">         70 :       finish_buf_.ServerSendStatus(ctx_-&gt;trailing_metadata_,</span>
+<span class="lineNum">     209 </span>            :                                    finish_buf_.SendMessage(msg));
+<span class="lineNum">     210 </span>            :     } else {
+<span class="lineNum">     211 </span><span class="lineNoCov">          0 :       finish_buf_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);</span>
+<span class="lineNum">     212 </span>            :     }
+<span class="lineNum">     213 </span><span class="lineCov">         70 :     call_.PerformOps(&amp;finish_buf_);</span>
+<span class="lineNum">     214 </span><span class="lineCov">         70 :   }</span>
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :   /// Indicate that the stream is to be finished with a non-OK status,
+<span class="lineNum">     217 </span>            :   /// and request notification for when the server has finished sending the
+<span class="lineNum">     218 </span>            :   /// appropriate signals to the client to end the call.
+<span class="lineNum">     219 </span>            :   /// Should not be used concurrently with other operations.
+<span class="lineNum">     220 </span>            :   ///
+<span class="lineNum">     221 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">     222 </span>            :   /// \param[in] status To be sent to the client as the result of the call.
+<span class="lineNum">     223 </span>            :   ///   - Note: \a status must have a non-OK code.
+<span class="lineNum">     224 </span>            :   ///
+<span class="lineNum">     225 </span>            :   /// Side effect:
+<span class="lineNum">     226 </span>            :   ///   - also sends initial metadata if not already sent (using the
+<span class="lineNum">     227 </span>            :   ///     \a ServerContext associated with this call).
+<span class="lineNum">     228 </span>            :   void FinishWithError(const Status&amp; status, void* tag) {
+<span class="lineNum">     229 </span>            :     GPR_CODEGEN_ASSERT(!status.ok());
+<span class="lineNum">     230 </span>            :     finish_buf_.set_output_tag(tag);
+<span class="lineNum">     231 </span>            :     if (!ctx_-&gt;sent_initial_metadata_) {
+<span class="lineNum">     232 </span>            :       finish_buf_.SendInitialMetadata(ctx_-&gt;initial_metadata_,
+<span class="lineNum">     233 </span>            :                                       ctx_-&gt;initial_metadata_flags());
+<span class="lineNum">     234 </span>            :       if (ctx_-&gt;compression_level_set()) {
+<span class="lineNum">     235 </span>            :         finish_buf_.set_compression_level(ctx_-&gt;compression_level());
+<span class="lineNum">     236 </span>            :       }
+<span class="lineNum">     237 </span>            :       ctx_-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     238 </span>            :     }
+<span class="lineNum">     239 </span>            :     finish_buf_.ServerSendStatus(ctx_-&gt;trailing_metadata_, status);
+<span class="lineNum">     240 </span>            :     call_.PerformOps(&amp;finish_buf_);
+<span class="lineNum">     241 </span>            :   }
+<a name="242"><span class="lineNum">     242 </span>            : </a>
+<span class="lineNum">     243 </span>            :  private:
+<span class="lineNum">     244 </span><span class="lineCov">        133 :   void BindCall(Call* call) override { call_ = *call; }</span>
+<span class="lineNum">     245 </span>            : 
+<span class="lineNum">     246 </span>            :   Call call_;
+<span class="lineNum">     247 </span>            :   ServerContext* ctx_;
+<span class="lineNum">     248 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata&gt; meta_buf_;
+<span class="lineNum">     249 </span>            :   CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">     250 </span>            :             CallOpServerSendStatus&gt;
+<span class="lineNum">     251 </span>            :       finish_buf_;
+<span class="lineNum">     252 </span>            : };
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : }  // namespace grpc
+<span class="lineNum">     255 </span>            : 
+<span class="lineNum">     256 </span>            : namespace std {
+<span class="lineNum">     257 </span>            : template &lt;class R&gt;
+<a name="258"><span class="lineNum">     258 </span>            : class default_delete&lt;grpc::ClientAsyncResponseReader&lt;R&gt;&gt; {</a>
+<span class="lineNum">     259 </span>            :  public:
+<span class="lineNum">     260 </span><span class="lineCov">        122 :   void operator()(void* p) {}</span>
+<span class="lineNum">     261 </span>            : };
+<span class="lineNum">     262 </span>            : template &lt;class R&gt;
+<span class="lineNum">     263 </span>            : class default_delete&lt;grpc::ClientAsyncResponseReaderInterface&lt;R&gt;&gt; {
+<span class="lineNum">     264 </span>            :  public:
+<span class="lineNum">     265 </span>            :   void operator()(void* p) {}
+<span class="lineNum">     266 </span>            : };
+<span class="lineNum">     267 </span>            : }
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_ASYNC_UNARY_CALL_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

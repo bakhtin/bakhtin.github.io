@@ -1,0 +1,371 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/completion_queue.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - completion_queue.h<span style="font-size: 80%;"> (source / <a href="completion_queue.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015-2016 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : /// A completion queue implements a concurrent producer-consumer queue, with
+<span class="lineNum">      20 </span>            : /// two main API-exposed methods: \a Next and \a AsyncNext. These
+<span class="lineNum">      21 </span>            : /// methods are the essential component of the gRPC C++ asynchronous API.
+<span class="lineNum">      22 </span>            : /// There is also a \a Shutdown method to indicate that a given completion queue
+<span class="lineNum">      23 </span>            : /// will no longer have regular events. This must be called before the
+<span class="lineNum">      24 </span>            : /// completion queue is destroyed.
+<span class="lineNum">      25 </span>            : /// All completion queue APIs are thread-safe and may be used concurrently with
+<span class="lineNum">      26 </span>            : /// any other completion queue API invocation; it is acceptable to have
+<span class="lineNum">      27 </span>            : /// multiple threads calling \a Next or \a AsyncNext on the same or different
+<span class="lineNum">      28 </span>            : /// completion queues, or to call these methods concurrently with a \a Shutdown
+<span class="lineNum">      29 </span>            : /// elsewhere.
+<span class="lineNum">      30 </span>            : /// \remark{All other API calls on completion queue should be completed before
+<span class="lineNum">      31 </span>            : /// a completion queue destructor is called.}
+<span class="lineNum">      32 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_COMPLETION_QUEUE_H
+<span class="lineNum">      33 </span>            : #define GRPCXX_IMPL_CODEGEN_COMPLETION_QUEUE_H
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : #include &lt;grpc++/impl/codegen/completion_queue_tag.h&gt;
+<span class="lineNum">      36 </span>            : #include &lt;grpc++/impl/codegen/core_codegen_interface.h&gt;
+<span class="lineNum">      37 </span>            : #include &lt;grpc++/impl/codegen/grpc_library.h&gt;
+<span class="lineNum">      38 </span>            : #include &lt;grpc++/impl/codegen/status.h&gt;
+<span class="lineNum">      39 </span>            : #include &lt;grpc++/impl/codegen/time.h&gt;
+<span class="lineNum">      40 </span>            : #include &lt;grpc/impl/codegen/atm.h&gt;
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : struct grpc_completion_queue;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : namespace grpc {
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : template &lt;class R&gt;
+<span class="lineNum">      47 </span>            : class ClientReader;
+<span class="lineNum">      48 </span>            : template &lt;class W&gt;
+<span class="lineNum">      49 </span>            : class ClientWriter;
+<span class="lineNum">      50 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">      51 </span>            : class ClientReaderWriter;
+<span class="lineNum">      52 </span>            : template &lt;class R&gt;
+<span class="lineNum">      53 </span>            : class ServerReader;
+<span class="lineNum">      54 </span>            : template &lt;class W&gt;
+<span class="lineNum">      55 </span>            : class ServerWriter;
+<span class="lineNum">      56 </span>            : namespace internal {
+<span class="lineNum">      57 </span>            : template &lt;class W, class R&gt;
+<span class="lineNum">      58 </span>            : class ServerReaderWriterBody;
+<span class="lineNum">      59 </span>            : }
+<span class="lineNum">      60 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">      61 </span>            : class RpcMethodHandler;
+<span class="lineNum">      62 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">      63 </span>            : class ClientStreamingHandler;
+<span class="lineNum">      64 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">      65 </span>            : class ServerStreamingHandler;
+<span class="lineNum">      66 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">      67 </span>            : class BidiStreamingHandler;
+<span class="lineNum">      68 </span>            : class UnknownMethodHandler;
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : class Channel;
+<span class="lineNum">      71 </span>            : class ChannelInterface;
+<span class="lineNum">      72 </span>            : class ClientContext;
+<span class="lineNum">      73 </span>            : class CompletionQueueTag;
+<span class="lineNum">      74 </span>            : class CompletionQueue;
+<span class="lineNum">      75 </span>            : class RpcMethod;
+<span class="lineNum">      76 </span>            : class Server;
+<span class="lineNum">      77 </span>            : class ServerBuilder;
+<span class="lineNum">      78 </span>            : class ServerContext;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : extern CoreCodegenInterface* g_core_codegen_interface;
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : /// A thin wrapper around \ref grpc_completion_queue (see \ref
+<span class="lineNum">      83 </span>            : /// src/core/lib/surface/completion_queue.h).
+<span class="lineNum">      84 </span>            : /// See \ref doc/cpp/perf_notes.md for notes on best practices for high
+<span class="lineNum">      85 </span>            : /// performance servers.
+<span class="lineNum">      86 </span>            : class CompletionQueue : private GrpcLibraryCodegen {
+<span class="lineNum">      87 </span>            :  public:
+<a name="88"><span class="lineNum">      88 </span>            :   /// Default constructor. Implicitly creates a \a grpc_completion_queue</a>
+<span class="lineNum">      89 </span>            :   /// instance.
+<span class="lineNum">      90 </span><span class="lineCov">        252 :   CompletionQueue()</span>
+<span class="lineNum">      91 </span>            :       : CompletionQueue(grpc_completion_queue_attributes{
+<span class="lineNum">      92 </span><span class="lineCov">        252 :             GRPC_CQ_CURRENT_VERSION, GRPC_CQ_NEXT, GRPC_CQ_DEFAULT_POLLING}) {}</span>
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :   /// Wrap \a take, taking ownership of the instance.
+<span class="lineNum">      95 </span>            :   ///
+<span class="lineNum">      96 </span>            :   /// \param take The completion queue instance to wrap. Ownership is taken.
+<span class="lineNum">      97 </span>            :   explicit CompletionQueue(grpc_completion_queue* take);
+<a name="98"><span class="lineNum">      98 </span>            : </a>
+<span class="lineNum">      99 </span>            :   /// Destructor. Destroys the owned wrapped completion queue / instance.
+<span class="lineNum">     100 </span><span class="lineCov">        728 :   ~CompletionQueue() {</span>
+<span class="lineNum">     101 </span><span class="lineCov">        364 :     g_core_codegen_interface-&gt;grpc_completion_queue_destroy(cq_);</span>
+<span class="lineNum">     102 </span><span class="lineCov">        364 :   }</span>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :   /// Tri-state return for AsyncNext: SHUTDOWN, GOT_EVENT, TIMEOUT.
+<span class="lineNum">     105 </span>            :   enum NextStatus {
+<span class="lineNum">     106 </span>            :     SHUTDOWN,   ///&lt; The completion queue has been shutdown.
+<span class="lineNum">     107 </span>            :     GOT_EVENT,  ///&lt; Got a new event; \a tag will be filled in with its
+<span class="lineNum">     108 </span>            :                 ///&lt; associated value; \a ok indicating its success.
+<span class="lineNum">     109 </span>            :     TIMEOUT     ///&lt; deadline was reached.
+<span class="lineNum">     110 </span>            :   };
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            :   /// Read from the queue, blocking up to \a deadline (or the queue's shutdown).
+<span class="lineNum">     113 </span>            :   /// Both \a tag and \a ok are updated upon success (if an event is available
+<span class="lineNum">     114 </span>            :   /// within the \a deadline).  A \a tag points to an arbitrary location usually
+<span class="lineNum">     115 </span>            :   /// employed to uniquely identify an event.
+<span class="lineNum">     116 </span>            :   ///
+<span class="lineNum">     117 </span>            :   /// \param tag[out] Upon sucess, updated to point to the event's tag.
+<span class="lineNum">     118 </span>            :   /// \param ok[out] Upon sucess, true if read a regular event, false otherwise.
+<span class="lineNum">     119 </span>            :   /// \param deadline[in] How long to block in wait for an event.
+<span class="lineNum">     120 </span>            :   ///
+<span class="lineNum">     121 </span>            :   /// \return The type of event read.
+<span class="lineNum">     122 </span>            :   template &lt;typename T&gt;
+<span class="lineNum">     123 </span>            :   NextStatus AsyncNext(void** tag, bool* ok, const T&amp; deadline) {
+<span class="lineNum">     124 </span>            :     TimePoint&lt;T&gt; deadline_tp(deadline);
+<span class="lineNum">     125 </span>            :     return AsyncNextInternal(tag, ok, deadline_tp.raw_time());
+<span class="lineNum">     126 </span>            :   }
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :   /// Read from the queue, blocking until an event is available or the queue is
+<span class="lineNum">     129 </span>            :   /// shutting down.
+<span class="lineNum">     130 </span>            :   ///
+<span class="lineNum">     131 </span>            :   /// \param tag[out] Updated to point to the read event's tag.
+<span class="lineNum">     132 </span>            :   /// \param ok[out] true if read a regular event, false otherwise.
+<a name="133"><span class="lineNum">     133 </span>            :   ///</a>
+<span class="lineNum">     134 </span>            :   /// \return true if read a regular event, false if the queue is shutting down.
+<span class="lineNum">     135 </span><span class="lineCov">        487 :   bool Next(void** tag, bool* ok) {</span>
+<span class="lineNum">     136 </span><span class="lineCov">        487 :     return (AsyncNextInternal(tag, ok, g_core_codegen_interface-&gt;gpr_inf_future(</span>
+<span class="lineNum">     137 </span><span class="lineCov">        487 :                                            GPR_CLOCK_REALTIME)) != SHUTDOWN);</span>
+<span class="lineNum">     138 </span>            :   }
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :   /// Request the shutdown of the queue.
+<span class="lineNum">     141 </span>            :   ///
+<span class="lineNum">     142 </span>            :   /// \warning This method must be called at some point if this completion queue
+<span class="lineNum">     143 </span>            :   /// is accessed with Next or AsyncNext. Once invoked, \a Next
+<span class="lineNum">     144 </span>            :   /// will start to return false and \a AsyncNext will return \a
+<span class="lineNum">     145 </span>            :   /// NextStatus::SHUTDOWN. Only once either one of these methods does that
+<span class="lineNum">     146 </span>            :   /// (that is, once the queue has been \em drained) can an instance of this
+<span class="lineNum">     147 </span>            :   /// class be destroyed. Also note that applications must ensure that
+<span class="lineNum">     148 </span>            :   /// no work is enqueued on this completion queue after this method is called.
+<span class="lineNum">     149 </span>            :   void Shutdown();
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :   /// Returns a \em raw pointer to the underlying \a grpc_completion_queue
+<span class="lineNum">     152 </span>            :   /// instance.
+<span class="lineNum">     153 </span>            :   ///
+<span class="lineNum">     154 </span>            :   /// \warning Remember that the returned instance is owned. No transfer of
+<span class="lineNum">     155 </span>            :   /// owership is performed.
+<span class="lineNum">     156 </span>            :   grpc_completion_queue* cq() { return cq_; }
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :   /// Manage state of avalanching operations : completion queue tags that
+<span class="lineNum">     159 </span>            :   /// trigger other completion queue operations. The underlying core completion
+<span class="lineNum">     160 </span>            :   /// queue should not really shutdown until all avalanching operations have
+<span class="lineNum">     161 </span>            :   /// been finalized. Note that we maintain the requirement that an avalanche
+<a name="162"><span class="lineNum">     162 </span>            :   /// registration must take place before CQ shutdown (which must be maintained</a>
+<span class="lineNum">     163 </span>            :   /// elsehwere)
+<span class="lineNum">     164 </span><span class="lineCov">        334 :   void InitialAvalanching() {</span>
+<span class="lineNum">     165 </span><span class="lineCov">        334 :     gpr_atm_rel_store(&amp;avalanches_in_flight_, static_cast&lt;gpr_atm&gt;(1));</span>
+<span class="lineNum">     166 </span><span class="lineCov">        334 :   }</span>
+<span class="lineNum">     167 </span>            :   void RegisterAvalanching() {
+<span class="lineNum">     168 </span>            :     gpr_atm_no_barrier_fetch_add(&amp;avalanches_in_flight_,
+<span class="lineNum">     169 </span>            :                                  static_cast&lt;gpr_atm&gt;(1));
+<span class="lineNum">     170 </span>            :   }
+<span class="lineNum">     171 </span>            :   void CompleteAvalanching();
+<span class="lineNum">     172 </span>            : 
+<a name="173"><span class="lineNum">     173 </span>            :  protected:</a>
+<span class="lineNum">     174 </span>            :   /// Private constructor of CompletionQueue only visible to friend classes
+<span class="lineNum">     175 </span><span class="lineCov">        564 :   CompletionQueue(const grpc_completion_queue_attributes&amp; attributes) {</span>
+<span class="lineNum">     176 </span><span class="lineCov">        282 :     cq_ = g_core_codegen_interface-&gt;grpc_completion_queue_create(</span>
+<span class="lineNum">     177 </span>            :         g_core_codegen_interface-&gt;grpc_completion_queue_factory_lookup(
+<span class="lineNum">     178 </span><span class="lineCov">        282 :             &amp;attributes),</span>
+<span class="lineNum">     179 </span><span class="lineCov">        564 :         &amp;attributes, NULL);</span>
+<span class="lineNum">     180 </span><span class="lineCov">        282 :     InitialAvalanching();  // reserve this for the future shutdown</span>
+<span class="lineNum">     181 </span><span class="lineCov">        282 :   }</span>
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :  private:
+<span class="lineNum">     184 </span>            :   // Friend synchronous wrappers so that they can access Pluck(), which is
+<span class="lineNum">     185 </span>            :   // a semi-private API geared towards the synchronous implementation.
+<span class="lineNum">     186 </span>            :   template &lt;class R&gt;
+<span class="lineNum">     187 </span>            :   friend class ::grpc::ClientReader;
+<span class="lineNum">     188 </span>            :   template &lt;class W&gt;
+<span class="lineNum">     189 </span>            :   friend class ::grpc::ClientWriter;
+<span class="lineNum">     190 </span>            :   template &lt;class W, class R&gt;
+<span class="lineNum">     191 </span>            :   friend class ::grpc::ClientReaderWriter;
+<span class="lineNum">     192 </span>            :   template &lt;class R&gt;
+<span class="lineNum">     193 </span>            :   friend class ::grpc::ServerReader;
+<span class="lineNum">     194 </span>            :   template &lt;class W&gt;
+<span class="lineNum">     195 </span>            :   friend class ::grpc::ServerWriter;
+<span class="lineNum">     196 </span>            :   template &lt;class W, class R&gt;
+<span class="lineNum">     197 </span>            :   friend class ::grpc::internal::ServerReaderWriterBody;
+<span class="lineNum">     198 </span>            :   template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">     199 </span>            :   friend class RpcMethodHandler;
+<span class="lineNum">     200 </span>            :   template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">     201 </span>            :   friend class ClientStreamingHandler;
+<span class="lineNum">     202 </span>            :   template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">     203 </span>            :   friend class ServerStreamingHandler;
+<span class="lineNum">     204 </span>            :   template &lt;class Streamer, bool WriteNeeded&gt;
+<span class="lineNum">     205 </span>            :   friend class TemplatedBidiStreamingHandler;
+<span class="lineNum">     206 </span>            :   friend class UnknownMethodHandler;
+<span class="lineNum">     207 </span>            :   friend class ::grpc::Server;
+<span class="lineNum">     208 </span>            :   friend class ::grpc::ServerContext;
+<span class="lineNum">     209 </span>            :   template &lt;class InputMessage, class OutputMessage&gt;
+<span class="lineNum">     210 </span>            :   friend Status BlockingUnaryCall(ChannelInterface* channel,
+<span class="lineNum">     211 </span>            :                                   const RpcMethod&amp; method,
+<span class="lineNum">     212 </span>            :                                   ClientContext* context,
+<span class="lineNum">     213 </span>            :                                   const InputMessage&amp; request,
+<span class="lineNum">     214 </span>            :                                   OutputMessage* result);
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :   NextStatus AsyncNextInternal(void** tag, bool* ok, gpr_timespec deadline);
+<span class="lineNum">     217 </span>            : 
+<a name="218"><span class="lineNum">     218 </span>            :   /// Wraps \a grpc_completion_queue_pluck.</a>
+<span class="lineNum">     219 </span>            :   /// \warning Must not be mixed with calls to \a Next.
+<span class="lineNum">     220 </span><span class="lineCov">         27 :   bool Pluck(CompletionQueueTag* tag) {</span>
+<span class="lineNum">     221 </span>            :     auto deadline =
+<span class="lineNum">     222 </span><span class="lineCov">         27 :         g_core_codegen_interface-&gt;gpr_inf_future(GPR_CLOCK_REALTIME);</span>
+<span class="lineNum">     223 </span>            :     auto ev = g_core_codegen_interface-&gt;grpc_completion_queue_pluck(
+<span class="lineNum">     224 </span><span class="lineCov">         27 :         cq_, tag, deadline, nullptr);</span>
+<span class="lineNum">     225 </span><span class="lineCov">         27 :     bool ok = ev.success != 0;</span>
+<span class="lineNum">     226 </span><span class="lineCov">         27 :     void* ignored = tag;</span>
+<span class="lineNum">     227 </span><span class="lineCov">         27 :     GPR_CODEGEN_ASSERT(tag-&gt;FinalizeResult(&amp;ignored, &amp;ok));</span>
+<span class="lineNum">     228 </span><span class="lineCov">         27 :     GPR_CODEGEN_ASSERT(ignored == tag);</span>
+<span class="lineNum">     229 </span>            :     // Ignore mutations by FinalizeResult: Pluck returns the C API status
+<span class="lineNum">     230 </span><span class="lineCov">         27 :     return ev.success != 0;</span>
+<span class="lineNum">     231 </span>            :   }
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            :   /// Performs a single polling pluck on \a tag.
+<span class="lineNum">     234 </span>            :   /// \warning Must not be mixed with calls to \a Next.
+<span class="lineNum">     235 </span>            :   ///
+<span class="lineNum">     236 </span>            :   /// TODO: sreek - This calls tag-&gt;FinalizeResult() even if the cq_ is already
+<span class="lineNum">     237 </span>            :   /// shutdown. This is most likely a bug and if it is a bug, then change this
+<span class="lineNum">     238 </span>            :   /// implementation to simple call the other TryPluck function with a zero
+<span class="lineNum">     239 </span>            :   /// timeout. i.e:
+<span class="lineNum">     240 </span>            :   ///      TryPluck(tag, gpr_time_0(GPR_CLOCK_REALTIME))
+<span class="lineNum">     241 </span>            :   void TryPluck(CompletionQueueTag* tag) {
+<span class="lineNum">     242 </span>            :     auto deadline = g_core_codegen_interface-&gt;gpr_time_0(GPR_CLOCK_REALTIME);
+<span class="lineNum">     243 </span>            :     auto ev = g_core_codegen_interface-&gt;grpc_completion_queue_pluck(
+<span class="lineNum">     244 </span>            :         cq_, tag, deadline, nullptr);
+<span class="lineNum">     245 </span>            :     if (ev.type == GRPC_QUEUE_TIMEOUT) return;
+<span class="lineNum">     246 </span>            :     bool ok = ev.success != 0;
+<span class="lineNum">     247 </span>            :     void* ignored = tag;
+<span class="lineNum">     248 </span>            :     // the tag must be swallowed if using TryPluck
+<span class="lineNum">     249 </span>            :     GPR_CODEGEN_ASSERT(!tag-&gt;FinalizeResult(&amp;ignored, &amp;ok));
+<span class="lineNum">     250 </span>            :   }
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :   /// Performs a single polling pluck on \a tag. Calls tag-&gt;FinalizeResult if
+<span class="lineNum">     253 </span>            :   /// the pluck() was successful and returned the tag.
+<span class="lineNum">     254 </span>            :   ///
+<span class="lineNum">     255 </span>            :   /// This exects tag-&gt;FinalizeResult (if called) to return 'false' i.e expects
+<span class="lineNum">     256 </span>            :   /// that the tag is internal not something that is returned to the user.
+<span class="lineNum">     257 </span>            :   void TryPluck(CompletionQueueTag* tag, gpr_timespec deadline) {
+<span class="lineNum">     258 </span>            :     auto ev = g_core_codegen_interface-&gt;grpc_completion_queue_pluck(
+<span class="lineNum">     259 </span>            :         cq_, tag, deadline, nullptr);
+<span class="lineNum">     260 </span>            :     if (ev.type == GRPC_QUEUE_TIMEOUT || ev.type == GRPC_QUEUE_SHUTDOWN) {
+<span class="lineNum">     261 </span>            :       return;
+<span class="lineNum">     262 </span>            :     }
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :     bool ok = ev.success != 0;
+<span class="lineNum">     265 </span>            :     void* ignored = tag;
+<span class="lineNum">     266 </span>            :     GPR_CODEGEN_ASSERT(!tag-&gt;FinalizeResult(&amp;ignored, &amp;ok));
+<span class="lineNum">     267 </span>            :   }
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :   grpc_completion_queue* cq_;  // owned
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            :   gpr_atm avalanches_in_flight_;
+<span class="lineNum">     272 </span>            : };
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span>            : /// A specific type of completion queue used by the processing of notifications
+<span class="lineNum">     275 </span>            : /// by servers. Instantiated by \a ServerBuilder.
+<span class="lineNum">     276 </span>            : class ServerCompletionQueue : public CompletionQueue {
+<span class="lineNum">     277 </span>            :  public:
+<span class="lineNum">     278 </span>            :   bool IsFrequentlyPolled() { return polling_type_ != GRPC_CQ_NON_LISTENING; }
+<span class="lineNum">     279 </span>            : 
+<span class="lineNum">     280 </span>            :  private:
+<span class="lineNum">     281 </span>            :   grpc_cq_polling_type polling_type_;
+<span class="lineNum">     282 </span>            :   friend class ServerBuilder;
+<span class="lineNum">     283 </span>            :   /// \param is_frequently_polled Informs the GRPC library about whether the
+<span class="lineNum">     284 </span>            :   /// server completion queue would be actively polled (by calling Next() or
+<span class="lineNum">     285 </span>            :   /// AsyncNext()). By default all server completion queues are assumed to be
+<span class="lineNum">     286 </span>            :   /// frequently polled.
+<span class="lineNum">     287 </span>            :   ServerCompletionQueue(grpc_cq_polling_type polling_type)
+<span class="lineNum">     288 </span>            :       : CompletionQueue(grpc_completion_queue_attributes{
+<span class="lineNum">     289 </span>            :             GRPC_CQ_CURRENT_VERSION, GRPC_CQ_NEXT, polling_type}),
+<span class="lineNum">     290 </span>            :         polling_type_(polling_type) {}
+<span class="lineNum">     291 </span>            : };
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            : }  // namespace grpc
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_COMPLETION_QUEUE_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,1007 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/execution/impl/command_executor.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">irohad/model/execution/impl</a> - command_executor.cpp<span style="font-size: 80%;"> (source / <a href="command_executor.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">374</td>
+            <td class="headerCovTableEntry">375</td>
+            <td class="headerCovTableEntryHi">99.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntry">73</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">392</td>
+            <td class="headerCovTableEntry">670</td>
+            <td class="headerCovTableEntryLo">58.5 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;model/execution/command_executor.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &lt;algorithm&gt;
+<span class="lineNum">      20 </span>                :            : #include &quot;model/commands/add_asset_quantity.hpp&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;model/commands/add_peer.hpp&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;model/commands/add_signatory.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;model/commands/append_role.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;model/commands/create_account.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;model/commands/create_asset.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;model/commands/create_domain.hpp&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;model/commands/create_role.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;model/commands/detach_role.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;model/commands/grant_permission.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;model/commands/remove_signatory.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;model/commands/revoke_permission.hpp&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;model/commands/set_account_detail.hpp&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;model/commands/set_quorum.hpp&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;model/commands/subtract_asset_quantity.hpp&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;model/commands/transfer_asset.hpp&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;model/execution/common_executor.hpp&quot;
+<span class="lineNum">      37 </span>                :            : #include &quot;model/permissions.hpp&quot;
+<span class="lineNum">      38 </span>                :            : #include &quot;validator/domain_name_validator.hpp&quot;
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            : using namespace iroha::ametsuchi;
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :            : namespace iroha {
+<span class="lineNum">      43 </span>                :            :   namespace model {
+<span class="lineNum">      44 </span>                :            : 
+<a name="45"><span class="lineNum">      45 </span>                :            :     // ----------------------------| Common |-----------------------------</a>
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :<span class="lineCov">       3584 :     CommandExecutor::CommandExecutor() {</span>
+<span class="lineNum">      48 </span>[<span class="branchCov" title="Branch 2 was taken 1792 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1792 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">       1792 :       log_ = logger::log(&quot;DefaultCommandExecutorLogger&quot;);</span>
+<a name="49"><span class="lineNum">      49 </span>                :<span class="lineCov">       1792 :     }</span></a>
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :<span class="lineCov">         85 :     bool CommandExecutor::validate(const Command &amp;command,</span>
+<span class="lineNum">      52 </span>                :            :                                    WsvQuery &amp;queries,
+<span class="lineNum">      53 </span>                :            :                                    const std::string &amp;creator_account_id) {
+<span class="lineNum">      54 </span>                :<span class="lineCov">         85 :       return hasPermissions(command, queries, creator_account_id)</span>
+<span class="lineNum">      55 </span>[<span class="branchCov" title="Branch 0 was taken 63 times"> + </span><span class="branchCov" title="Branch 1 was taken 22 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 44 times"> + </span><span class="branchCov" title="Branch 4 was taken 19 times"> + </span>]:<span class="lineCov">         85 :           and isValid(command, queries, creator_account_id);</span>
+<span class="lineNum">      56 </span>                :            :     }
+<a name="57"><span class="lineNum">      57 </span>                :            : </a>
+<span class="lineNum">      58 </span>                :            :     // ----------------------------| Append Role |-----------------------------
+<span class="lineNum">      59 </span>                :<span class="lineCov">        224 :     AppendRoleExecutor::AppendRoleExecutor() {</span>
+<span class="lineNum">      60 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;AppendRoleExecutor&quot;);</span>
+<a name="61"><span class="lineNum">      61 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :<span class="lineCov">          8 :     bool AppendRoleExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">      64 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">      65 </span>                :            :                                      ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">      66 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :       auto cmd_value = static_cast&lt;const AppendRole &amp;&gt;(command);</span>
+<span class="lineNum">      68 </span>                :            : 
+<span class="lineNum">      69 </span>                :            :       return commands.insertAccountRole(cmd_value.account_id,
+<span class="lineNum">      70 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :                                         cmd_value.role_name);</span>
+<a name="71"><span class="lineNum">      71 </span>                :            :     }</a>
+<span class="lineNum">      72 </span>                :            : 
+<span class="lineNum">      73 </span>                :<span class="lineCov">          5 :     bool AppendRoleExecutor::hasPermissions(</span>
+<span class="lineNum">      74 </span>                :            :         const Command &amp;command,
+<span class="lineNum">      75 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">      76 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">      77 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">      78 </span>                :<span class="lineCov">          5 :           creator_account_id, queries, can_append_role);</span>
+<a name="79"><span class="lineNum">      79 </span>                :            :     }</a>
+<span class="lineNum">      80 </span>                :            : 
+<span class="lineNum">      81 </span>                :<span class="lineCov">          4 :     bool AppendRoleExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">      82 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">      83 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">      84 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto cmd_value = static_cast&lt;const AppendRole &amp;&gt;(command);</span>
+<span class="lineNum">      85 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto role_permissions = queries.getRolePermissions(cmd_value.role_name);</span>
+<span class="lineNum">      86 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto account_roles = queries.getAccountRoles(creator_account_id);</span>
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>]:<span class="lineCov">          4 :       if (not role_permissions.has_value() or not account_roles.has_value()) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 2 times"> + </span><span class="branchCov" title="Branch 7 was taken 2 times"> + </span>]
+<span class="lineNum">      89 </span>                :<span class="lineCov">          2 :         return false;</span>
+<span class="lineNum">      90 </span>                :            :       }
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :<span class="lineCov">          4 :       std::set&lt;std::string&gt; account_permissions;</span>
+<span class="lineNum">      93 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 2 times"> + </span><span class="branchCov" title="Branch 7 was taken 2 times"> + </span>]:<span class="lineCov">          4 :       for (const auto &amp;role : *account_roles) {</span>
+<span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         auto permissions = queries.getRolePermissions(role);</span>
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          2 :         if (not permissions.has_value())</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">          1 :           continue;</span>
+<span class="lineNum">      97 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 1 time"> + </span><span class="branchCov" title="Branch 7 was taken 1 time"> + </span>]:<span class="lineCov">          3 :         for (const auto &amp;permission : *permissions)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchCov" title="Branch 12 was taken 1 time"> + </span>]
+<span class="lineNum">      98 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           account_permissions.insert(permission);</span>
+<span class="lineNum">      99 </span>                :            :       }
+<span class="lineNum">     100 </span>                :            : 
+<a name="101"><span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :       return std::none_of((*role_permissions).begin(),</span></a>
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                           (*role_permissions).end(),</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">          2 :                           [&amp;account_permissions](const auto &amp;perm) {</span>
+<span class="lineNum">     104 </span>                :            :                             return account_permissions.find(perm)
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :                                 == account_permissions.end();</span>
+<span class="lineNum">     106 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :                           });</span>
+<span class="lineNum">     107 </span>                :            :     }
+<a name="108"><span class="lineNum">     108 </span>                :            : </a>
+<span class="lineNum">     109 </span>                :            :     // ----------------------------| Detach Role |-----------------------------
+<span class="lineNum">     110 </span>                :<span class="lineCov">        224 :     DetachRoleExecutor::DetachRoleExecutor() {</span>
+<span class="lineNum">     111 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;DetachRoleExecutor&quot;);</span>
+<a name="112"><span class="lineNum">     112 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">          1 :     bool DetachRoleExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     115 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     116 </span>                :            :                                      ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     117 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       auto cmd_value = static_cast&lt;const DetachRole &amp;&gt;(command);</span>
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :       return commands.deleteAccountRole(cmd_value.account_id,
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                                         cmd_value.role_name);</span>
+<a name="122"><span class="lineNum">     122 </span>                :            :     }</a>
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :<span class="lineCov">          2 :     bool DetachRoleExecutor::hasPermissions(</span>
+<span class="lineNum">     125 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     126 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     127 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     128 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     129 </span>                :<span class="lineCov">          2 :           creator_account_id, queries, can_detach_role);</span>
+<a name="130"><span class="lineNum">     130 </span>                :            :     }</a>
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :<span class="lineCov">          1 :     bool DetachRoleExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     133 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     134 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">     135 </span>                :<span class="lineCov">          1 :       return true;</span>
+<span class="lineNum">     136 </span>                :            :     }
+<span class="lineNum">     137 </span>                :            : 
+<a name="138"><span class="lineNum">     138 </span>                :            :     // ----------------------------| Create Role |-----------------------------</a>
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :<span class="lineCov">        224 :     CreateRoleExecutor::CreateRoleExecutor() {</span>
+<span class="lineNum">     141 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;CreateRoleExecutor&quot;);</span>
+<a name="142"><span class="lineNum">     142 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :<span class="lineCov">         17 :     bool CreateRoleExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     145 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     146 </span>                :            :                                      ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     147 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :       auto cmd_value = static_cast&lt;const CreateRole &amp;&gt;(command);</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :       return commands.insertRole(cmd_value.role_name)</span>
+<span class="lineNum">     151 </span>[<span class="branchCov" title="Branch 0 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         17 :           and commands.insertRolePermissions(cmd_value.role_name,</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     152 </span>                :<span class="lineCov">         17 :                                              cmd_value.permissions);</span>
+<a name="153"><span class="lineNum">     153 </span>                :            :     }</a>
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :<span class="lineCov">          4 :     bool CreateRoleExecutor::hasPermissions(</span>
+<span class="lineNum">     156 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     157 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     158 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     159 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     160 </span>                :<span class="lineCov">          4 :           creator_account_id, queries, can_create_role);</span>
+<a name="161"><span class="lineNum">     161 </span>                :            :     }</a>
+<span class="lineNum">     162 </span>                :            : 
+<span class="lineNum">     163 </span>                :<span class="lineCov">          3 :     bool CreateRoleExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     164 </span>                :            :                                      ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     165 </span>                :            :                                      const std::string &amp;creator_account_id) {
+<span class="lineNum">     166 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       auto cmd_value = static_cast&lt;const CreateRole &amp;&gt;(command);</span>
+<span class="lineNum">     167 </span>                :<span class="lineCov">          3 :       cmd_value.role_name.size();</span>
+<span class="lineNum">     168 </span>                :            : 
+<span class="lineNum">     169 </span>                :            :       auto role_is_a_subset =
+<a name="170"><span class="lineNum">     170 </span>                :<span class="lineCov">          3 :           std::all_of(cmd_value.permissions.begin(),</span></a>
+<span class="lineNum">     171 </span>                :            :                       cmd_value.permissions.end(),
+<span class="lineNum">     172 </span>                :<span class="lineCov">          3 :                       [&amp;queries, &amp;creator_account_id](auto perm) {</span>
+<span class="lineNum">     173 </span>                :            :                         return checkAccountRolePermission(
+<span class="lineNum">     174 </span>                :            :                             creator_account_id, queries, perm);
+<span class="lineNum">     175 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :                       });</span>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       return role_is_a_subset and not cmd_value.role_name.empty()</span>
+<span class="lineNum">     178 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          7 :           and cmd_value.role_name.size() &lt; 8 and</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]
+<span class="lineNum">     179 </span>                :            :           // Role must be well-formed (no system symbols)
+<a name="180"><span class="lineNum">     180 </span>[<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 2 times"> + </span>]:<span class="lineCov">          7 :           std::all_of(std::begin(cmd_value.role_name),</span></a>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     181 </span>                :            :                       std::end(cmd_value.role_name),
+<span class="lineNum">     182 </span>[<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         22 :                       [](char c) { return std::isalnum(c) and islower(c); });</span>
+<span class="lineNum">     183 </span>                :            :     }
+<a name="184"><span class="lineNum">     184 </span>                :            : </a>
+<span class="lineNum">     185 </span>                :            :     // --------------------|Grant Permission|-----------------------
+<span class="lineNum">     186 </span>                :<span class="lineCov">        224 :     GrantPermissionExecutor::GrantPermissionExecutor() {</span>
+<span class="lineNum">     187 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;GrantPermissionExecutor&quot;);</span>
+<a name="188"><span class="lineNum">     188 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     189 </span>                :            : 
+<span class="lineNum">     190 </span>                :<span class="lineCov">          1 :     bool GrantPermissionExecutor::execute(</span>
+<span class="lineNum">     191 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     192 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     193 </span>                :            :         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     194 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     195 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       auto cmd_value = static_cast&lt;const GrantPermission &amp;&gt;(command);</span>
+<span class="lineNum">     196 </span>                :            :       return commands.insertAccountGrantablePermission(
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           cmd_value.account_id, creator_account_id, cmd_value.permission_name);</span>
+<a name="198"><span class="lineNum">     198 </span>                :            :     }</a>
+<span class="lineNum">     199 </span>                :            : 
+<span class="lineNum">     200 </span>                :<span class="lineCov">          2 :     bool GrantPermissionExecutor::hasPermissions(</span>
+<span class="lineNum">     201 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     202 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     203 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     204 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :       auto cmd_value = static_cast&lt;const GrantPermission &amp;&gt;(command);</span>
+<span class="lineNum">     205 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :           creator_account_id, queries, can_grant + cmd_value.permission_name);</span>
+<a name="207"><span class="lineNum">     207 </span>                :            :     }</a>
+<span class="lineNum">     208 </span>                :            : 
+<span class="lineNum">     209 </span>                :<span class="lineCov">          1 :     bool GrantPermissionExecutor::isValid(</span>
+<span class="lineNum">     210 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     211 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     212 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     213 </span>                :            :       // TODO: no additional checks ?
+<span class="lineNum">     214 </span>                :<span class="lineCov">          1 :       return true;</span>
+<span class="lineNum">     215 </span>                :            :     }
+<span class="lineNum">     216 </span>                :            : 
+<a name="217"><span class="lineNum">     217 </span>                :            :     // --------------------------|Revoke</a>
+<span class="lineNum">     218 </span>                :            :     // Permission|-----------------------------
+<span class="lineNum">     219 </span>                :<span class="lineCov">        224 :     RevokePermissionExecutor::RevokePermissionExecutor() {</span>
+<span class="lineNum">     220 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;RevokePermissionExecutor&quot;);</span>
+<a name="221"><span class="lineNum">     221 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :<span class="lineCov">          1 :     bool RevokePermissionExecutor::execute(</span>
+<span class="lineNum">     224 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     225 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     226 </span>                :            :         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     227 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     228 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       auto cmd_value = static_cast&lt;const RevokePermission &amp;&gt;(command);</span>
+<span class="lineNum">     229 </span>                :            :       return commands.deleteAccountGrantablePermission(
+<span class="lineNum">     230 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           cmd_value.account_id, creator_account_id, cmd_value.permission_name);</span>
+<a name="231"><span class="lineNum">     231 </span>                :            :     }</a>
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :<span class="lineCov">          2 :     bool RevokePermissionExecutor::hasPermissions(</span>
+<span class="lineNum">     234 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     235 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     236 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :       auto cmd_value = static_cast&lt;const GrantPermission &amp;&gt;(command);</span>
+<span class="lineNum">     238 </span>                :            :       // Target account must have permission on creator's account -&gt; creator can
+<span class="lineNum">     239 </span>                :            :       // revoke his permission
+<span class="lineNum">     240 </span>                :            :       return queries.hasAccountGrantablePermission(
+<span class="lineNum">     241 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :           cmd_value.account_id, creator_account_id, cmd_value.permission_name);</span>
+<a name="242"><span class="lineNum">     242 </span>                :            :     }</a>
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineCov">          1 :     bool RevokePermissionExecutor::isValid(</span>
+<span class="lineNum">     245 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     246 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     247 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     248 </span>                :            :       // TODO: no checks needed ?
+<span class="lineNum">     249 </span>                :<span class="lineCov">          1 :       return true;</span>
+<span class="lineNum">     250 </span>                :            :     }
+<span class="lineNum">     251 </span>                :            : 
+<a name="252"><span class="lineNum">     252 </span>                :            :     // ----------------------------|AddAssetQuantity|-----------------------------</a>
+<span class="lineNum">     253 </span>                :            : 
+<span class="lineNum">     254 </span>                :<span class="lineCov">        224 :     AddAssetQuantityExecutor::AddAssetQuantityExecutor() {</span>
+<span class="lineNum">     255 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;AddAssetQuantityExecutor&quot;);</span>
+<a name="256"><span class="lineNum">     256 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     257 </span>                :            : 
+<span class="lineNum">     258 </span>                :<span class="lineCov">         16 :     bool AddAssetQuantityExecutor::execute(</span>
+<span class="lineNum">     259 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     260 </span>                :            :         WsvQuery &amp;queries,
+<span class="lineNum">     261 </span>                :            :         WsvCommand &amp;commands,
+<span class="lineNum">     262 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     263 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :       auto add_asset_quantity = static_cast&lt;const AddAssetQuantity &amp;&gt;(command);</span>
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :       auto asset = queries.getAsset(add_asset_quantity.asset_id);</span>
+<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 15 times"> + </span>]:<span class="lineCov">         16 :       if (not asset.has_value()) {</span>
+<span class="lineNum">     267 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;asset {} is absent&quot;, add_asset_quantity.asset_id);</span>
+<span class="lineNum">     268 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     269 </span>                :            :       }
+<span class="lineNum">     270 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :       auto precision = asset.value().precision;</span>
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 13 times"> + </span>]:<span class="lineCov">         15 :       if (add_asset_quantity.amount.getPrecision() != precision) {</span>
+<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         log_-&gt;info(&quot;amount is wrongly formed:&quot;);</span>
+<span class="lineNum">     274 </span>                :<span class="lineCov">          2 :         return false;</span>
+<span class="lineNum">     275 </span>                :            :       }
+<span class="lineNum">     276 </span>[<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 12 times"> + </span>]:<span class="lineCov">         13 :       if (not queries.getAccount(add_asset_quantity.account_id).has_value()) {</span>
+<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;amount {} is absent&quot;, add_asset_quantity.account_id);</span>
+<span class="lineNum">     278 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     279 </span>                :            :       }
+<span class="lineNum">     280 </span>                :            :       auto account_asset = queries.getAccountAsset(
+<span class="lineNum">     281 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :           add_asset_quantity.account_id, add_asset_quantity.asset_id);</span>
+<span class="lineNum">     282 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">         12 :       if (not account_asset.has_value()) {</span>
+<span class="lineNum">     283 </span>                :<span class="lineCov">         10 :         log_-&gt;info(&quot;create wallet {} for {}&quot;,</span>
+<span class="lineNum">     284 </span>                :            :                    add_asset_quantity.asset_id,
+<span class="lineNum">     285 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                    add_asset_quantity.account_id);</span>
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :         account_asset = AccountAsset();</span>
+<span class="lineNum">     288 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :         account_asset-&gt;asset_id = add_asset_quantity.asset_id;</span>
+<span class="lineNum">     289 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :         account_asset-&gt;account_id = add_asset_quantity.account_id;</span>
+<span class="lineNum">     290 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :         account_asset-&gt;balance = add_asset_quantity.amount;</span>
+<span class="lineNum">     291 </span>                :            :       } else {
+<span class="lineNum">     292 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         auto account_asset_value = account_asset.value();</span>
+<span class="lineNum">     293 </span>                :            : 
+<span class="lineNum">     294 </span>                :            :         auto new_balance =
+<span class="lineNum">     295 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :             account_asset_value.balance + add_asset_quantity.amount;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 1 time"> + </span><span class="branchCov" title="Branch 13 was taken 1 time"> + </span>]
+<span class="lineNum">     296 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          2 :         if (not new_balance.has_value()) {</span>
+<span class="lineNum">     297 </span>                :<span class="lineCov">          1 :           return false;</span>
+<span class="lineNum">     298 </span>                :            :         }
+<span class="lineNum">     299 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :         account_asset-&gt;balance = new_balance.value();</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 1 time"> + </span><span class="branchCov" title="Branch 11 was taken 1 time"> + </span>]
+<span class="lineNum">     300 </span>                :            :       }
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :       // accountAsset.value().balance += amount;
+<span class="lineNum">     303 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         11 :       return commands.upsertAccountAsset(account_asset.value());</span>
+<a name="304"><span class="lineNum">     304 </span>                :            :     }</a>
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :<span class="lineCov">         11 :     bool AddAssetQuantityExecutor::hasPermissions(</span>
+<span class="lineNum">     307 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     308 </span>                :            :         WsvQuery &amp;queries,
+<span class="lineNum">     309 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         22 :       auto cmd_value = static_cast&lt;const AddAssetQuantity &amp;&gt;(command);</span>
+<span class="lineNum">     311 </span>                :            :       // Check if creator has MoneyCreator permission.
+<span class="lineNum">     312 </span>                :            :       // One can only add to his/her account
+<span class="lineNum">     313 </span>                :            :       // TODO: In future: Separate money creation for distinct assets
+<span class="lineNum">     314 </span>                :<span class="lineCov">         11 :       return creator_account_id == cmd_value.account_id</span>
+<span class="lineNum">     315 </span>[<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         11 :           and checkAccountRolePermission(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 10 times"> + </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]
+<span class="lineNum">     316 </span>                :<span class="lineCov">         11 :                   creator_account_id, queries, can_add_asset_qty);</span>
+<a name="317"><span class="lineNum">     317 </span>                :            :     }</a>
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :<span class="lineCov">         10 :     bool AddAssetQuantityExecutor::isValid(</span>
+<span class="lineNum">     320 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     321 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     322 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     323 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto add_asset_quantity = static_cast&lt;const AddAssetQuantity &amp;&gt;(command);</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">         10 :       return true;</span>
+<span class="lineNum">     325 </span>                :            :     }
+<span class="lineNum">     326 </span>                :            : 
+<a name="327"><span class="lineNum">     327 </span>                :            :     // ----------------------------|SubtractAssetQuantity|-----------------------------</a>
+<span class="lineNum">     328 </span>                :            : 
+<span class="lineNum">     329 </span>                :<span class="lineCov">        224 :     SubtractAssetQuantityExecutor::SubtractAssetQuantityExecutor() {</span>
+<span class="lineNum">     330 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;SubtractAssetQuantityExecutor&quot;);</span>
+<a name="331"><span class="lineNum">     331 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     332 </span>                :            : 
+<span class="lineNum">     333 </span>                :<span class="lineCov">          6 :     bool SubtractAssetQuantityExecutor::execute(</span>
+<span class="lineNum">     334 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     335 </span>                :            :         WsvQuery &amp;queries,
+<span class="lineNum">     336 </span>                :            :         WsvCommand &amp;commands,
+<span class="lineNum">     337 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     338 </span>                :            :       auto subtract_asset_quantity =
+<span class="lineNum">     339 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :           static_cast&lt;const SubtractAssetQuantity &amp;&gt;(command);</span>
+<span class="lineNum">     340 </span>                :            : 
+<span class="lineNum">     341 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :       auto asset = queries.getAsset(subtract_asset_quantity.asset_id);</span>
+<span class="lineNum">     342 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span>]:<span class="lineCov">          6 :       if (not asset) {</span>
+<span class="lineNum">     343 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;asset {} is absent&quot;, subtract_asset_quantity.asset_id);</span>
+<span class="lineNum">     344 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     345 </span>                :            :       }
+<span class="lineNum">     346 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :       auto precision = asset.value().precision;</span>
+<span class="lineNum">     347 </span>                :            : 
+<span class="lineNum">     348 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 3 times"> + </span>]:<span class="lineCov">          5 :       if (subtract_asset_quantity.amount.getPrecision() != precision) {</span>
+<span class="lineNum">     349 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         log_-&gt;info(&quot;amount is wrongly formed&quot;);</span>
+<span class="lineNum">     350 </span>                :<span class="lineCov">          2 :         return false;</span>
+<span class="lineNum">     351 </span>                :            :       }
+<span class="lineNum">     352 </span>                :            :       auto account_asset = queries.getAccountAsset(
+<span class="lineNum">     353 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           subtract_asset_quantity.account_id, subtract_asset_quantity.asset_id);</span>
+<span class="lineNum">     354 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          3 :       if (not account_asset.has_value()) {</span>
+<span class="lineNum">     355 </span>                :<span class="lineCov">          1 :         log_-&gt;info(&quot;{} do not have {}&quot;,</span>
+<span class="lineNum">     356 </span>                :            :                    subtract_asset_quantity.account_id,
+<span class="lineNum">     357 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                    subtract_asset_quantity.asset_id);</span>
+<span class="lineNum">     358 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     359 </span>                :            :       }
+<span class="lineNum">     360 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :       auto account_asset_value = account_asset.value();</span>
+<span class="lineNum">     361 </span>                :            : 
+<span class="lineNum">     362 </span>                :            :       auto new_balance =
+<span class="lineNum">     363 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :           account_asset_value.balance - subtract_asset_quantity.amount;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     364 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          2 :       if (not new_balance.has_value()) {</span>
+<span class="lineNum">     365 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;Not sufficient amount&quot;);</span>
+<span class="lineNum">     366 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     367 </span>                :            :       }
+<span class="lineNum">     368 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :       account_asset-&gt;balance = new_balance.value();</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     369 </span>                :            : 
+<span class="lineNum">     370 </span>                :            :       // accountAsset.value().balance -= amount;
+<span class="lineNum">     371 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :       return commands.upsertAccountAsset(account_asset.value());</span>
+<a name="372"><span class="lineNum">     372 </span>                :            :     }</a>
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :<span class="lineCov">          8 :     bool SubtractAssetQuantityExecutor::hasPermissions(</span>
+<span class="lineNum">     375 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     376 </span>                :            :         WsvQuery &amp;queries,
+<span class="lineNum">     377 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     378 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :       auto cmd_value = static_cast&lt;const SubtractAssetQuantity &amp;&gt;(command);</span>
+<span class="lineNum">     379 </span>                :<span class="lineCov">          8 :       return creator_account_id == cmd_value.account_id</span>
+<span class="lineNum">     380 </span>[<span class="branchCov" title="Branch 0 was taken 7 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          8 :           and checkAccountRolePermission(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]
+<span class="lineNum">     381 </span>                :<span class="lineCov">          8 :                   creator_account_id, queries, can_subtract_asset_qty);</span>
+<a name="382"><span class="lineNum">     382 </span>                :            :     }</a>
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :<span class="lineCov">          6 :     bool SubtractAssetQuantityExecutor::isValid(</span>
+<span class="lineNum">     385 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     386 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     387 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     388 </span>                :<span class="lineCov">          6 :       return true;</span>
+<span class="lineNum">     389 </span>                :            :     }
+<span class="lineNum">     390 </span>                :            : 
+<a name="391"><span class="lineNum">     391 </span>                :            :     // --------------------------|AddPeer|------------------------------</a>
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :<span class="lineCov">        224 :     AddPeerExecutor::AddPeerExecutor() {</span>
+<span class="lineNum">     394 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;AddPeerExecutor&quot;);</span>
+<a name="395"><span class="lineNum">     395 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     396 </span>                :            : 
+<span class="lineNum">     397 </span>                :<span class="lineCov">          7 :     bool AddPeerExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     398 </span>                :            :                                   ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     399 </span>                :            :                                   ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     400 </span>                :            :                                   const std::string &amp;creator_account_id) {
+<span class="lineNum">     401 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :       auto add_peer = static_cast&lt;const AddPeer &amp;&gt;(command);</span>
+<span class="lineNum">     402 </span>                :            : 
+<span class="lineNum">     403 </span>                :<span class="lineCov">         14 :       Peer peer;</span>
+<span class="lineNum">     404 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          7 :       peer.address = add_peer.address;</span>
+<span class="lineNum">     405 </span>                :<span class="lineCov">          7 :       peer.pubkey = add_peer.peer_key;</span>
+<span class="lineNum">     406 </span>                :            :       // Will return false if peer is not unique
+<span class="lineNum">     407 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :       return commands.insertPeer(peer);</span>
+<a name="408"><span class="lineNum">     408 </span>                :            :     }</a>
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :<span class="lineCov">          2 :     bool AddPeerExecutor::hasPermissions(</span>
+<span class="lineNum">     411 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     412 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     413 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     414 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     415 </span>                :<span class="lineCov">          2 :           creator_account_id, queries, can_add_peer);</span>
+<a name="416"><span class="lineNum">     416 </span>                :            :     }</a>
+<span class="lineNum">     417 </span>                :            : 
+<span class="lineNum">     418 </span>                :<span class="lineCov">          1 :     bool AddPeerExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     419 </span>                :            :                                   ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     420 </span>                :            :                                   const std::string &amp;creator_account_id) {
+<span class="lineNum">     421 </span>                :            :       // TODO: check that address is formed right
+<span class="lineNum">     422 </span>                :<span class="lineCov">          1 :       return true;</span>
+<span class="lineNum">     423 </span>                :            :     }
+<a name="424"><span class="lineNum">     424 </span>                :            : </a>
+<span class="lineNum">     425 </span>                :            :     // -------------------------|AddSignatory|--------------------------
+<span class="lineNum">     426 </span>                :<span class="lineCov">        224 :     AddSignatoryExecutor::AddSignatoryExecutor() {</span>
+<span class="lineNum">     427 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;AddSignatoryExecutor&quot;);</span>
+<a name="428"><span class="lineNum">     428 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     429 </span>                :            : 
+<span class="lineNum">     430 </span>                :<span class="lineCov">          5 :     bool AddSignatoryExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     431 </span>                :            :                                        ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     432 </span>                :            :                                        ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     433 </span>                :            :                                        const std::string &amp;creator_account_id) {
+<span class="lineNum">     434 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto add_signatory = static_cast&lt;const AddSignatory &amp;&gt;(command);</span>
+<span class="lineNum">     435 </span>                :            : 
+<span class="lineNum">     436 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :       return commands.insertSignatory(add_signatory.pubkey)</span>
+<span class="lineNum">     437 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 :           &amp;&amp; commands.insertAccountSignatory(add_signatory.account_id,</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     438 </span>                :<span class="lineCov">          5 :                                              add_signatory.pubkey);</span>
+<a name="439"><span class="lineNum">     439 </span>                :            :     }</a>
+<span class="lineNum">     440 </span>                :            : 
+<span class="lineNum">     441 </span>                :<span class="lineCov">          5 :     bool AddSignatoryExecutor::hasPermissions(</span>
+<span class="lineNum">     442 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     443 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     444 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     445 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto add_signatory = static_cast&lt;const AddSignatory &amp;&gt;(command);</span>
+<span class="lineNum">     446 </span>                :            : 
+<span class="lineNum">     447 </span>                :            :       return
+<span class="lineNum">     448 </span>                :            :           // Case 1. When command creator wants to add signatory to their
+<span class="lineNum">     449 </span>                :            :           // account and he has permission CanAddSignatory
+<span class="lineNum">     450 </span>                :<span class="lineCov">          5 :           (add_signatory.account_id == creator_account_id</span>
+<span class="lineNum">     451 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          1 :            and checkAccountRolePermission(</span>
+<span class="lineNum">     452 </span>                :            :                    creator_account_id, queries, can_add_signatory))
+<span class="lineNum">     453 </span>[<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 2 times"> + </span>]:<span class="lineCov">         10 :           or</span>
+<span class="lineNum">     454 </span>                :            :           // Case 2. Creator has granted permission for it
+<span class="lineNum">     455 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :           (queries.hasAccountGrantablePermission(</span>
+<span class="lineNum">     456 </span>                :<span class="lineCov">          5 :               creator_account_id, add_signatory.account_id, can_add_signatory));</span>
+<a name="457"><span class="lineNum">     457 </span>                :            :     }</a>
+<span class="lineNum">     458 </span>                :            : 
+<span class="lineNum">     459 </span>                :<span class="lineCov">          3 :     bool AddSignatoryExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     460 </span>                :            :                                        ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     461 </span>                :            :                                        const std::string &amp;creator_account_id) {
+<span class="lineNum">     462 </span>                :<span class="lineCov">          3 :       return true;</span>
+<span class="lineNum">     463 </span>                :            :     }
+<a name="464"><span class="lineNum">     464 </span>                :            : </a>
+<span class="lineNum">     465 </span>                :            :     // ------------------------------|CreateAccount|------------------------------
+<span class="lineNum">     466 </span>                :<span class="lineCov">        224 :     CreateAccountExecutor::CreateAccountExecutor() {</span>
+<span class="lineNum">     467 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;CreateAccountExecutor&quot;);</span>
+<a name="468"><span class="lineNum">     468 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     469 </span>                :            : 
+<span class="lineNum">     470 </span>                :<span class="lineCov">         23 :     bool CreateAccountExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     471 </span>                :            :                                         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     472 </span>                :            :                                         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     473 </span>                :            :                                         const std::string &amp;creator_account_id) {
+<span class="lineNum">     474 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         46 :       auto create_account = static_cast&lt;const CreateAccount &amp;&gt;(command);</span>
+<span class="lineNum">     475 </span>                :            : 
+<span class="lineNum">     476 </span>                :<span class="lineCov">         46 :       Account account;</span>
+<span class="lineNum">     477 </span>                :            :       account.account_id =
+<span class="lineNum">     478 </span>[<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         23 :           create_account.account_name + &quot;@&quot; + create_account.domain_id;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         23 :       account.domain_id = create_account.domain_id;</span>
+<span class="lineNum">     481 </span>                :<span class="lineCov">         23 :       account.quorum = 1;</span>
+<span class="lineNum">     482 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         23 :       account.json_data = &quot;{}&quot;;</span>
+<span class="lineNum">     483 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         46 :       auto domain = queries.getDomain(create_account.domain_id);</span>
+<span class="lineNum">     484 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 22 times"> + </span>]:<span class="lineCov">         23 :       if (not domain.has_value()) {</span>
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;Domain {} not found&quot;, create_account.domain_id);</span>
+<span class="lineNum">     486 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     487 </span>                :            :       }
+<span class="lineNum">     488 </span>                :            :       // TODO: remove insert signatory from here ?
+<span class="lineNum">     489 </span>        [<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         22 :       return commands.insertSignatory(create_account.pubkey)</span>
+<span class="lineNum">     490 </span>[<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         22 :           and commands.insertAccount(account)</span>
+<span class="lineNum">     491 </span>[<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         22 :           and commands.insertAccountSignatory(account.account_id,</span>
+<span class="lineNum">     492 </span>                :<span class="lineCov">         22 :                                               create_account.pubkey)</span>
+<span class="lineNum">     493 </span>[<span class="branchCov" title="Branch 0 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         44 :           and commands.insertAccountRole(account.account_id,</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     494 </span>        [<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         44 :                                          domain.value().default_role);</span>
+<a name="495"><span class="lineNum">     495 </span>                :            :     }</a>
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :<span class="lineCov">          5 :     bool CreateAccountExecutor::hasPermissions(</span>
+<span class="lineNum">     498 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     499 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     500 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     501 </span>                :            :       // Creator must have permission to create account
+<span class="lineNum">     502 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     503 </span>                :<span class="lineCov">          5 :           creator_account_id, queries, can_create_account);</span>
+<a name="504"><span class="lineNum">     504 </span>                :            :     }</a>
+<span class="lineNum">     505 </span>                :            : 
+<span class="lineNum">     506 </span>                :<span class="lineCov">          4 :     bool CreateAccountExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     507 </span>                :            :                                         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     508 </span>                :            :                                         const std::string &amp;creator_account_id) {
+<span class="lineNum">     509 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto create_account = static_cast&lt;const CreateAccount &amp;&gt;(command);</span>
+<span class="lineNum">     510 </span>                :            : 
+<span class="lineNum">     511 </span>                :            :       return
+<span class="lineNum">     512 </span>                :            :           // Name is within some range
+<span class="lineNum">     513 </span>                :<span class="lineCov">          4 :           not create_account.account_name.empty()</span>
+<span class="lineNum">     514 </span>                :            :           // Account must be well-formed (no system symbols)
+<span class="lineNum">     515 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          8 :           and validator::isValidDomainName(create_account.account_name);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchCov" title="Branch 6 was taken 2 times"> + </span>]
+<span class="lineNum">     516 </span>                :            :     }
+<span class="lineNum">     517 </span>                :            : 
+<a name="518"><span class="lineNum">     518 </span>                :            :     // --------------------------|CreateAsset|---------------------------</a>
+<span class="lineNum">     519 </span>                :            : 
+<span class="lineNum">     520 </span>                :<span class="lineCov">        224 :     CreateAssetExecutor::CreateAssetExecutor() {</span>
+<span class="lineNum">     521 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;CreateAssetExecutor&quot;);</span>
+<a name="522"><span class="lineNum">     522 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     523 </span>                :            : 
+<span class="lineNum">     524 </span>                :<span class="lineCov">          9 :     bool CreateAssetExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     525 </span>                :            :                                       ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     526 </span>                :            :                                       ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     527 </span>                :            :                                       const std::string &amp;creator_account_id) {
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :       auto create_asset = static_cast&lt;const CreateAsset &amp;&gt;(command);</span>
+<span class="lineNum">     529 </span>                :            : 
+<span class="lineNum">     530 </span>                :<span class="lineCov">         18 :       Asset new_asset;</span>
+<span class="lineNum">     531 </span>                :            :       new_asset.asset_id =
+<span class="lineNum">     532 </span>[<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          9 :           create_asset.asset_name + &quot;#&quot; + create_asset.domain_id;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     533 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :       new_asset.domain_id = create_asset.domain_id;</span>
+<span class="lineNum">     534 </span>                :<span class="lineCov">          9 :       new_asset.precision = create_asset.precision;</span>
+<span class="lineNum">     535 </span>                :            :       // The insert will fail if asset already exist
+<span class="lineNum">     536 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :       return commands.insertAsset(new_asset);</span>
+<a name="537"><span class="lineNum">     537 </span>                :            :     }</a>
+<span class="lineNum">     538 </span>                :            : 
+<span class="lineNum">     539 </span>                :<span class="lineCov">          3 :     bool CreateAssetExecutor::hasPermissions(</span>
+<span class="lineNum">     540 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     541 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     542 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     543 </span>                :            :       // Creator must have permission to create assets
+<span class="lineNum">     544 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     545 </span>                :<span class="lineCov">          3 :           creator_account_id, queries, can_create_asset);</span>
+<a name="546"><span class="lineNum">     546 </span>                :            :     }</a>
+<span class="lineNum">     547 </span>                :            : 
+<span class="lineNum">     548 </span>                :<span class="lineCov">          2 :     bool CreateAssetExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     549 </span>                :            :                                       ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     550 </span>                :            :                                       const std::string &amp;creator_account_id) {
+<span class="lineNum">     551 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :       auto create_asset = static_cast&lt;const CreateAsset &amp;&gt;(command);</span>
+<span class="lineNum">     552 </span>                :            : 
+<span class="lineNum">     553 </span>                :            :       return
+<span class="lineNum">     554 </span>                :            :           // Name is within some range
+<span class="lineNum">     555 </span>                :<span class="lineCov">          2 :           not create_asset.asset_name.empty()</span>
+<span class="lineNum">     556 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          4 :           &amp;&amp; create_asset.asset_name.size() &lt; 10 &amp;&amp;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     557 </span>                :            :           // Account must be well-formed (no system symbols)
+<a name="558"><span class="lineNum">     558 </span>[<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 2 times"> + </span>]:<span class="lineCov">          6 :           std::all_of(std::begin(create_asset.asset_name),</span></a>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     559 </span>                :            :                       std::end(create_asset.asset_name),
+<span class="lineNum">     560 </span>                :<span class="lineCov">         20 :                       [](char c) { return std::isalnum(c); });</span>
+<span class="lineNum">     561 </span>                :            :     }
+<span class="lineNum">     562 </span>                :            : 
+<a name="563"><span class="lineNum">     563 </span>                :            :     // ------------------------|CreateDomain|---------------------------</a>
+<span class="lineNum">     564 </span>                :            : 
+<span class="lineNum">     565 </span>                :<span class="lineCov">        224 :     CreateDomainExecutor::CreateDomainExecutor() {</span>
+<span class="lineNum">     566 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;CreateDomainExecutor&quot;);</span>
+<a name="567"><span class="lineNum">     567 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     568 </span>                :            : 
+<span class="lineNum">     569 </span>                :<span class="lineCov">         14 :     bool CreateDomainExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     570 </span>                :            :                                        ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     571 </span>                :            :                                        ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     572 </span>                :            :                                        const std::string &amp;creator_account_id) {
+<span class="lineNum">     573 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       auto create_domain = static_cast&lt;const CreateDomain &amp;&gt;(command);</span>
+<span class="lineNum">     574 </span>                :            : 
+<span class="lineNum">     575 </span>                :<span class="lineCov">         28 :       Domain new_domain;</span>
+<span class="lineNum">     576 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :       new_domain.domain_id = create_domain.domain_id;</span>
+<span class="lineNum">     577 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :       new_domain.default_role = create_domain.user_default_role;</span>
+<span class="lineNum">     578 </span>                :            :       // The insert will fail if domain already exist
+<span class="lineNum">     579 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       return commands.insertDomain(new_domain);</span>
+<a name="580"><span class="lineNum">     580 </span>                :            :     }</a>
+<span class="lineNum">     581 </span>                :            : 
+<span class="lineNum">     582 </span>                :<span class="lineCov">          2 :     bool CreateDomainExecutor::hasPermissions(</span>
+<span class="lineNum">     583 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     584 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     585 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     586 </span>                :            :       // Creator must have permission to create domains
+<span class="lineNum">     587 </span>                :            :       return checkAccountRolePermission(
+<span class="lineNum">     588 </span>                :<span class="lineCov">          2 :           creator_account_id, queries, can_create_domain);</span>
+<a name="589"><span class="lineNum">     589 </span>                :            :     }</a>
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :<span class="lineCov">          1 :     bool CreateDomainExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     592 </span>                :            :                                        ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     593 </span>                :            :                                        const std::string &amp;creator_account_id) {
+<span class="lineNum">     594 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       auto create_domain = static_cast&lt;const CreateDomain &amp;&gt;(command);</span>
+<span class="lineNum">     595 </span>                :            : 
+<span class="lineNum">     596 </span>                :            :       return
+<span class="lineNum">     597 </span>                :            :           // Name is within some range
+<span class="lineNum">     598 </span>                :<span class="lineCov">          1 :           not create_domain.domain_id.empty()</span>
+<span class="lineNum">     599 </span>[<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          2 :           and create_domain.domain_id.size() &lt; 10 and</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<span class="lineNum">     600 </span>                :            :           // Account must be well-formed (no system symbols)
+<a name="601"><span class="lineNum">     601 </span>[<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]:<span class="lineCov">          3 :           std::all_of(std::begin(create_domain.domain_id),</span></a>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     602 </span>                :            :                       std::end(create_domain.domain_id),
+<span class="lineNum">     603 </span>                :<span class="lineCov">          6 :                       [](char c) { return std::isalnum(c); });</span>
+<span class="lineNum">     604 </span>                :            :     }
+<span class="lineNum">     605 </span>                :            : 
+<a name="606"><span class="lineNum">     606 </span>                :            :     // --------------------|RemoveSignatory|--------------------</a>
+<span class="lineNum">     607 </span>                :            : 
+<span class="lineNum">     608 </span>                :<span class="lineCov">        224 :     RemoveSignatoryExecutor::RemoveSignatoryExecutor() {</span>
+<span class="lineNum">     609 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;RemoveSignatoryExecutor&quot;);</span>
+<a name="610"><span class="lineNum">     610 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     611 </span>                :            : 
+<span class="lineNum">     612 </span>                :<span class="lineCov">          3 :     bool RemoveSignatoryExecutor::execute(</span>
+<span class="lineNum">     613 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     614 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     615 </span>                :            :         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     616 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     617 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       auto remove_signatory = static_cast&lt;const RemoveSignatory &amp;&gt;(command);</span>
+<span class="lineNum">     618 </span>                :            : 
+<span class="lineNum">     619 </span>                :            :       // Delete will fail if account signatory doesn't exist
+<span class="lineNum">     620 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       return commands.deleteAccountSignatory(remove_signatory.account_id,</span>
+<span class="lineNum">     621 </span>                :<span class="lineCov">          3 :                                              remove_signatory.pubkey)</span>
+<span class="lineNum">     622 </span>[<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :           &amp;&amp; commands.deleteSignatory(remove_signatory.pubkey);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]
+<a name="623"><span class="lineNum">     623 </span>                :            :     }</a>
+<span class="lineNum">     624 </span>                :            : 
+<span class="lineNum">     625 </span>                :<span class="lineCov">          8 :     bool RemoveSignatoryExecutor::hasPermissions(</span>
+<span class="lineNum">     626 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     627 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     628 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     629 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :       auto remove_signatory = static_cast&lt;const RemoveSignatory &amp;&gt;(command);</span>
+<span class="lineNum">     630 </span>                :            : 
+<span class="lineNum">     631 </span>                :            :       // Two cases possible.
+<span class="lineNum">     632 </span>                :            : 
+<span class="lineNum">     633 </span>                :            :       return
+<span class="lineNum">     634 </span>                :            :           // 1. Creator removes signatory from their account, and he must have
+<span class="lineNum">     635 </span>                :            :           // permission on it
+<span class="lineNum">     636 </span>                :<span class="lineCov">          8 :           (creator_account_id == remove_signatory.account_id</span>
+<span class="lineNum">     637 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          1 :            and checkAccountRolePermission(</span>
+<span class="lineNum">     638 </span>                :            :                    creator_account_id, queries, can_remove_signatory))
+<span class="lineNum">     639 </span>                :            :           // 2. Creator has granted permission on removal
+<span class="lineNum">     640 </span>[<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          9 :           or (queries.hasAccountGrantablePermission(creator_account_id,</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchCov" title="Branch 6 was taken 2 times"> + </span>]
+<span class="lineNum">     641 </span>                :            :                                                     remove_signatory.account_id,
+<span class="lineNum">     642 </span>                :<span class="lineCov">          8 :                                                     can_remove_signatory));</span>
+<a name="643"><span class="lineNum">     643 </span>                :            :     }</a>
+<span class="lineNum">     644 </span>                :            : 
+<span class="lineNum">     645 </span>                :<span class="lineCov">          6 :     bool RemoveSignatoryExecutor::isValid(</span>
+<span class="lineNum">     646 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     647 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     648 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     649 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :       auto remove_signatory = static_cast&lt;const RemoveSignatory &amp;&gt;(command);</span>
+<span class="lineNum">     650 </span>                :            : 
+<span class="lineNum">     651 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :       auto account = queries.getAccount(remove_signatory.account_id);</span>
+<span class="lineNum">     652 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :       auto signatories = queries.getSignatories(remove_signatory.account_id);</span>
+<span class="lineNum">     653 </span>                :            : 
+<span class="lineNum">     654 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 3 times"> + </span>]:<span class="lineCov">          6 :       if (not(account.has_value() and signatories.has_value())) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchCov" title="Branch 7 was taken 3 times"> + </span>]
+<span class="lineNum">     655 </span>                :            :         // No account or signatories found
+<span class="lineNum">     656 </span>                :<span class="lineCov">          3 :         return false;</span>
+<span class="lineNum">     657 </span>                :            :       }
+<span class="lineNum">     658 </span>                :            : 
+<span class="lineNum">     659 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       auto newSignatoriesSize = signatories.value().size() - 1;</span>
+<span class="lineNum">     660 </span>                :            : 
+<span class="lineNum">     661 </span>                :            :       // You can't remove if size of rest signatories less than the quorum
+<span class="lineNum">     662 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       return newSignatoriesSize &gt;= account.value().quorum;</span>
+<span class="lineNum">     663 </span>                :            :     }
+<span class="lineNum">     664 </span>                :            : 
+<a name="665"><span class="lineNum">     665 </span>                :            :     // -----------------------|SetAccountDetail|-------------------------</a>
+<span class="lineNum">     666 </span>                :            : 
+<span class="lineNum">     667 </span>                :<span class="lineCov">        224 :     SetAccountDetailExecutor::SetAccountDetailExecutor() {</span>
+<span class="lineNum">     668 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;SetAccountDetailExecutor&quot;);</span>
+<a name="669"><span class="lineNum">     669 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     670 </span>                :            : 
+<span class="lineNum">     671 </span>                :<span class="lineCov">          4 :     bool SetAccountDetailExecutor::execute(</span>
+<span class="lineNum">     672 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     673 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     674 </span>                :            :         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     675 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     676 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto cmd = static_cast&lt;const SetAccountDetail &amp;&gt;(command);</span>
+<span class="lineNum">     677 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto creator = creator_account_id;</span>
+<span class="lineNum">     678 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">          4 :       if (creator_account_id.empty()) {</span>
+<span class="lineNum">     679 </span>                :            :         // When creator is not known, it is genesis block
+<span class="lineNum">     680 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         creator = &quot;genesis&quot;;</span>
+<span class="lineNum">     681 </span>                :            :       }
+<span class="lineNum">     682 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       return commands.setAccountKV(cmd.account_id, creator, cmd.key, cmd.value);</span>
+<a name="683"><span class="lineNum">     683 </span>                :            :     }</a>
+<span class="lineNum">     684 </span>                :            : 
+<span class="lineNum">     685 </span>                :<span class="lineCov">          3 :     bool SetAccountDetailExecutor::hasPermissions(</span>
+<span class="lineNum">     686 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     687 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     688 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     689 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       auto cmd = static_cast&lt;const SetAccountDetail &amp;&gt;(command);</span>
+<span class="lineNum">     690 </span>                :            : 
+<span class="lineNum">     691 </span>                :            :       return
+<span class="lineNum">     692 </span>                :            :           // Case 1. Creator set details for his account
+<span class="lineNum">     693 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          5 :           creator_account_id == cmd.account_id or</span>
+<span class="lineNum">     694 </span>                :            :           // Case 2. Creator has grantable permission to set account key/value
+<span class="lineNum">     695 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           queries.hasAccountGrantablePermission(</span>
+<span class="lineNum">     696 </span>                :<span class="lineCov">          3 :               creator_account_id, cmd.account_id, can_set_detail);</span>
+<a name="697"><span class="lineNum">     697 </span>                :            :     }</a>
+<span class="lineNum">     698 </span>                :            : 
+<span class="lineNum">     699 </span>                :<span class="lineCov">          2 :     bool SetAccountDetailExecutor::isValid(</span>
+<span class="lineNum">     700 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     701 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     702 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     703 </span>                :<span class="lineCov">          2 :       return true;</span>
+<span class="lineNum">     704 </span>                :            :     }
+<span class="lineNum">     705 </span>                :            : 
+<a name="706"><span class="lineNum">     706 </span>                :            :     // -----------------------|SetQuorum|-------------------------</a>
+<span class="lineNum">     707 </span>                :            : 
+<span class="lineNum">     708 </span>                :<span class="lineCov">        224 :     SetQuorumExecutor::SetQuorumExecutor() {</span>
+<span class="lineNum">     709 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;SetQuorumExecutor&quot;);</span>
+<a name="710"><span class="lineNum">     710 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     711 </span>                :            : 
+<span class="lineNum">     712 </span>                :<span class="lineCov">          4 :     bool SetQuorumExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     713 </span>                :            :                                     ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     714 </span>                :            :                                     ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     715 </span>                :            :                                     const std::string &amp;creator_account_id) {
+<span class="lineNum">     716 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto set_quorum = static_cast&lt;const SetQuorum &amp;&gt;(command);</span>
+<span class="lineNum">     717 </span>                :            : 
+<span class="lineNum">     718 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :       auto account = queries.getAccount(set_quorum.account_id);</span>
+<span class="lineNum">     719 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          4 :       if (not account.has_value()) {</span>
+<span class="lineNum">     720 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;absent account {}&quot;, set_quorum.account_id);</span>
+<span class="lineNum">     721 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     722 </span>                :            :       }
+<span class="lineNum">     723 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       account.value().quorum = set_quorum.new_quorum;</span>
+<span class="lineNum">     724 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :       return commands.updateAccount(account.value());</span>
+<a name="725"><span class="lineNum">     725 </span>                :            :     }</a>
+<span class="lineNum">     726 </span>                :            : 
+<span class="lineNum">     727 </span>                :<span class="lineCov">          7 :     bool SetQuorumExecutor::hasPermissions(</span>
+<span class="lineNum">     728 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     729 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     730 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     731 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :       auto set_quorum = static_cast&lt;const SetQuorum &amp;&gt;(command);</span>
+<span class="lineNum">     732 </span>                :            : 
+<span class="lineNum">     733 </span>                :            :       return
+<span class="lineNum">     734 </span>                :            :           // 1. Creator set quorum for his account -&gt; must have permission
+<span class="lineNum">     735 </span>                :<span class="lineCov">          7 :           (creator_account_id == set_quorum.account_id</span>
+<span class="lineNum">     736 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 4 times"> + </span>]:<span class="lineCov">          4 :            and checkAccountRolePermission(</span>
+<span class="lineNum">     737 </span>                :            :                    creator_account_id, queries, can_set_quorum))
+<span class="lineNum">     738 </span>                :            :           // 2. Creator has granted permission on it
+<span class="lineNum">     739 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         11 :           or (queries.hasAccountGrantablePermission(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 2 times"> + </span>]
+<span class="lineNum">     740 </span>                :<span class="lineCov">          7 :                  creator_account_id, set_quorum.account_id, can_set_quorum));</span>
+<a name="741"><span class="lineNum">     741 </span>                :            :     }</a>
+<span class="lineNum">     742 </span>                :            : 
+<span class="lineNum">     743 </span>                :<span class="lineCov">          5 :     bool SetQuorumExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     744 </span>                :            :                                     ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     745 </span>                :            :                                     const std::string &amp;creator_account_id) {
+<span class="lineNum">     746 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto set_quorum = static_cast&lt;const SetQuorum &amp;&gt;(command);</span>
+<span class="lineNum">     747 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto signatories = queries.getSignatories(set_quorum.account_id);</span>
+<span class="lineNum">     748 </span>                :            : 
+<span class="lineNum">     749 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">          5 :       if (not(signatories.has_value())) {</span>
+<span class="lineNum">     750 </span>                :            :         // No  signatories of an account found
+<span class="lineNum">     751 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     752 </span>                :            :       }
+<span class="lineNum">     753 </span>                :            :       // You can't remove if size of rest signatories less than the quorum
+<span class="lineNum">     754 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          4 :       return set_quorum.new_quorum &gt; 0 and set_quorum.new_quorum &lt; 10</span>
+<span class="lineNum">     755 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          8 :           and signatories.value().size() &gt;= set_quorum.new_quorum;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchCov" title="Branch 7 was taken 1 time"> + </span>]
+<span class="lineNum">     756 </span>                :            :     }
+<a name="757"><span class="lineNum">     757 </span>                :            : </a>
+<span class="lineNum">     758 </span>                :            :     // ------------------------|TransferAsset|-------------------------
+<span class="lineNum">     759 </span>                :<span class="lineCov">        224 :     TransferAssetExecutor::TransferAssetExecutor() {</span>
+<span class="lineNum">     760 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        112 :       log_ = logger::log(&quot;TransferAssetExecutor&quot;);</span>
+<a name="761"><span class="lineNum">     761 </span>                :<span class="lineCov">        112 :     }</span></a>
+<span class="lineNum">     762 </span>                :            : 
+<span class="lineNum">     763 </span>                :<span class="lineCov">         18 :     bool TransferAssetExecutor::execute(const Command &amp;command,</span>
+<span class="lineNum">     764 </span>                :            :                                         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     765 </span>                :            :                                         ametsuchi::WsvCommand &amp;commands,
+<span class="lineNum">     766 </span>                :            :                                         const std::string &amp;creator_account_id) {
+<span class="lineNum">     767 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         36 :       auto transfer_asset = static_cast&lt;const TransferAsset &amp;&gt;(command);</span>
+<span class="lineNum">     768 </span>                :            : 
+<span class="lineNum">     769 </span>                :            :       auto src_account_asset = queries.getAccountAsset(
+<span class="lineNum">     770 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         36 :           transfer_asset.src_account_id, transfer_asset.asset_id);</span>
+<span class="lineNum">     771 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 17 times"> + </span>]:<span class="lineCov">         18 :       if (not src_account_asset.has_value()) {</span>
+<span class="lineNum">     772 </span>                :<span class="lineCov">          1 :         log_-&gt;info(&quot;asset {} is absent of {}&quot;,</span>
+<span class="lineNum">     773 </span>                :            :                    transfer_asset.asset_id,
+<span class="lineNum">     774 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                    transfer_asset.src_account_id);</span>
+<span class="lineNum">     775 </span>                :            : 
+<span class="lineNum">     776 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     777 </span>                :            :       }
+<span class="lineNum">     778 </span>                :            : 
+<span class="lineNum">     779 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :       AccountAsset dest_AccountAsset;</span>
+<span class="lineNum">     780 </span>                :            :       auto dest_account_asset = queries.getAccountAsset(
+<span class="lineNum">     781 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :           transfer_asset.dest_account_id, transfer_asset.asset_id);</span>
+<span class="lineNum">     782 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :       auto asset = queries.getAsset(transfer_asset.asset_id);</span>
+<span class="lineNum">     783 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 16 times"> + </span>]:<span class="lineCov">         17 :       if (not asset.has_value()) {</span>
+<span class="lineNum">     784 </span>                :<span class="lineCov">          1 :         log_-&gt;info(&quot;asset {} is absent of {}&quot;,</span>
+<span class="lineNum">     785 </span>                :            :                    transfer_asset.asset_id,
+<span class="lineNum">     786 </span>                :            :                    transfer_asset.dest_account_id,
+<span class="lineNum">     787 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                    transfer_asset.description);</span>
+<span class="lineNum">     788 </span>                :            : 
+<span class="lineNum">     789 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     790 </span>                :            :       }
+<span class="lineNum">     791 </span>                :            :       // Precision for both wallets
+<span class="lineNum">     792 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :       auto precision = asset.value().precision;</span>
+<span class="lineNum">     793 </span>[<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 15 times"> + </span>]:<span class="lineCov">         16 :       if (transfer_asset.amount.getPrecision() != precision) {</span>
+<span class="lineNum">     794 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;precision {} is wrong&quot;, precision);</span>
+<span class="lineNum">     795 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     796 </span>                :            :       }
+<span class="lineNum">     797 </span>                :            :       // Get src balance
+<span class="lineNum">     798 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         15 :       auto src_balance = src_account_asset.value().balance;</span>
+<span class="lineNum">     799 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         30 :       auto new_src_balance = src_balance - transfer_asset.amount;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     800 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 14 times"> + </span>]:<span class="lineCov">         15 :       if (not new_src_balance.has_value()) {</span>
+<span class="lineNum">     801 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     802 </span>                :            :       }
+<span class="lineNum">     803 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         14 :       src_balance = new_src_balance.value();</span>
+<span class="lineNum">     804 </span>                :            :       // Set new balance for source account
+<span class="lineNum">     805 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         14 :       src_account_asset.value().balance = src_balance;</span>
+<span class="lineNum">     806 </span>                :            : 
+<span class="lineNum">     807 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">         14 :       if (not dest_account_asset.has_value()) {</span>
+<span class="lineNum">     808 </span>                :            :         // This assert is new for this account - create new AccountAsset
+<span class="lineNum">     809 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :         dest_AccountAsset = AccountAsset();</span>
+<span class="lineNum">     810 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :         dest_AccountAsset.asset_id = transfer_asset.asset_id;</span>
+<span class="lineNum">     811 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :         dest_AccountAsset.account_id = transfer_asset.dest_account_id;</span>
+<span class="lineNum">     812 </span>                :            :         // Set new balance for dest account
+<span class="lineNum">     813 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :         dest_AccountAsset.balance = transfer_asset.amount;</span>
+<span class="lineNum">     814 </span>                :            : 
+<span class="lineNum">     815 </span>                :            :       } else {
+<span class="lineNum">     816 </span>                :            :         // Account already has such asset
+<span class="lineNum">     817 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         dest_AccountAsset = dest_account_asset.value();</span>
+<span class="lineNum">     818 </span>                :            :         // Get balance dest account
+<span class="lineNum">     819 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         auto dest_balance = dest_account_asset.value().balance;</span>
+<span class="lineNum">     820 </span>                :            : 
+<span class="lineNum">     821 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          8 :         auto new_dest_balance = dest_balance + transfer_asset.amount;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     822 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          4 :         if (not new_dest_balance.has_value()) {</span>
+<span class="lineNum">     823 </span>                :<span class="lineCov">          1 :           return false;</span>
+<span class="lineNum">     824 </span>                :            :         }
+<span class="lineNum">     825 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :         dest_balance = new_dest_balance.value();</span>
+<span class="lineNum">     826 </span>                :            :         // Set new balance for dest
+<span class="lineNum">     827 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span>]:<span class="lineCov">          4 :         dest_AccountAsset.balance = dest_balance;</span>
+<span class="lineNum">     828 </span>                :            :       }
+<span class="lineNum">     829 </span>                :            : 
+<span class="lineNum">     830 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         13 :       return commands.upsertAccountAsset(dest_AccountAsset)</span>
+<span class="lineNum">     831 </span>[<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         13 :           and commands.upsertAccountAsset(src_account_asset.value());</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 6 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<a name="832"><span class="lineNum">     832 </span>                :            :     }</a>
+<span class="lineNum">     833 </span>                :            : 
+<span class="lineNum">     834 </span>                :<span class="lineCov">         16 :     bool TransferAssetExecutor::hasPermissions(</span>
+<span class="lineNum">     835 </span>                :            :         const Command &amp;command,
+<span class="lineNum">     836 </span>                :            :         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     837 </span>                :            :         const std::string &amp;creator_account_id) {
+<span class="lineNum">     838 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :       auto transfer_asset = static_cast&lt;const TransferAsset &amp;&gt;(command);</span>
+<span class="lineNum">     839 </span>                :            : 
+<span class="lineNum">     840 </span>                :            :       return
+<span class="lineNum">     841 </span>                :            : 
+<span class="lineNum">     842 </span>                :            :           (
+<span class="lineNum">     843 </span>                :            :               // 1. Creator has granted permission on src_account_id
+<span class="lineNum">     844 </span>                :<span class="lineCov">         16 :               (creator_account_id != transfer_asset.src_account_id</span>
+<span class="lineNum">     845 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          2 :                and queries.hasAccountGrantablePermission(</span>
+<span class="lineNum">     846 </span>                :            :                        creator_account_id,
+<span class="lineNum">     847 </span>                :            :                        transfer_asset.src_account_id,
+<span class="lineNum">     848 </span>                :<span class="lineCov">          2 :                        can_transfer))</span>
+<span class="lineNum">     849 </span>        [<span class="branchCov" title="Branch 0 was taken 14 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>]:<span class="lineCov">         15 :               or</span>
+<span class="lineNum">     850 </span>                :            :               // 2. Creator transfer from their account
+<span class="lineNum">     851 </span>                :<span class="lineCov">         15 :               (creator_account_id == transfer_asset.src_account_id</span>
+<span class="lineNum">     852 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">         14 :                and checkAccountRolePermission(</span>
+<span class="lineNum">     853 </span>                :            :                        creator_account_id, queries, can_transfer)))
+<span class="lineNum">     854 </span>                :            :           // For both cases, dest_account must have can_receive
+<span class="lineNum">     855 </span>[<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>][<span class="branchCov" title="Branch 3 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         32 :           and checkAccountRolePermission(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 5 was taken 13 times"> + </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]
+<span class="lineNum">     856 </span>                :<span class="lineCov">         16 :                   transfer_asset.dest_account_id, queries, can_receive);</span>
+<a name="857"><span class="lineNum">     857 </span>                :            :     }</a>
+<span class="lineNum">     858 </span>                :            : 
+<span class="lineNum">     859 </span>                :<span class="lineCov">         13 :     bool TransferAssetExecutor::isValid(const Command &amp;command,</span>
+<span class="lineNum">     860 </span>                :            :                                         ametsuchi::WsvQuery &amp;queries,
+<span class="lineNum">     861 </span>                :            :                                         const std::string &amp;creator_account_id) {
+<span class="lineNum">     862 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         26 :       auto transfer_asset = static_cast&lt;const TransferAsset &amp;&gt;(command);</span>
+<span class="lineNum">     863 </span>                :            : 
+<span class="lineNum">     864 </span>[<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 12 times"> + </span>]:<span class="lineCov">         13 :       if (transfer_asset.amount.getIntValue() == 0) {</span>
+<span class="lineNum">     865 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;amount must be not zero&quot;);</span>
+<span class="lineNum">     866 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     867 </span>                :            :       }
+<span class="lineNum">     868 </span>                :            : 
+<span class="lineNum">     869 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :       auto asset = queries.getAsset(transfer_asset.asset_id);</span>
+<span class="lineNum">     870 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 11 times"> + </span>]:<span class="lineCov">         12 :       if (not asset.has_value()) {</span>
+<span class="lineNum">     871 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;Asset not found&quot;);</span>
+<span class="lineNum">     872 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     873 </span>                :            :       }
+<span class="lineNum">     874 </span>                :            :       // Amount is formed wrong
+<span class="lineNum">     875 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         11 :       if (transfer_asset.amount.getPrecision() != asset.value().precision) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 1 time"> + </span><span class="branchCov" title="Branch 7 was taken 10 times"> + </span>]
+<span class="lineNum">     876 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         log_-&gt;info(&quot;Wrong precision&quot;);</span>
+<span class="lineNum">     877 </span>                :<span class="lineCov">          1 :         return false;</span>
+<span class="lineNum">     878 </span>                :            :       }
+<span class="lineNum">     879 </span>                :            :       auto account_asset = queries.getAccountAsset(
+<span class="lineNum">     880 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         20 :           transfer_asset.src_account_id, transfer_asset.asset_id);</span>
+<span class="lineNum">     881 </span>                :            : 
+<span class="lineNum">     882 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">         19 :       return account_asset.has_value() and</span>
+<span class="lineNum">     883 </span>                :            :           // Check if dest account exist
+<span class="lineNum">     884 </span>[<span class="branchCov" title="Branch 0 was taken 9 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         28 :           queries.getAccount(transfer_asset.dest_account_id) and</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 6 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchCov" title="Branch 9 was taken 9 times"> + </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">     885 </span>                :            :           // Balance in your wallet should be at least amount of transfer
+<span class="lineNum">     886 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         18 :           account_asset.value().balance &gt;= transfer_asset.amount;</span>
+<span class="lineNum">     887 </span>                :            :     }
+<a name="888"><span class="lineNum">     888 </span>                :            : </a>
+<span class="lineNum">     889 </span>                :            :   }  // namespace model
+<span class="lineNum">     890 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         20 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

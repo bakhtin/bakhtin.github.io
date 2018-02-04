@@ -1,0 +1,686 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rapidjson/writer.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rapidjson</a> - writer.h<span style="font-size: 80%;"> (source / <a href="writer.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">66</td>
+            <td class="headerCovTableEntryLo">45.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryLo">68.8 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Tencent is pleased to support the open source community by making RapidJSON available.</a>
+<span class="lineNum">       2 </span>            : // 
+<span class="lineNum">       3 </span>            : // Copyright (C) 2015 THL A29 Limited, a Tencent company, and Milo Yip. All rights reserved.
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // Licensed under the MIT License (the &quot;License&quot;); you may not use this file except
+<span class="lineNum">       6 </span>            : // in compliance with the License. You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : //
+<span class="lineNum">       8 </span>            : // http://opensource.org/licenses/MIT
+<span class="lineNum">       9 </span>            : //
+<span class="lineNum">      10 </span>            : // Unless required by applicable law or agreed to in writing, software distributed 
+<span class="lineNum">      11 </span>            : // under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR 
+<span class="lineNum">      12 </span>            : // CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+<span class="lineNum">      13 </span>            : // specific language governing permissions and limitations under the License.
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #ifndef RAPIDJSON_WRITER_H_
+<span class="lineNum">      16 </span>            : #define RAPIDJSON_WRITER_H_
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : #include &quot;stream.h&quot;
+<span class="lineNum">      19 </span>            : #include &quot;internal/stack.h&quot;
+<span class="lineNum">      20 </span>            : #include &quot;internal/strfunc.h&quot;
+<span class="lineNum">      21 </span>            : #include &quot;internal/dtoa.h&quot;
+<span class="lineNum">      22 </span>            : #include &quot;internal/itoa.h&quot;
+<span class="lineNum">      23 </span>            : #include &quot;stringbuffer.h&quot;
+<span class="lineNum">      24 </span>            : #include &lt;new&gt;      // placement new
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #if defined(RAPIDJSON_SIMD) &amp;&amp; defined(_MSC_VER)
+<span class="lineNum">      27 </span>            : #include &lt;intrin.h&gt;
+<span class="lineNum">      28 </span>            : #pragma intrinsic(_BitScanForward)
+<span class="lineNum">      29 </span>            : #endif
+<span class="lineNum">      30 </span>            : #ifdef RAPIDJSON_SSE42
+<span class="lineNum">      31 </span>            : #include &lt;nmmintrin.h&gt;
+<span class="lineNum">      32 </span>            : #elif defined(RAPIDJSON_SSE2)
+<span class="lineNum">      33 </span>            : #include &lt;emmintrin.h&gt;
+<span class="lineNum">      34 </span>            : #endif
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #ifdef _MSC_VER
+<span class="lineNum">      37 </span>            : RAPIDJSON_DIAG_PUSH
+<span class="lineNum">      38 </span>            : RAPIDJSON_DIAG_OFF(4127) // conditional expression is constant
+<span class="lineNum">      39 </span>            : #endif
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : #ifdef __clang__
+<span class="lineNum">      42 </span>            : RAPIDJSON_DIAG_PUSH
+<span class="lineNum">      43 </span>            : RAPIDJSON_DIAG_OFF(padded)
+<span class="lineNum">      44 </span>            : RAPIDJSON_DIAG_OFF(unreachable-code)
+<span class="lineNum">      45 </span>            : #endif
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : RAPIDJSON_NAMESPACE_BEGIN
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      50 </span>            : // WriteFlag
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : /*! \def RAPIDJSON_WRITE_DEFAULT_FLAGS 
+<span class="lineNum">      53 </span>            :     \ingroup RAPIDJSON_CONFIG
+<span class="lineNum">      54 </span>            :     \brief User-defined kWriteDefaultFlags definition.
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            :     User can define this as any \c WriteFlag combinations.
+<span class="lineNum">      57 </span>            : */
+<span class="lineNum">      58 </span>            : #ifndef RAPIDJSON_WRITE_DEFAULT_FLAGS
+<span class="lineNum">      59 </span>            : #define RAPIDJSON_WRITE_DEFAULT_FLAGS kWriteNoFlags
+<span class="lineNum">      60 </span>            : #endif
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : //! Combination of writeFlags
+<span class="lineNum">      63 </span>            : enum WriteFlag {
+<span class="lineNum">      64 </span>            :     kWriteNoFlags = 0,              //!&lt; No flags are set.
+<span class="lineNum">      65 </span>            :     kWriteValidateEncodingFlag = 1, //!&lt; Validate encoding of JSON strings.
+<span class="lineNum">      66 </span>            :     kWriteNanAndInfFlag = 2,        //!&lt; Allow writing of Infinity, -Infinity and NaN.
+<span class="lineNum">      67 </span>            :     kWriteDefaultFlags = RAPIDJSON_WRITE_DEFAULT_FLAGS  //!&lt; Default write flags. Can be customized by defining RAPIDJSON_WRITE_DEFAULT_FLAGS
+<span class="lineNum">      68 </span>            : };
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : //! JSON writer
+<span class="lineNum">      71 </span>            : /*! Writer implements the concept Handler.
+<span class="lineNum">      72 </span>            :     It generates JSON text by events to an output os.
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :     User may programmatically calls the functions of a writer to generate JSON text.
+<span class="lineNum">      75 </span>            : 
+<span class="lineNum">      76 </span>            :     On the other side, a writer can also be passed to objects that generates events, 
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     for example Reader::Parse() and Document::Accept().
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     \tparam OutputStream Type of output stream.
+<span class="lineNum">      81 </span>            :     \tparam SourceEncoding Encoding of source string.
+<span class="lineNum">      82 </span>            :     \tparam TargetEncoding Encoding of output stream.
+<span class="lineNum">      83 </span>            :     \tparam StackAllocator Type of allocator for allocating memory of stack.
+<span class="lineNum">      84 </span>            :     \note implements Handler concept
+<a name="85"><span class="lineNum">      85 </span>            : */</a>
+<span class="lineNum">      86 </span>            : template&lt;typename OutputStream, typename SourceEncoding = UTF8&lt;&gt;, typename TargetEncoding = UTF8&lt;&gt;, typename StackAllocator = CrtAllocator, unsigned writeFlags = kWriteDefaultFlags&gt;
+<span class="lineNum">      87 </span><span class="lineCov">        154 : class Writer {</span>
+<span class="lineNum">      88 </span>            : public:
+<span class="lineNum">      89 </span>            :     typedef typename SourceEncoding::Ch Ch;
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :     static const int kDefaultMaxDecimalPlaces = 324;
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            :     //! Constructor
+<span class="lineNum">      94 </span>            :     /*! \param os Output stream.
+<span class="lineNum">      95 </span>            :         \param stackAllocator User supplied allocator. If it is null, it will create a private one.
+<span class="lineNum">      96 </span>            :         \param levelDepth Initial capacity of stack.
+<a name="97"><span class="lineNum">      97 </span>            :     */</a>
+<span class="lineNum">      98 </span>            :     explicit
+<span class="lineNum">      99 </span><span class="lineCov">         77 :     Writer(OutputStream&amp; os, StackAllocator* stackAllocator = 0, size_t levelDepth = kDefaultLevelDepth) : </span>
+<span class="lineNum">     100 </span><span class="lineCov">         77 :         os_(&amp;os), level_stack_(stackAllocator, levelDepth * sizeof(Level)), maxDecimalPlaces_(kDefaultMaxDecimalPlaces), hasRoot_(false) {}</span>
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            :     explicit
+<span class="lineNum">     103 </span>            :     Writer(StackAllocator* allocator = 0, size_t levelDepth = kDefaultLevelDepth) :
+<span class="lineNum">     104 </span>            :         os_(0), level_stack_(allocator, levelDepth * sizeof(Level)), maxDecimalPlaces_(kDefaultMaxDecimalPlaces), hasRoot_(false) {}
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     //! Reset the writer with a new stream.
+<span class="lineNum">     107 </span>            :     /*!
+<span class="lineNum">     108 </span>            :         This function reset the writer with a new stream and default settings,
+<span class="lineNum">     109 </span>            :         in order to make a Writer object reusable for output multiple JSONs.
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :         \param os New output stream.
+<span class="lineNum">     112 </span>            :         \code
+<span class="lineNum">     113 </span>            :         Writer&lt;OutputStream&gt; writer(os1);
+<span class="lineNum">     114 </span>            :         writer.StartObject();
+<span class="lineNum">     115 </span>            :         // ...
+<span class="lineNum">     116 </span>            :         writer.EndObject();
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            :         writer.Reset(os2);
+<span class="lineNum">     119 </span>            :         writer.StartObject();
+<span class="lineNum">     120 </span>            :         // ...
+<span class="lineNum">     121 </span>            :         writer.EndObject();
+<span class="lineNum">     122 </span>            :         \endcode
+<span class="lineNum">     123 </span>            :     */
+<span class="lineNum">     124 </span>            :     void Reset(OutputStream&amp; os) {
+<span class="lineNum">     125 </span>            :         os_ = &amp;os;
+<span class="lineNum">     126 </span>            :         hasRoot_ = false;
+<span class="lineNum">     127 </span>            :         level_stack_.Clear();
+<span class="lineNum">     128 </span>            :     }
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            :     //! Checks whether the output is a complete JSON.
+<span class="lineNum">     131 </span>            :     /*!
+<span class="lineNum">     132 </span>            :         A complete JSON has a complete root object or array.
+<span class="lineNum">     133 </span>            :     */
+<span class="lineNum">     134 </span>            :     bool IsComplete() const {
+<span class="lineNum">     135 </span>            :         return hasRoot_ &amp;&amp; level_stack_.Empty();
+<span class="lineNum">     136 </span>            :     }
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :     int GetMaxDecimalPlaces() const {
+<span class="lineNum">     139 </span>            :         return maxDecimalPlaces_;
+<span class="lineNum">     140 </span>            :     }
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :     //! Sets the maximum number of decimal places for double output.
+<span class="lineNum">     143 </span>            :     /*!
+<span class="lineNum">     144 </span>            :         This setting truncates the output with specified number of decimal places.
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            :         For example, 
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            :         \code
+<span class="lineNum">     149 </span>            :         writer.SetMaxDecimalPlaces(3);
+<span class="lineNum">     150 </span>            :         writer.StartArray();
+<span class="lineNum">     151 </span>            :         writer.Double(0.12345);                 // &quot;0.123&quot;
+<span class="lineNum">     152 </span>            :         writer.Double(0.0001);                  // &quot;0.0&quot;
+<span class="lineNum">     153 </span>            :         writer.Double(1.234567890123456e30);    // &quot;1.234567890123456e30&quot; (do not truncate significand for positive exponent)
+<span class="lineNum">     154 </span>            :         writer.Double(1.23e-4);                 // &quot;0.0&quot;                  (do truncate significand for negative exponent)
+<span class="lineNum">     155 </span>            :         writer.EndArray();
+<span class="lineNum">     156 </span>            :         \endcode
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :         The default setting does not truncate any decimal places. You can restore to this setting by calling
+<span class="lineNum">     159 </span>            :         \code
+<span class="lineNum">     160 </span>            :         writer.SetMaxDecimalPlaces(Writer::kDefaultMaxDecimalPlaces);
+<span class="lineNum">     161 </span>            :         \endcode
+<span class="lineNum">     162 </span>            :     */
+<span class="lineNum">     163 </span>            :     void SetMaxDecimalPlaces(int maxDecimalPlaces) {
+<span class="lineNum">     164 </span>            :         maxDecimalPlaces_ = maxDecimalPlaces;
+<span class="lineNum">     165 </span>            :     }
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :     /*!@name Implementation of Handler
+<span class="lineNum">     168 </span>            :         \see Handler
+<span class="lineNum">     169 </span>            :     */
+<span class="lineNum">     170 </span>            :     //@{
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :     bool Null()                 { Prefix(kNullType);   return EndValue(WriteNull()); }
+<span class="lineNum">     173 </span>            :     bool Bool(bool b)           { Prefix(b ? kTrueType : kFalseType); return EndValue(WriteBool(b)); }
+<span class="lineNum">     174 </span>            :     bool Int(int i)             { Prefix(kNumberType); return EndValue(WriteInt(i)); }
+<span class="lineNum">     175 </span>            :     bool Uint(unsigned u)       { Prefix(kNumberType); return EndValue(WriteUint(u)); }
+<span class="lineNum">     176 </span>            :     bool Int64(int64_t i64)     { Prefix(kNumberType); return EndValue(WriteInt64(i64)); }
+<span class="lineNum">     177 </span>            :     bool Uint64(uint64_t u64)   { Prefix(kNumberType); return EndValue(WriteUint64(u64)); }
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            :     //! Writes the given \c double value to the stream
+<span class="lineNum">     180 </span>            :     /*!
+<span class="lineNum">     181 </span>            :         \param d The value to be written.
+<span class="lineNum">     182 </span>            :         \return Whether it is succeed.
+<span class="lineNum">     183 </span>            :     */
+<span class="lineNum">     184 </span>            :     bool Double(double d)       { Prefix(kNumberType); return EndValue(WriteDouble(d)); }
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            :     bool RawNumber(const Ch* str, SizeType length, bool copy = false) {
+<span class="lineNum">     187 </span>            :         (void)copy;
+<span class="lineNum">     188 </span>            :         Prefix(kNumberType);
+<span class="lineNum">     189 </span>            :         return EndValue(WriteString(str, length));
+<span class="lineNum">     190 </span>            :     }
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :     bool String(const Ch* str, SizeType length, bool copy = false) {
+<span class="lineNum">     193 </span>            :         (void)copy;
+<span class="lineNum">     194 </span>            :         Prefix(kStringType);
+<span class="lineNum">     195 </span>            :         return EndValue(WriteString(str, length));
+<span class="lineNum">     196 </span>            :     }
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            : #if RAPIDJSON_HAS_STDSTRING
+<span class="lineNum">     199 </span>            :     bool String(const std::basic_string&lt;Ch&gt;&amp; str) {
+<span class="lineNum">     200 </span>            :         return String(str.data(), SizeType(str.size()));
+<span class="lineNum">     201 </span>            :     }
+<span class="lineNum">     202 </span>            : #endif
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :     bool StartObject() {
+<span class="lineNum">     205 </span>            :         Prefix(kObjectType);
+<span class="lineNum">     206 </span>            :         new (level_stack_.template Push&lt;Level&gt;()) Level(false);
+<span class="lineNum">     207 </span>            :         return WriteStartObject();
+<span class="lineNum">     208 </span>            :     }
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :     bool Key(const Ch* str, SizeType length, bool copy = false) { return String(str, length, copy); }
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span>            :     bool EndObject(SizeType memberCount = 0) {
+<span class="lineNum">     213 </span>            :         (void)memberCount;
+<span class="lineNum">     214 </span>            :         RAPIDJSON_ASSERT(level_stack_.GetSize() &gt;= sizeof(Level));
+<span class="lineNum">     215 </span>            :         RAPIDJSON_ASSERT(!level_stack_.template Top&lt;Level&gt;()-&gt;inArray);
+<span class="lineNum">     216 </span>            :         level_stack_.template Pop&lt;Level&gt;(1);
+<span class="lineNum">     217 </span>            :         return EndValue(WriteEndObject());
+<span class="lineNum">     218 </span>            :     }
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :     bool StartArray() {
+<span class="lineNum">     221 </span>            :         Prefix(kArrayType);
+<span class="lineNum">     222 </span>            :         new (level_stack_.template Push&lt;Level&gt;()) Level(true);
+<span class="lineNum">     223 </span>            :         return WriteStartArray();
+<span class="lineNum">     224 </span>            :     }
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :     bool EndArray(SizeType elementCount = 0) {
+<span class="lineNum">     227 </span>            :         (void)elementCount;
+<span class="lineNum">     228 </span>            :         RAPIDJSON_ASSERT(level_stack_.GetSize() &gt;= sizeof(Level));
+<span class="lineNum">     229 </span>            :         RAPIDJSON_ASSERT(level_stack_.template Top&lt;Level&gt;()-&gt;inArray);
+<span class="lineNum">     230 </span>            :         level_stack_.template Pop&lt;Level&gt;(1);
+<span class="lineNum">     231 </span>            :         return EndValue(WriteEndArray());
+<span class="lineNum">     232 </span>            :     }
+<span class="lineNum">     233 </span>            :     //@}
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :     /*! @name Convenience extensions */
+<span class="lineNum">     236 </span>            :     //@{
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     //! Simpler but slower overload.
+<span class="lineNum">     239 </span>            :     bool String(const Ch* str) { return String(str, internal::StrLen(str)); }
+<span class="lineNum">     240 </span>            :     bool Key(const Ch* str) { return Key(str, internal::StrLen(str)); }
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            :     //@}
+<span class="lineNum">     243 </span>            : 
+<span class="lineNum">     244 </span>            :     //! Write a raw JSON value.
+<span class="lineNum">     245 </span>            :     /*!
+<span class="lineNum">     246 </span>            :         For user to write a stringified JSON as a value.
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :         \param json A well-formed JSON value. It should not contain null character within [0, length - 1] range.
+<span class="lineNum">     249 </span>            :         \param length Length of the json.
+<span class="lineNum">     250 </span>            :         \param type Type of the root of json.
+<span class="lineNum">     251 </span>            :     */
+<span class="lineNum">     252 </span>            :     bool RawValue(const Ch* json, size_t length, Type type) { Prefix(type); return EndValue(WriteRawValue(json, length)); }
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            : protected:
+<a name="255"><span class="lineNum">     255 </span>            :     //! Information for each nested level</a>
+<span class="lineNum">     256 </span>            :     struct Level {
+<span class="lineNum">     257 </span><span class="lineCov">        664 :         Level(bool inArray_) : valueCount(0), inArray(inArray_) {}</span>
+<span class="lineNum">     258 </span>            :         size_t valueCount;  //!&lt; number of values in this level
+<span class="lineNum">     259 </span>            :         bool inArray;       //!&lt; true if in array, otherwise in object
+<span class="lineNum">     260 </span>            :     };
+<span class="lineNum">     261 </span>            : 
+<a name="262"><span class="lineNum">     262 </span>            :     static const size_t kDefaultLevelDepth = 32;</a>
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 :     bool WriteNull()  {</span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :         PutReserve(*os_, 4);</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :         PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'u'); PutUnsafe(*os_, 'l'); PutUnsafe(*os_, 'l'); return true;</span>
+<a name="267"><span class="lineNum">     267 </span>            :     }</a>
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :     bool WriteBool(bool b)  {</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 :         if (b) {</span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :             PutReserve(*os_, 4);</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :             PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'r'); PutUnsafe(*os_, 'u'); PutUnsafe(*os_, 'e');</span>
+<span class="lineNum">     273 </span>            :         }
+<span class="lineNum">     274 </span>            :         else {
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :             PutReserve(*os_, 5);</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 :             PutUnsafe(*os_, 'f'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'l'); PutUnsafe(*os_, 's'); PutUnsafe(*os_, 'e');</span>
+<span class="lineNum">     277 </span>            :         }
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     279 </span>            :     }
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :     bool WriteInt(int i) {
+<span class="lineNum">     282 </span>            :         char buffer[11];
+<span class="lineNum">     283 </span>            :         const char* end = internal::i32toa(i, buffer);
+<span class="lineNum">     284 </span>            :         PutReserve(*os_, static_cast&lt;size_t&gt;(end - buffer));
+<span class="lineNum">     285 </span>            :         for (const char* p = buffer; p != end; ++p)
+<span class="lineNum">     286 </span>            :             PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(*p));
+<span class="lineNum">     287 </span>            :         return true;
+<span class="lineNum">     288 </span>            :     }
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            :     bool WriteUint(unsigned u) {
+<span class="lineNum">     291 </span>            :         char buffer[10];
+<span class="lineNum">     292 </span>            :         const char* end = internal::u32toa(u, buffer);
+<span class="lineNum">     293 </span>            :         PutReserve(*os_, static_cast&lt;size_t&gt;(end - buffer));
+<span class="lineNum">     294 </span>            :         for (const char* p = buffer; p != end; ++p)
+<span class="lineNum">     295 </span>            :             PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(*p));
+<span class="lineNum">     296 </span>            :         return true;
+<span class="lineNum">     297 </span>            :     }
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :     bool WriteInt64(int64_t i64) {
+<span class="lineNum">     300 </span>            :         char buffer[21];
+<span class="lineNum">     301 </span>            :         const char* end = internal::i64toa(i64, buffer);
+<span class="lineNum">     302 </span>            :         PutReserve(*os_, static_cast&lt;size_t&gt;(end - buffer));
+<span class="lineNum">     303 </span>            :         for (const char* p = buffer; p != end; ++p)
+<span class="lineNum">     304 </span>            :             PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(*p));
+<span class="lineNum">     305 </span>            :         return true;
+<span class="lineNum">     306 </span>            :     }
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            :     bool WriteUint64(uint64_t u64) {
+<span class="lineNum">     309 </span>            :         char buffer[20];
+<span class="lineNum">     310 </span>            :         char* end = internal::u64toa(u64, buffer);
+<span class="lineNum">     311 </span>            :         PutReserve(*os_, static_cast&lt;size_t&gt;(end - buffer));
+<span class="lineNum">     312 </span>            :         for (char* p = buffer; p != end; ++p)
+<span class="lineNum">     313 </span>            :             PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(*p));
+<span class="lineNum">     314 </span>            :         return true;
+<span class="lineNum">     315 </span>            :     }
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            :     bool WriteDouble(double d) {
+<span class="lineNum">     318 </span>            :         if (internal::Double(d).IsNanOrInf()) {
+<span class="lineNum">     319 </span>            :             if (!(writeFlags &amp; kWriteNanAndInfFlag))
+<span class="lineNum">     320 </span>            :                 return false;
+<span class="lineNum">     321 </span>            :             if (internal::Double(d).IsNan()) {
+<span class="lineNum">     322 </span>            :                 PutReserve(*os_, 3);
+<span class="lineNum">     323 </span>            :                 PutUnsafe(*os_, 'N'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'N');
+<span class="lineNum">     324 </span>            :                 return true;
+<span class="lineNum">     325 </span>            :             }
+<span class="lineNum">     326 </span>            :             if (internal::Double(d).Sign()) {
+<span class="lineNum">     327 </span>            :                 PutReserve(*os_, 9);
+<span class="lineNum">     328 </span>            :                 PutUnsafe(*os_, '-');
+<span class="lineNum">     329 </span>            :             }
+<span class="lineNum">     330 </span>            :             else
+<span class="lineNum">     331 </span>            :                 PutReserve(*os_, 8);
+<span class="lineNum">     332 </span>            :             PutUnsafe(*os_, 'I'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'f');
+<span class="lineNum">     333 </span>            :             PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'y');
+<span class="lineNum">     334 </span>            :             return true;
+<span class="lineNum">     335 </span>            :         }
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            :         char buffer[25];
+<span class="lineNum">     338 </span>            :         char* end = internal::dtoa(d, buffer, maxDecimalPlaces_);
+<span class="lineNum">     339 </span>            :         PutReserve(*os_, static_cast&lt;size_t&gt;(end - buffer));
+<span class="lineNum">     340 </span>            :         for (char* p = buffer; p != end; ++p)
+<span class="lineNum">     341 </span>            :             PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(*p));
+<span class="lineNum">     342 </span>            :         return true;
+<a name="343"><span class="lineNum">     343 </span>            :     }</a>
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span><span class="lineCov">       4622 :     bool WriteString(const Ch* str, SizeType length)  {</span>
+<span class="lineNum">     346 </span>            :         static const typename TargetEncoding::Ch hexDigits[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+<span class="lineNum">     347 </span>            :         static const char escape[256] = {
+<span class="lineNum">     348 </span>            : #define Z16 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+<span class="lineNum">     349 </span>            :             //0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+<span class="lineNum">     350 </span>            :             'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'b', 't', 'n', 'u', 'f', 'r', 'u', 'u', // 00
+<span class="lineNum">     351 </span>            :             'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', // 10
+<span class="lineNum">     352 </span>            :               0,   0, '&quot;',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, // 20
+<span class="lineNum">     353 </span>            :             Z16, Z16,                                                                       // 30~4F
+<span class="lineNum">     354 </span>            :               0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,'\\',   0,   0,   0, // 50
+<span class="lineNum">     355 </span>            :             Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16, Z16                                // 60~FF
+<span class="lineNum">     356 </span>            : #undef Z16
+<span class="lineNum">     357 </span>            :         };
+<span class="lineNum">     358 </span>            : 
+<span class="lineNum">     359 </span>            :         if (TargetEncoding::supportUnicode)
+<span class="lineNum">     360 </span><span class="lineCov">       2311 :             PutReserve(*os_, 2 + length * 6); // &quot;\uxxxx...&quot;</span>
+<span class="lineNum">     361 </span>            :         else
+<span class="lineNum">     362 </span>            :             PutReserve(*os_, 2 + length * 12);  // &quot;\uxxxx\uyyyy...&quot;
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span><span class="lineCov">       2311 :         PutUnsafe(*os_, '\&quot;');</span>
+<span class="lineNum">     365 </span><span class="lineCov">       2311 :         GenericStringStream&lt;SourceEncoding&gt; is(str);</span>
+<span class="lineNum">     366 </span><span class="lineCov">      39813 :         while (ScanWriteUnescapedString(is, length)) {</span>
+<span class="lineNum">     367 </span><span class="lineCov">      37502 :             const Ch c = is.Peek();</span>
+<span class="lineNum">     368 </span>            :             if (!TargetEncoding::supportUnicode &amp;&amp; static_cast&lt;unsigned&gt;(c) &gt;= 0x80) {
+<span class="lineNum">     369 </span>            :                 // Unicode escaping
+<span class="lineNum">     370 </span>            :                 unsigned codepoint;
+<span class="lineNum">     371 </span>            :                 if (RAPIDJSON_UNLIKELY(!SourceEncoding::Decode(is, &amp;codepoint)))
+<span class="lineNum">     372 </span>            :                     return false;
+<span class="lineNum">     373 </span>            :                 PutUnsafe(*os_, '\\');
+<span class="lineNum">     374 </span>            :                 PutUnsafe(*os_, 'u');
+<span class="lineNum">     375 </span>            :                 if (codepoint &lt;= 0xD7FF || (codepoint &gt;= 0xE000 &amp;&amp; codepoint &lt;= 0xFFFF)) {
+<span class="lineNum">     376 </span>            :                     PutUnsafe(*os_, hexDigits[(codepoint &gt;&gt; 12) &amp; 15]);
+<span class="lineNum">     377 </span>            :                     PutUnsafe(*os_, hexDigits[(codepoint &gt;&gt;  8) &amp; 15]);
+<span class="lineNum">     378 </span>            :                     PutUnsafe(*os_, hexDigits[(codepoint &gt;&gt;  4) &amp; 15]);
+<span class="lineNum">     379 </span>            :                     PutUnsafe(*os_, hexDigits[(codepoint      ) &amp; 15]);
+<span class="lineNum">     380 </span>            :                 }
+<span class="lineNum">     381 </span>            :                 else {
+<span class="lineNum">     382 </span>            :                     RAPIDJSON_ASSERT(codepoint &gt;= 0x010000 &amp;&amp; codepoint &lt;= 0x10FFFF);
+<span class="lineNum">     383 </span>            :                     // Surrogate pair
+<span class="lineNum">     384 </span>            :                     unsigned s = codepoint - 0x010000;
+<span class="lineNum">     385 </span>            :                     unsigned lead = (s &gt;&gt; 10) + 0xD800;
+<span class="lineNum">     386 </span>            :                     unsigned trail = (s &amp; 0x3FF) + 0xDC00;
+<span class="lineNum">     387 </span>            :                     PutUnsafe(*os_, hexDigits[(lead &gt;&gt; 12) &amp; 15]);
+<span class="lineNum">     388 </span>            :                     PutUnsafe(*os_, hexDigits[(lead &gt;&gt;  8) &amp; 15]);
+<span class="lineNum">     389 </span>            :                     PutUnsafe(*os_, hexDigits[(lead &gt;&gt;  4) &amp; 15]);
+<span class="lineNum">     390 </span>            :                     PutUnsafe(*os_, hexDigits[(lead      ) &amp; 15]);
+<span class="lineNum">     391 </span>            :                     PutUnsafe(*os_, '\\');
+<span class="lineNum">     392 </span>            :                     PutUnsafe(*os_, 'u');
+<span class="lineNum">     393 </span>            :                     PutUnsafe(*os_, hexDigits[(trail &gt;&gt; 12) &amp; 15]);
+<span class="lineNum">     394 </span>            :                     PutUnsafe(*os_, hexDigits[(trail &gt;&gt;  8) &amp; 15]);
+<span class="lineNum">     395 </span>            :                     PutUnsafe(*os_, hexDigits[(trail &gt;&gt;  4) &amp; 15]);
+<span class="lineNum">     396 </span>            :                     PutUnsafe(*os_, hexDigits[(trail      ) &amp; 15]);                    
+<span class="lineNum">     397 </span>            :                 }
+<span class="lineNum">     398 </span>            :             }
+<span class="lineNum">     399 </span><span class="lineCov">      37502 :             else if ((sizeof(Ch) == 1 || static_cast&lt;unsigned&gt;(c) &lt; 256) &amp;&amp; RAPIDJSON_UNLIKELY(escape[static_cast&lt;unsigned char&gt;(c)]))  {</span>
+<span class="lineNum">     400 </span><span class="lineNoCov">          0 :                 is.Take();</span>
+<span class="lineNum">     401 </span><span class="lineNoCov">          0 :                 PutUnsafe(*os_, '\\');</span>
+<span class="lineNum">     402 </span><span class="lineNoCov">          0 :                 PutUnsafe(*os_, static_cast&lt;typename TargetEncoding::Ch&gt;(escape[static_cast&lt;unsigned char&gt;(c)]));</span>
+<span class="lineNum">     403 </span><span class="lineNoCov">          0 :                 if (escape[static_cast&lt;unsigned char&gt;(c)] == 'u') {</span>
+<span class="lineNum">     404 </span><span class="lineNoCov">          0 :                     PutUnsafe(*os_, '0');</span>
+<span class="lineNum">     405 </span><span class="lineNoCov">          0 :                     PutUnsafe(*os_, '0');</span>
+<span class="lineNum">     406 </span><span class="lineNoCov">          0 :                     PutUnsafe(*os_, hexDigits[static_cast&lt;unsigned char&gt;(c) &gt;&gt; 4]);</span>
+<span class="lineNum">     407 </span><span class="lineNoCov">          0 :                     PutUnsafe(*os_, hexDigits[static_cast&lt;unsigned char&gt;(c) &amp; 0xF]);</span>
+<span class="lineNum">     408 </span>            :                 }
+<span class="lineNum">     409 </span>            :             }
+<span class="lineNum">     410 </span><span class="lineCov">      37502 :             else if (RAPIDJSON_UNLIKELY(!(writeFlags &amp; kWriteValidateEncodingFlag ? </span>
+<span class="lineNum">     411 </span>            :                 Transcoder&lt;SourceEncoding, TargetEncoding&gt;::Validate(is, *os_) :
+<span class="lineNum">     412 </span>            :                 Transcoder&lt;SourceEncoding, TargetEncoding&gt;::TranscodeUnsafe(is, *os_))))
+<span class="lineNum">     413 </span><span class="lineNoCov">          0 :                 return false;</span>
+<span class="lineNum">     414 </span>            :         }
+<span class="lineNum">     415 </span><span class="lineCov">       2311 :         PutUnsafe(*os_, '\&quot;');</span>
+<span class="lineNum">     416 </span><span class="lineCov">       2311 :         return true;</span>
+<a name="417"><span class="lineNum">     417 </span>            :     }</a>
+<span class="lineNum">     418 </span>            : 
+<span class="lineNum">     419 </span><span class="lineCov">      39813 :     bool ScanWriteUnescapedString(GenericStringStream&lt;SourceEncoding&gt;&amp; is, size_t length) {</span>
+<span class="lineNum">     420 </span><span class="lineCov">      39813 :         return RAPIDJSON_LIKELY(is.Tell() &lt; length);</span>
+<a name="421"><span class="lineNum">     421 </span>            :     }</a>
+<a name="422"><span class="lineNum">     422 </span>            : </a>
+<a name="423"><span class="lineNum">     423 </span><span class="lineCov">        654 :     bool WriteStartObject() { os_-&gt;Put('{'); return true; }</span></a>
+<a name="424"><span class="lineNum">     424 </span><span class="lineCov">        654 :     bool WriteEndObject()   { os_-&gt;Put('}'); return true; }</span></a>
+<span class="lineNum">     425 </span><span class="lineCov">        674 :     bool WriteStartArray()  { os_-&gt;Put('['); return true; }</span>
+<span class="lineNum">     426 </span><span class="lineCov">        674 :     bool WriteEndArray()    { os_-&gt;Put(']'); return true; }</span>
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span>            :     bool WriteRawValue(const Ch* json, size_t length) {
+<span class="lineNum">     429 </span>            :         PutReserve(*os_, length);
+<span class="lineNum">     430 </span>            :         for (size_t i = 0; i &lt; length; i++) {
+<span class="lineNum">     431 </span>            :             RAPIDJSON_ASSERT(json[i] != '\0');
+<span class="lineNum">     432 </span>            :             PutUnsafe(*os_, json[i]);
+<span class="lineNum">     433 </span>            :         }
+<span class="lineNum">     434 </span>            :         return true;
+<span class="lineNum">     435 </span>            :     }
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span>            :     void Prefix(Type type) {
+<span class="lineNum">     438 </span>            :         (void)type;
+<span class="lineNum">     439 </span>            :         if (RAPIDJSON_LIKELY(level_stack_.GetSize() != 0)) { // this value is not at root
+<span class="lineNum">     440 </span>            :             Level* level = level_stack_.template Top&lt;Level&gt;();
+<span class="lineNum">     441 </span>            :             if (level-&gt;valueCount &gt; 0) {
+<span class="lineNum">     442 </span>            :                 if (level-&gt;inArray) 
+<span class="lineNum">     443 </span>            :                     os_-&gt;Put(','); // add comma if it is not the first element in array
+<span class="lineNum">     444 </span>            :                 else  // in object
+<span class="lineNum">     445 </span>            :                     os_-&gt;Put((level-&gt;valueCount % 2 == 0) ? ',' : ':');
+<span class="lineNum">     446 </span>            :             }
+<span class="lineNum">     447 </span>            :             if (!level-&gt;inArray &amp;&amp; level-&gt;valueCount % 2 == 0)
+<span class="lineNum">     448 </span>            :                 RAPIDJSON_ASSERT(type == kStringType);  // if it's in object, then even number should be a name
+<span class="lineNum">     449 </span>            :             level-&gt;valueCount++;
+<span class="lineNum">     450 </span>            :         }
+<span class="lineNum">     451 </span>            :         else {
+<span class="lineNum">     452 </span>            :             RAPIDJSON_ASSERT(!hasRoot_);    // Should only has one and only one root.
+<span class="lineNum">     453 </span>            :             hasRoot_ = true;
+<span class="lineNum">     454 </span>            :         }
+<span class="lineNum">     455 </span>            :     }
+<span class="lineNum">     456 </span>            : 
+<span class="lineNum">     457 </span>            :     // Flush the value if it is the top level one.
+<span class="lineNum">     458 </span>            :     bool EndValue(bool ret) {
+<span class="lineNum">     459 </span>            :         if (RAPIDJSON_UNLIKELY(level_stack_.Empty()))   // end of json text
+<span class="lineNum">     460 </span>            :             os_-&gt;Flush();
+<span class="lineNum">     461 </span>            :         return ret;
+<span class="lineNum">     462 </span>            :     }
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span>            :     OutputStream* os_;
+<span class="lineNum">     465 </span>            :     internal::Stack&lt;StackAllocator&gt; level_stack_;
+<span class="lineNum">     466 </span>            :     int maxDecimalPlaces_;
+<span class="lineNum">     467 </span>            :     bool hasRoot_;
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span>            : private:
+<span class="lineNum">     470 </span>            :     // Prohibit copy constructor &amp; assignment operator.
+<span class="lineNum">     471 </span>            :     Writer(const Writer&amp;);
+<span class="lineNum">     472 </span>            :     Writer&amp; operator=(const Writer&amp;);
+<span class="lineNum">     473 </span>            : };
+<span class="lineNum">     474 </span>            : 
+<span class="lineNum">     475 </span>            : // Full specialization for StringStream to prevent memory copying
+<a name="476"><span class="lineNum">     476 </span>            : </a>
+<span class="lineNum">     477 </span>            : template&lt;&gt;
+<span class="lineNum">     478 </span><span class="lineCov">        431 : inline bool Writer&lt;StringBuffer&gt;::WriteInt(int i) {</span>
+<span class="lineNum">     479 </span><span class="lineCov">        431 :     char *buffer = os_-&gt;Push(11);</span>
+<span class="lineNum">     480 </span><span class="lineCov">        431 :     const char* end = internal::i32toa(i, buffer);</span>
+<span class="lineNum">     481 </span><span class="lineCov">        431 :     os_-&gt;Pop(static_cast&lt;size_t&gt;(11 - (end - buffer)));</span>
+<span class="lineNum">     482 </span><span class="lineCov">        431 :     return true;</span>
+<span class="lineNum">     483 </span>            : }
+<a name="484"><span class="lineNum">     484 </span>            : </a>
+<span class="lineNum">     485 </span>            : template&lt;&gt;
+<span class="lineNum">     486 </span><span class="lineNoCov">          0 : inline bool Writer&lt;StringBuffer&gt;::WriteUint(unsigned u) {</span>
+<span class="lineNum">     487 </span><span class="lineNoCov">          0 :     char *buffer = os_-&gt;Push(10);</span>
+<span class="lineNum">     488 </span><span class="lineNoCov">          0 :     const char* end = internal::u32toa(u, buffer);</span>
+<span class="lineNum">     489 </span><span class="lineNoCov">          0 :     os_-&gt;Pop(static_cast&lt;size_t&gt;(10 - (end - buffer)));</span>
+<span class="lineNum">     490 </span><span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">     491 </span>            : }
+<a name="492"><span class="lineNum">     492 </span>            : </a>
+<span class="lineNum">     493 </span>            : template&lt;&gt;
+<span class="lineNum">     494 </span><span class="lineCov">          6 : inline bool Writer&lt;StringBuffer&gt;::WriteInt64(int64_t i64) {</span>
+<span class="lineNum">     495 </span><span class="lineCov">          6 :     char *buffer = os_-&gt;Push(21);</span>
+<span class="lineNum">     496 </span><span class="lineCov">          6 :     const char* end = internal::i64toa(i64, buffer);</span>
+<span class="lineNum">     497 </span><span class="lineCov">          6 :     os_-&gt;Pop(static_cast&lt;size_t&gt;(21 - (end - buffer)));</span>
+<span class="lineNum">     498 </span><span class="lineCov">          6 :     return true;</span>
+<span class="lineNum">     499 </span>            : }
+<a name="500"><span class="lineNum">     500 </span>            : </a>
+<span class="lineNum">     501 </span>            : template&lt;&gt;
+<span class="lineNum">     502 </span><span class="lineNoCov">          0 : inline bool Writer&lt;StringBuffer&gt;::WriteUint64(uint64_t u) {</span>
+<span class="lineNum">     503 </span><span class="lineNoCov">          0 :     char *buffer = os_-&gt;Push(20);</span>
+<span class="lineNum">     504 </span><span class="lineNoCov">          0 :     const char* end = internal::u64toa(u, buffer);</span>
+<span class="lineNum">     505 </span><span class="lineNoCov">          0 :     os_-&gt;Pop(static_cast&lt;size_t&gt;(20 - (end - buffer)));</span>
+<span class="lineNum">     506 </span><span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">     507 </span>            : }
+<a name="508"><span class="lineNum">     508 </span>            : </a>
+<span class="lineNum">     509 </span>            : template&lt;&gt;
+<span class="lineNum">     510 </span><span class="lineNoCov">          0 : inline bool Writer&lt;StringBuffer&gt;::WriteDouble(double d) {</span>
+<span class="lineNum">     511 </span><span class="lineNoCov">          0 :     if (internal::Double(d).IsNanOrInf()) {</span>
+<span class="lineNum">     512 </span>            :         // Note: This code path can only be reached if (RAPIDJSON_WRITE_DEFAULT_FLAGS &amp; kWriteNanAndInfFlag).
+<span class="lineNum">     513 </span>            :         if (!(kWriteDefaultFlags &amp; kWriteNanAndInfFlag))
+<span class="lineNum">     514 </span><span class="lineNoCov">          0 :             return false;</span>
+<span class="lineNum">     515 </span>            :         if (internal::Double(d).IsNan()) {
+<span class="lineNum">     516 </span>            :             PutReserve(*os_, 3);
+<span class="lineNum">     517 </span>            :             PutUnsafe(*os_, 'N'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'N');
+<span class="lineNum">     518 </span>            :             return true;
+<span class="lineNum">     519 </span>            :         }
+<span class="lineNum">     520 </span>            :         if (internal::Double(d).Sign()) {
+<span class="lineNum">     521 </span>            :             PutReserve(*os_, 9);
+<span class="lineNum">     522 </span>            :             PutUnsafe(*os_, '-');
+<span class="lineNum">     523 </span>            :         }
+<span class="lineNum">     524 </span>            :         else
+<span class="lineNum">     525 </span>            :             PutReserve(*os_, 8);
+<span class="lineNum">     526 </span>            :         PutUnsafe(*os_, 'I'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'f');
+<span class="lineNum">     527 </span>            :         PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'y');
+<span class="lineNum">     528 </span>            :         return true;
+<span class="lineNum">     529 </span>            :     }
+<span class="lineNum">     530 </span>            :     
+<span class="lineNum">     531 </span><span class="lineNoCov">          0 :     char *buffer = os_-&gt;Push(25);</span>
+<span class="lineNum">     532 </span><span class="lineNoCov">          0 :     char* end = internal::dtoa(d, buffer, maxDecimalPlaces_);</span>
+<span class="lineNum">     533 </span><span class="lineNoCov">          0 :     os_-&gt;Pop(static_cast&lt;size_t&gt;(25 - (end - buffer)));</span>
+<span class="lineNum">     534 </span><span class="lineNoCov">          0 :     return true;</span>
+<span class="lineNum">     535 </span>            : }
+<span class="lineNum">     536 </span>            : 
+<span class="lineNum">     537 </span>            : #if defined(RAPIDJSON_SSE2) || defined(RAPIDJSON_SSE42)
+<span class="lineNum">     538 </span>            : template&lt;&gt;
+<span class="lineNum">     539 </span>            : inline bool Writer&lt;StringBuffer&gt;::ScanWriteUnescapedString(StringStream&amp; is, size_t length) {
+<span class="lineNum">     540 </span>            :     if (length &lt; 16)
+<span class="lineNum">     541 </span>            :         return RAPIDJSON_LIKELY(is.Tell() &lt; length);
+<span class="lineNum">     542 </span>            : 
+<span class="lineNum">     543 </span>            :     if (!RAPIDJSON_LIKELY(is.Tell() &lt; length))
+<span class="lineNum">     544 </span>            :         return false;
+<span class="lineNum">     545 </span>            : 
+<span class="lineNum">     546 </span>            :     const char* p = is.src_;
+<span class="lineNum">     547 </span>            :     const char* end = is.head_ + length;
+<span class="lineNum">     548 </span>            :     const char* nextAligned = reinterpret_cast&lt;const char*&gt;((reinterpret_cast&lt;size_t&gt;(p) + 15) &amp; static_cast&lt;size_t&gt;(~15));
+<span class="lineNum">     549 </span>            :     const char* endAligned = reinterpret_cast&lt;const char*&gt;(reinterpret_cast&lt;size_t&gt;(end) &amp; static_cast&lt;size_t&gt;(~15));
+<span class="lineNum">     550 </span>            :     if (nextAligned &gt; end)
+<span class="lineNum">     551 </span>            :         return true;
+<span class="lineNum">     552 </span>            : 
+<span class="lineNum">     553 </span>            :     while (p != nextAligned)
+<span class="lineNum">     554 </span>            :         if (*p &lt; 0x20 || *p == '\&quot;' || *p == '\\') {
+<span class="lineNum">     555 </span>            :             is.src_ = p;
+<span class="lineNum">     556 </span>            :             return RAPIDJSON_LIKELY(is.Tell() &lt; length);
+<span class="lineNum">     557 </span>            :         }
+<span class="lineNum">     558 </span>            :         else
+<span class="lineNum">     559 </span>            :             os_-&gt;PutUnsafe(*p++);
+<span class="lineNum">     560 </span>            : 
+<span class="lineNum">     561 </span>            :     // The rest of string using SIMD
+<span class="lineNum">     562 </span>            :     static const char dquote[16] = { '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;', '\&quot;' };
+<span class="lineNum">     563 </span>            :     static const char bslash[16] = { '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\', '\\' };
+<span class="lineNum">     564 </span>            :     static const char space[16]  = { 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19, 0x19 };
+<span class="lineNum">     565 </span>            :     const __m128i dq = _mm_loadu_si128(reinterpret_cast&lt;const __m128i *&gt;(&amp;dquote[0]));
+<span class="lineNum">     566 </span>            :     const __m128i bs = _mm_loadu_si128(reinterpret_cast&lt;const __m128i *&gt;(&amp;bslash[0]));
+<span class="lineNum">     567 </span>            :     const __m128i sp = _mm_loadu_si128(reinterpret_cast&lt;const __m128i *&gt;(&amp;space[0]));
+<span class="lineNum">     568 </span>            : 
+<span class="lineNum">     569 </span>            :     for (; p != endAligned; p += 16) {
+<span class="lineNum">     570 </span>            :         const __m128i s = _mm_load_si128(reinterpret_cast&lt;const __m128i *&gt;(p));
+<span class="lineNum">     571 </span>            :         const __m128i t1 = _mm_cmpeq_epi8(s, dq);
+<span class="lineNum">     572 </span>            :         const __m128i t2 = _mm_cmpeq_epi8(s, bs);
+<span class="lineNum">     573 </span>            :         const __m128i t3 = _mm_cmpeq_epi8(_mm_max_epu8(s, sp), sp); // s &lt; 0x20 &lt;=&gt; max(s, 0x19) == 0x19
+<span class="lineNum">     574 </span>            :         const __m128i x = _mm_or_si128(_mm_or_si128(t1, t2), t3);
+<span class="lineNum">     575 </span>            :         unsigned short r = static_cast&lt;unsigned short&gt;(_mm_movemask_epi8(x));
+<span class="lineNum">     576 </span>            :         if (RAPIDJSON_UNLIKELY(r != 0)) {   // some of characters is escaped
+<span class="lineNum">     577 </span>            :             SizeType len;
+<span class="lineNum">     578 </span>            : #ifdef _MSC_VER         // Find the index of first escaped
+<span class="lineNum">     579 </span>            :             unsigned long offset;
+<span class="lineNum">     580 </span>            :             _BitScanForward(&amp;offset, r);
+<span class="lineNum">     581 </span>            :             len = offset;
+<span class="lineNum">     582 </span>            : #else
+<span class="lineNum">     583 </span>            :             len = static_cast&lt;SizeType&gt;(__builtin_ffs(r) - 1);
+<span class="lineNum">     584 </span>            : #endif
+<span class="lineNum">     585 </span>            :             char* q = reinterpret_cast&lt;char*&gt;(os_-&gt;PushUnsafe(len));
+<span class="lineNum">     586 </span>            :             for (size_t i = 0; i &lt; len; i++)
+<span class="lineNum">     587 </span>            :                 q[i] = p[i];
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            :             p += len;
+<span class="lineNum">     590 </span>            :             break;
+<span class="lineNum">     591 </span>            :         }
+<span class="lineNum">     592 </span>            :         _mm_storeu_si128(reinterpret_cast&lt;__m128i *&gt;(os_-&gt;PushUnsafe(16)), s);
+<span class="lineNum">     593 </span>            :     }
+<span class="lineNum">     594 </span>            : 
+<span class="lineNum">     595 </span>            :     is.src_ = p;
+<span class="lineNum">     596 </span>            :     return RAPIDJSON_LIKELY(is.Tell() &lt; length);
+<span class="lineNum">     597 </span>            : }
+<span class="lineNum">     598 </span>            : #endif // defined(RAPIDJSON_SSE2) || defined(RAPIDJSON_SSE42)
+<span class="lineNum">     599 </span>            : 
+<span class="lineNum">     600 </span>            : RAPIDJSON_NAMESPACE_END
+<span class="lineNum">     601 </span>            : 
+<span class="lineNum">     602 </span>            : #ifdef _MSC_VER
+<span class="lineNum">     603 </span>            : RAPIDJSON_DIAG_POP
+<span class="lineNum">     604 </span>            : #endif
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            : #ifdef __clang__
+<span class="lineNum">     607 </span>            : RAPIDJSON_DIAG_POP
+<span class="lineNum">     608 </span>            : #endif
+<span class="lineNum">     609 </span>            : 
+<span class="lineNum">     610 </span>            : #endif // RAPIDJSON_RAPIDJSON_H_
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

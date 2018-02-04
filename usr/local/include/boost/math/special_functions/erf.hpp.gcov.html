@@ -1,0 +1,1237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/math/special_functions/erf.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/math/special_functions</a> - erf.hpp<span style="font-size: 80%;"> (source / <a href="erf.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">132</td>
+            <td class="headerCovTableEntry">139</td>
+            <td class="headerCovTableEntryHi">95.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //  (C) Copyright John Maddock 2006.</a>
+<span class="lineNum">       2 </span>            : //  Use, modification and distribution are subject to the
+<span class="lineNum">       3 </span>            : //  Boost Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef BOOST_MATH_SPECIAL_ERF_HPP
+<span class="lineNum">       7 </span>            : #define BOOST_MATH_SPECIAL_ERF_HPP
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #ifdef _MSC_VER
+<span class="lineNum">      10 </span>            : #pragma once
+<span class="lineNum">      11 </span>            : #endif
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &lt;boost/math/special_functions/math_fwd.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;boost/math/tools/config.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/math/special_functions/gamma.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/math/tools/roots.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/math/policies/error_handling.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/math/tools/big_constant.hpp&gt;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace boost{ namespace math{
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : namespace detail
+<span class="lineNum">      23 </span>            : {
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : //
+<span class="lineNum">      26 </span>            : // Asymptotic series for large z:
+<span class="lineNum">      27 </span>            : //
+<span class="lineNum">      28 </span>            : template &lt;class T&gt;
+<span class="lineNum">      29 </span>            : struct erf_asympt_series_t
+<span class="lineNum">      30 </span>            : {
+<span class="lineNum">      31 </span>            :    erf_asympt_series_t(T z) : xx(2 * -z * z), tk(1)
+<span class="lineNum">      32 </span>            :    {
+<span class="lineNum">      33 </span>            :       BOOST_MATH_STD_USING
+<span class="lineNum">      34 </span>            :       result = -exp(-z * z) / sqrt(boost::math::constants::pi&lt;T&gt;());
+<span class="lineNum">      35 </span>            :       result /= z;
+<span class="lineNum">      36 </span>            :    }
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :    typedef T result_type;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :    T operator()()
+<span class="lineNum">      41 </span>            :    {
+<span class="lineNum">      42 </span>            :       BOOST_MATH_STD_USING
+<span class="lineNum">      43 </span>            :       T r = result;
+<span class="lineNum">      44 </span>            :       result *= tk / xx;
+<span class="lineNum">      45 </span>            :       tk += 2;
+<span class="lineNum">      46 </span>            :       if( fabs(r) &lt; fabs(result))
+<span class="lineNum">      47 </span>            :          result = 0;
+<span class="lineNum">      48 </span>            :       return r;
+<span class="lineNum">      49 </span>            :    }
+<span class="lineNum">      50 </span>            : private:
+<span class="lineNum">      51 </span>            :    T result;
+<span class="lineNum">      52 </span>            :    T xx;
+<span class="lineNum">      53 </span>            :    int tk;
+<span class="lineNum">      54 </span>            : };
+<span class="lineNum">      55 </span>            : //
+<span class="lineNum">      56 </span>            : // How large z has to be in order to ensure that the series converges:
+<span class="lineNum">      57 </span>            : //
+<span class="lineNum">      58 </span>            : template &lt;class T&gt;
+<span class="lineNum">      59 </span>            : inline float erf_asymptotic_limit_N(const T&amp;)
+<span class="lineNum">      60 </span>            : {
+<span class="lineNum">      61 </span>            :    return (std::numeric_limits&lt;float&gt;::max)();
+<span class="lineNum">      62 </span>            : }
+<span class="lineNum">      63 </span>            : inline float erf_asymptotic_limit_N(const mpl::int_&lt;24&gt;&amp;)
+<span class="lineNum">      64 </span>            : {
+<span class="lineNum">      65 </span>            :    return 2.8F;
+<span class="lineNum">      66 </span>            : }
+<span class="lineNum">      67 </span>            : inline float erf_asymptotic_limit_N(const mpl::int_&lt;53&gt;&amp;)
+<span class="lineNum">      68 </span>            : {
+<span class="lineNum">      69 </span>            :    return 4.3F;
+<span class="lineNum">      70 </span>            : }
+<span class="lineNum">      71 </span>            : inline float erf_asymptotic_limit_N(const mpl::int_&lt;64&gt;&amp;)
+<span class="lineNum">      72 </span>            : {
+<span class="lineNum">      73 </span>            :    return 4.8F;
+<span class="lineNum">      74 </span>            : }
+<span class="lineNum">      75 </span>            : inline float erf_asymptotic_limit_N(const mpl::int_&lt;106&gt;&amp;)
+<span class="lineNum">      76 </span>            : {
+<span class="lineNum">      77 </span>            :    return 6.5F;
+<span class="lineNum">      78 </span>            : }
+<span class="lineNum">      79 </span>            : inline float erf_asymptotic_limit_N(const mpl::int_&lt;113&gt;&amp;)
+<span class="lineNum">      80 </span>            : {
+<span class="lineNum">      81 </span>            :    return 6.8F;
+<span class="lineNum">      82 </span>            : }
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">      85 </span>            : inline T erf_asymptotic_limit()
+<span class="lineNum">      86 </span>            : {
+<span class="lineNum">      87 </span>            :    typedef typename policies::precision&lt;T, Policy&gt;::type precision_type;
+<span class="lineNum">      88 </span>            :    typedef typename mpl::if_&lt;
+<span class="lineNum">      89 </span>            :       mpl::less_equal&lt;precision_type, mpl::int_&lt;24&gt; &gt;,
+<span class="lineNum">      90 </span>            :       typename mpl::if_&lt;
+<span class="lineNum">      91 </span>            :          mpl::less_equal&lt;precision_type, mpl::int_&lt;0&gt; &gt;,
+<span class="lineNum">      92 </span>            :          mpl::int_&lt;0&gt;,
+<span class="lineNum">      93 </span>            :          mpl::int_&lt;24&gt;
+<span class="lineNum">      94 </span>            :       &gt;::type,
+<span class="lineNum">      95 </span>            :       typename mpl::if_&lt;
+<span class="lineNum">      96 </span>            :          mpl::less_equal&lt;precision_type, mpl::int_&lt;53&gt; &gt;,
+<span class="lineNum">      97 </span>            :          mpl::int_&lt;53&gt;,
+<span class="lineNum">      98 </span>            :          typename mpl::if_&lt;
+<span class="lineNum">      99 </span>            :             mpl::less_equal&lt;precision_type, mpl::int_&lt;64&gt; &gt;,
+<span class="lineNum">     100 </span>            :             mpl::int_&lt;64&gt;,
+<span class="lineNum">     101 </span>            :             typename mpl::if_&lt;
+<span class="lineNum">     102 </span>            :                mpl::less_equal&lt;precision_type, mpl::int_&lt;106&gt; &gt;,
+<span class="lineNum">     103 </span>            :                mpl::int_&lt;106&gt;,
+<span class="lineNum">     104 </span>            :                typename mpl::if_&lt;
+<span class="lineNum">     105 </span>            :                   mpl::less_equal&lt;precision_type, mpl::int_&lt;113&gt; &gt;,
+<span class="lineNum">     106 </span>            :                   mpl::int_&lt;113&gt;,
+<span class="lineNum">     107 </span>            :                   mpl::int_&lt;0&gt;
+<span class="lineNum">     108 </span>            :                &gt;::type
+<span class="lineNum">     109 </span>            :             &gt;::type
+<span class="lineNum">     110 </span>            :          &gt;::type
+<span class="lineNum">     111 </span>            :       &gt;::type
+<span class="lineNum">     112 </span>            :    &gt;::type tag_type;
+<span class="lineNum">     113 </span>            :    return erf_asymptotic_limit_N(tag_type());
+<span class="lineNum">     114 </span>            : }
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            : template &lt;class T, class Policy, class Tag&gt;
+<span class="lineNum">     117 </span>            : T erf_imp(T z, bool invert, const Policy&amp; pol, const Tag&amp; t)
+<span class="lineNum">     118 </span>            : {
+<span class="lineNum">     119 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;Generic erf_imp called&quot;);
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :    if(z &lt; 0)
+<span class="lineNum">     124 </span>            :    {
+<span class="lineNum">     125 </span>            :       if(!invert)
+<span class="lineNum">     126 </span>            :          return -erf_imp(T(-z), invert, pol, t);
+<span class="lineNum">     127 </span>            :       else
+<span class="lineNum">     128 </span>            :          return 1 + erf_imp(T(-z), false, pol, t);
+<span class="lineNum">     129 </span>            :    }
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :    T result;
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            :    if(!invert &amp;&amp; (z &gt; detail::erf_asymptotic_limit&lt;T, Policy&gt;()))
+<span class="lineNum">     134 </span>            :    {
+<span class="lineNum">     135 </span>            :       detail::erf_asympt_series_t&lt;T&gt; s(z);
+<span class="lineNum">     136 </span>            :       boost::uintmax_t max_iter = policies::get_max_series_iterations&lt;Policy&gt;();
+<span class="lineNum">     137 </span>            :       result = boost::math::tools::sum_series(s, policies::get_epsilon&lt;T, Policy&gt;(), max_iter, 1);
+<span class="lineNum">     138 </span>            :       policies::check_series_iterations&lt;T&gt;(&quot;boost::math::erf&lt;%1%&gt;(%1%, %1%)&quot;, max_iter, pol);
+<span class="lineNum">     139 </span>            :    }
+<span class="lineNum">     140 </span>            :    else
+<span class="lineNum">     141 </span>            :    {
+<span class="lineNum">     142 </span>            :       T x = z * z;
+<span class="lineNum">     143 </span>            :       if(x &lt; 0.6)
+<span class="lineNum">     144 </span>            :       {
+<span class="lineNum">     145 </span>            :          // Compute P:
+<span class="lineNum">     146 </span>            :          result = z * exp(-x);
+<span class="lineNum">     147 </span>            :          result /= sqrt(boost::math::constants::pi&lt;T&gt;());
+<span class="lineNum">     148 </span>            :          if(result != 0)
+<span class="lineNum">     149 </span>            :             result *= 2 * detail::lower_gamma_series(T(0.5f), x, pol);
+<span class="lineNum">     150 </span>            :       }
+<span class="lineNum">     151 </span>            :       else if(x &lt; 1.1f)
+<span class="lineNum">     152 </span>            :       {
+<span class="lineNum">     153 </span>            :          // Compute Q:
+<span class="lineNum">     154 </span>            :          invert = !invert;
+<span class="lineNum">     155 </span>            :          result = tgamma_small_upper_part(T(0.5f), x, pol);
+<span class="lineNum">     156 </span>            :          result /= sqrt(boost::math::constants::pi&lt;T&gt;());
+<span class="lineNum">     157 </span>            :       }
+<span class="lineNum">     158 </span>            :       else if(x &gt; 1 / tools::epsilon&lt;T&gt;())
+<span class="lineNum">     159 </span>            :       {
+<span class="lineNum">     160 </span>            :          // http://functions.wolfram.com/06.27.06.0006.02
+<span class="lineNum">     161 </span>            :          invert = !invert;
+<span class="lineNum">     162 </span>            :          result = exp(-x) / (constants::root_pi&lt;T&gt;() * z);
+<span class="lineNum">     163 </span>            :       }
+<span class="lineNum">     164 </span>            :       else
+<span class="lineNum">     165 </span>            :       {
+<span class="lineNum">     166 </span>            :          // Compute Q:
+<span class="lineNum">     167 </span>            :          invert = !invert;
+<span class="lineNum">     168 </span>            :          result = z * exp(-x);
+<span class="lineNum">     169 </span>            :          result /= boost::math::constants::root_pi&lt;T&gt;();
+<span class="lineNum">     170 </span>            :          result *= upper_gamma_fraction(T(0.5f), x, policies::get_epsilon&lt;T, Policy&gt;());
+<span class="lineNum">     171 </span>            :       }
+<span class="lineNum">     172 </span>            :    }
+<span class="lineNum">     173 </span>            :    if(invert)
+<span class="lineNum">     174 </span>            :       result = 1 - result;
+<span class="lineNum">     175 </span>            :    return result;
+<span class="lineNum">     176 </span>            : }
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     179 </span>            : T erf_imp(T z, bool invert, const Policy&amp; pol, const mpl::int_&lt;53&gt;&amp; t)
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     182 </span>            : 
+<span class="lineNum">     183 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;53-bit precision erf_imp called&quot;);
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :    if(z &lt; 0)
+<span class="lineNum">     186 </span>            :    {
+<span class="lineNum">     187 </span>            :       if(!invert)
+<span class="lineNum">     188 </span>            :          return -erf_imp(T(-z), invert, pol, t);
+<span class="lineNum">     189 </span>            :       else if(z &lt; -0.5)
+<span class="lineNum">     190 </span>            :          return 2 - erf_imp(T(-z), invert, pol, t);
+<span class="lineNum">     191 </span>            :       else
+<span class="lineNum">     192 </span>            :          return 1 + erf_imp(T(-z), false, pol, t);
+<span class="lineNum">     193 </span>            :    }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            :    T result;
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :    //
+<span class="lineNum">     198 </span>            :    // Big bunch of selection statements now to pick
+<span class="lineNum">     199 </span>            :    // which implementation to use,
+<span class="lineNum">     200 </span>            :    // try to put most likely options first:
+<span class="lineNum">     201 </span>            :    //
+<span class="lineNum">     202 </span>            :    if(z &lt; 0.5)
+<span class="lineNum">     203 </span>            :    {
+<span class="lineNum">     204 </span>            :       //
+<span class="lineNum">     205 </span>            :       // We're going to calculate erf:
+<span class="lineNum">     206 </span>            :       //
+<span class="lineNum">     207 </span>            :       if(z &lt; 1e-10)
+<span class="lineNum">     208 </span>            :       {
+<span class="lineNum">     209 </span>            :          if(z == 0)
+<span class="lineNum">     210 </span>            :          {
+<span class="lineNum">     211 </span>            :             result = T(0);
+<span class="lineNum">     212 </span>            :          }
+<span class="lineNum">     213 </span>            :          else
+<span class="lineNum">     214 </span>            :          {
+<span class="lineNum">     215 </span>            :             static const T c = BOOST_MATH_BIG_CONSTANT(T, 53, 0.003379167095512573896158903121545171688);
+<span class="lineNum">     216 </span>            :             result = static_cast&lt;T&gt;(z * 1.125f + z * c);
+<span class="lineNum">     217 </span>            :          }
+<span class="lineNum">     218 </span>            :       }
+<span class="lineNum">     219 </span>            :       else
+<span class="lineNum">     220 </span>            :       {
+<span class="lineNum">     221 </span>            :          // Maximum Deviation Found:                     1.561e-17
+<span class="lineNum">     222 </span>            :          // Expected Error Term:                         1.561e-17
+<span class="lineNum">     223 </span>            :          // Maximum Relative Change in Control Points:   1.155e-04
+<span class="lineNum">     224 </span>            :          // Max Error found at double precision =        2.961182e-17
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :          static const T Y = 1.044948577880859375f;
+<span class="lineNum">     227 </span>            :          static const T P[] = {    
+<span class="lineNum">     228 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0834305892146531832907),
+<span class="lineNum">     229 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.338165134459360935041),
+<span class="lineNum">     230 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.0509990735146777432841),
+<span class="lineNum">     231 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.00772758345802133288487),
+<span class="lineNum">     232 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.000322780120964605683831),
+<span class="lineNum">     233 </span>            :          };
+<span class="lineNum">     234 </span>            :          static const T Q[] = {    
+<span class="lineNum">     235 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
+<span class="lineNum">     236 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.455004033050794024546),
+<span class="lineNum">     237 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0875222600142252549554),
+<span class="lineNum">     238 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00858571925074406212772),
+<span class="lineNum">     239 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.000370900071787748000569),
+<span class="lineNum">     240 </span>            :          };
+<span class="lineNum">     241 </span>            :          T zz = z * z;
+<span class="lineNum">     242 </span>            :          result = z * (Y + tools::evaluate_polynomial(P, zz) / tools::evaluate_polynomial(Q, zz));
+<span class="lineNum">     243 </span>            :       }
+<span class="lineNum">     244 </span>            :    }
+<span class="lineNum">     245 </span>            :    else if(invert ? (z &lt; 28) : (z &lt; 5.8f))
+<span class="lineNum">     246 </span>            :    {
+<span class="lineNum">     247 </span>            :       //
+<span class="lineNum">     248 </span>            :       // We'll be calculating erfc:
+<span class="lineNum">     249 </span>            :       //
+<span class="lineNum">     250 </span>            :       invert = !invert;
+<span class="lineNum">     251 </span>            :       if(z &lt; 1.5f)
+<span class="lineNum">     252 </span>            :       {
+<span class="lineNum">     253 </span>            :          // Maximum Deviation Found:                     3.702e-17
+<span class="lineNum">     254 </span>            :          // Expected Error Term:                         3.702e-17
+<span class="lineNum">     255 </span>            :          // Maximum Relative Change in Control Points:   2.845e-04
+<span class="lineNum">     256 </span>            :          // Max Error found at double precision =        4.841816e-17
+<span class="lineNum">     257 </span>            :          static const T Y = 0.405935764312744140625f;
+<span class="lineNum">     258 </span>            :          static const T P[] = {    
+<span class="lineNum">     259 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.098090592216281240205),
+<span class="lineNum">     260 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.178114665841120341155),
+<span class="lineNum">     261 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.191003695796775433986),
+<span class="lineNum">     262 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0888900368967884466578),
+<span class="lineNum">     263 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0195049001251218801359),
+<span class="lineNum">     264 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00180424538297014223957),
+<span class="lineNum">     265 </span>            :          };
+<span class="lineNum">     266 </span>            :          static const T Q[] = {    
+<span class="lineNum">     267 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
+<span class="lineNum">     268 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.84759070983002217845),
+<span class="lineNum">     269 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.42628004845511324508),
+<span class="lineNum">     270 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.578052804889902404909),
+<span class="lineNum">     271 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.12385097467900864233),
+<span class="lineNum">     272 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0113385233577001411017),
+<span class="lineNum">     273 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.337511472483094676155e-5),
+<span class="lineNum">     274 </span>            :          };
+<span class="lineNum">     275 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(Y);
+<span class="lineNum">     276 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(P[0]);
+<span class="lineNum">     277 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(Q[0]);
+<span class="lineNum">     278 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(z);
+<span class="lineNum">     279 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 0.5)) / tools::evaluate_polynomial(Q, T(z - 0.5));
+<span class="lineNum">     280 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(result);
+<span class="lineNum">     281 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     282 </span>            :          BOOST_MATH_INSTRUMENT_VARIABLE(result);
+<span class="lineNum">     283 </span>            :       }
+<span class="lineNum">     284 </span>            :       else if(z &lt; 2.5f)
+<span class="lineNum">     285 </span>            :       {
+<span class="lineNum">     286 </span>            :          // Max Error found at double precision =        6.599585e-18
+<span class="lineNum">     287 </span>            :          // Maximum Deviation Found:                     3.909e-18
+<span class="lineNum">     288 </span>            :          // Expected Error Term:                         3.909e-18
+<span class="lineNum">     289 </span>            :          // Maximum Relative Change in Control Points:   9.886e-05
+<span class="lineNum">     290 </span>            :          static const T Y = 0.50672817230224609375f;
+<span class="lineNum">     291 </span>            :          static const T P[] = {    
+<span class="lineNum">     292 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.0243500476207698441272),
+<span class="lineNum">     293 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0386540375035707201728),
+<span class="lineNum">     294 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.04394818964209516296),
+<span class="lineNum">     295 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0175679436311802092299),
+<span class="lineNum">     296 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00323962406290842133584),
+<span class="lineNum">     297 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.000235839115596880717416),
+<span class="lineNum">     298 </span>            :          };
+<span class="lineNum">     299 </span>            :          static const T Q[] = {    
+<span class="lineNum">     300 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
+<span class="lineNum">     301 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.53991494948552447182),
+<span class="lineNum">     302 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.982403709157920235114),
+<span class="lineNum">     303 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.325732924782444448493),
+<span class="lineNum">     304 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0563921837420478160373),
+<span class="lineNum">     305 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00410369723978904575884),
+<span class="lineNum">     306 </span>            :          };
+<span class="lineNum">     307 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 1.5)) / tools::evaluate_polynomial(Q, T(z - 1.5));
+<span class="lineNum">     308 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     309 </span>            :       }
+<span class="lineNum">     310 </span>            :       else if(z &lt; 4.5f)
+<span class="lineNum">     311 </span>            :       {
+<span class="lineNum">     312 </span>            :          // Maximum Deviation Found:                     1.512e-17
+<span class="lineNum">     313 </span>            :          // Expected Error Term:                         1.512e-17
+<span class="lineNum">     314 </span>            :          // Maximum Relative Change in Control Points:   2.222e-04
+<span class="lineNum">     315 </span>            :          // Max Error found at double precision =        2.062515e-17
+<span class="lineNum">     316 </span>            :          static const T Y = 0.5405750274658203125f;
+<span class="lineNum">     317 </span>            :          static const T P[] = {    
+<span class="lineNum">     318 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00295276716530971662634),
+<span class="lineNum">     319 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0137384425896355332126),
+<span class="lineNum">     320 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00840807615555585383007),
+<span class="lineNum">     321 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00212825620914618649141),
+<span class="lineNum">     322 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.000250269961544794627958),
+<span class="lineNum">     323 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.113212406648847561139e-4),
+<span class="lineNum">     324 </span>            :          };
+<span class="lineNum">     325 </span>            :          static const T Q[] = {    
+<span class="lineNum">     326 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
+<span class="lineNum">     327 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.04217814166938418171),
+<span class="lineNum">     328 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.442597659481563127003),
+<span class="lineNum">     329 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0958492726301061423444),
+<span class="lineNum">     330 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0105982906484876531489),
+<span class="lineNum">     331 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.000479411269521714493907),
+<span class="lineNum">     332 </span>            :          };
+<span class="lineNum">     333 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 3.5)) / tools::evaluate_polynomial(Q, T(z - 3.5));
+<span class="lineNum">     334 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     335 </span>            :       }
+<span class="lineNum">     336 </span>            :       else
+<span class="lineNum">     337 </span>            :       {
+<span class="lineNum">     338 </span>            :          // Max Error found at double precision =        2.997958e-17
+<span class="lineNum">     339 </span>            :          // Maximum Deviation Found:                     2.860e-17
+<span class="lineNum">     340 </span>            :          // Expected Error Term:                         2.859e-17
+<span class="lineNum">     341 </span>            :          // Maximum Relative Change in Control Points:   1.357e-05
+<span class="lineNum">     342 </span>            :          static const T Y = 0.5579090118408203125f;
+<span class="lineNum">     343 </span>            :          static const T P[] = {    
+<span class="lineNum">     344 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.00628057170626964891937),
+<span class="lineNum">     345 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 0.0175389834052493308818),
+<span class="lineNum">     346 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.212652252872804219852),
+<span class="lineNum">     347 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -0.687717681153649930619),
+<span class="lineNum">     348 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -2.5518551727311523996),
+<span class="lineNum">     349 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -3.22729451764143718517),
+<span class="lineNum">     350 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, -2.8175401114513378771),
+<span class="lineNum">     351 </span>            :          };
+<span class="lineNum">     352 </span>            :          static const T Q[] = {    
+<span class="lineNum">     353 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 1.0),
+<span class="lineNum">     354 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 2.79257750980575282228),
+<span class="lineNum">     355 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 11.0567237927800161565),
+<span class="lineNum">     356 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 15.930646027911794143),
+<span class="lineNum">     357 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 22.9367376522880577224),
+<span class="lineNum">     358 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 13.5064170191802889145),
+<span class="lineNum">     359 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 53, 5.48409182238641741584),
+<span class="lineNum">     360 </span>            :          };
+<span class="lineNum">     361 </span>            :          result = Y + tools::evaluate_polynomial(P, T(1 / z)) / tools::evaluate_polynomial(Q, T(1 / z));
+<span class="lineNum">     362 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     363 </span>            :       }
+<span class="lineNum">     364 </span>            :    }
+<span class="lineNum">     365 </span>            :    else
+<span class="lineNum">     366 </span>            :    {
+<span class="lineNum">     367 </span>            :       //
+<span class="lineNum">     368 </span>            :       // Any value of z larger than 28 will underflow to zero:
+<span class="lineNum">     369 </span>            :       //
+<span class="lineNum">     370 </span>            :       result = 0;
+<span class="lineNum">     371 </span>            :       invert = !invert;
+<span class="lineNum">     372 </span>            :    }
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            :    if(invert)
+<span class="lineNum">     375 </span>            :    {
+<span class="lineNum">     376 </span>            :       result = 1 - result;
+<span class="lineNum">     377 </span>            :    }
+<span class="lineNum">     378 </span>            : 
+<span class="lineNum">     379 </span>            :    return result;
+<span class="lineNum">     380 </span>            : } // template &lt;class T, class Lanczos&gt;T erf_imp(T z, bool invert, const Lanczos&amp; l, const mpl::int_&lt;53&gt;&amp; t)
+<span class="lineNum">     381 </span>            : 
+<a name="382"><span class="lineNum">     382 </span>            : </a>
+<span class="lineNum">     383 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     384 </span><span class="lineCov">          8 : T erf_imp(T z, bool invert, const Policy&amp; pol, const mpl::int_&lt;64&gt;&amp; t)</span>
+<span class="lineNum">     385 </span>            : {
+<span class="lineNum">     386 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;64-bit precision erf_imp called&quot;);
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span><span class="lineCov">          8 :    if(z &lt; 0)</span>
+<span class="lineNum">     391 </span>            :    {
+<span class="lineNum">     392 </span><span class="lineNoCov">          0 :       if(!invert)</span>
+<span class="lineNum">     393 </span><span class="lineNoCov">          0 :          return -erf_imp(T(-z), invert, pol, t);</span>
+<span class="lineNum">     394 </span><span class="lineNoCov">          0 :       else if(z &lt; -0.5)</span>
+<span class="lineNum">     395 </span><span class="lineNoCov">          0 :          return 2 - erf_imp(T(-z), invert, pol, t);</span>
+<span class="lineNum">     396 </span>            :       else
+<span class="lineNum">     397 </span><span class="lineNoCov">          0 :          return 1 + erf_imp(T(-z), false, pol, t);</span>
+<span class="lineNum">     398 </span>            :    }
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            :    T result;
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :    //
+<span class="lineNum">     403 </span>            :    // Big bunch of selection statements now to pick which
+<span class="lineNum">     404 </span>            :    // implementation to use, try to put most likely options
+<span class="lineNum">     405 </span>            :    // first:
+<span class="lineNum">     406 </span>            :    //
+<span class="lineNum">     407 </span><span class="lineCov">          8 :    if(z &lt; 0.5)</span>
+<span class="lineNum">     408 </span>            :    {
+<span class="lineNum">     409 </span>            :       //
+<span class="lineNum">     410 </span>            :       // We're going to calculate erf:
+<span class="lineNum">     411 </span>            :       //
+<span class="lineNum">     412 </span><span class="lineCov">          3 :       if(z == 0)</span>
+<span class="lineNum">     413 </span>            :       {
+<span class="lineNum">     414 </span><span class="lineCov">          1 :          result = 0;</span>
+<span class="lineNum">     415 </span>            :       }
+<span class="lineNum">     416 </span><span class="lineCov">          2 :       else if(z &lt; 1e-10)</span>
+<span class="lineNum">     417 </span>            :       {
+<span class="lineNum">     418 </span><span class="lineCov">          1 :          static const T c = BOOST_MATH_BIG_CONSTANT(T, 64, 0.003379167095512573896158903121545171688);</span>
+<span class="lineNum">     419 </span><span class="lineCov">          1 :          result = z * 1.125 + z * c;</span>
+<span class="lineNum">     420 </span>            :       }
+<span class="lineNum">     421 </span>            :       else
+<span class="lineNum">     422 </span>            :       {
+<span class="lineNum">     423 </span>            :          // Max Error found at long double precision =   1.623299e-20
+<span class="lineNum">     424 </span>            :          // Maximum Deviation Found:                     4.326e-22
+<span class="lineNum">     425 </span>            :          // Expected Error Term:                         -4.326e-22
+<span class="lineNum">     426 </span>            :          // Maximum Relative Change in Control Points:   1.474e-04
+<span class="lineNum">     427 </span>            :          static const T Y = 1.044948577880859375f;
+<span class="lineNum">     428 </span>            :          static const T P[] = {    
+<span class="lineNum">     429 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0834305892146531988966),</span>
+<span class="lineNum">     430 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.338097283075565413695),</span>
+<span class="lineNum">     431 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.0509602734406067204596),</span>
+<span class="lineNum">     432 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.00904906346158537794396),</span>
+<span class="lineNum">     433 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.000489468651464798669181),</span>
+<span class="lineNum">     434 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.200305626366151877759e-4),</span>
+<span class="lineNum">     435 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     436 </span>            :          static const T Q[] = {    
+<span class="lineNum">     437 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     438 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.455817300515875172439),</span>
+<span class="lineNum">     439 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0916537354356241792007),</span>
+<span class="lineNum">     440 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0102722652675910031202),</span>
+<span class="lineNum">     441 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.000650511752687851548735),</span>
+<span class="lineNum">     442 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.189532519105655496778e-4),</span>
+<span class="lineNum">     443 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     444 </span><span class="lineCov">          3 :          result = z * (Y + tools::evaluate_polynomial(P, T(z * z)) / tools::evaluate_polynomial(Q, T(z * z)));</span>
+<span class="lineNum">     445 </span>            :       }
+<span class="lineNum">     446 </span>            :    }
+<span class="lineNum">     447 </span><span class="lineCov">          5 :    else if(invert ? (z &lt; 110) : (z &lt; 6.4f))</span>
+<span class="lineNum">     448 </span>            :    {
+<span class="lineNum">     449 </span>            :       //
+<span class="lineNum">     450 </span>            :       // We'll be calculating erfc:
+<span class="lineNum">     451 </span>            :       //
+<span class="lineNum">     452 </span><span class="lineCov">          5 :       invert = !invert;</span>
+<span class="lineNum">     453 </span><span class="lineCov">          5 :       if(z &lt; 1.5)</span>
+<span class="lineNum">     454 </span>            :       {
+<span class="lineNum">     455 </span>            :          // Max Error found at long double precision =   3.239590e-20
+<span class="lineNum">     456 </span>            :          // Maximum Deviation Found:                     2.241e-20
+<span class="lineNum">     457 </span>            :          // Expected Error Term:                         -2.241e-20
+<span class="lineNum">     458 </span>            :          // Maximum Relative Change in Control Points:   5.110e-03
+<span class="lineNum">     459 </span>            :          static const T Y = 0.405935764312744140625f;
+<span class="lineNum">     460 </span>            :          static const T P[] = {    
+<span class="lineNum">     461 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.0980905922162812031672),</span>
+<span class="lineNum">     462 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.159989089922969141329),</span>
+<span class="lineNum">     463 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.222359821619935712378),</span>
+<span class="lineNum">     464 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.127303921703577362312),</span>
+<span class="lineNum">     465 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0384057530342762400273),</span>
+<span class="lineNum">     466 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00628431160851156719325),</span>
+<span class="lineNum">     467 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.000441266654514391746428),</span>
+<span class="lineNum">     468 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.266689068336295642561e-7),</span>
+<span class="lineNum">     469 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     470 </span>            :          static const T Q[] = {    
+<span class="lineNum">     471 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     472 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 2.03237474985469469291),</span>
+<span class="lineNum">     473 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.78355454954969405222),</span>
+<span class="lineNum">     474 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.867940326293760578231),</span>
+<span class="lineNum">     475 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.248025606990021698392),</span>
+<span class="lineNum">     476 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0396649631833002269861),</span>
+<span class="lineNum">     477 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00279220237309449026796),</span>
+<span class="lineNum">     478 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     479 </span><span class="lineCov">          1 :          result = Y + tools::evaluate_polynomial(P, T(z - 0.5f)) / tools::evaluate_polynomial(Q, T(z - 0.5f));</span>
+<span class="lineNum">     480 </span><span class="lineCov">          1 :          result *= exp(-z * z) / z;</span>
+<span class="lineNum">     481 </span>            :       }
+<span class="lineNum">     482 </span><span class="lineCov">          4 :       else if(z &lt; 2.5)</span>
+<span class="lineNum">     483 </span>            :       {
+<span class="lineNum">     484 </span>            :          // Max Error found at long double precision =   3.686211e-21
+<span class="lineNum">     485 </span>            :          // Maximum Deviation Found:                     1.495e-21
+<span class="lineNum">     486 </span>            :          // Expected Error Term:                         -1.494e-21
+<span class="lineNum">     487 </span>            :          // Maximum Relative Change in Control Points:   1.793e-04
+<span class="lineNum">     488 </span>            :          static const T Y = 0.50672817230224609375f;
+<span class="lineNum">     489 </span>            :          static const T P[] = {    
+<span class="lineNum">     490 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.024350047620769840217),</span>
+<span class="lineNum">     491 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0343522687935671451309),</span>
+<span class="lineNum">     492 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0505420824305544949541),</span>
+<span class="lineNum">     493 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0257479325917757388209),</span>
+<span class="lineNum">     494 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00669349844190354356118),</span>
+<span class="lineNum">     495 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00090807914416099524444),</span>
+<span class="lineNum">     496 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.515917266698050027934e-4),</span>
+<span class="lineNum">     497 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     498 </span>            :          static const T Q[] = {    
+<span class="lineNum">     499 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     500 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.71657861671930336344),</span>
+<span class="lineNum">     501 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.26409634824280366218),</span>
+<span class="lineNum">     502 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.512371437838969015941),</span>
+<span class="lineNum">     503 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.120902623051120950935),</span>
+<span class="lineNum">     504 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0158027197831887485261),</span>
+<span class="lineNum">     505 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.000897871370778031611439),</span>
+<span class="lineNum">     506 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     507 </span><span class="lineCov">          1 :          result = Y + tools::evaluate_polynomial(P, T(z - 1.5f)) / tools::evaluate_polynomial(Q, T(z - 1.5f));</span>
+<span class="lineNum">     508 </span><span class="lineCov">          1 :          result *= exp(-z * z) / z;</span>
+<span class="lineNum">     509 </span>            :       }
+<span class="lineNum">     510 </span><span class="lineCov">          3 :       else if(z &lt; 4.5)</span>
+<span class="lineNum">     511 </span>            :       {
+<span class="lineNum">     512 </span>            :          // Maximum Deviation Found:                     1.107e-20
+<span class="lineNum">     513 </span>            :          // Expected Error Term:                         -1.106e-20
+<span class="lineNum">     514 </span>            :          // Maximum Relative Change in Control Points:   1.709e-04
+<span class="lineNum">     515 </span>            :          // Max Error found at long double precision =   1.446908e-20
+<span class="lineNum">     516 </span>            :          static const T Y  = 0.5405750274658203125f;
+<span class="lineNum">     517 </span>            :          static const T P[] = {    
+<span class="lineNum">     518 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0029527671653097284033),</span>
+<span class="lineNum">     519 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0141853245895495604051),</span>
+<span class="lineNum">     520 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0104959584626432293901),</span>
+<span class="lineNum">     521 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00343963795976100077626),</span>
+<span class="lineNum">     522 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00059065441194877637899),</span>
+<span class="lineNum">     523 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.523435380636174008685e-4),</span>
+<span class="lineNum">     524 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.189896043050331257262e-5),</span>
+<span class="lineNum">     525 </span><span class="lineCov">          3 :          };</span>
+<span class="lineNum">     526 </span>            :          static const T Q[] = {    
+<span class="lineNum">     527 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     528 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.19352160185285642574),</span>
+<span class="lineNum">     529 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.603256964363454392857),</span>
+<span class="lineNum">     530 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.165411142458540585835),</span>
+<span class="lineNum">     531 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0259729870946203166468),</span>
+<span class="lineNum">     532 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00221657568292893699158),</span>
+<span class="lineNum">     533 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.804149464190309799804e-4),</span>
+<span class="lineNum">     534 </span><span class="lineCov">          3 :          };</span>
+<span class="lineNum">     535 </span><span class="lineCov">          2 :          result = Y + tools::evaluate_polynomial(P, T(z - 3.5f)) / tools::evaluate_polynomial(Q, T(z - 3.5f));</span>
+<span class="lineNum">     536 </span><span class="lineCov">          2 :          result *= exp(-z * z) / z;</span>
+<span class="lineNum">     537 </span>            :       }
+<span class="lineNum">     538 </span>            :       else
+<span class="lineNum">     539 </span>            :       {
+<span class="lineNum">     540 </span>            :          // Max Error found at long double precision =   7.961166e-21
+<span class="lineNum">     541 </span>            :          // Maximum Deviation Found:                     6.677e-21
+<span class="lineNum">     542 </span>            :          // Expected Error Term:                         6.676e-21
+<span class="lineNum">     543 </span>            :          // Maximum Relative Change in Control Points:   2.319e-05
+<span class="lineNum">     544 </span>            :          static const T Y = 0.55825519561767578125f;
+<span class="lineNum">     545 </span>            :          static const T P[] = {    
+<span class="lineNum">     546 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.00593438793008050214106),</span>
+<span class="lineNum">     547 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 0.0280666231009089713937),</span>
+<span class="lineNum">     548 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.141597835204583050043),</span>
+<span class="lineNum">     549 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -0.978088201154300548842),</span>
+<span class="lineNum">     550 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -5.47351527796012049443),</span>
+<span class="lineNum">     551 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -13.8677304660245326627),</span>
+<span class="lineNum">     552 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -27.1274948720539821722),</span>
+<span class="lineNum">     553 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -29.2545152747009461519),</span>
+<span class="lineNum">     554 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, -16.8865774499799676937),</span>
+<span class="lineNum">     555 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     556 </span>            :          static const T Q[] = {    
+<span class="lineNum">     557 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     558 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 4.72948911186645394541),</span>
+<span class="lineNum">     559 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 23.6750543147695749212),</span>
+<span class="lineNum">     560 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 60.0021517335693186785),</span>
+<span class="lineNum">     561 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 131.766251645149522868),</span>
+<span class="lineNum">     562 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 178.167924971283482513),</span>
+<span class="lineNum">     563 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 182.499390505915222699),</span>
+<span class="lineNum">     564 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 104.365251479578577989),</span>
+<span class="lineNum">     565 </span><span class="lineCov">          1 :             BOOST_MATH_BIG_CONSTANT(T, 64, 30.8365511891224291717),</span>
+<span class="lineNum">     566 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     567 </span><span class="lineCov">          1 :          result = Y + tools::evaluate_polynomial(P, T(1 / z)) / tools::evaluate_polynomial(Q, T(1 / z));</span>
+<span class="lineNum">     568 </span><span class="lineCov">          5 :          result *= exp(-z * z) / z;</span>
+<span class="lineNum">     569 </span>            :       }
+<span class="lineNum">     570 </span>            :    }
+<span class="lineNum">     571 </span>            :    else
+<span class="lineNum">     572 </span>            :    {
+<span class="lineNum">     573 </span>            :       //
+<span class="lineNum">     574 </span>            :       // Any value of z larger than 110 will underflow to zero:
+<span class="lineNum">     575 </span>            :       //
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :       result = 0;</span>
+<span class="lineNum">     577 </span><span class="lineNoCov">          0 :       invert = !invert;</span>
+<span class="lineNum">     578 </span>            :    }
+<span class="lineNum">     579 </span>            : 
+<span class="lineNum">     580 </span><span class="lineCov">          8 :    if(invert)</span>
+<span class="lineNum">     581 </span>            :    {
+<span class="lineNum">     582 </span><span class="lineCov">          5 :       result = 1 - result;</span>
+<span class="lineNum">     583 </span>            :    }
+<span class="lineNum">     584 </span>            : 
+<span class="lineNum">     585 </span><span class="lineCov">          8 :    return result;</span>
+<span class="lineNum">     586 </span>            : } // template &lt;class T, class Lanczos&gt;T erf_imp(T z, bool invert, const Lanczos&amp; l, const mpl::int_&lt;64&gt;&amp; t)
+<span class="lineNum">     587 </span>            : 
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     590 </span>            : T erf_imp(T z, bool invert, const Policy&amp; pol, const mpl::int_&lt;113&gt;&amp; t)
+<span class="lineNum">     591 </span>            : {
+<span class="lineNum">     592 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     593 </span>            : 
+<span class="lineNum">     594 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;113-bit precision erf_imp called&quot;);
+<span class="lineNum">     595 </span>            : 
+<span class="lineNum">     596 </span>            :    if(z &lt; 0)
+<span class="lineNum">     597 </span>            :    {
+<span class="lineNum">     598 </span>            :       if(!invert)
+<span class="lineNum">     599 </span>            :          return -erf_imp(T(-z), invert, pol, t);
+<span class="lineNum">     600 </span>            :       else if(z &lt; -0.5)
+<span class="lineNum">     601 </span>            :          return 2 - erf_imp(T(-z), invert, pol, t);
+<span class="lineNum">     602 </span>            :       else
+<span class="lineNum">     603 </span>            :          return 1 + erf_imp(T(-z), false, pol, t);
+<span class="lineNum">     604 </span>            :    }
+<span class="lineNum">     605 </span>            : 
+<span class="lineNum">     606 </span>            :    T result;
+<span class="lineNum">     607 </span>            : 
+<span class="lineNum">     608 </span>            :    //
+<span class="lineNum">     609 </span>            :    // Big bunch of selection statements now to pick which
+<span class="lineNum">     610 </span>            :    // implementation to use, try to put most likely options
+<span class="lineNum">     611 </span>            :    // first:
+<span class="lineNum">     612 </span>            :    //
+<span class="lineNum">     613 </span>            :    if(z &lt; 0.5)
+<span class="lineNum">     614 </span>            :    {
+<span class="lineNum">     615 </span>            :       //
+<span class="lineNum">     616 </span>            :       // We're going to calculate erf:
+<span class="lineNum">     617 </span>            :       //
+<span class="lineNum">     618 </span>            :       if(z == 0)
+<span class="lineNum">     619 </span>            :       {
+<span class="lineNum">     620 </span>            :          result = 0;
+<span class="lineNum">     621 </span>            :       }
+<span class="lineNum">     622 </span>            :       else if(z &lt; 1e-20)
+<span class="lineNum">     623 </span>            :       {
+<span class="lineNum">     624 </span>            :          static const T c = BOOST_MATH_BIG_CONSTANT(T, 113, 0.003379167095512573896158903121545171688);
+<span class="lineNum">     625 </span>            :          result = z * 1.125 + z * c;
+<span class="lineNum">     626 </span>            :       }
+<span class="lineNum">     627 </span>            :       else
+<span class="lineNum">     628 </span>            :       {
+<span class="lineNum">     629 </span>            :          // Max Error found at long double precision =   2.342380e-35
+<span class="lineNum">     630 </span>            :          // Maximum Deviation Found:                     6.124e-36
+<span class="lineNum">     631 </span>            :          // Expected Error Term:                         -6.124e-36
+<span class="lineNum">     632 </span>            :          // Maximum Relative Change in Control Points:   3.492e-10
+<span class="lineNum">     633 </span>            :          static const T Y = 1.0841522216796875f;
+<span class="lineNum">     634 </span>            :          static const T P[] = {    
+<span class="lineNum">     635 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0442269454158250738961589031215451778),
+<span class="lineNum">     636 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.35549265736002144875335323556961233),
+<span class="lineNum">     637 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0582179564566667896225454670863270393),
+<span class="lineNum">     638 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0112694696904802304229950538453123925),
+<span class="lineNum">     639 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.000805730648981801146251825329609079099),
+<span class="lineNum">     640 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.566304966591936566229702842075966273e-4),
+<span class="lineNum">     641 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.169655010425186987820201021510002265e-5),
+<span class="lineNum">     642 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.344448249920445916714548295433198544e-7),
+<span class="lineNum">     643 </span>            :          };
+<span class="lineNum">     644 </span>            :          static const T Q[] = {    
+<span class="lineNum">     645 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     646 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.466542092785657604666906909196052522),
+<span class="lineNum">     647 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.100005087012526447295176964142107611),
+<span class="lineNum">     648 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0128341535890117646540050072234142603),
+<span class="lineNum">     649 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00107150448466867929159660677016658186),
+<span class="lineNum">     650 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.586168368028999183607733369248338474e-4),
+<span class="lineNum">     651 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.196230608502104324965623171516808796e-5),
+<span class="lineNum">     652 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.313388521582925207734229967907890146e-7),
+<span class="lineNum">     653 </span>            :          };
+<span class="lineNum">     654 </span>            :          result = z * (Y + tools::evaluate_polynomial(P, T(z * z)) / tools::evaluate_polynomial(Q, T(z * z)));
+<span class="lineNum">     655 </span>            :       }
+<span class="lineNum">     656 </span>            :    }
+<span class="lineNum">     657 </span>            :    else if(invert ? (z &lt; 110) : (z &lt; 8.65f))
+<span class="lineNum">     658 </span>            :    {
+<span class="lineNum">     659 </span>            :       //
+<span class="lineNum">     660 </span>            :       // We'll be calculating erfc:
+<span class="lineNum">     661 </span>            :       //
+<span class="lineNum">     662 </span>            :       invert = !invert;
+<span class="lineNum">     663 </span>            :       if(z &lt; 1)
+<span class="lineNum">     664 </span>            :       {
+<span class="lineNum">     665 </span>            :          // Max Error found at long double precision =   3.246278e-35
+<span class="lineNum">     666 </span>            :          // Maximum Deviation Found:                     1.388e-35
+<span class="lineNum">     667 </span>            :          // Expected Error Term:                         1.387e-35
+<span class="lineNum">     668 </span>            :          // Maximum Relative Change in Control Points:   6.127e-05
+<span class="lineNum">     669 </span>            :          static const T Y = 0.371877193450927734375f;
+<span class="lineNum">     670 </span>            :          static const T P[] = {    
+<span class="lineNum">     671 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0640320213544647969396032886581290455),
+<span class="lineNum">     672 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.200769874440155895637857443946706731),
+<span class="lineNum">     673 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.378447199873537170666487408805779826),
+<span class="lineNum">     674 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.30521399466465939450398642044975127),
+<span class="lineNum">     675 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.146890026406815277906781824723458196),
+<span class="lineNum">     676 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0464837937749539978247589252732769567),
+<span class="lineNum">     677 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00987895759019540115099100165904822903),
+<span class="lineNum">     678 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00137507575429025512038051025154301132),
+<span class="lineNum">     679 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0001144764551085935580772512359680516),
+<span class="lineNum">     680 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.436544865032836914773944382339900079e-5),
+<span class="lineNum">     681 </span>            :          };
+<span class="lineNum">     682 </span>            :          static const T Q[] = {    
+<span class="lineNum">     683 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     684 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.47651182872457465043733800302427977),
+<span class="lineNum">     685 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.78706486002517996428836400245547955),
+<span class="lineNum">     686 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.87295924621659627926365005293130693),
+<span class="lineNum">     687 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.829375825174365625428280908787261065),
+<span class="lineNum">     688 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.251334771307848291593780143950311514),
+<span class="lineNum">     689 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0522110268876176186719436765734722473),
+<span class="lineNum">     690 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00718332151250963182233267040106902368),
+<span class="lineNum">     691 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000595279058621482041084986219276392459),
+<span class="lineNum">     692 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.226988669466501655990637599399326874e-4),
+<span class="lineNum">     693 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.270666232259029102353426738909226413e-10),
+<span class="lineNum">     694 </span>            :          };
+<span class="lineNum">     695 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 0.5f)) / tools::evaluate_polynomial(Q, T(z - 0.5f));
+<span class="lineNum">     696 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     697 </span>            :       }
+<span class="lineNum">     698 </span>            :       else if(z &lt; 1.5)
+<span class="lineNum">     699 </span>            :       {
+<span class="lineNum">     700 </span>            :          // Max Error found at long double precision =   2.215785e-35
+<span class="lineNum">     701 </span>            :          // Maximum Deviation Found:                     1.539e-35
+<span class="lineNum">     702 </span>            :          // Expected Error Term:                         1.538e-35
+<span class="lineNum">     703 </span>            :          // Maximum Relative Change in Control Points:   6.104e-05
+<span class="lineNum">     704 </span>            :          static const T Y = 0.45658016204833984375f;
+<span class="lineNum">     705 </span>            :          static const T P[] = {    
+<span class="lineNum">     706 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0289965858925328393392496555094848345),
+<span class="lineNum">     707 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0868181194868601184627743162571779226),
+<span class="lineNum">     708 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.169373435121178901746317404936356745),
+<span class="lineNum">     709 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.13350446515949251201104889028133486),
+<span class="lineNum">     710 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0617447837290183627136837688446313313),
+<span class="lineNum">     711 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0185618495228251406703152962489700468),
+<span class="lineNum">     712 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00371949406491883508764162050169531013),
+<span class="lineNum">     713 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000485121708792921297742105775823900772),
+<span class="lineNum">     714 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.376494706741453489892108068231400061e-4),
+<span class="lineNum">     715 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.133166058052466262415271732172490045e-5),
+<span class="lineNum">     716 </span>            :          };
+<span class="lineNum">     717 </span>            :          static const T Q[] = {    
+<span class="lineNum">     718 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     719 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.32970330146503867261275580968135126),
+<span class="lineNum">     720 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.46325715420422771961250513514928746),
+<span class="lineNum">     721 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.55307882560757679068505047390857842),
+<span class="lineNum">     722 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.644274289865972449441174485441409076),
+<span class="lineNum">     723 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.182609091063258208068606847453955649),
+<span class="lineNum">     724 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0354171651271241474946129665801606795),
+<span class="lineNum">     725 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00454060370165285246451879969534083997),
+<span class="lineNum">     726 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000349871943711566546821198612518656486),
+<span class="lineNum">     727 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.123749319840299552925421880481085392e-4),
+<span class="lineNum">     728 </span>            :          };
+<span class="lineNum">     729 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 1.0f)) / tools::evaluate_polynomial(Q, T(z - 1.0f));
+<span class="lineNum">     730 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     731 </span>            :       }
+<span class="lineNum">     732 </span>            :       else if(z &lt; 2.25)
+<span class="lineNum">     733 </span>            :       {
+<span class="lineNum">     734 </span>            :          // Maximum Deviation Found:                     1.418e-35
+<span class="lineNum">     735 </span>            :          // Expected Error Term:                         1.418e-35
+<span class="lineNum">     736 </span>            :          // Maximum Relative Change in Control Points:   1.316e-04
+<span class="lineNum">     737 </span>            :          // Max Error found at long double precision =   1.998462e-35
+<span class="lineNum">     738 </span>            :          static const T Y = 0.50250148773193359375f;
+<span class="lineNum">     739 </span>            :          static const T P[] = {    
+<span class="lineNum">     740 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0201233630504573402185161184151016606),
+<span class="lineNum">     741 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0331864357574860196516686996302305002),
+<span class="lineNum">     742 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0716562720864787193337475444413405461),
+<span class="lineNum">     743 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0545835322082103985114927569724880658),
+<span class="lineNum">     744 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0236692635189696678976549720784989593),
+<span class="lineNum">     745 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00656970902163248872837262539337601845),
+<span class="lineNum">     746 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00120282643299089441390490459256235021),
+<span class="lineNum">     747 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000142123229065182650020762792081622986),
+<span class="lineNum">     748 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.991531438367015135346716277792989347e-5),
+<span class="lineNum">     749 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.312857043762117596999398067153076051e-6),
+<span class="lineNum">     750 </span>            :          };
+<span class="lineNum">     751 </span>            :          static const T Q[] = {    
+<span class="lineNum">     752 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     753 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.13506082409097783827103424943508554),
+<span class="lineNum">     754 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.06399257267556230937723190496806215),
+<span class="lineNum">     755 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.18678481279932541314830499880691109),
+<span class="lineNum">     756 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.447733186643051752513538142316799562),
+<span class="lineNum">     757 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.11505680005657879437196953047542148),
+<span class="lineNum">     758 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.020163993632192726170219663831914034),
+<span class="lineNum">     759 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00232708971840141388847728782209730585),
+<span class="lineNum">     760 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000160733201627963528519726484608224112),
+<span class="lineNum">     761 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.507158721790721802724402992033269266e-5),
+<span class="lineNum">     762 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.18647774409821470950544212696270639e-12),
+<span class="lineNum">     763 </span>            :          };
+<span class="lineNum">     764 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 1.5f)) / tools::evaluate_polynomial(Q, T(z - 1.5f));
+<span class="lineNum">     765 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     766 </span>            :       }
+<span class="lineNum">     767 </span>            :       else if (z &lt; 3)
+<span class="lineNum">     768 </span>            :       {
+<span class="lineNum">     769 </span>            :          // Maximum Deviation Found:                     3.575e-36
+<span class="lineNum">     770 </span>            :          // Expected Error Term:                         3.575e-36
+<span class="lineNum">     771 </span>            :          // Maximum Relative Change in Control Points:   7.103e-05
+<span class="lineNum">     772 </span>            :          // Max Error found at long double precision =   5.794737e-36
+<span class="lineNum">     773 </span>            :          static const T Y = 0.52896785736083984375f;
+<span class="lineNum">     774 </span>            :          static const T P[] = {    
+<span class="lineNum">     775 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.00902152521745813634562524098263360074),
+<span class="lineNum">     776 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0145207142776691539346923710537580927),
+<span class="lineNum">     777 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0301681239582193983824211995978678571),
+<span class="lineNum">     778 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0215548540823305814379020678660434461),
+<span class="lineNum">     779 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00864683476267958365678294164340749949),
+<span class="lineNum">     780 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00219693096885585491739823283511049902),
+<span class="lineNum">     781 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000364961639163319762492184502159894371),
+<span class="lineNum">     782 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.388174251026723752769264051548703059e-4),
+<span class="lineNum">     783 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.241918026931789436000532513553594321e-5),
+<span class="lineNum">     784 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.676586625472423508158937481943649258e-7),
+<span class="lineNum">     785 </span>            :          };
+<span class="lineNum">     786 </span>            :          static const T Q[] = {    
+<span class="lineNum">     787 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     788 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.93669171363907292305550231764920001),
+<span class="lineNum">     789 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.69468476144051356810672506101377494),
+<span class="lineNum">     790 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.880023580986436640372794392579985511),
+<span class="lineNum">     791 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.299099106711315090710836273697708402),
+<span class="lineNum">     792 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0690593962363545715997445583603382337),
+<span class="lineNum">     793 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0108427016361318921960863149875360222),
+<span class="lineNum">     794 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00111747247208044534520499324234317695),
+<span class="lineNum">     795 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.686843205749767250666787987163701209e-4),
+<span class="lineNum">     796 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.192093541425429248675532015101904262e-5),
+<span class="lineNum">     797 </span>            :          };
+<span class="lineNum">     798 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 2.25f)) / tools::evaluate_polynomial(Q, T(z - 2.25f));
+<span class="lineNum">     799 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     800 </span>            :       }
+<span class="lineNum">     801 </span>            :       else if(z &lt; 3.5)
+<span class="lineNum">     802 </span>            :       {
+<span class="lineNum">     803 </span>            :          // Maximum Deviation Found:                     8.126e-37
+<span class="lineNum">     804 </span>            :          // Expected Error Term:                         -8.126e-37
+<span class="lineNum">     805 </span>            :          // Maximum Relative Change in Control Points:   1.363e-04
+<span class="lineNum">     806 </span>            :          // Max Error found at long double precision =   1.747062e-36
+<span class="lineNum">     807 </span>            :          static const T Y = 0.54037380218505859375f;
+<span class="lineNum">     808 </span>            :          static const T P[] = {    
+<span class="lineNum">     809 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0033703486408887424921155540591370375),
+<span class="lineNum">     810 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0104948043110005245215286678898115811),
+<span class="lineNum">     811 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0148530118504000311502310457390417795),
+<span class="lineNum">     812 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00816693029245443090102738825536188916),
+<span class="lineNum">     813 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00249716579989140882491939681805594585),
+<span class="lineNum">     814 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0004655591010047353023978045800916647),
+<span class="lineNum">     815 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.531129557920045295895085236636025323e-4),
+<span class="lineNum">     816 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.343526765122727069515775194111741049e-5),
+<span class="lineNum">     817 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.971120407556888763695313774578711839e-7),
+<span class="lineNum">     818 </span>            :          };
+<span class="lineNum">     819 </span>            :          static const T Q[] = {    
+<span class="lineNum">     820 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     821 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.59911256167540354915906501335919317),
+<span class="lineNum">     822 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.136006830764025173864831382946934),
+<span class="lineNum">     823 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.468565867990030871678574840738423023),
+<span class="lineNum">     824 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.122821824954470343413956476900662236),
+<span class="lineNum">     825 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0209670914950115943338996513330141633),
+<span class="lineNum">     826 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00227845718243186165620199012883547257),
+<span class="lineNum">     827 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000144243326443913171313947613547085553),
+<span class="lineNum">     828 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.407763415954267700941230249989140046e-5),
+<span class="lineNum">     829 </span>            :          };
+<span class="lineNum">     830 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 3.0f)) / tools::evaluate_polynomial(Q, T(z - 3.0f));
+<span class="lineNum">     831 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     832 </span>            :       }
+<span class="lineNum">     833 </span>            :       else if(z &lt; 5.5)
+<span class="lineNum">     834 </span>            :       {
+<span class="lineNum">     835 </span>            :          // Maximum Deviation Found:                     5.804e-36
+<span class="lineNum">     836 </span>            :          // Expected Error Term:                         -5.803e-36
+<span class="lineNum">     837 </span>            :          // Maximum Relative Change in Control Points:   2.475e-05
+<span class="lineNum">     838 </span>            :          // Max Error found at long double precision =   1.349545e-35
+<span class="lineNum">     839 </span>            :          static const T Y = 0.55000019073486328125f;
+<span class="lineNum">     840 </span>            :          static const T P[] = {    
+<span class="lineNum">     841 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00118142849742309772151454518093813615),
+<span class="lineNum">     842 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0072201822885703318172366893469382745),
+<span class="lineNum">     843 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0078782276276860110721875733778481505),
+<span class="lineNum">     844 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00418229166204362376187593976656261146),
+<span class="lineNum">     845 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00134198400587769200074194304298642705),
+<span class="lineNum">     846 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000283210387078004063264777611497435572),
+<span class="lineNum">     847 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.405687064094911866569295610914844928e-4),
+<span class="lineNum">     848 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.39348283801568113807887364414008292e-5),
+<span class="lineNum">     849 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.248798540917787001526976889284624449e-6),
+<span class="lineNum">     850 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.929502490223452372919607105387474751e-8),
+<span class="lineNum">     851 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.156161469668275442569286723236274457e-9),
+<span class="lineNum">     852 </span>            :          };
+<span class="lineNum">     853 </span>            :          static const T Q[] = {    
+<span class="lineNum">     854 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     855 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.52955245103668419479878456656709381),
+<span class="lineNum">     856 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.06263944820093830054635017117417064),
+<span class="lineNum">     857 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.441684612681607364321013134378316463),
+<span class="lineNum">     858 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.121665258426166960049773715928906382),
+<span class="lineNum">     859 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0232134512374747691424978642874321434),
+<span class="lineNum">     860 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00310778180686296328582860464875562636),
+<span class="lineNum">     861 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000288361770756174705123674838640161693),
+<span class="lineNum">     862 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.177529187194133944622193191942300132e-4),
+<span class="lineNum">     863 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.655068544833064069223029299070876623e-6),
+<span class="lineNum">     864 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.11005507545746069573608988651927452e-7),
+<span class="lineNum">     865 </span>            :          };
+<span class="lineNum">     866 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 4.5f)) / tools::evaluate_polynomial(Q, T(z - 4.5f));
+<span class="lineNum">     867 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     868 </span>            :       }
+<span class="lineNum">     869 </span>            :       else if(z &lt; 7.5)
+<span class="lineNum">     870 </span>            :       {
+<span class="lineNum">     871 </span>            :          // Maximum Deviation Found:                     1.007e-36
+<span class="lineNum">     872 </span>            :          // Expected Error Term:                         1.007e-36
+<span class="lineNum">     873 </span>            :          // Maximum Relative Change in Control Points:   1.027e-03
+<span class="lineNum">     874 </span>            :          // Max Error found at long double precision =   2.646420e-36
+<span class="lineNum">     875 </span>            :          static const T Y = 0.5574436187744140625f;
+<span class="lineNum">     876 </span>            :          static const T P[] = {    
+<span class="lineNum">     877 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000293236907400849056269309713064107674),
+<span class="lineNum">     878 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00225110719535060642692275221961480162),
+<span class="lineNum">     879 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00190984458121502831421717207849429799),
+<span class="lineNum">     880 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000747757733460111743833929141001680706),
+<span class="lineNum">     881 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000170663175280949889583158597373928096),
+<span class="lineNum">     882 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.246441188958013822253071608197514058e-4),
+<span class="lineNum">     883 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.229818000860544644974205957895688106e-5),
+<span class="lineNum">     884 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.134886977703388748488480980637704864e-6),
+<span class="lineNum">     885 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.454764611880548962757125070106650958e-8),
+<span class="lineNum">     886 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.673002744115866600294723141176820155e-10),
+<span class="lineNum">     887 </span>            :          };
+<span class="lineNum">     888 </span>            :          static const T Q[] = {    
+<span class="lineNum">     889 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     890 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.12843690320861239631195353379313367),
+<span class="lineNum">     891 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.569900657061622955362493442186537259),
+<span class="lineNum">     892 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.169094404206844928112348730277514273),
+<span class="lineNum">     893 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0324887449084220415058158657252147063),
+<span class="lineNum">     894 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00419252877436825753042680842608219552),
+<span class="lineNum">     895 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00036344133176118603523976748563178578),
+<span class="lineNum">     896 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.204123895931375107397698245752850347e-4),
+<span class="lineNum">     897 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.674128352521481412232785122943508729e-6),
+<span class="lineNum">     898 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.997637501418963696542159244436245077e-8),
+<span class="lineNum">     899 </span>            :          };
+<span class="lineNum">     900 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z - 6.5f)) / tools::evaluate_polynomial(Q, T(z - 6.5f));
+<span class="lineNum">     901 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     902 </span>            :       }
+<span class="lineNum">     903 </span>            :       else if(z &lt; 11.5)
+<span class="lineNum">     904 </span>            :       {
+<span class="lineNum">     905 </span>            :          // Maximum Deviation Found:                     8.380e-36
+<span class="lineNum">     906 </span>            :          // Expected Error Term:                         8.380e-36
+<span class="lineNum">     907 </span>            :          // Maximum Relative Change in Control Points:   2.632e-06
+<span class="lineNum">     908 </span>            :          // Max Error found at long double precision =   9.849522e-36
+<span class="lineNum">     909 </span>            :          static const T Y = 0.56083202362060546875f;
+<span class="lineNum">     910 </span>            :          static const T P[] = {    
+<span class="lineNum">     911 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000282420728751494363613829834891390121),
+<span class="lineNum">     912 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00175387065018002823433704079355125161),
+<span class="lineNum">     913 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0021344978564889819420775336322920375),
+<span class="lineNum">     914 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00124151356560137532655039683963075661),
+<span class="lineNum">     915 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000423600733566948018555157026862139644),
+<span class="lineNum">     916 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.914030340865175237133613697319509698e-4),
+<span class="lineNum">     917 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.126999927156823363353809747017945494e-4),
+<span class="lineNum">     918 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.110610959842869849776179749369376402e-5),
+<span class="lineNum">     919 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.55075079477173482096725348704634529e-7),
+<span class="lineNum">     920 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.119735694018906705225870691331543806e-8),
+<span class="lineNum">     921 </span>            :          };
+<span class="lineNum">     922 </span>            :          static const T Q[] = {    
+<span class="lineNum">     923 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     924 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.69889613396167354566098060039549882),
+<span class="lineNum">     925 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.28824647372749624464956031163282674),
+<span class="lineNum">     926 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.572297795434934493541628008224078717),
+<span class="lineNum">     927 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.164157697425571712377043857240773164),
+<span class="lineNum">     928 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0315311145224594430281219516531649562),
+<span class="lineNum">     929 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00405588922155632380812945849777127458),
+<span class="lineNum">     930 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000336929033691445666232029762868642417),
+<span class="lineNum">     931 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.164033049810404773469413526427932109e-4),
+<span class="lineNum">     932 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.356615210500531410114914617294694857e-6),
+<span class="lineNum">     933 </span>            :          };
+<span class="lineNum">     934 </span>            :          result = Y + tools::evaluate_polynomial(P, T(z / 2 - 4.75f)) / tools::evaluate_polynomial(Q, T(z / 2 - 4.75f));
+<span class="lineNum">     935 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     936 </span>            :       }
+<span class="lineNum">     937 </span>            :       else
+<span class="lineNum">     938 </span>            :       {
+<span class="lineNum">     939 </span>            :          // Maximum Deviation Found:                     1.132e-35
+<span class="lineNum">     940 </span>            :          // Expected Error Term:                         -1.132e-35
+<span class="lineNum">     941 </span>            :          // Maximum Relative Change in Control Points:   4.674e-04
+<span class="lineNum">     942 </span>            :          // Max Error found at long double precision =   1.162590e-35
+<span class="lineNum">     943 </span>            :          static const T Y = 0.5632686614990234375f;
+<span class="lineNum">     944 </span>            :          static const T P[] = {    
+<span class="lineNum">     945 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.000920922048732849448079451574171836943),
+<span class="lineNum">     946 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00321439044532288750501700028748922439),
+<span class="lineNum">     947 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.250455263029390118657884864261823431),
+<span class="lineNum">     948 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.906807635364090342031792404764598142),
+<span class="lineNum">     949 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -8.92233572835991735876688745989985565),
+<span class="lineNum">     950 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -21.7797433494422564811782116907878495),
+<span class="lineNum">     951 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -91.1451915251976354349734589601171659),
+<span class="lineNum">     952 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -144.1279109655993927069052125017673),
+<span class="lineNum">     953 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -313.845076581796338665519022313775589),
+<span class="lineNum">     954 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -273.11378811923343424081101235736475),
+<span class="lineNum">     955 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -271.651566205951067025696102600443452),
+<span class="lineNum">     956 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -60.0530577077238079968843307523245547),
+<span class="lineNum">     957 </span>            :          };
+<span class="lineNum">     958 </span>            :          static const T Q[] = {    
+<span class="lineNum">     959 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     960 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 3.49040448075464744191022350947892036),
+<span class="lineNum">     961 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 34.3563592467165971295915749548313227),
+<span class="lineNum">     962 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 84.4993232033879023178285731843850461),
+<span class="lineNum">     963 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 376.005865281206894120659401340373818),
+<span class="lineNum">     964 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 629.95369438888946233003926191755125),
+<span class="lineNum">     965 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1568.35771983533158591604513304269098),
+<span class="lineNum">     966 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1646.02452040831961063640827116581021),
+<span class="lineNum">     967 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2299.96860633240298708910425594484895),
+<span class="lineNum">     968 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1222.73204392037452750381340219906374),
+<span class="lineNum">     969 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 799.359797306084372350264298361110448),
+<span class="lineNum">     970 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 72.7415265778588087243442792401576737),
+<span class="lineNum">     971 </span>            :          };
+<span class="lineNum">     972 </span>            :          result = Y + tools::evaluate_polynomial(P, T(1 / z)) / tools::evaluate_polynomial(Q, T(1 / z));
+<span class="lineNum">     973 </span>            :          result *= exp(-z * z) / z;
+<span class="lineNum">     974 </span>            :       }
+<span class="lineNum">     975 </span>            :    }
+<span class="lineNum">     976 </span>            :    else
+<span class="lineNum">     977 </span>            :    {
+<span class="lineNum">     978 </span>            :       //
+<span class="lineNum">     979 </span>            :       // Any value of z larger than 110 will underflow to zero:
+<span class="lineNum">     980 </span>            :       //
+<span class="lineNum">     981 </span>            :       result = 0;
+<span class="lineNum">     982 </span>            :       invert = !invert;
+<span class="lineNum">     983 </span>            :    }
+<span class="lineNum">     984 </span>            : 
+<span class="lineNum">     985 </span>            :    if(invert)
+<span class="lineNum">     986 </span>            :    {
+<span class="lineNum">     987 </span>            :       result = 1 - result;
+<span class="lineNum">     988 </span>            :    }
+<span class="lineNum">     989 </span>            : 
+<span class="lineNum">     990 </span>            :    return result;
+<span class="lineNum">     991 </span>            : } // template &lt;class T, class Lanczos&gt;T erf_imp(T z, bool invert, const Lanczos&amp; l, const mpl::int_&lt;113&gt;&amp; t)
+<span class="lineNum">     992 </span>            : 
+<span class="lineNum">     993 </span>            : template &lt;class T, class Policy, class tag&gt;
+<span class="lineNum">     994 </span>            : struct erf_initializer
+<span class="lineNum">     995 </span>            : {
+<a name="996"><span class="lineNum">     996 </span>            :    struct init</a>
+<span class="lineNum">     997 </span>            :    {
+<span class="lineNum">     998 </span><span class="lineCov">          1 :       init()</span>
+<span class="lineNum">     999 </span>            :       {
+<span class="lineNum">    1000 </span><span class="lineCov">          1 :          do_init(tag());</span>
+<span class="lineNum">    1001 </span><span class="lineCov">          1 :       }</span>
+<span class="lineNum">    1002 </span>            :       static void do_init(const mpl::int_&lt;0&gt;&amp;){}
+<span class="lineNum">    1003 </span>            :       static void do_init(const mpl::int_&lt;53&gt;&amp;)
+<span class="lineNum">    1004 </span>            :       {
+<span class="lineNum">    1005 </span>            :          boost::math::erf(static_cast&lt;T&gt;(1e-12), Policy());
+<span class="lineNum">    1006 </span>            :          boost::math::erf(static_cast&lt;T&gt;(0.25), Policy());
+<span class="lineNum">    1007 </span>            :          boost::math::erf(static_cast&lt;T&gt;(1.25), Policy());
+<span class="lineNum">    1008 </span>            :          boost::math::erf(static_cast&lt;T&gt;(2.25), Policy());
+<span class="lineNum">    1009 </span>            :          boost::math::erf(static_cast&lt;T&gt;(4.25), Policy());
+<a name="1010"><span class="lineNum">    1010 </span>            :          boost::math::erf(static_cast&lt;T&gt;(5.25), Policy());</a>
+<span class="lineNum">    1011 </span>            :       }
+<span class="lineNum">    1012 </span><span class="lineCov">          1 :       static void do_init(const mpl::int_&lt;64&gt;&amp;)</span>
+<span class="lineNum">    1013 </span>            :       {
+<span class="lineNum">    1014 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(1e-12), Policy());</span>
+<span class="lineNum">    1015 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(0.25), Policy());</span>
+<span class="lineNum">    1016 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(1.25), Policy());</span>
+<span class="lineNum">    1017 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(2.25), Policy());</span>
+<span class="lineNum">    1018 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(4.25), Policy());</span>
+<span class="lineNum">    1019 </span><span class="lineCov">          1 :          boost::math::erf(static_cast&lt;T&gt;(5.25), Policy());</span>
+<span class="lineNum">    1020 </span><span class="lineCov">          1 :       }</span>
+<span class="lineNum">    1021 </span>            :       static void do_init(const mpl::int_&lt;113&gt;&amp;)
+<span class="lineNum">    1022 </span>            :       {
+<span class="lineNum">    1023 </span>            :          boost::math::erf(static_cast&lt;T&gt;(1e-22), Policy());
+<span class="lineNum">    1024 </span>            :          boost::math::erf(static_cast&lt;T&gt;(0.25), Policy());
+<span class="lineNum">    1025 </span>            :          boost::math::erf(static_cast&lt;T&gt;(1.25), Policy());
+<span class="lineNum">    1026 </span>            :          boost::math::erf(static_cast&lt;T&gt;(2.125), Policy());
+<span class="lineNum">    1027 </span>            :          boost::math::erf(static_cast&lt;T&gt;(2.75), Policy());
+<span class="lineNum">    1028 </span>            :          boost::math::erf(static_cast&lt;T&gt;(3.25), Policy());
+<span class="lineNum">    1029 </span>            :          boost::math::erf(static_cast&lt;T&gt;(5.25), Policy());
+<span class="lineNum">    1030 </span>            :          boost::math::erf(static_cast&lt;T&gt;(7.25), Policy());
+<span class="lineNum">    1031 </span>            :          boost::math::erf(static_cast&lt;T&gt;(11.25), Policy());
+<a name="1032"><span class="lineNum">    1032 </span>            :          boost::math::erf(static_cast&lt;T&gt;(12.5), Policy());</a>
+<span class="lineNum">    1033 </span>            :       }
+<span class="lineNum">    1034 </span><span class="lineCov">          8 :       void force_instantiate()const{}</span>
+<a name="1035"><span class="lineNum">    1035 </span>            :    };</a>
+<span class="lineNum">    1036 </span>            :    static const init initializer;
+<span class="lineNum">    1037 </span><span class="lineCov">          8 :    static void force_instantiate()</span>
+<span class="lineNum">    1038 </span>            :    {
+<span class="lineNum">    1039 </span><span class="lineCov">          8 :       initializer.force_instantiate();</span>
+<span class="lineNum">    1040 </span><span class="lineCov">          8 :    }</span>
+<span class="lineNum">    1041 </span>            : };
+<span class="lineNum">    1042 </span>            : 
+<span class="lineNum">    1043 </span>            : template &lt;class T, class Policy, class tag&gt;
+<span class="lineNum">    1044 </span><span class="lineCov">          1 : const typename erf_initializer&lt;T, Policy, tag&gt;::init erf_initializer&lt;T, Policy, tag&gt;::initializer;</span>
+<span class="lineNum">    1045 </span>            : 
+<span class="lineNum">    1046 </span>            : } // namespace detail
+<a name="1047"><span class="lineNum">    1047 </span>            : </a>
+<span class="lineNum">    1048 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">    1049 </span><span class="lineCov">          6 : inline typename tools::promote_args&lt;T&gt;::type erf(T z, const Policy&amp; /* pol */)</span>
+<span class="lineNum">    1050 </span>            : {
+<span class="lineNum">    1051 </span>            :    typedef typename tools::promote_args&lt;T&gt;::type result_type;
+<span class="lineNum">    1052 </span>            :    typedef typename policies::evaluation&lt;result_type, Policy&gt;::type value_type;
+<span class="lineNum">    1053 </span>            :    typedef typename policies::precision&lt;result_type, Policy&gt;::type precision_type;
+<span class="lineNum">    1054 </span>            :    typedef typename policies::normalise&lt;
+<span class="lineNum">    1055 </span>            :       Policy, 
+<span class="lineNum">    1056 </span>            :       policies::promote_float&lt;false&gt;, 
+<span class="lineNum">    1057 </span>            :       policies::promote_double&lt;false&gt;, 
+<span class="lineNum">    1058 </span>            :       policies::discrete_quantile&lt;&gt;,
+<span class="lineNum">    1059 </span>            :       policies::assert_undefined&lt;&gt; &gt;::type forwarding_policy;
+<span class="lineNum">    1060 </span>            : 
+<span class="lineNum">    1061 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;result_type = &quot; &lt;&lt; typeid(result_type).name());
+<span class="lineNum">    1062 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;value_type = &quot; &lt;&lt; typeid(value_type).name());
+<span class="lineNum">    1063 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;precision_type = &quot; &lt;&lt; typeid(precision_type).name());
+<span class="lineNum">    1064 </span>            : 
+<span class="lineNum">    1065 </span>            :    typedef typename mpl::if_&lt;
+<span class="lineNum">    1066 </span>            :       mpl::less_equal&lt;precision_type, mpl::int_&lt;0&gt; &gt;,
+<span class="lineNum">    1067 </span>            :       mpl::int_&lt;0&gt;,
+<span class="lineNum">    1068 </span>            :       typename mpl::if_&lt;
+<span class="lineNum">    1069 </span>            :          mpl::less_equal&lt;precision_type, mpl::int_&lt;53&gt; &gt;,
+<span class="lineNum">    1070 </span>            :          mpl::int_&lt;53&gt;,  // double
+<span class="lineNum">    1071 </span>            :          typename mpl::if_&lt;
+<span class="lineNum">    1072 </span>            :             mpl::less_equal&lt;precision_type, mpl::int_&lt;64&gt; &gt;,
+<span class="lineNum">    1073 </span>            :             mpl::int_&lt;64&gt;, // 80-bit long double
+<span class="lineNum">    1074 </span>            :             typename mpl::if_&lt;
+<span class="lineNum">    1075 </span>            :                mpl::less_equal&lt;precision_type, mpl::int_&lt;113&gt; &gt;,
+<span class="lineNum">    1076 </span>            :                mpl::int_&lt;113&gt;, // 128-bit long double
+<span class="lineNum">    1077 </span>            :                mpl::int_&lt;0&gt; // too many bits, use generic version.
+<span class="lineNum">    1078 </span>            :             &gt;::type
+<span class="lineNum">    1079 </span>            :          &gt;::type
+<span class="lineNum">    1080 </span>            :       &gt;::type
+<span class="lineNum">    1081 </span>            :    &gt;::type tag_type;
+<span class="lineNum">    1082 </span>            : 
+<span class="lineNum">    1083 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;tag_type = &quot; &lt;&lt; typeid(tag_type).name());
+<span class="lineNum">    1084 </span>            : 
+<span class="lineNum">    1085 </span><span class="lineCov">          6 :    detail::erf_initializer&lt;value_type, forwarding_policy, tag_type&gt;::force_instantiate(); // Force constants to be initialized before main</span>
+<span class="lineNum">    1086 </span>            : 
+<span class="lineNum">    1087 </span><span class="lineCov">         12 :    return policies::checked_narrowing_cast&lt;result_type, forwarding_policy&gt;(detail::erf_imp(</span>
+<span class="lineNum">    1088 </span>            :       static_cast&lt;value_type&gt;(z),
+<span class="lineNum">    1089 </span>            :       false,
+<span class="lineNum">    1090 </span>            :       forwarding_policy(),
+<span class="lineNum">    1091 </span><span class="lineCov">         12 :       tag_type()), &quot;boost::math::erf&lt;%1%&gt;(%1%, %1%)&quot;);</span>
+<span class="lineNum">    1092 </span>            : }
+<a name="1093"><span class="lineNum">    1093 </span>            : </a>
+<span class="lineNum">    1094 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">    1095 </span><span class="lineCov">          2 : inline typename tools::promote_args&lt;T&gt;::type erfc(T z, const Policy&amp; /* pol */)</span>
+<span class="lineNum">    1096 </span>            : {
+<span class="lineNum">    1097 </span>            :    typedef typename tools::promote_args&lt;T&gt;::type result_type;
+<span class="lineNum">    1098 </span>            :    typedef typename policies::evaluation&lt;result_type, Policy&gt;::type value_type;
+<span class="lineNum">    1099 </span>            :    typedef typename policies::precision&lt;result_type, Policy&gt;::type precision_type;
+<span class="lineNum">    1100 </span>            :    typedef typename policies::normalise&lt;
+<span class="lineNum">    1101 </span>            :       Policy, 
+<span class="lineNum">    1102 </span>            :       policies::promote_float&lt;false&gt;, 
+<span class="lineNum">    1103 </span>            :       policies::promote_double&lt;false&gt;, 
+<span class="lineNum">    1104 </span>            :       policies::discrete_quantile&lt;&gt;,
+<span class="lineNum">    1105 </span>            :       policies::assert_undefined&lt;&gt; &gt;::type forwarding_policy;
+<span class="lineNum">    1106 </span>            : 
+<span class="lineNum">    1107 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;result_type = &quot; &lt;&lt; typeid(result_type).name());
+<span class="lineNum">    1108 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;value_type = &quot; &lt;&lt; typeid(value_type).name());
+<span class="lineNum">    1109 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;precision_type = &quot; &lt;&lt; typeid(precision_type).name());
+<span class="lineNum">    1110 </span>            : 
+<span class="lineNum">    1111 </span>            :    typedef typename mpl::if_&lt;
+<span class="lineNum">    1112 </span>            :       mpl::less_equal&lt;precision_type, mpl::int_&lt;0&gt; &gt;,
+<span class="lineNum">    1113 </span>            :       mpl::int_&lt;0&gt;,
+<span class="lineNum">    1114 </span>            :       typename mpl::if_&lt;
+<span class="lineNum">    1115 </span>            :          mpl::less_equal&lt;precision_type, mpl::int_&lt;53&gt; &gt;,
+<span class="lineNum">    1116 </span>            :          mpl::int_&lt;53&gt;,  // double
+<span class="lineNum">    1117 </span>            :          typename mpl::if_&lt;
+<span class="lineNum">    1118 </span>            :             mpl::less_equal&lt;precision_type, mpl::int_&lt;64&gt; &gt;,
+<span class="lineNum">    1119 </span>            :             mpl::int_&lt;64&gt;, // 80-bit long double
+<span class="lineNum">    1120 </span>            :             typename mpl::if_&lt;
+<span class="lineNum">    1121 </span>            :                mpl::less_equal&lt;precision_type, mpl::int_&lt;113&gt; &gt;,
+<span class="lineNum">    1122 </span>            :                mpl::int_&lt;113&gt;, // 128-bit long double
+<span class="lineNum">    1123 </span>            :                mpl::int_&lt;0&gt; // too many bits, use generic version.
+<span class="lineNum">    1124 </span>            :             &gt;::type
+<span class="lineNum">    1125 </span>            :          &gt;::type
+<span class="lineNum">    1126 </span>            :       &gt;::type
+<span class="lineNum">    1127 </span>            :    &gt;::type tag_type;
+<span class="lineNum">    1128 </span>            : 
+<span class="lineNum">    1129 </span>            :    BOOST_MATH_INSTRUMENT_CODE(&quot;tag_type = &quot; &lt;&lt; typeid(tag_type).name());
+<span class="lineNum">    1130 </span>            : 
+<span class="lineNum">    1131 </span><span class="lineCov">          2 :    detail::erf_initializer&lt;value_type, forwarding_policy, tag_type&gt;::force_instantiate(); // Force constants to be initialized before main</span>
+<span class="lineNum">    1132 </span>            : 
+<span class="lineNum">    1133 </span><span class="lineCov">          4 :    return policies::checked_narrowing_cast&lt;result_type, forwarding_policy&gt;(detail::erf_imp(</span>
+<span class="lineNum">    1134 </span>            :       static_cast&lt;value_type&gt;(z),
+<span class="lineNum">    1135 </span>            :       true,
+<span class="lineNum">    1136 </span>            :       forwarding_policy(),
+<span class="lineNum">    1137 </span><span class="lineCov">          4 :       tag_type()), &quot;boost::math::erfc&lt;%1%&gt;(%1%, %1%)&quot;);</span>
+<span class="lineNum">    1138 </span>            : }
+<span class="lineNum">    1139 </span>            : 
+<span class="lineNum">    1140 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1141 </span>            : inline typename tools::promote_args&lt;T&gt;::type erf(T z)
+<span class="lineNum">    1142 </span>            : {
+<span class="lineNum">    1143 </span>            :    return boost::math::erf(z, policies::policy&lt;&gt;());
+<span class="lineNum">    1144 </span>            : }
+<span class="lineNum">    1145 </span>            : 
+<span class="lineNum">    1146 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1147 </span>            : inline typename tools::promote_args&lt;T&gt;::type erfc(T z)
+<span class="lineNum">    1148 </span>            : {
+<span class="lineNum">    1149 </span>            :    return boost::math::erfc(z, policies::policy&lt;&gt;());
+<span class="lineNum">    1150 </span>            : }
+<span class="lineNum">    1151 </span>            : 
+<span class="lineNum">    1152 </span>            : } // namespace math
+<span class="lineNum">    1153 </span>            : } // namespace boost
+<span class="lineNum">    1154 </span>            : 
+<span class="lineNum">    1155 </span>            : #include &lt;boost/math/special_functions/detail/erf_inv.hpp&gt;
+<span class="lineNum">    1156 </span>            : 
+<span class="lineNum">    1157 </span>            : #endif // BOOST_MATH_SPECIAL_ERF_HPP
+<span class="lineNum">    1158 </span>            : 
+<span class="lineNum">    1159 </span>            : 
+<span class="lineNum">    1160 </span>            : 
+<span class="lineNum">    1161 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

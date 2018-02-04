@@ -1,0 +1,506 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/google/protobuf/message_lite.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/google/protobuf</a> - message_lite.h<span style="font-size: 80%;"> (source / <a href="message_lite.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:30:07</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Protocol Buffers - Google's data interchange format</a>
+<span class="lineNum">       2 </span>            : // Copyright 2008 Google Inc.  All rights reserved.
+<span class="lineNum">       3 </span>            : // https://developers.google.com/protocol-buffers/
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>            : // modification, are permitted provided that the following conditions are
+<span class="lineNum">       7 </span>            : // met:
+<span class="lineNum">       8 </span>            : //
+<span class="lineNum">       9 </span>            : //     * Redistributions of source code must retain the above copyright
+<span class="lineNum">      10 </span>            : // notice, this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>            : //     * Redistributions in binary form must reproduce the above
+<span class="lineNum">      12 </span>            : // copyright notice, this list of conditions and the following disclaimer
+<span class="lineNum">      13 </span>            : // in the documentation and/or other materials provided with the
+<span class="lineNum">      14 </span>            : // distribution.
+<span class="lineNum">      15 </span>            : //     * Neither the name of Google Inc. nor the names of its
+<span class="lineNum">      16 </span>            : // contributors may be used to endorse or promote products derived from
+<span class="lineNum">      17 </span>            : // this software without specific prior written permission.
+<span class="lineNum">      18 </span>            : //
+<span class="lineNum">      19 </span>            : // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+<span class="lineNum">      20 </span>            : // &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+<span class="lineNum">      21 </span>            : // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+<span class="lineNum">      22 </span>            : // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+<span class="lineNum">      23 </span>            : // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<span class="lineNum">      24 </span>            : // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<span class="lineNum">      25 </span>            : // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+<span class="lineNum">      26 </span>            : // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+<span class="lineNum">      27 </span>            : // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+<span class="lineNum">      28 </span>            : // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+<span class="lineNum">      29 </span>            : // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : // Authors: wink@google.com (Wink Saville),
+<span class="lineNum">      32 </span>            : //          kenton@google.com (Kenton Varda)
+<span class="lineNum">      33 </span>            : //  Based on original Protocol Buffers design by
+<span class="lineNum">      34 </span>            : //  Sanjay Ghemawat, Jeff Dean, and others.
+<span class="lineNum">      35 </span>            : //
+<span class="lineNum">      36 </span>            : // Defines MessageLite, the abstract interface implemented by all (lite
+<span class="lineNum">      37 </span>            : // and non-lite) protocol message objects.
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : #ifndef GOOGLE_PROTOBUF_MESSAGE_LITE_H__
+<span class="lineNum">      40 </span>            : #define GOOGLE_PROTOBUF_MESSAGE_LITE_H__
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #include &lt;climits&gt;
+<span class="lineNum">      43 </span>            : #include &lt;google/protobuf/stubs/common.h&gt;
+<span class="lineNum">      44 </span>            : #include &lt;google/protobuf/stubs/logging.h&gt;
+<span class="lineNum">      45 </span>            : #include &lt;google/protobuf/stubs/once.h&gt;
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : #if LANG_CXX11 &amp;&amp; !defined(__NVCC__)
+<span class="lineNum">      49 </span>            : #define PROTOBUF_CXX11 1
+<span class="lineNum">      50 </span>            : #else
+<span class="lineNum">      51 </span>            : #define PROTOBUF_CXX11 0
+<span class="lineNum">      52 </span>            : #endif
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : #if PROTOBUF_CXX11
+<span class="lineNum">      55 </span>            : #define PROTOBUF_FINAL final
+<span class="lineNum">      56 </span>            : #else
+<span class="lineNum">      57 </span>            : #define PROTOBUF_FINAL
+<span class="lineNum">      58 </span>            : #endif
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : #ifndef LIBPROTOBUF_EXPORT
+<span class="lineNum">      61 </span>            : #define LIBPROTOBUF_EXPORT
+<span class="lineNum">      62 </span>            : #endif
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : #define PROTOBUF_RUNTIME_DEPRECATED(message)
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            : namespace google {
+<span class="lineNum">      67 </span>            : namespace protobuf {
+<span class="lineNum">      68 </span>            : class Arena;
+<span class="lineNum">      69 </span>            : namespace io {
+<span class="lineNum">      70 </span>            : class CodedInputStream;
+<span class="lineNum">      71 </span>            : class CodedOutputStream;
+<span class="lineNum">      72 </span>            : class ZeroCopyInputStream;
+<span class="lineNum">      73 </span>            : class ZeroCopyOutputStream;
+<span class="lineNum">      74 </span>            : }
+<span class="lineNum">      75 </span>            : namespace internal {
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : class WireFormatLite;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : #ifndef SWIG
+<span class="lineNum">      80 </span>            : // We compute sizes as size_t but cache them as int.  This function converts a
+<span class="lineNum">      81 </span>            : // computed size to a cached size.  Since we don't proceed with serialization
+<span class="lineNum">      82 </span>            : // if the total size was &gt; INT_MAX, it is not important what this function
+<span class="lineNum">      83 </span>            : // returns for inputs &gt; INT_MAX.  However this case should not error or
+<span class="lineNum">      84 </span>            : // GOOGLE_CHECK-fail, because the full size_t resolution is still returned from
+<span class="lineNum">      85 </span>            : // ByteSizeLong() and checked against INT_MAX; we can catch the overflow
+<span class="lineNum">      86 </span>            : // there.
+<span class="lineNum">      87 </span>            : inline int ToCachedSize(size_t size) { return static_cast&lt;int&gt;(size); }
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : // We mainly calculate sizes in terms of size_t, but some functions that
+<span class="lineNum">      90 </span>            : // compute sizes return &quot;int&quot;.  These int sizes are expected to always be
+<span class="lineNum">      91 </span>            : // positive. This function is more efficient than casting an int to size_t
+<span class="lineNum">      92 </span>            : // directly on 64-bit platforms because it avoids making the compiler emit a
+<span class="lineNum">      93 </span>            : // sign extending instruction, which we don't want and don't want to pay for.
+<span class="lineNum">      94 </span>            : inline size_t FromIntSize(int size) {
+<span class="lineNum">      95 </span>            :   // Convert to unsigned before widening so sign extension is not necessary.
+<span class="lineNum">      96 </span>            :   return static_cast&lt;unsigned int&gt;(size);
+<span class="lineNum">      97 </span>            : }
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            : // For cases where a legacy function returns an integer size.  We GOOGLE_DCHECK()
+<span class="lineNum">     100 </span>            : // that the conversion will fit within an integer; if this is false then we
+<span class="lineNum">     101 </span>            : // are losing information.
+<span class="lineNum">     102 </span>            : inline int ToIntSize(size_t size) {
+<span class="lineNum">     103 </span>            :   GOOGLE_DCHECK_LE(size, static_cast&lt;size_t&gt;(INT_MAX));
+<span class="lineNum">     104 </span>            :   return static_cast&lt;int&gt;(size);
+<span class="lineNum">     105 </span>            : }
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            : // This type wraps a variable whose constructor and destructor are explicitly
+<span class="lineNum">     108 </span>            : // called. It is particularly useful for a global variable, without its
+<span class="lineNum">     109 </span>            : // constructor and destructor run on start and end of the program lifetime.
+<span class="lineNum">     110 </span>            : // This circumvents the initial construction order fiasco, while keeping
+<span class="lineNum">     111 </span>            : // the address of the empty string a compile time constant.
+<span class="lineNum">     112 </span>            : //
+<span class="lineNum">     113 </span>            : // Pay special attention to the initialization state of the object.
+<span class="lineNum">     114 </span>            : // 1. The object is &quot;uninitialized&quot; to begin with.
+<span class="lineNum">     115 </span>            : // 2. Call DefaultConstruct() only if the object is uninitialized.
+<span class="lineNum">     116 </span>            : //    After the call, the object becomes &quot;initialized&quot;.
+<span class="lineNum">     117 </span>            : // 3. Call get() and get_mutable() only if the object is initialized.
+<span class="lineNum">     118 </span>            : // 4. Call Destruct() only if the object is initialized.
+<span class="lineNum">     119 </span>            : //    After the call, the object becomes uninitialized.
+<span class="lineNum">     120 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     121 </span>            : class ExplicitlyConstructed {
+<span class="lineNum">     122 </span>            :  public:
+<span class="lineNum">     123 </span>            :   void DefaultConstruct() {
+<span class="lineNum">     124 </span>            :     new (&amp;union_) T();
+<span class="lineNum">     125 </span>            :   }
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            :   void Destruct() {
+<span class="lineNum">     128 </span>            :     get_mutable()-&gt;~T();
+<span class="lineNum">     129 </span>            :   }
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : #if LANG_CXX11
+<span class="lineNum">     132 </span>            :   constexpr
+<a name="133"><span class="lineNum">     133 </span>            : #endif</a>
+<span class="lineNum">     134 </span>            :       const T&amp;
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :       get() const {</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :     return reinterpret_cast&lt;const T&amp;&gt;(union_);</span>
+<span class="lineNum">     137 </span>            :   }
+<span class="lineNum">     138 </span>            :   T* get_mutable() { return reinterpret_cast&lt;T*&gt;(&amp;union_); }
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :  private:
+<span class="lineNum">     141 </span>            :   // Prefer c++14 aligned_storage, but for compatibility this will do.
+<span class="lineNum">     142 </span>            :   union AlignedUnion {
+<span class="lineNum">     143 </span>            :     char space[sizeof(T)];
+<span class="lineNum">     144 </span>            :     int64 align_to_int64;
+<span class="lineNum">     145 </span>            :     void* align_to_ptr;
+<span class="lineNum">     146 </span>            :   } union_;
+<span class="lineNum">     147 </span>            : };
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            : // Default empty string object. Don't use this directly. Instead, call
+<span class="lineNum">     150 </span>            : // GetEmptyString() to get the reference.
+<span class="lineNum">     151 </span>            : extern ExplicitlyConstructed&lt; ::std::string&gt; fixed_address_empty_string;
+<span class="lineNum">     152 </span>            : LIBPROTOBUF_EXPORT extern ProtobufOnceType empty_string_once_init_;
+<span class="lineNum">     153 </span>            : LIBPROTOBUF_EXPORT void InitEmptyString();
+<a name="154"><span class="lineNum">     154 </span>            : </a>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 : LIBPROTOBUF_EXPORT inline const ::std::string&amp; GetEmptyStringAlreadyInited() {</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :   return fixed_address_empty_string.get();</span>
+<span class="lineNum">     158 </span>            : }
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            : LIBPROTOBUF_EXPORT inline const ::std::string&amp; GetEmptyString() {
+<span class="lineNum">     161 </span>            :   ::google::protobuf::GoogleOnceInit(&amp;empty_string_once_init_, &amp;InitEmptyString);
+<span class="lineNum">     162 </span>            :   return GetEmptyStringAlreadyInited();
+<span class="lineNum">     163 </span>            : }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : LIBPROTOBUF_EXPORT size_t StringSpaceUsedExcludingSelfLong(const string&amp; str);
+<span class="lineNum">     166 </span>            : #endif  // SWIG
+<span class="lineNum">     167 </span>            : }  // namespace internal
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            : // Interface to light weight protocol messages.
+<span class="lineNum">     170 </span>            : //
+<span class="lineNum">     171 </span>            : // This interface is implemented by all protocol message objects.  Non-lite
+<span class="lineNum">     172 </span>            : // messages additionally implement the Message interface, which is a
+<span class="lineNum">     173 </span>            : // subclass of MessageLite.  Use MessageLite instead when you only need
+<span class="lineNum">     174 </span>            : // the subset of features which it supports -- namely, nothing that uses
+<span class="lineNum">     175 </span>            : // descriptors or reflection.  You can instruct the protocol compiler
+<span class="lineNum">     176 </span>            : // to generate classes which implement only MessageLite, not the full
+<span class="lineNum">     177 </span>            : // Message interface, by adding the following line to the .proto file:
+<span class="lineNum">     178 </span>            : //
+<span class="lineNum">     179 </span>            : //   option optimize_for = LITE_RUNTIME;
+<span class="lineNum">     180 </span>            : //
+<span class="lineNum">     181 </span>            : // This is particularly useful on resource-constrained systems where
+<span class="lineNum">     182 </span>            : // the full protocol buffers runtime library is too big.
+<span class="lineNum">     183 </span>            : //
+<span class="lineNum">     184 </span>            : // Note that on non-constrained systems (e.g. servers) when you need
+<span class="lineNum">     185 </span>            : // to link in lots of protocol definitions, a better way to reduce
+<span class="lineNum">     186 </span>            : // total code footprint is to use optimize_for = CODE_SIZE.  This
+<span class="lineNum">     187 </span>            : // will make the generated code smaller while still supporting all the
+<span class="lineNum">     188 </span>            : // same features (at the expense of speed).  optimize_for = LITE_RUNTIME
+<span class="lineNum">     189 </span>            : // is best when you only have a small number of message types linked
+<span class="lineNum">     190 </span>            : // into your binary, in which case the size of the protocol buffers
+<span class="lineNum">     191 </span>            : // runtime itself is the biggest problem.
+<span class="lineNum">     192 </span>            : class LIBPROTOBUF_EXPORT MessageLite {
+<span class="lineNum">     193 </span>            :  public:
+<span class="lineNum">     194 </span>            :   inline MessageLite() {}
+<span class="lineNum">     195 </span>            :   virtual ~MessageLite() {}
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :   // Basic Operations ------------------------------------------------
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            :   // Get the name of this message type, e.g. &quot;foo.bar.BazProto&quot;.
+<span class="lineNum">     200 </span>            :   virtual string GetTypeName() const = 0;
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            :   // Construct a new instance of the same type.  Ownership is passed to the
+<span class="lineNum">     203 </span>            :   // caller.
+<span class="lineNum">     204 </span>            :   virtual MessageLite* New() const = 0;
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            :   // Construct a new instance on the arena. Ownership is passed to the caller
+<span class="lineNum">     207 </span>            :   // if arena is a NULL. Default implementation for backwards compatibility.
+<span class="lineNum">     208 </span>            :   virtual MessageLite* New(::google::protobuf::Arena* arena) const;
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :   // Get the arena, if any, associated with this message. Virtual method
+<span class="lineNum">     211 </span>            :   // required for generic operations but most arena-related operations should
+<span class="lineNum">     212 </span>            :   // use the GetArenaNoVirtual() generated-code method. Default implementation
+<span class="lineNum">     213 </span>            :   // to reduce code size by avoiding the need for per-type implementations
+<span class="lineNum">     214 </span>            :   // when types do not implement arena support.
+<span class="lineNum">     215 </span>            :   virtual ::google::protobuf::Arena* GetArena() const { return NULL; }
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :   // Get a pointer that may be equal to this message's arena, or may not be.
+<span class="lineNum">     218 </span>            :   // If the value returned by this method is equal to some arena pointer, then
+<span class="lineNum">     219 </span>            :   // this message is on that arena; however, if this message is on some arena,
+<span class="lineNum">     220 </span>            :   // this method may or may not return that arena's pointer. As a tradeoff,
+<span class="lineNum">     221 </span>            :   // this method may be more efficient than GetArena(). The intent is to allow
+<span class="lineNum">     222 </span>            :   // underlying representations that use e.g. tagged pointers to sometimes
+<span class="lineNum">     223 </span>            :   // store the arena pointer directly, and sometimes in a more indirect way,
+<span class="lineNum">     224 </span>            :   // and allow a fastpath comparison against the arena pointer when it's easy
+<span class="lineNum">     225 </span>            :   // to obtain.
+<span class="lineNum">     226 </span>            :   virtual void* GetMaybeArenaPointer() const { return GetArena(); }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :   // Clear all fields of the message and set them to their default values.
+<span class="lineNum">     229 </span>            :   // Clear() avoids freeing memory, assuming that any memory allocated
+<span class="lineNum">     230 </span>            :   // to hold parts of the message will be needed again to hold the next
+<span class="lineNum">     231 </span>            :   // message.  If you actually want to free the memory used by a Message,
+<span class="lineNum">     232 </span>            :   // you must delete it.
+<span class="lineNum">     233 </span>            :   virtual void Clear() = 0;
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            :   // Quickly check if all required fields have values set.
+<span class="lineNum">     236 </span>            :   virtual bool IsInitialized() const = 0;
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :   // This is not implemented for Lite messages -- it just returns &quot;(cannot
+<span class="lineNum">     239 </span>            :   // determine missing fields for lite message)&quot;.  However, it is implemented
+<span class="lineNum">     240 </span>            :   // for full messages.  See message.h.
+<span class="lineNum">     241 </span>            :   virtual string InitializationErrorString() const;
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :   // If |other| is the exact same class as this, calls MergeFrom(). Otherwise,
+<span class="lineNum">     244 </span>            :   // results are undefined (probably crash).
+<span class="lineNum">     245 </span>            :   virtual void CheckTypeAndMergeFrom(const MessageLite&amp; other) = 0;
+<span class="lineNum">     246 </span>            : 
+<span class="lineNum">     247 </span>            :   // Parsing ---------------------------------------------------------
+<span class="lineNum">     248 </span>            :   // Methods for parsing in protocol buffer format.  Most of these are
+<span class="lineNum">     249 </span>            :   // just simple wrappers around MergeFromCodedStream().  Clear() will be
+<span class="lineNum">     250 </span>            :   // called before merging the input.
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :   // Fill the message with a protocol buffer parsed from the given input
+<span class="lineNum">     253 </span>            :   // stream. Returns false on a read error or if the input is in the wrong
+<span class="lineNum">     254 </span>            :   // format.  A successful return does not indicate the entire input is
+<span class="lineNum">     255 </span>            :   // consumed, ensure you call ConsumedEntireMessage() to check that if
+<span class="lineNum">     256 </span>            :   // applicable.
+<span class="lineNum">     257 </span>            :   bool ParseFromCodedStream(io::CodedInputStream* input);
+<span class="lineNum">     258 </span>            :   // Like ParseFromCodedStream(), but accepts messages that are missing
+<span class="lineNum">     259 </span>            :   // required fields.
+<span class="lineNum">     260 </span>            :   bool ParsePartialFromCodedStream(io::CodedInputStream* input);
+<span class="lineNum">     261 </span>            :   // Read a protocol buffer from the given zero-copy input stream.  If
+<span class="lineNum">     262 </span>            :   // successful, the entire input will be consumed.
+<span class="lineNum">     263 </span>            :   bool ParseFromZeroCopyStream(io::ZeroCopyInputStream* input);
+<span class="lineNum">     264 </span>            :   // Like ParseFromZeroCopyStream(), but accepts messages that are missing
+<span class="lineNum">     265 </span>            :   // required fields.
+<span class="lineNum">     266 </span>            :   bool ParsePartialFromZeroCopyStream(io::ZeroCopyInputStream* input);
+<span class="lineNum">     267 </span>            :   // Read a protocol buffer from the given zero-copy input stream, expecting
+<span class="lineNum">     268 </span>            :   // the message to be exactly &quot;size&quot; bytes long.  If successful, exactly
+<span class="lineNum">     269 </span>            :   // this many bytes will have been consumed from the input.
+<span class="lineNum">     270 </span>            :   bool ParseFromBoundedZeroCopyStream(io::ZeroCopyInputStream* input, int size);
+<span class="lineNum">     271 </span>            :   // Like ParseFromBoundedZeroCopyStream(), but accepts messages that are
+<span class="lineNum">     272 </span>            :   // missing required fields.
+<span class="lineNum">     273 </span>            :   bool ParsePartialFromBoundedZeroCopyStream(io::ZeroCopyInputStream* input,
+<span class="lineNum">     274 </span>            :                                              int size);
+<span class="lineNum">     275 </span>            :   // Parses a protocol buffer contained in a string. Returns true on success.
+<span class="lineNum">     276 </span>            :   // This function takes a string in the (non-human-readable) binary wire
+<span class="lineNum">     277 </span>            :   // format, matching the encoding output by MessageLite::SerializeToString().
+<span class="lineNum">     278 </span>            :   // If you'd like to convert a human-readable string into a protocol buffer
+<span class="lineNum">     279 </span>            :   // object, see google::protobuf::TextFormat::ParseFromString().
+<span class="lineNum">     280 </span>            :   bool ParseFromString(const string&amp; data);
+<span class="lineNum">     281 </span>            :   // Like ParseFromString(), but accepts messages that are missing
+<span class="lineNum">     282 </span>            :   // required fields.
+<span class="lineNum">     283 </span>            :   bool ParsePartialFromString(const string&amp; data);
+<span class="lineNum">     284 </span>            :   // Parse a protocol buffer contained in an array of bytes.
+<span class="lineNum">     285 </span>            :   bool ParseFromArray(const void* data, int size);
+<span class="lineNum">     286 </span>            :   // Like ParseFromArray(), but accepts messages that are missing
+<span class="lineNum">     287 </span>            :   // required fields.
+<span class="lineNum">     288 </span>            :   bool ParsePartialFromArray(const void* data, int size);
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            :   // Reads a protocol buffer from the stream and merges it into this
+<span class="lineNum">     292 </span>            :   // Message.  Singular fields read from the input overwrite what is
+<span class="lineNum">     293 </span>            :   // already in the Message and repeated fields are appended to those
+<span class="lineNum">     294 </span>            :   // already present.
+<span class="lineNum">     295 </span>            :   //
+<span class="lineNum">     296 </span>            :   // It is the responsibility of the caller to call input-&gt;LastTagWas()
+<span class="lineNum">     297 </span>            :   // (for groups) or input-&gt;ConsumedEntireMessage() (for non-groups) after
+<span class="lineNum">     298 </span>            :   // this returns to verify that the message's end was delimited correctly.
+<span class="lineNum">     299 </span>            :   //
+<span class="lineNum">     300 </span>            :   // ParsefromCodedStream() is implemented as Clear() followed by
+<span class="lineNum">     301 </span>            :   // MergeFromCodedStream().
+<span class="lineNum">     302 </span>            :   bool MergeFromCodedStream(io::CodedInputStream* input);
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            :   // Like MergeFromCodedStream(), but succeeds even if required fields are
+<span class="lineNum">     305 </span>            :   // missing in the input.
+<span class="lineNum">     306 </span>            :   //
+<span class="lineNum">     307 </span>            :   // MergeFromCodedStream() is just implemented as MergePartialFromCodedStream()
+<span class="lineNum">     308 </span>            :   // followed by IsInitialized().
+<span class="lineNum">     309 </span>            :   virtual bool MergePartialFromCodedStream(io::CodedInputStream* input) = 0;
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :   // Serialization ---------------------------------------------------
+<span class="lineNum">     313 </span>            :   // Methods for serializing in protocol buffer format.  Most of these
+<span class="lineNum">     314 </span>            :   // are just simple wrappers around ByteSize() and SerializeWithCachedSizes().
+<span class="lineNum">     315 </span>            : 
+<span class="lineNum">     316 </span>            :   // Write a protocol buffer of this message to the given output.  Returns
+<span class="lineNum">     317 </span>            :   // false on a write error.  If the message is missing required fields,
+<span class="lineNum">     318 </span>            :   // this may GOOGLE_CHECK-fail.
+<span class="lineNum">     319 </span>            :   bool SerializeToCodedStream(io::CodedOutputStream* output) const;
+<span class="lineNum">     320 </span>            :   // Like SerializeToCodedStream(), but allows missing required fields.
+<span class="lineNum">     321 </span>            :   bool SerializePartialToCodedStream(io::CodedOutputStream* output) const;
+<span class="lineNum">     322 </span>            :   // Write the message to the given zero-copy output stream.  All required
+<span class="lineNum">     323 </span>            :   // fields must be set.
+<span class="lineNum">     324 </span>            :   bool SerializeToZeroCopyStream(io::ZeroCopyOutputStream* output) const;
+<span class="lineNum">     325 </span>            :   // Like SerializeToZeroCopyStream(), but allows missing required fields.
+<span class="lineNum">     326 </span>            :   bool SerializePartialToZeroCopyStream(io::ZeroCopyOutputStream* output) const;
+<span class="lineNum">     327 </span>            :   // Serialize the message and store it in the given string.  All required
+<span class="lineNum">     328 </span>            :   // fields must be set.
+<span class="lineNum">     329 </span>            :   bool SerializeToString(string* output) const;
+<span class="lineNum">     330 </span>            :   // Like SerializeToString(), but allows missing required fields.
+<span class="lineNum">     331 </span>            :   bool SerializePartialToString(string* output) const;
+<span class="lineNum">     332 </span>            :   // Serialize the message and store it in the given byte array.  All required
+<span class="lineNum">     333 </span>            :   // fields must be set.
+<span class="lineNum">     334 </span>            :   bool SerializeToArray(void* data, int size) const;
+<span class="lineNum">     335 </span>            :   // Like SerializeToArray(), but allows missing required fields.
+<span class="lineNum">     336 </span>            :   bool SerializePartialToArray(void* data, int size) const;
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :   // Make a string encoding the message. Is equivalent to calling
+<span class="lineNum">     339 </span>            :   // SerializeToString() on a string and using that.  Returns the empty
+<span class="lineNum">     340 </span>            :   // string if SerializeToString() would have returned an error.
+<span class="lineNum">     341 </span>            :   // Note: If you intend to generate many such strings, you may
+<span class="lineNum">     342 </span>            :   // reduce heap fragmentation by instead re-using the same string
+<span class="lineNum">     343 </span>            :   // object with calls to SerializeToString().
+<span class="lineNum">     344 </span>            :   string SerializeAsString() const;
+<span class="lineNum">     345 </span>            :   // Like SerializeAsString(), but allows missing required fields.
+<span class="lineNum">     346 </span>            :   string SerializePartialAsString() const;
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span>            :   // Like SerializeToString(), but appends to the data to the string's existing
+<span class="lineNum">     349 </span>            :   // contents.  All required fields must be set.
+<span class="lineNum">     350 </span>            :   bool AppendToString(string* output) const;
+<span class="lineNum">     351 </span>            :   // Like AppendToString(), but allows missing required fields.
+<span class="lineNum">     352 </span>            :   bool AppendPartialToString(string* output) const;
+<span class="lineNum">     353 </span>            : 
+<span class="lineNum">     354 </span>            :   // Computes the serialized size of the message.  This recursively calls
+<span class="lineNum">     355 </span>            :   // ByteSizeLong() on all embedded messages.
+<span class="lineNum">     356 </span>            :   //
+<span class="lineNum">     357 </span>            :   // ByteSizeLong() is generally linear in the number of fields defined for the
+<span class="lineNum">     358 </span>            :   // proto.
+<span class="lineNum">     359 </span>            :   virtual size_t ByteSizeLong() const = 0;
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            :   // Legacy ByteSize() API.
+<span class="lineNum">     362 </span>            :   PROTOBUF_RUNTIME_DEPRECATED(&quot;Please use ByteSizeLong() instead&quot;)
+<span class="lineNum">     363 </span>            :   int ByteSize() const {
+<span class="lineNum">     364 </span>            :     return internal::ToIntSize(ByteSizeLong());
+<span class="lineNum">     365 </span>            :   }
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            :   // Serializes the message without recomputing the size.  The message must not
+<span class="lineNum">     368 </span>            :   // have changed since the last call to ByteSize(), and the value returned by
+<span class="lineNum">     369 </span>            :   // ByteSize must be non-negative.  Otherwise the results are undefined.
+<span class="lineNum">     370 </span>            :   virtual void SerializeWithCachedSizes(
+<span class="lineNum">     371 </span>            :       io::CodedOutputStream* output) const;
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            :   // Functions below here are not part of the public interface.  It isn't
+<span class="lineNum">     374 </span>            :   // enforced, but they should be treated as private, and will be private
+<span class="lineNum">     375 </span>            :   // at some future time.  Unfortunately the implementation of the &quot;friend&quot;
+<span class="lineNum">     376 </span>            :   // keyword in GCC is broken at the moment, but we expect it will be fixed.
+<span class="lineNum">     377 </span>            : 
+<span class="lineNum">     378 </span>            :   // Like SerializeWithCachedSizes, but writes directly to *target, returning
+<span class="lineNum">     379 </span>            :   // a pointer to the byte immediately after the last byte written.  &quot;target&quot;
+<span class="lineNum">     380 </span>            :   // must point at a byte array of at least ByteSize() bytes.  Whether to use
+<span class="lineNum">     381 </span>            :   // deterministic serialization, e.g., maps in sorted order, is determined by
+<span class="lineNum">     382 </span>            :   // CodedOutputStream::IsDefaultSerializationDeterministic().
+<span class="lineNum">     383 </span>            :   virtual uint8* SerializeWithCachedSizesToArray(uint8* target) const;
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            :   // Returns the result of the last call to ByteSize().  An embedded message's
+<span class="lineNum">     386 </span>            :   // size is needed both to serialize it (because embedded messages are
+<span class="lineNum">     387 </span>            :   // length-delimited) and to compute the outer message's size.  Caching
+<span class="lineNum">     388 </span>            :   // the size avoids computing it multiple times.
+<span class="lineNum">     389 </span>            :   //
+<span class="lineNum">     390 </span>            :   // ByteSize() does not automatically use the cached size when available
+<span class="lineNum">     391 </span>            :   // because this would require invalidating it every time the message was
+<span class="lineNum">     392 </span>            :   // modified, which would be too hard and expensive.  (E.g. if a deeply-nested
+<span class="lineNum">     393 </span>            :   // sub-message is changed, all of its parents' cached sizes would need to be
+<span class="lineNum">     394 </span>            :   // invalidated, which is too much work for an otherwise inlined setter
+<span class="lineNum">     395 </span>            :   // method.)
+<span class="lineNum">     396 </span>            :   virtual int GetCachedSize() const = 0;
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            :   virtual uint8* InternalSerializeWithCachedSizesToArray(bool deterministic,
+<span class="lineNum">     399 </span>            :                                                          uint8* target) const;
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            :  private:
+<span class="lineNum">     402 </span>            :   // TODO(gerbens) make this a pure abstract function
+<span class="lineNum">     403 </span>            :   virtual const void* InternalGetTable() const { return NULL; }
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :   friend class internal::WireFormatLite;
+<span class="lineNum">     406 </span>            :   friend class Message;
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MessageLite);
+<span class="lineNum">     409 </span>            : };
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : namespace internal {
+<span class="lineNum">     412 </span>            : 
+<span class="lineNum">     413 </span>            : extern bool LIBPROTOBUF_EXPORT proto3_preserve_unknown_;
+<span class="lineNum">     414 </span>            : 
+<span class="lineNum">     415 </span>            : // DO NOT USE: For migration only. Will be removed when Proto3 defaults to
+<span class="lineNum">     416 </span>            : // preserve unknowns.
+<span class="lineNum">     417 </span>            : inline bool GetProto3PreserveUnknownsDefault() {
+<span class="lineNum">     418 </span>            :   return proto3_preserve_unknown_;
+<span class="lineNum">     419 </span>            : }
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            : // DO NOT USE: For migration only. Will be removed when Proto3 defaults to
+<span class="lineNum">     422 </span>            : // preserve unknowns.
+<span class="lineNum">     423 </span>            : void LIBPROTOBUF_EXPORT SetProto3PreserveUnknownsDefault(bool preserve);
+<span class="lineNum">     424 </span>            : }  // namespace internal
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            : 
+<span class="lineNum">     427 </span>            : }  // namespace protobuf
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span>            : }  // namespace google
+<span class="lineNum">     430 </span>            : #endif  // GOOGLE_PROTOBUF_MESSAGE_LITE_H__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/support/terminal.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/support</a> - terminal.hpp<span style="font-size: 80%;"> (source / <a href="terminal.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">63</td>
+            <td class="headerCovTableEntry">63</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :     Copyright (c) 2001-2011 Hartmut Kaiser
+<span class="lineNum">       4 </span>            :     Copyright (c)      2011 Thomas Heller
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       7 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>            : ==============================================================================*/
+<span class="lineNum">       9 </span>            : #if !defined(BOOST_SPIRIT_TERMINAL_NOVEMBER_04_2008_0906AM)
+<span class="lineNum">      10 </span>            : #define BOOST_SPIRIT_TERMINAL_NOVEMBER_04_2008_0906AM
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      13 </span>            : #pragma once
+<span class="lineNum">      14 </span>            : #endif
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/spirit/include/phoenix_core.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/include/phoenix_function.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/proto/proto.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/meta_compiler.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/spirit/home/support/detail/make_vector.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/spirit/home/support/unused.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/spirit/home/support/detail/is_spirit_tag.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/preprocessor/tuple/elem.hpp&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #include &lt;boost/spirit/home/support/terminal_expression.hpp&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace boost { namespace spirit
+<a name="29"><span class="lineNum">      29 </span>            : {</a>
+<span class="lineNum">      30 </span>            :     template &lt;typename Terminal, typename Args&gt;
+<span class="lineNum">      31 </span><span class="lineCov">        184 :     struct terminal_ex</span>
+<span class="lineNum">      32 </span>            :     {
+<span class="lineNum">      33 </span>            :         typedef Terminal terminal_type;
+<span class="lineNum">      34 </span>            :         typedef Args args_type;
+<span class="lineNum">      35 </span>            : 
+<a name="36"><span class="lineNum">      36 </span>            :         terminal_ex(Args const&amp; args_)</a>
+<span class="lineNum">      37 </span>            :           : args(args_) {}
+<span class="lineNum">      38 </span><span class="lineCov">         23 :         terminal_ex(Args const&amp; args_, Terminal const&amp; term_)</span>
+<span class="lineNum">      39 </span><span class="lineCov">         23 :           : args(args_), term(term_) {}</span>
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :         Args args;  // Args is guaranteed to be a fusion::vectorN so you
+<span class="lineNum">      42 </span>            :                     // can use that template for detection and specialization
+<span class="lineNum">      43 </span>            :         Terminal term;
+<span class="lineNum">      44 </span>            :     };
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            :     template &lt;typename Terminal, typename Actor, int Arity&gt;
+<span class="lineNum">      47 </span>            :     struct lazy_terminal
+<span class="lineNum">      48 </span>            :     {
+<span class="lineNum">      49 </span>            :         typedef Terminal terminal_type;
+<span class="lineNum">      50 </span>            :         typedef Actor actor_type;
+<span class="lineNum">      51 </span>            :         static int const arity = Arity;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            :         lazy_terminal(Actor const&amp; actor_)
+<span class="lineNum">      54 </span>            :           : actor(actor_) {}
+<span class="lineNum">      55 </span>            :         lazy_terminal(Actor const&amp; actor_, Terminal const&amp; term_)
+<span class="lineNum">      56 </span>            :           : actor(actor_), term(term_) {}
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            :         Actor actor;
+<span class="lineNum">      59 </span>            :         Terminal term;
+<span class="lineNum">      60 </span>            :     };
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            :     template &lt;typename Domain, typename Terminal, int Arity, typename Enable = void&gt;
+<span class="lineNum">      63 </span>            :     struct use_lazy_terminal : mpl::false_ {};
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :     template &lt;typename Domain, typename Terminal, int Arity, typename Enable = void&gt;
+<span class="lineNum">      66 </span>            :     struct use_lazy_directive : mpl::false_ {};
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :     template &lt;typename Terminal&gt;
+<span class="lineNum">      69 </span>            :     struct terminal;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :     template &lt;typename Domain, typename Terminal&gt;
+<span class="lineNum">      72 </span>            :     struct use_terminal&lt;Domain, terminal&lt;Terminal&gt; &gt;
+<span class="lineNum">      73 </span>            :         : use_terminal&lt;Domain, Terminal&gt; {};
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :     template &lt;typename Domain, typename Terminal, int Arity, typename Actor&gt;
+<span class="lineNum">      76 </span>            :     struct use_terminal&lt;Domain, lazy_terminal&lt;Terminal, Actor, Arity&gt; &gt;
+<span class="lineNum">      77 </span>            :         : use_lazy_terminal&lt;Domain, Terminal, Arity&gt; {};
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :     template &lt;typename Domain, typename Terminal, int Arity, typename Actor&gt;
+<span class="lineNum">      80 </span>            :     struct use_directive&lt;Domain, lazy_terminal&lt;Terminal, Actor, Arity&gt; &gt;
+<span class="lineNum">      81 </span>            :         : use_lazy_directive&lt;Domain, Terminal, Arity&gt; {};
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :     template &lt;
+<span class="lineNum">      84 </span>            :         typename F
+<span class="lineNum">      85 </span>            :       , typename A0 = unused_type
+<span class="lineNum">      86 </span>            :       , typename A1 = unused_type
+<span class="lineNum">      87 </span>            :       , typename A2 = unused_type
+<span class="lineNum">      88 </span>            :       , typename Unused = unused_type
+<span class="lineNum">      89 </span>            :     &gt;
+<span class="lineNum">      90 </span>            :     struct make_lazy;
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     template &lt;typename F, typename A0&gt;
+<span class="lineNum">      93 </span>            :     struct make_lazy&lt;F, A0&gt;
+<span class="lineNum">      94 </span>            :     {
+<span class="lineNum">      95 </span>            :         typedef typename
+<span class="lineNum">      96 </span>            :             proto::terminal&lt;
+<span class="lineNum">      97 </span>            :                 lazy_terminal&lt;
+<span class="lineNum">      98 </span>            :                     typename F::terminal_type
+<span class="lineNum">      99 </span>            :                   , typename phoenix::detail::expression::function_eval&lt;F, A0&gt;::type
+<span class="lineNum">     100 </span>            :                   , 1 // arity
+<span class="lineNum">     101 </span>            :                 &gt;
+<span class="lineNum">     102 </span>            :             &gt;::type
+<span class="lineNum">     103 </span>            :         result_type;
+<span class="lineNum">     104 </span>            :         typedef result_type type;
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :         result_type
+<span class="lineNum">     107 </span>            :         operator()(F f, A0 const&amp; _0_) const
+<span class="lineNum">     108 </span>            :         {
+<span class="lineNum">     109 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     110 </span>            :             return result_type::make(child_type(
+<span class="lineNum">     111 </span>            :                 phoenix::detail::expression::function_eval&lt;F, A0&gt;::make(f, _0_)
+<span class="lineNum">     112 </span>            :               , f.proto_base().child0
+<span class="lineNum">     113 </span>            :             ));
+<span class="lineNum">     114 </span>            :         }
+<span class="lineNum">     115 </span>            :     };
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :     template &lt;typename F, typename A0, typename A1&gt;
+<span class="lineNum">     118 </span>            :     struct make_lazy&lt;F, A0, A1&gt;
+<span class="lineNum">     119 </span>            :     {
+<span class="lineNum">     120 </span>            :         typedef typename
+<span class="lineNum">     121 </span>            :             proto::terminal&lt;
+<span class="lineNum">     122 </span>            :                lazy_terminal&lt;
+<span class="lineNum">     123 </span>            :                     typename F::terminal_type
+<span class="lineNum">     124 </span>            :                   , typename phoenix::detail::expression::function_eval&lt;F, A0, A1&gt;::type
+<span class="lineNum">     125 </span>            :                   , 2 // arity
+<span class="lineNum">     126 </span>            :                 &gt;
+<span class="lineNum">     127 </span>            :             &gt;::type
+<span class="lineNum">     128 </span>            :         result_type;
+<span class="lineNum">     129 </span>            :         typedef result_type type;
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            :         result_type
+<span class="lineNum">     132 </span>            :         operator()(F f, A0 const&amp; _0_, A1 const&amp; _1_) const
+<span class="lineNum">     133 </span>            :         {
+<span class="lineNum">     134 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     135 </span>            :             return result_type::make(child_type(
+<span class="lineNum">     136 </span>            :                 phoenix::detail::expression::function_eval&lt;F, A0, A1&gt;::make(f, _0_, _1_)
+<span class="lineNum">     137 </span>            :               , f.proto_base().child0
+<span class="lineNum">     138 </span>            :             ));
+<span class="lineNum">     139 </span>            :         }
+<span class="lineNum">     140 </span>            :     };
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :     template &lt;typename F, typename A0, typename A1, typename A2&gt;
+<span class="lineNum">     143 </span>            :     struct make_lazy&lt;F, A0, A1, A2&gt;
+<span class="lineNum">     144 </span>            :     {
+<span class="lineNum">     145 </span>            :         typedef typename
+<span class="lineNum">     146 </span>            :             proto::terminal&lt;
+<span class="lineNum">     147 </span>            :                lazy_terminal&lt;
+<span class="lineNum">     148 </span>            :                     typename F::terminal_type
+<span class="lineNum">     149 </span>            :                   , typename phoenix::detail::expression::function_eval&lt;F, A0, A1, A2&gt;::type
+<span class="lineNum">     150 </span>            :                   , 3 // arity
+<span class="lineNum">     151 </span>            :                 &gt;
+<span class="lineNum">     152 </span>            :             &gt;::type
+<span class="lineNum">     153 </span>            :         result_type;
+<span class="lineNum">     154 </span>            :         typedef result_type type;
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :         result_type
+<span class="lineNum">     157 </span>            :         operator()(F f, A0 const&amp; _0_, A1 const&amp; _1_, A2 const&amp; _2_) const
+<span class="lineNum">     158 </span>            :         {
+<span class="lineNum">     159 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     160 </span>            :             return result_type::make(child_type(
+<span class="lineNum">     161 </span>            :                 phoenix::detail::expression::function_eval&lt;F, A0, A1, A2&gt;::make(f, _0_, _1_, _2_)
+<span class="lineNum">     162 </span>            :               , f.proto_base().child0
+<span class="lineNum">     163 </span>            :             ));
+<span class="lineNum">     164 </span>            :         }
+<span class="lineNum">     165 </span>            :     };
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :     namespace detail
+<span class="lineNum">     168 </span>            :     {
+<span class="lineNum">     169 </span>            :         // Helper struct for SFINAE purposes
+<span class="lineNum">     170 </span>            :         template &lt;bool C&gt; struct bool_;
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :         template &lt;&gt;
+<span class="lineNum">     173 </span>            :         struct bool_&lt;true&gt; : mpl::bool_&lt;true&gt;
+<span class="lineNum">     174 </span>            :         { 
+<span class="lineNum">     175 </span>            :             typedef bool_&lt;true&gt;* is_true; 
+<span class="lineNum">     176 </span>            :         };
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :         template &lt;&gt;
+<span class="lineNum">     179 </span>            :         struct bool_&lt;false&gt; : mpl::bool_&lt;false&gt;
+<span class="lineNum">     180 </span>            :         { 
+<span class="lineNum">     181 </span>            :             typedef bool_&lt;false&gt;* is_false; 
+<span class="lineNum">     182 </span>            :         };
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :         // Metafunction to detect if at least one arg is a Phoenix actor
+<span class="lineNum">     185 </span>            :         template &lt;
+<span class="lineNum">     186 </span>            :             typename A0
+<span class="lineNum">     187 </span>            :           , typename A1 = unused_type
+<span class="lineNum">     188 </span>            :           , typename A2 = unused_type
+<span class="lineNum">     189 </span>            :         &gt;
+<span class="lineNum">     190 </span>            :         struct contains_actor
+<span class="lineNum">     191 </span>            :             : bool_&lt;
+<span class="lineNum">     192 </span>            :                   phoenix::is_actor&lt;A0&gt;::value
+<span class="lineNum">     193 </span>            :                || phoenix::is_actor&lt;A1&gt;::value
+<span class="lineNum">     194 </span>            :                || phoenix::is_actor&lt;A2&gt;::value
+<span class="lineNum">     195 </span>            :               &gt;
+<span class="lineNum">     196 </span>            :         {};
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            :         // to_lazy_arg: convert a terminal arg type to the type make_lazy needs
+<span class="lineNum">     199 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     200 </span>            :         struct to_lazy_arg
+<span class="lineNum">     201 </span>            :           : phoenix::as_actor&lt;A&gt; // wrap A in a Phoenix actor if not already one
+<span class="lineNum">     202 </span>            :         {};
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     205 </span>            :         struct to_lazy_arg&lt;const A&gt;
+<span class="lineNum">     206 </span>            :           : to_lazy_arg&lt;A&gt;
+<span class="lineNum">     207 </span>            :         {};
+<span class="lineNum">     208 </span>            :         
+<span class="lineNum">     209 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     210 </span>            :         struct to_lazy_arg&lt;A &amp;&gt;
+<span class="lineNum">     211 </span>            :           : to_lazy_arg&lt;A&gt;
+<span class="lineNum">     212 </span>            :         {};
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :         template &lt;&gt;
+<span class="lineNum">     215 </span>            :         struct to_lazy_arg&lt;unused_type&gt;
+<span class="lineNum">     216 </span>            :         {
+<span class="lineNum">     217 </span>            :             // unused arg: make_lazy wants unused_type
+<span class="lineNum">     218 </span>            :             typedef unused_type type;
+<span class="lineNum">     219 </span>            :         };
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            :         // to_nonlazy_arg: convert a terminal arg type to the type make_vector needs
+<span class="lineNum">     222 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     223 </span>            :         struct to_nonlazy_arg
+<span class="lineNum">     224 </span>            :         {
+<span class="lineNum">     225 </span>            :             // identity
+<span class="lineNum">     226 </span>            :             typedef A type;
+<span class="lineNum">     227 </span>            :         };
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     230 </span>            :         struct to_nonlazy_arg&lt;const A&gt;
+<span class="lineNum">     231 </span>            :           : to_nonlazy_arg&lt;A&gt;
+<span class="lineNum">     232 </span>            :         {};
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            :         template &lt;typename A&gt;
+<span class="lineNum">     235 </span>            :         struct to_nonlazy_arg&lt;A &amp;&gt;
+<span class="lineNum">     236 </span>            :           : to_nonlazy_arg&lt;A&gt;
+<span class="lineNum">     237 </span>            :         {};
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            :         // incomplete type: should not be appeared unused_type in nonlazy arg.
+<span class="lineNum">     240 </span>            :         template &lt;&gt;
+<span class="lineNum">     241 </span>            :         struct to_nonlazy_arg&lt;unused_type&gt;;
+<span class="lineNum">     242 </span>            :     }
+<span class="lineNum">     243 </span>            : 
+<span class="lineNum">     244 </span>            :     template &lt;typename Terminal&gt;
+<span class="lineNum">     245 </span>            :     struct terminal
+<span class="lineNum">     246 </span>            :       : proto::extends&lt;
+<span class="lineNum">     247 </span>            :             typename proto::terminal&lt;Terminal&gt;::type
+<span class="lineNum">     248 </span>            :           , terminal&lt;Terminal&gt;
+<span class="lineNum">     249 </span>            :         &gt;
+<span class="lineNum">     250 </span>            :     {
+<span class="lineNum">     251 </span>            :         typedef terminal&lt;Terminal&gt; this_type;
+<span class="lineNum">     252 </span>            :         typedef Terminal terminal_type;
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :         typedef proto::extends&lt;
+<span class="lineNum">     255 </span>            :             typename proto::terminal&lt;Terminal&gt;::type
+<span class="lineNum">     256 </span>            :           , terminal&lt;Terminal&gt;
+<a name="257"><span class="lineNum">     257 </span>            :         &gt; base_type;</a>
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span><span class="lineCov">        360 :         terminal() {}</span>
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            :         terminal(Terminal const&amp; t)
+<span class="lineNum">     262 </span>            :           : base_type(proto::terminal&lt;Terminal&gt;::type::make(t)) 
+<span class="lineNum">     263 </span>            :         {}
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            : #if defined(BOOST_MSVC)
+<span class="lineNum">     266 </span>            : #pragma warning(push)
+<span class="lineNum">     267 </span>            : // warning C4348: 'boost::spirit::terminal&lt;...&gt;::result_helper': redefinition of default parameter: parameter 3, 4
+<span class="lineNum">     268 </span>            : #pragma warning(disable: 4348)
+<span class="lineNum">     269 </span>            : #endif
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            :         template &lt;
+<span class="lineNum">     272 </span>            :             bool Lazy
+<span class="lineNum">     273 </span>            :           , typename A0
+<span class="lineNum">     274 </span>            :           , typename A1 = unused_type
+<span class="lineNum">     275 </span>            :           , typename A2 = unused_type
+<span class="lineNum">     276 </span>            :         &gt;
+<span class="lineNum">     277 </span>            :         struct result_helper;
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            : #if defined(BOOST_MSVC)
+<span class="lineNum">     280 </span>            : #pragma warning(pop)
+<span class="lineNum">     281 </span>            : #endif
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            :         template &lt;
+<span class="lineNum">     284 </span>            :             typename A0
+<span class="lineNum">     285 </span>            :         &gt;
+<span class="lineNum">     286 </span>            :         struct result_helper&lt;false, A0&gt;
+<span class="lineNum">     287 </span>            :         {
+<span class="lineNum">     288 </span>            :             typedef typename
+<span class="lineNum">     289 </span>            :                 proto::terminal&lt;
+<span class="lineNum">     290 </span>            :                     terminal_ex&lt;
+<span class="lineNum">     291 </span>            :                         Terminal
+<span class="lineNum">     292 </span>            :                       , typename detail::result_of::make_vector&lt;
+<span class="lineNum">     293 </span>            :                             typename detail::to_nonlazy_arg&lt;A0&gt;::type&gt;::type&gt;
+<span class="lineNum">     294 </span>            :                 &gt;::type
+<span class="lineNum">     295 </span>            :             type;
+<span class="lineNum">     296 </span>            :         };
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            :         template &lt;
+<span class="lineNum">     299 </span>            :             typename A0
+<span class="lineNum">     300 </span>            :           , typename A1
+<span class="lineNum">     301 </span>            :         &gt;
+<span class="lineNum">     302 </span>            :         struct result_helper&lt;false, A0, A1&gt;
+<span class="lineNum">     303 </span>            :         {
+<span class="lineNum">     304 </span>            :             typedef typename
+<span class="lineNum">     305 </span>            :                 proto::terminal&lt;
+<span class="lineNum">     306 </span>            :                     terminal_ex&lt;
+<span class="lineNum">     307 </span>            :                         Terminal
+<span class="lineNum">     308 </span>            :                       , typename detail::result_of::make_vector&lt;
+<span class="lineNum">     309 </span>            :                             typename detail::to_nonlazy_arg&lt;A0&gt;::type
+<span class="lineNum">     310 </span>            :                           , typename detail::to_nonlazy_arg&lt;A1&gt;::type&gt;::type&gt;
+<span class="lineNum">     311 </span>            :                 &gt;::type
+<span class="lineNum">     312 </span>            :             type;
+<span class="lineNum">     313 </span>            :         };
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            :         template &lt;
+<span class="lineNum">     316 </span>            :             typename A0
+<span class="lineNum">     317 </span>            :           , typename A1
+<span class="lineNum">     318 </span>            :           , typename A2
+<span class="lineNum">     319 </span>            :         &gt;
+<span class="lineNum">     320 </span>            :         struct result_helper&lt;false, A0, A1, A2&gt;
+<span class="lineNum">     321 </span>            :         {
+<span class="lineNum">     322 </span>            :             typedef typename
+<span class="lineNum">     323 </span>            :                 proto::terminal&lt;
+<span class="lineNum">     324 </span>            :                     terminal_ex&lt;
+<span class="lineNum">     325 </span>            :                         Terminal
+<span class="lineNum">     326 </span>            :                       , typename detail::result_of::make_vector&lt;
+<span class="lineNum">     327 </span>            :                             typename detail::to_nonlazy_arg&lt;A0&gt;::type
+<span class="lineNum">     328 </span>            :                           , typename detail::to_nonlazy_arg&lt;A1&gt;::type
+<span class="lineNum">     329 </span>            :                           , typename detail::to_nonlazy_arg&lt;A2&gt;::type&gt;::type&gt;
+<span class="lineNum">     330 </span>            :                 &gt;::type
+<span class="lineNum">     331 </span>            :             type;
+<span class="lineNum">     332 </span>            :         };
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            :         template &lt;
+<span class="lineNum">     335 </span>            :             typename A0
+<span class="lineNum">     336 </span>            :           , typename A1
+<span class="lineNum">     337 </span>            :           , typename A2
+<span class="lineNum">     338 </span>            :         &gt;
+<span class="lineNum">     339 </span>            :         struct result_helper&lt;true, A0, A1, A2&gt;
+<span class="lineNum">     340 </span>            :         {
+<span class="lineNum">     341 </span>            :             typedef typename
+<span class="lineNum">     342 </span>            :                 make_lazy&lt;this_type
+<span class="lineNum">     343 </span>            :                   , typename detail::to_lazy_arg&lt;A0&gt;::type
+<span class="lineNum">     344 </span>            :                   , typename detail::to_lazy_arg&lt;A1&gt;::type
+<span class="lineNum">     345 </span>            :                   , typename detail::to_lazy_arg&lt;A2&gt;::type&gt;::type
+<span class="lineNum">     346 </span>            :             type;
+<span class="lineNum">     347 </span>            :         };
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span>            :         // FIXME: we need to change this to conform to the result_of protocol
+<span class="lineNum">     350 </span>            :         template &lt;
+<span class="lineNum">     351 </span>            :             typename A0
+<span class="lineNum">     352 </span>            :           , typename A1 = unused_type
+<span class="lineNum">     353 </span>            :           , typename A2 = unused_type      // Support up to 3 args
+<span class="lineNum">     354 </span>            :         &gt;
+<span class="lineNum">     355 </span>            :         struct result
+<span class="lineNum">     356 </span>            :         {
+<span class="lineNum">     357 </span>            :             typedef typename
+<span class="lineNum">     358 </span>            :                 result_helper&lt;
+<span class="lineNum">     359 </span>            :                     detail::contains_actor&lt;A0, A1, A2&gt;::value
+<span class="lineNum">     360 </span>            :                   , A0, A1, A2
+<span class="lineNum">     361 </span>            :                 &gt;::type
+<span class="lineNum">     362 </span>            :             type;
+<span class="lineNum">     363 </span>            :         };
+<span class="lineNum">     364 </span>            : 
+<span class="lineNum">     365 </span>            :         template &lt;typename This, typename A0&gt;
+<span class="lineNum">     366 </span>            :         struct result&lt;This(A0)&gt;
+<span class="lineNum">     367 </span>            :         {
+<span class="lineNum">     368 </span>            :             typedef typename
+<span class="lineNum">     369 </span>            :                 result_helper&lt;
+<span class="lineNum">     370 </span>            :                     detail::contains_actor&lt;A0, unused_type, unused_type&gt;::value
+<span class="lineNum">     371 </span>            :                   , A0, unused_type, unused_type
+<span class="lineNum">     372 </span>            :                 &gt;::type
+<span class="lineNum">     373 </span>            :             type;
+<span class="lineNum">     374 </span>            :         };
+<span class="lineNum">     375 </span>            : 
+<span class="lineNum">     376 </span>            :         template &lt;typename This, typename A0, typename A1&gt;
+<span class="lineNum">     377 </span>            :         struct result&lt;This(A0, A1)&gt;
+<span class="lineNum">     378 </span>            :         {
+<span class="lineNum">     379 </span>            :             typedef typename
+<span class="lineNum">     380 </span>            :                 result_helper&lt;
+<span class="lineNum">     381 </span>            :                     detail::contains_actor&lt;A0, A1, unused_type&gt;::value
+<span class="lineNum">     382 </span>            :                   , A0, A1, unused_type
+<span class="lineNum">     383 </span>            :                 &gt;::type
+<span class="lineNum">     384 </span>            :             type;
+<span class="lineNum">     385 </span>            :         };
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            :         template &lt;typename This, typename A0, typename A1, typename A2&gt;
+<span class="lineNum">     389 </span>            :         struct result&lt;This(A0, A1, A2)&gt;
+<span class="lineNum">     390 </span>            :         {
+<span class="lineNum">     391 </span>            :             typedef typename
+<span class="lineNum">     392 </span>            :                 result_helper&lt;
+<span class="lineNum">     393 </span>            :                      detail::contains_actor&lt;A0, A1, A2&gt;::value
+<span class="lineNum">     394 </span>            :                    , A0, A1, A2
+<span class="lineNum">     395 </span>            :                  &gt;::type
+<span class="lineNum">     396 </span>            :                  type;
+<span class="lineNum">     397 </span>            :         };
+<span class="lineNum">     398 </span>            : 
+<span class="lineNum">     399 </span>            :         // Note: in the following overloads, SFINAE cannot
+<span class="lineNum">     400 </span>            :         // be done on return type because of gcc bug #24915:
+<span class="lineNum">     401 </span>            :         //   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=24915
+<span class="lineNum">     402 </span>            :         // Hence an additional, fake argument is used for SFINAE,
+<span class="lineNum">     403 </span>            :         // using a type which can never be a real argument type.
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :         // Non-lazy overloads. Only enabled when all
+<span class="lineNum">     406 </span>            :         // args are immediates (no Phoenix actor).
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :         template &lt;typename A0&gt;
+<span class="lineNum">     409 </span>            :         typename result&lt;A0&gt;::type
+<span class="lineNum">     410 </span>            :         operator()(A0 const&amp; _0_
+<span class="lineNum">     411 </span>            :           , typename detail::contains_actor&lt;A0&gt;::is_false = 0) const
+<span class="lineNum">     412 </span>            :         {
+<span class="lineNum">     413 </span>            :             typedef typename result&lt;A0&gt;::type result_type;
+<span class="lineNum">     414 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     415 </span>            :             return result_type::make(
+<span class="lineNum">     416 </span>            :                 child_type(
+<span class="lineNum">     417 </span>            :                     detail::make_vector(_0_)
+<span class="lineNum">     418 </span>            :                   , this-&gt;proto_base().child0)
+<span class="lineNum">     419 </span>            :             );
+<span class="lineNum">     420 </span>            :         }
+<span class="lineNum">     421 </span>            : 
+<a name="422"><span class="lineNum">     422 </span>            :         template &lt;typename A0, typename A1&gt;</a>
+<span class="lineNum">     423 </span>            :         typename result&lt;A0, A1&gt;::type
+<span class="lineNum">     424 </span><span class="lineCov">         23 :         operator()(A0 const&amp; _0_, A1 const&amp; _1_</span>
+<span class="lineNum">     425 </span>            :           , typename detail::contains_actor&lt;A0, A1&gt;::is_false = 0) const
+<span class="lineNum">     426 </span>            :         {
+<span class="lineNum">     427 </span>            :             typedef typename result&lt;A0, A1&gt;::type result_type;
+<span class="lineNum">     428 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     429 </span><span class="lineCov">         46 :             return result_type::make(</span>
+<span class="lineNum">     430 </span>            :                 child_type(
+<span class="lineNum">     431 </span>            :                     detail::make_vector(_0_, _1_)
+<span class="lineNum">     432 </span>            :                   , this-&gt;proto_base().child0)
+<span class="lineNum">     433 </span><span class="lineCov">         46 :             );</span>
+<span class="lineNum">     434 </span>            :         }
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            :         template &lt;typename A0, typename A1, typename A2&gt;
+<span class="lineNum">     437 </span>            :         typename result&lt;A0, A1, A2&gt;::type
+<span class="lineNum">     438 </span>            :         operator()(A0 const&amp; _0_, A1 const&amp; _1_, A2 const&amp; _2_
+<span class="lineNum">     439 </span>            :           , typename detail::contains_actor&lt;A0, A1, A2&gt;::is_false = 0) const
+<span class="lineNum">     440 </span>            :         {
+<span class="lineNum">     441 </span>            :             typedef typename result&lt;A0, A1, A2&gt;::type result_type;
+<span class="lineNum">     442 </span>            :             typedef typename result_type::proto_child0 child_type;
+<span class="lineNum">     443 </span>            :             return result_type::make(
+<span class="lineNum">     444 </span>            :                 child_type(
+<span class="lineNum">     445 </span>            :                     detail::make_vector(_0_, _1_, _2_)
+<span class="lineNum">     446 </span>            :                   , this-&gt;proto_base().child0)
+<span class="lineNum">     447 </span>            :             );
+<span class="lineNum">     448 </span>            :         }
+<span class="lineNum">     449 </span>            : 
+<span class="lineNum">     450 </span>            :         // Lazy overloads. Enabled when at
+<span class="lineNum">     451 </span>            :         // least one arg is a Phoenix actor.
+<span class="lineNum">     452 </span>            :         template &lt;typename A0&gt;
+<span class="lineNum">     453 </span>            :         typename result&lt;A0&gt;::type
+<span class="lineNum">     454 </span>            :         operator()(A0 const&amp; _0_
+<span class="lineNum">     455 </span>            :           , typename detail::contains_actor&lt;A0&gt;::is_true = 0) const
+<span class="lineNum">     456 </span>            :         {
+<span class="lineNum">     457 </span>            :             return make_lazy&lt;this_type
+<span class="lineNum">     458 </span>            :               , typename phoenix::as_actor&lt;A0&gt;::type&gt;()(*this
+<span class="lineNum">     459 </span>            :               , phoenix::as_actor&lt;A0&gt;::convert(_0_));
+<span class="lineNum">     460 </span>            :         }
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            :         template &lt;typename A0, typename A1&gt;
+<span class="lineNum">     463 </span>            :         typename result&lt;A0, A1&gt;::type
+<span class="lineNum">     464 </span>            :         operator()(A0 const&amp; _0_, A1 const&amp; _1_
+<span class="lineNum">     465 </span>            :           , typename detail::contains_actor&lt;A0, A1&gt;::is_true = 0) const
+<span class="lineNum">     466 </span>            :         {
+<span class="lineNum">     467 </span>            :             return make_lazy&lt;this_type
+<span class="lineNum">     468 </span>            :               , typename phoenix::as_actor&lt;A0&gt;::type
+<span class="lineNum">     469 </span>            :               , typename phoenix::as_actor&lt;A1&gt;::type&gt;()(*this
+<span class="lineNum">     470 </span>            :               , phoenix::as_actor&lt;A0&gt;::convert(_0_)
+<span class="lineNum">     471 </span>            :               , phoenix::as_actor&lt;A1&gt;::convert(_1_));
+<span class="lineNum">     472 </span>            :         }
+<span class="lineNum">     473 </span>            : 
+<span class="lineNum">     474 </span>            :         template &lt;typename A0, typename A1, typename A2&gt;
+<span class="lineNum">     475 </span>            :         typename result&lt;A0, A1, A2&gt;::type
+<span class="lineNum">     476 </span>            :         operator()(A0 const&amp; _0_, A1 const&amp; _1_, A2 const&amp; _2_
+<span class="lineNum">     477 </span>            :           , typename detail::contains_actor&lt;A0, A1, A2&gt;::is_true = 0) const
+<span class="lineNum">     478 </span>            :         {
+<span class="lineNum">     479 </span>            :             return make_lazy&lt;this_type
+<span class="lineNum">     480 </span>            :               , typename phoenix::as_actor&lt;A0&gt;::type
+<span class="lineNum">     481 </span>            :               , typename phoenix::as_actor&lt;A1&gt;::type
+<span class="lineNum">     482 </span>            :               , typename phoenix::as_actor&lt;A2&gt;::type&gt;()(*this
+<span class="lineNum">     483 </span>            :               , phoenix::as_actor&lt;A0&gt;::convert(_0_)
+<span class="lineNum">     484 </span>            :               , phoenix::as_actor&lt;A1&gt;::convert(_1_)
+<span class="lineNum">     485 </span>            :               , phoenix::as_actor&lt;A2&gt;::convert(_2_));
+<span class="lineNum">     486 </span>            :         }
+<span class="lineNum">     487 </span>            : 
+<span class="lineNum">     488 </span>            :     private:
+<span class="lineNum">     489 </span>            :         // silence MSVC warning C4512: assignment operator could not be generated
+<span class="lineNum">     490 </span>            :         terminal&amp; operator= (terminal const&amp;);
+<span class="lineNum">     491 </span>            :     };
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     494 </span>            :     namespace result_of
+<span class="lineNum">     495 </span>            :     {
+<span class="lineNum">     496 </span>            :         // Calculate the type of the compound terminal if generated by one of
+<span class="lineNum">     497 </span>            :         // the spirit::terminal::operator() overloads above
+<span class="lineNum">     498 </span>            : 
+<span class="lineNum">     499 </span>            :         // The terminal type itself is passed through without modification
+<span class="lineNum">     500 </span>            :         template &lt;typename Tag&gt;
+<span class="lineNum">     501 </span>            :         struct terminal
+<span class="lineNum">     502 </span>            :         {
+<span class="lineNum">     503 </span>            :             typedef spirit::terminal&lt;Tag&gt; type;
+<span class="lineNum">     504 </span>            :         };
+<span class="lineNum">     505 </span>            : 
+<span class="lineNum">     506 </span>            :         template &lt;typename Tag, typename A0&gt;
+<span class="lineNum">     507 </span>            :         struct terminal&lt;Tag(A0)&gt;
+<span class="lineNum">     508 </span>            :         {
+<span class="lineNum">     509 </span>            :             typedef typename spirit::terminal&lt;Tag&gt;::
+<span class="lineNum">     510 </span>            :                 template result&lt;A0&gt;::type type;
+<span class="lineNum">     511 </span>            :         };
+<span class="lineNum">     512 </span>            : 
+<span class="lineNum">     513 </span>            :         template &lt;typename Tag, typename A0, typename A1&gt;
+<span class="lineNum">     514 </span>            :         struct terminal&lt;Tag(A0, A1)&gt;
+<span class="lineNum">     515 </span>            :         {
+<span class="lineNum">     516 </span>            :             typedef typename spirit::terminal&lt;Tag&gt;::
+<span class="lineNum">     517 </span>            :                 template result&lt;A0, A1&gt;::type type;
+<span class="lineNum">     518 </span>            :         };
+<span class="lineNum">     519 </span>            : 
+<span class="lineNum">     520 </span>            :         template &lt;typename Tag, typename A0, typename A1, typename A2&gt;
+<span class="lineNum">     521 </span>            :         struct terminal&lt;Tag(A0, A1, A2)&gt;
+<span class="lineNum">     522 </span>            :         {
+<span class="lineNum">     523 </span>            :             typedef typename spirit::terminal&lt;Tag&gt;::
+<span class="lineNum">     524 </span>            :                 template result&lt;A0, A1, A2&gt;::type type;
+<span class="lineNum">     525 </span>            :         };
+<span class="lineNum">     526 </span>            :     }
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     529 </span>            :     // support for stateful tag types
+<span class="lineNum">     530 </span>            :     namespace tag
+<span class="lineNum">     531 </span>            :     {
+<span class="lineNum">     532 </span>            :         template &lt;
+<span class="lineNum">     533 </span>            :             typename Data, typename Tag
+<span class="lineNum">     534 </span>            :           , typename DataTag1 = unused_type, typename DataTag2 = unused_type&gt;
+<span class="lineNum">     535 </span>            :         struct stateful_tag
+<span class="lineNum">     536 </span>            :         {
+<span class="lineNum">     537 </span>            :             BOOST_SPIRIT_IS_TAG()
+<span class="lineNum">     538 </span>            : 
+<span class="lineNum">     539 </span>            :             typedef Data data_type;
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span>            :             stateful_tag() {}
+<span class="lineNum">     542 </span>            :             stateful_tag(data_type const&amp; data) : data_(data) {}
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            :             data_type data_;
+<span class="lineNum">     545 </span>            : 
+<span class="lineNum">     546 </span>            :         private:
+<span class="lineNum">     547 </span>            :             // silence MSVC warning C4512: assignment operator could not be generated
+<span class="lineNum">     548 </span>            :             stateful_tag&amp; operator= (stateful_tag const&amp;);
+<span class="lineNum">     549 </span>            :         };
+<span class="lineNum">     550 </span>            :     }
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            :     template &lt;
+<span class="lineNum">     553 </span>            :         typename Data, typename Tag
+<span class="lineNum">     554 </span>            :       , typename DataTag1 = unused_type, typename DataTag2 = unused_type&gt;
+<span class="lineNum">     555 </span>            :     struct stateful_tag_type
+<span class="lineNum">     556 </span>            :       : spirit::terminal&lt;tag::stateful_tag&lt;Data, Tag, DataTag1, DataTag2&gt; &gt;
+<span class="lineNum">     557 </span>            :     {
+<span class="lineNum">     558 </span>            :         typedef tag::stateful_tag&lt;Data, Tag, DataTag1, DataTag2&gt; tag_type;
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span>            :         stateful_tag_type() {}
+<span class="lineNum">     561 </span>            :         stateful_tag_type(Data const&amp; data)
+<span class="lineNum">     562 </span>            :           : spirit::terminal&lt;tag_type&gt;(data) 
+<span class="lineNum">     563 </span>            :         {}
+<span class="lineNum">     564 </span>            : 
+<span class="lineNum">     565 </span>            :     private:
+<span class="lineNum">     566 </span>            :         // silence MSVC warning C4512: assignment operator could not be generated
+<span class="lineNum">     567 </span>            :         stateful_tag_type&amp; operator= (stateful_tag_type const&amp;);
+<span class="lineNum">     568 </span>            :     };
+<span class="lineNum">     569 </span>            : 
+<span class="lineNum">     570 </span>            :     namespace detail
+<span class="lineNum">     571 </span>            :     {
+<span class="lineNum">     572 </span>            :         // extract expression if this is a Tag
+<span class="lineNum">     573 </span>            :         template &lt;typename StatefulTag&gt;
+<span class="lineNum">     574 </span>            :         struct get_stateful_data
+<span class="lineNum">     575 </span>            :         {
+<span class="lineNum">     576 </span>            :             typedef typename StatefulTag::data_type data_type;
+<span class="lineNum">     577 </span>            : 
+<span class="lineNum">     578 </span>            :             // is invoked if given tag is != Tag
+<span class="lineNum">     579 </span>            :             template &lt;typename Tag_&gt;
+<span class="lineNum">     580 </span>            :             static data_type call(Tag_) { return data_type(); }
+<span class="lineNum">     581 </span>            : 
+<span class="lineNum">     582 </span>            :             // this is invoked if given tag is same as'Tag'
+<span class="lineNum">     583 </span>            :             static data_type const&amp; call(StatefulTag const&amp; t) { return t.data_; }
+<span class="lineNum">     584 </span>            :         };
+<span class="lineNum">     585 </span>            :     }
+<span class="lineNum">     586 </span>            : 
+<span class="lineNum">     587 </span>            : }}
+<span class="lineNum">     588 </span>            : 
+<span class="lineNum">     589 </span>            : namespace boost { namespace phoenix
+<span class="lineNum">     590 </span>            : {
+<span class="lineNum">     591 </span>            :     template &lt;typename Tag&gt;
+<span class="lineNum">     592 </span>            :     struct is_custom_terminal&lt;Tag, typename Tag::is_spirit_tag&gt;
+<span class="lineNum">     593 </span>            :       : mpl::true_
+<span class="lineNum">     594 </span>            :     {};
+<span class="lineNum">     595 </span>            : 
+<span class="lineNum">     596 </span>            :     template &lt;typename Tag&gt;
+<span class="lineNum">     597 </span>            :     struct custom_terminal&lt;Tag, typename Tag::is_spirit_tag&gt;
+<span class="lineNum">     598 </span>            :     {
+<span class="lineNum">     599 </span>            : #ifndef BOOST_PHOENIX_NO_SPECIALIZE_CUSTOM_TERMINAL
+<span class="lineNum">     600 </span>            :         typedef void _is_default_custom_terminal; // fix for #7730
+<span class="lineNum">     601 </span>            : #endif
+<span class="lineNum">     602 </span>            : 
+<span class="lineNum">     603 </span>            :         typedef spirit::terminal&lt;Tag&gt; result_type;
+<span class="lineNum">     604 </span>            : 
+<span class="lineNum">     605 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     606 </span>            :         result_type operator()(Tag const &amp; t, Context const &amp;)
+<span class="lineNum">     607 </span>            :         {
+<span class="lineNum">     608 </span>            :             return spirit::terminal&lt;Tag&gt;(t);
+<span class="lineNum">     609 </span>            :         }
+<span class="lineNum">     610 </span>            :     };
+<span class="lineNum">     611 </span>            : }}
+<span class="lineNum">     612 </span>            : 
+<span class="lineNum">     613 </span>            : // Define a spirit terminal. This macro may be placed in any namespace.
+<span class="lineNum">     614 </span>            : // Common placeholders are placed in the main boost::spirit namespace
+<span class="lineNum">     615 </span>            : // (see common_terminals.hpp)
+<span class="lineNum">     616 </span>            : 
+<span class="lineNum">     617 </span>            : #define BOOST_SPIRIT_TERMINAL_X(x, y) ((x, y)) BOOST_SPIRIT_TERMINAL_Y
+<span class="lineNum">     618 </span>            : #define BOOST_SPIRIT_TERMINAL_Y(x, y) ((x, y)) BOOST_SPIRIT_TERMINAL_X
+<span class="lineNum">     619 </span>            : #define BOOST_SPIRIT_TERMINAL_X0
+<span class="lineNum">     620 </span>            : #define BOOST_SPIRIT_TERMINAL_Y0
+<span class="lineNum">     621 </span>            : 
+<span class="lineNum">     622 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     623 </span>            : 
+<span class="lineNum">     624 </span>            : #define BOOST_SPIRIT_TERMINAL_NAME(name, type_name)                             \
+<span class="lineNum">     625 </span>            :     namespace tag { struct name { BOOST_SPIRIT_IS_TAG() }; }                    \
+<span class="lineNum">     626 </span>            :     typedef boost::proto::terminal&lt;tag::name&gt;::type type_name;                  \
+<span class="lineNum">     627 </span>            :     type_name const name = {{}};                                                \
+<span class="lineNum">     628 </span>            :     inline void BOOST_PP_CAT(silence_unused_warnings_, name)() { (void) name; } \
+<span class="lineNum">     629 </span>            :     /***/
+<span class="lineNum">     630 </span>            : 
+<span class="lineNum">     631 </span>            : #else
+<span class="lineNum">     632 </span>            : 
+<span class="lineNum">     633 </span>            : #define BOOST_SPIRIT_TERMINAL_NAME(name, type_name)                             \
+<span class="lineNum">     634 </span>            :     namespace tag { struct name { BOOST_SPIRIT_IS_TAG() }; }                    \
+<span class="lineNum">     635 </span>            :     typedef boost::proto::terminal&lt;tag::name&gt;::type type_name;                  \
+<span class="lineNum">     636 </span>            :     /***/
+<span class="lineNum">     637 </span>            : 
+<span class="lineNum">     638 </span>            : #endif
+<span class="lineNum">     639 </span>            : 
+<span class="lineNum">     640 </span>            : #define BOOST_SPIRIT_TERMINAL(name)                                             \
+<span class="lineNum">     641 </span>            :     BOOST_SPIRIT_TERMINAL_NAME(name, name ## _type)                             \
+<span class="lineNum">     642 </span>            :     /***/
+<span class="lineNum">     643 </span>            : 
+<span class="lineNum">     644 </span>            : #define BOOST_SPIRIT_DEFINE_TERMINALS_NAME_A(r, _, names)                       \
+<span class="lineNum">     645 </span>            :     BOOST_SPIRIT_TERMINAL_NAME(                                                 \
+<span class="lineNum">     646 </span>            :         BOOST_PP_TUPLE_ELEM(2, 0, names),                                       \
+<span class="lineNum">     647 </span>            :         BOOST_PP_TUPLE_ELEM(2, 1, names)                                        \
+<span class="lineNum">     648 </span>            :     )                                                                           \
+<span class="lineNum">     649 </span>            :     /***/
+<span class="lineNum">     650 </span>            : 
+<span class="lineNum">     651 </span>            : #define BOOST_SPIRIT_DEFINE_TERMINALS_NAME(seq)                                 \
+<span class="lineNum">     652 </span>            :     BOOST_PP_SEQ_FOR_EACH(BOOST_SPIRIT_DEFINE_TERMINALS_NAME_A, _,              \
+<span class="lineNum">     653 </span>            :         BOOST_PP_CAT(BOOST_SPIRIT_TERMINAL_X seq, 0))                           \
+<span class="lineNum">     654 </span>            :     /***/
+<span class="lineNum">     655 </span>            : 
+<span class="lineNum">     656 </span>            : // Define a spirit extended terminal. This macro may be placed in any namespace.
+<span class="lineNum">     657 </span>            : // Common placeholders are placed in the main boost::spirit namespace
+<span class="lineNum">     658 </span>            : // (see common_terminals.hpp)
+<span class="lineNum">     659 </span>            : 
+<span class="lineNum">     660 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     661 </span>            : 
+<span class="lineNum">     662 </span>            : #define BOOST_SPIRIT_TERMINAL_NAME_EX(name, type_name)                          \
+<span class="lineNum">     663 </span>            :     namespace tag { struct name { BOOST_SPIRIT_IS_TAG() }; }                    \
+<span class="lineNum">     664 </span>            :     typedef boost::spirit::terminal&lt;tag::name&gt; type_name;                       \
+<span class="lineNum">     665 </span>            :     type_name const name = type_name();                                         \
+<span class="lineNum">     666 </span>            :     inline void BOOST_PP_CAT(silence_unused_warnings_, name)() { (void) name; } \
+<span class="lineNum">     667 </span>            :     /***/
+<span class="lineNum">     668 </span>            : 
+<span class="lineNum">     669 </span>            : #else
+<span class="lineNum">     670 </span>            : 
+<span class="lineNum">     671 </span>            : #define BOOST_SPIRIT_TERMINAL_NAME_EX(name, type_name)                          \
+<span class="lineNum">     672 </span>            :     namespace tag { struct name { BOOST_SPIRIT_IS_TAG() }; }                    \
+<span class="lineNum">     673 </span>            :     typedef boost::spirit::terminal&lt;tag::name&gt; type_name;                       \
+<span class="lineNum">     674 </span>            :     /***/
+<span class="lineNum">     675 </span>            : 
+<span class="lineNum">     676 </span>            : #endif
+<span class="lineNum">     677 </span>            : 
+<span class="lineNum">     678 </span>            : #define BOOST_SPIRIT_TERMINAL_EX(name)                                          \
+<span class="lineNum">     679 </span>            :     BOOST_SPIRIT_TERMINAL_NAME_EX(name, name ## _type)                          \
+<span class="lineNum">     680 </span>            :     /***/
+<span class="lineNum">     681 </span>            : 
+<span class="lineNum">     682 </span>            : #define BOOST_SPIRIT_DEFINE_TERMINALS_NAME_EX_A(r, _, names)                    \
+<span class="lineNum">     683 </span>            :     BOOST_SPIRIT_TERMINAL_NAME_EX(                                              \
+<span class="lineNum">     684 </span>            :         BOOST_PP_TUPLE_ELEM(2, 0, names),                                       \
+<span class="lineNum">     685 </span>            :         BOOST_PP_TUPLE_ELEM(2, 1, names)                                        \
+<span class="lineNum">     686 </span>            :     )                                                                           \
+<span class="lineNum">     687 </span>            :     /***/
+<span class="lineNum">     688 </span>            : 
+<span class="lineNum">     689 </span>            : #define BOOST_SPIRIT_DEFINE_TERMINALS_NAME_EX(seq)                              \
+<span class="lineNum">     690 </span>            :     BOOST_PP_SEQ_FOR_EACH(BOOST_SPIRIT_DEFINE_TERMINALS_NAME_EX_A, _,           \
+<span class="lineNum">     691 </span>            :         BOOST_PP_CAT(BOOST_SPIRIT_TERMINAL_X seq, 0))                           \
+<span class="lineNum">     692 </span>            :     /***/
+<span class="lineNum">     693 </span>            : 
+<span class="lineNum">     694 </span>            : #endif
+<span class="lineNum">     695 </span>            : 
+<span class="lineNum">     696 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

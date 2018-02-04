@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/service_type.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - service_type.h<span style="font-size: 80%;"> (source / <a href="service_type.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntry">9</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryMed">85.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_SERVICE_TYPE_H
+<span class="lineNum">      20 </span>            : #define GRPCXX_IMPL_CODEGEN_SERVICE_TYPE_H
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;grpc++/impl/codegen/config.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;grpc++/impl/codegen/core_codegen_interface.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;grpc++/impl/codegen/rpc_service_method.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;grpc++/impl/codegen/serialization_traits.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;grpc++/impl/codegen/server_interface.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;grpc++/impl/codegen/status.h&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace grpc {
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : class Call;
+<span class="lineNum">      32 </span>            : class CompletionQueue;
+<span class="lineNum">      33 </span>            : class Server;
+<span class="lineNum">      34 </span>            : class ServerInterface;
+<span class="lineNum">      35 </span>            : class ServerCompletionQueue;
+<a name="36"><span class="lineNum">      36 </span>            : class ServerContext;</a>
+<span class="lineNum">      37 </span>            : 
+<a name="38"><span class="lineNum">      38 </span><span class="lineCov">        154 : class ServerAsyncStreamingInterface {</span></a>
+<span class="lineNum">      39 </span>            :  public:
+<span class="lineNum">      40 </span><span class="lineCov">        308 :   virtual ~ServerAsyncStreamingInterface() {}</span>
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            :   /// Request notification of the sending of initial metadata to the client.
+<span class="lineNum">      43 </span>            :   /// Completion will be notified by \a tag on the associated completion
+<span class="lineNum">      44 </span>            :   /// queue. This call is optional, but if it is used, it cannot be used
+<span class="lineNum">      45 </span>            :   /// concurrently with or after the \a Finish method.
+<span class="lineNum">      46 </span>            :   ///
+<span class="lineNum">      47 </span>            :   /// \param[in] tag Tag identifying this request.
+<span class="lineNum">      48 </span>            :   virtual void SendInitialMetadata(void* tag) = 0;
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :  private:
+<span class="lineNum">      51 </span>            :   friend class ServerInterface;
+<span class="lineNum">      52 </span>            :   virtual void BindCall(Call* call) = 0;
+<span class="lineNum">      53 </span>            : };
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : /// Desriptor of an RPC service and its various RPC methods
+<span class="lineNum">      56 </span>            : class Service {
+<span class="lineNum">      57 </span>            :  public:
+<span class="lineNum">      58 </span>            :   Service() : server_(nullptr) {}
+<span class="lineNum">      59 </span>            :   virtual ~Service() {}
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :   bool has_async_methods() const {
+<span class="lineNum">      62 </span>            :     for (auto it = methods_.begin(); it != methods_.end(); ++it) {
+<span class="lineNum">      63 </span>            :       if (*it &amp;&amp; (*it)-&gt;handler() == nullptr) {
+<span class="lineNum">      64 </span>            :         return true;
+<span class="lineNum">      65 </span>            :       }
+<span class="lineNum">      66 </span>            :     }
+<span class="lineNum">      67 </span>            :     return false;
+<span class="lineNum">      68 </span>            :   }
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :   bool has_synchronous_methods() const {
+<span class="lineNum">      71 </span>            :     for (auto it = methods_.begin(); it != methods_.end(); ++it) {
+<span class="lineNum">      72 </span>            :       if (*it &amp;&amp; (*it)-&gt;handler() != nullptr) {
+<span class="lineNum">      73 </span>            :         return true;
+<span class="lineNum">      74 </span>            :       }
+<span class="lineNum">      75 </span>            :     }
+<span class="lineNum">      76 </span>            :     return false;
+<span class="lineNum">      77 </span>            :   }
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :   bool has_generic_methods() const {
+<span class="lineNum">      80 </span>            :     for (auto it = methods_.begin(); it != methods_.end(); ++it) {
+<span class="lineNum">      81 </span>            :       if (it-&gt;get() == nullptr) {
+<span class="lineNum">      82 </span>            :         return true;
+<span class="lineNum">      83 </span>            :       }
+<span class="lineNum">      84 </span>            :     }
+<span class="lineNum">      85 </span>            :     return false;
+<span class="lineNum">      86 </span>            :   }
+<span class="lineNum">      87 </span>            : 
+<a name="88"><span class="lineNum">      88 </span>            :  protected:</a>
+<span class="lineNum">      89 </span>            :   template &lt;class Message&gt;
+<span class="lineNum">      90 </span><span class="lineCov">        133 :   void RequestAsyncUnary(int index, ServerContext* context, Message* request,</span>
+<span class="lineNum">      91 </span>            :                          ServerAsyncStreamingInterface* stream,
+<span class="lineNum">      92 </span>            :                          CompletionQueue* call_cq,
+<span class="lineNum">      93 </span>            :                          ServerCompletionQueue* notification_cq, void* tag) {
+<span class="lineNum">      94 </span><span class="lineCov">        133 :     server_-&gt;RequestAsyncCall(methods_[index].get(), context, stream, call_cq,</span>
+<span class="lineNum">      95 </span>            :                               notification_cq, tag, request);
+<span class="lineNum">      96 </span><span class="lineCov">        133 :   }</span>
+<span class="lineNum">      97 </span>            :   void RequestAsyncClientStreaming(int index, ServerContext* context,
+<span class="lineNum">      98 </span>            :                                    ServerAsyncStreamingInterface* stream,
+<span class="lineNum">      99 </span>            :                                    CompletionQueue* call_cq,
+<span class="lineNum">     100 </span>            :                                    ServerCompletionQueue* notification_cq,
+<span class="lineNum">     101 </span>            :                                    void* tag) {
+<span class="lineNum">     102 </span>            :     server_-&gt;RequestAsyncCall(methods_[index].get(), context, stream, call_cq,
+<span class="lineNum">     103 </span>            :                               notification_cq, tag);
+<span class="lineNum">     104 </span>            :   }
+<span class="lineNum">     105 </span>            :   template &lt;class Message&gt;
+<span class="lineNum">     106 </span>            :   void RequestAsyncServerStreaming(int index, ServerContext* context,
+<span class="lineNum">     107 </span>            :                                    Message* request,
+<span class="lineNum">     108 </span>            :                                    ServerAsyncStreamingInterface* stream,
+<span class="lineNum">     109 </span>            :                                    CompletionQueue* call_cq,
+<span class="lineNum">     110 </span>            :                                    ServerCompletionQueue* notification_cq,
+<span class="lineNum">     111 </span>            :                                    void* tag) {
+<span class="lineNum">     112 </span>            :     server_-&gt;RequestAsyncCall(methods_[index].get(), context, stream, call_cq,
+<span class="lineNum">     113 </span>            :                               notification_cq, tag, request);
+<span class="lineNum">     114 </span>            :   }
+<span class="lineNum">     115 </span>            :   void RequestAsyncBidiStreaming(int index, ServerContext* context,
+<span class="lineNum">     116 </span>            :                                  ServerAsyncStreamingInterface* stream,
+<span class="lineNum">     117 </span>            :                                  CompletionQueue* call_cq,
+<span class="lineNum">     118 </span>            :                                  ServerCompletionQueue* notification_cq,
+<span class="lineNum">     119 </span>            :                                  void* tag) {
+<span class="lineNum">     120 </span>            :     server_-&gt;RequestAsyncCall(methods_[index].get(), context, stream, call_cq,
+<span class="lineNum">     121 </span>            :                               notification_cq, tag);
+<span class="lineNum">     122 </span>            :   }
+<span class="lineNum">     123 </span>            : 
+<a name="124"><span class="lineNum">     124 </span>            :   void AddMethod(RpcServiceMethod* method) { methods_.emplace_back(method); }</a>
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span><span class="lineCov">         63 :   void MarkMethodAsync(int index) {</span>
+<span class="lineNum">     127 </span><span class="lineCov">         63 :     GPR_CODEGEN_ASSERT(</span>
+<span class="lineNum">     128 </span>            :         methods_[index].get() != nullptr &amp;&amp;
+<span class="lineNum">     129 </span>            :         &quot;Cannot mark the method as 'async' because it has already been &quot;
+<span class="lineNum">     130 </span>            :         &quot;marked as 'generic'.&quot;);
+<span class="lineNum">     131 </span><span class="lineCov">         63 :     methods_[index]-&gt;ResetHandler();</span>
+<span class="lineNum">     132 </span><span class="lineCov">         63 :   }</span>
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :   void MarkMethodGeneric(int index) {
+<span class="lineNum">     135 </span>            :     GPR_CODEGEN_ASSERT(
+<span class="lineNum">     136 </span>            :         methods_[index]-&gt;handler() != nullptr &amp;&amp;
+<span class="lineNum">     137 </span>            :         &quot;Cannot mark the method as 'generic' because it has already been &quot;
+<span class="lineNum">     138 </span>            :         &quot;marked as 'async'.&quot;);
+<span class="lineNum">     139 </span>            :     methods_[index].reset();
+<span class="lineNum">     140 </span>            :   }
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :   void MarkMethodStreamed(int index, MethodHandler* streamed_method) {
+<span class="lineNum">     143 </span>            :     GPR_CODEGEN_ASSERT(methods_[index] &amp;&amp; methods_[index]-&gt;handler() &amp;&amp;
+<span class="lineNum">     144 </span>            :                        &quot;Cannot mark an async or generic method Streamed&quot;);
+<span class="lineNum">     145 </span>            :     methods_[index]-&gt;SetHandler(streamed_method);
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :     // From the server's point of view, streamed unary is a special
+<span class="lineNum">     148 </span>            :     // case of BIDI_STREAMING that has 1 read and 1 write, in that order,
+<span class="lineNum">     149 </span>            :     // and split server-side streaming is BIDI_STREAMING with 1 read and
+<span class="lineNum">     150 </span>            :     // any number of writes, in that order.
+<span class="lineNum">     151 </span>            :     methods_[index]-&gt;SetMethodType(::grpc::RpcMethod::BIDI_STREAMING);
+<span class="lineNum">     152 </span>            :   }
+<span class="lineNum">     153 </span>            : 
+<span class="lineNum">     154 </span>            :  private:
+<span class="lineNum">     155 </span>            :   friend class Server;
+<span class="lineNum">     156 </span>            :   friend class ServerInterface;
+<span class="lineNum">     157 </span>            :   ServerInterface* server_;
+<span class="lineNum">     158 </span>            :   std::vector&lt;std::unique_ptr&lt;RpcServiceMethod&gt;&gt; methods_;
+<span class="lineNum">     159 </span>            : };
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            : }  // namespace grpc
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_SERVICE_TYPE_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

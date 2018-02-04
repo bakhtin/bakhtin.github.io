@@ -1,0 +1,1985 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/multiprecision/number.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/multiprecision</a> - number.hpp<span style="font-size: 80%;"> (source / <a href="number.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryLo">46.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:30:07</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : ///////////////////////////////////////////////////////////////////////////////</a>
+<span class="lineNum">       2 </span>            : //  Copyright 2011 John Maddock. Distributed under the Boost
+<span class="lineNum">       3 </span>            : //  Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef BOOST_MATH_EXTENDED_REAL_HPP
+<span class="lineNum">       7 </span>            : #define BOOST_MATH_EXTENDED_REAL_HPP
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;boost/cstdint.hpp&gt;
+<span class="lineNum">      10 </span>            : #include &lt;boost/mpl/max.hpp&gt;
+<span class="lineNum">      11 </span>            : #include &lt;boost/mpl/plus.hpp&gt;
+<span class="lineNum">      12 </span>            : #include &lt;boost/mpl/or.hpp&gt;
+<span class="lineNum">      13 </span>            : #include &lt;boost/mpl/find_if.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/type_traits/remove_pointer.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/type_traits/is_signed.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/type_traits/is_unsigned.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/type_traits/is_floating_point.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/type_traits/is_integral.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/type_traits/make_unsigned.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/throw_exception.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/multiprecision/detail/generic_interconvert.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/multiprecision/detail/number_compare.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/multiprecision/traits/is_restricted_conversion.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;istream&gt;  // stream operators
+<span class="lineNum">      26 </span>            : #include &lt;cstdio&gt;   // EOF
+<span class="lineNum">      27 </span>            : #include &lt;cctype&gt;   // isspace
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace boost{ namespace multiprecision{
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">      32 </span>            : // warning C4127: conditional expression is constant
+<span class="lineNum">      33 </span>            : // warning C4714: function marked as __forceinline not inlined
+<span class="lineNum">      34 </span>            : #pragma warning(push)
+<span class="lineNum">      35 </span>            : #pragma warning(disable:4127 4714 6326)
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : template &lt;class Backend, expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">      39 </span>            : class number
+<span class="lineNum">      40 </span>            : {
+<span class="lineNum">      41 </span>            :    typedef number&lt;Backend, ExpressionTemplates&gt; self_type;
+<span class="lineNum">      42 </span>            : public:
+<span class="lineNum">      43 </span>            :    typedef Backend backend_type;
+<span class="lineNum">      44 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number() BOOST_MP_NOEXCEPT_IF(noexcept(Backend())) {}
+<span class="lineNum">      45 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(const number&amp; e) BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Backend const&amp;&gt;()))) : m_backend(e.m_backend){}
+<span class="lineNum">      46 </span>            :    template &lt;class V&gt;
+<span class="lineNum">      47 </span>            :    BOOST_MP_FORCEINLINE number(const V&amp; v, typename boost::enable_if_c&lt;
+<span class="lineNum">      48 </span>            :             (boost::is_arithmetic&lt;V&gt;::value || is_same&lt;std::string, V&gt;::value || is_convertible&lt;V, const char*&gt;::value)
+<span class="lineNum">      49 </span>            :             &amp;&amp; !is_convertible&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      50 </span>            :             &amp;&amp; !detail::is_restricted_conversion&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      51 </span>            : #ifdef BOOST_HAS_FLOAT128
+<span class="lineNum">      52 </span>            :             &amp;&amp; !boost::is_same&lt;V, __float128&gt;::value
+<span class="lineNum">      53 </span>            : #endif
+<span class="lineNum">      54 </span>            :          &gt;::type* = 0)
+<span class="lineNum">      55 </span>            :    {
+<span class="lineNum">      56 </span>            :       m_backend = canonical_value(v);
+<span class="lineNum">      57 </span>            :    }
+<span class="lineNum">      58 </span>            :    template &lt;class V&gt;
+<span class="lineNum">      59 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(const V&amp; v, typename boost::enable_if_c&lt;
+<span class="lineNum">      60 </span>            :             is_convertible&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      61 </span>            :             &amp;&amp; !detail::is_restricted_conversion&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      62 </span>            :    &gt;::type* = 0) 
+<span class="lineNum">      63 </span>            : #ifndef BOOST_INTEL
+<span class="lineNum">      64 </span>            :           BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;typename detail::canonical&lt;V, Backend&gt;::type const&amp;&gt;())))
+<span class="lineNum">      65 </span>            : #endif
+<span class="lineNum">      66 </span>            :       : m_backend(canonical_value(v)) {}
+<span class="lineNum">      67 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(const number&amp; e, unsigned digits10) 
+<span class="lineNum">      68 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Backend const&amp;&gt;(), std::declval&lt;unsigned&gt;())))
+<span class="lineNum">      69 </span>            :       : m_backend(e.m_backend, digits10){}
+<span class="lineNum">      70 </span>            :    template &lt;class V&gt;
+<span class="lineNum">      71 </span>            :    explicit BOOST_MP_FORCEINLINE number(const V&amp; v, typename boost::enable_if_c&lt;
+<span class="lineNum">      72 </span>            :             (boost::is_arithmetic&lt;V&gt;::value || is_same&lt;std::string, V&gt;::value || is_convertible&lt;V, const char*&gt;::value)
+<span class="lineNum">      73 </span>            :             &amp;&amp; !detail::is_explicitly_convertible&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      74 </span>            :             &amp;&amp; detail::is_restricted_conversion&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      75 </span>            :          &gt;::type* = 0) 
+<span class="lineNum">      76 </span>            :          BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&amp;&gt;() = std::declval&lt;typename detail::canonical&lt;V, Backend&gt;::type const&amp;&gt;()))
+<span class="lineNum">      77 </span>            :    {
+<span class="lineNum">      78 </span>            :       m_backend = canonical_value(v);
+<span class="lineNum">      79 </span>            :    }
+<span class="lineNum">      80 </span>            :    template &lt;class V&gt;
+<span class="lineNum">      81 </span>            :    explicit BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(const V&amp; v, typename boost::enable_if_c&lt;
+<span class="lineNum">      82 </span>            :             detail::is_explicitly_convertible&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      83 </span>            :             &amp;&amp; (detail::is_restricted_conversion&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value
+<span class="lineNum">      84 </span>            :                 || !is_convertible&lt;typename detail::canonical&lt;V, Backend&gt;::type, Backend&gt;::value)
+<span class="lineNum">      85 </span>            :          &gt;::type* = 0)
+<span class="lineNum">      86 </span>            :          BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;typename detail::canonical&lt;V, Backend&gt;::type const&amp;&gt;())))
+<span class="lineNum">      87 </span>            :       : m_backend(canonical_value(v)) {}
+<span class="lineNum">      88 </span>            :    /*
+<span class="lineNum">      89 </span>            :    //
+<span class="lineNum">      90 </span>            :    // This conflicts with component based initialization (for rational and complex types)
+<span class="lineNum">      91 </span>            :    // which is arguably more useful.  Disabled for now.
+<span class="lineNum">      92 </span>            :    //
+<span class="lineNum">      93 </span>            :    template &lt;class V&gt;
+<span class="lineNum">      94 </span>            :    number(V v, unsigned digits10, typename boost::enable_if&lt;mpl::or_&lt;boost::is_arithmetic&lt;V&gt;, is_same&lt;std::string, V&gt;, is_convertible&lt;V, const char*&gt; &gt; &gt;::type* dummy1 = 0)
+<span class="lineNum">      95 </span>            :    {
+<span class="lineNum">      96 </span>            :       m_backend.precision(digits10);
+<span class="lineNum">      97 </span>            :       m_backend = canonical_value(v);
+<span class="lineNum">      98 </span>            :    }
+<span class="lineNum">      99 </span>            :    */
+<span class="lineNum">     100 </span>            :    template&lt;expression_template_option ET&gt;
+<span class="lineNum">     101 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(const number&lt;Backend, ET&gt;&amp; val)
+<span class="lineNum">     102 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Backend const&amp;&gt;()))) : m_backend(val.backend()) {}
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :    template &lt;class Other, expression_template_option ET&gt;
+<span class="lineNum">     105 </span>            :    BOOST_MP_FORCEINLINE number(const number&lt;Other, ET&gt;&amp; val,
+<span class="lineNum">     106 </span>            :          typename boost::enable_if_c&lt;(boost::is_convertible&lt;Other, Backend&gt;::value &amp;&amp; !detail::is_restricted_conversion&lt;Other, Backend&gt;::value)&gt;::type* = 0)
+<span class="lineNum">     107 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Other const&amp;&gt;())))
+<span class="lineNum">     108 </span>            :       : m_backend(val.backend()) {}
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            :    template &lt;class Other, expression_template_option ET&gt;
+<span class="lineNum">     111 </span>            :    explicit number(const number&lt;Other, ET&gt;&amp; val, typename boost::enable_if_c&lt;
+<span class="lineNum">     112 </span>            :          (!detail::is_explicitly_convertible&lt;Other, Backend&gt;::value)
+<span class="lineNum">     113 </span>            :          &gt;::type* = 0)
+<span class="lineNum">     114 </span>            :    {
+<span class="lineNum">     115 </span>            :       //
+<span class="lineNum">     116 </span>            :       // Attempt a generic interconvertion:
+<span class="lineNum">     117 </span>            :       //
+<span class="lineNum">     118 </span>            :       using detail::generic_interconvert;
+<span class="lineNum">     119 </span>            :       generic_interconvert(backend(), val.backend(), number_category&lt;Backend&gt;(), number_category&lt;Other&gt;());
+<span class="lineNum">     120 </span>            :    }
+<span class="lineNum">     121 </span>            :    template &lt;class Other, expression_template_option ET&gt;
+<span class="lineNum">     122 </span>            :    explicit BOOST_MP_FORCEINLINE number(const number&lt;Other, ET&gt;&amp; val, typename boost::enable_if_c&lt;
+<span class="lineNum">     123 </span>            :          (detail::is_explicitly_convertible&lt;Other, Backend&gt;::value
+<span class="lineNum">     124 </span>            :             &amp;&amp; (detail::is_restricted_conversion&lt;Other, Backend&gt;::value || !boost::is_convertible&lt;Other, Backend&gt;::value))
+<span class="lineNum">     125 </span>            :          &gt;::type* = 0) BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Other const&amp;&gt;())))
+<span class="lineNum">     126 </span>            :       : m_backend(val.backend()) {}
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     129 </span>            :    BOOST_MP_FORCEINLINE number(V v1, V v2, typename boost::enable_if&lt;mpl::or_&lt;boost::is_arithmetic&lt;V&gt;, is_same&lt;std::string, V&gt;, is_convertible&lt;V, const char*&gt; &gt; &gt;::type* = 0)
+<span class="lineNum">     130 </span>            :    {
+<span class="lineNum">     131 </span>            :       using default_ops::assign_components;
+<span class="lineNum">     132 </span>            :       assign_components(m_backend, canonical_value(v1), canonical_value(v2));
+<span class="lineNum">     133 </span>            :    }
+<span class="lineNum">     134 </span>            :    template &lt;class Other, expression_template_option ET&gt;
+<span class="lineNum">     135 </span>            :    BOOST_MP_FORCEINLINE number(const number&lt;Other, ET&gt;&amp; v1, const number&lt;Other, ET&gt;&amp; v2, typename boost::enable_if&lt;boost::is_convertible&lt;Other, Backend&gt; &gt;::type* = 0)
+<span class="lineNum">     136 </span>            :    {
+<span class="lineNum">     137 </span>            :       using default_ops::assign_components;
+<span class="lineNum">     138 </span>            :       assign_components(m_backend, v1.backend(), v2.backend());
+<span class="lineNum">     139 </span>            :    }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     142 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     143 </span>            :    {
+<span class="lineNum">     144 </span>            :       typedef typename is_same&lt;number, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type&gt;::type tag_type;
+<span class="lineNum">     145 </span>            :       do_assign(e, tag_type());
+<span class="lineNum">     146 </span>            :       return *this;
+<span class="lineNum">     147 </span>            :    }
+<span class="lineNum">     148 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     149 </span>            :    number&amp; assign(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     150 </span>            :    {
+<span class="lineNum">     151 </span>            :       typedef typename is_same&lt;number, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type&gt;::type tag_type;
+<span class="lineNum">     152 </span>            :       do_assign(e, tag_type());
+<span class="lineNum">     153 </span>            :       return *this;
+<span class="lineNum">     154 </span>            :    }
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator=(const number&amp; e)
+<span class="lineNum">     157 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&amp;&gt;() = std::declval&lt;Backend const&amp;&gt;()))
+<span class="lineNum">     158 </span>            :    {
+<span class="lineNum">     159 </span>            :       m_backend = e.m_backend;
+<span class="lineNum">     160 </span>            :       return *this;
+<span class="lineNum">     161 </span>            :    }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     164 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     165 </span>            :       operator=(const V&amp; v)
+<span class="lineNum">     166 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&amp;&gt;() = std::declval&lt;const typename detail::canonical&lt;V, Backend&gt;::type&amp;&gt;()))
+<span class="lineNum">     167 </span>            :    {
+<span class="lineNum">     168 </span>            :       m_backend = canonical_value(v);
+<span class="lineNum">     169 </span>            :       return *this;
+<span class="lineNum">     170 </span>            :    }
+<span class="lineNum">     171 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     172 </span>            :    BOOST_MP_FORCEINLINE number&lt;Backend, ExpressionTemplates&gt;&amp; assign(const V&amp; v)
+<span class="lineNum">     173 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&amp;&gt;() = std::declval&lt;const typename detail::canonical&lt;V, Backend&gt;::type&amp;&gt;()))
+<span class="lineNum">     174 </span>            :    {
+<span class="lineNum">     175 </span>            :       m_backend = canonical_value(v);
+<span class="lineNum">     176 </span>            :       return *this;
+<span class="lineNum">     177 </span>            :    }
+<span class="lineNum">     178 </span>            :    template &lt;class Other, expression_template_option ET&gt;
+<span class="lineNum">     179 </span>            :    typename boost::disable_if&lt;boost::multiprecision::detail::is_explicitly_convertible&lt;Other, Backend&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     180 </span>            :       assign(const number&lt;Other, ET&gt;&amp; v)
+<span class="lineNum">     181 </span>            :    {
+<span class="lineNum">     182 </span>            :       //
+<span class="lineNum">     183 </span>            :       // Attempt a generic interconvertion:
+<span class="lineNum">     184 </span>            :       //
+<span class="lineNum">     185 </span>            :       using detail::generic_interconvert;
+<span class="lineNum">     186 </span>            :       generic_interconvert(backend(), v.backend(), number_category&lt;Backend&gt;(), number_category&lt;Other&gt;());
+<span class="lineNum">     187 </span>            :       return *this;
+<span class="lineNum">     188 </span>            :    }
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     191 </span>            :    number(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e, typename boost::enable_if_c&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;::value&gt;::type* = 0)
+<span class="lineNum">     192 </span>            :    {
+<span class="lineNum">     193 </span>            :       *this = e;
+<span class="lineNum">     194 </span>            :    }
+<span class="lineNum">     195 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     196 </span>            :    explicit number(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e,
+<span class="lineNum">     197 </span>            :       typename boost::enable_if_c&lt;!is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;::value
+<span class="lineNum">     198 </span>            :       &amp;&amp; boost::multiprecision::detail::is_explicitly_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;::value&gt;::type* = 0)
+<span class="lineNum">     199 </span>            :    {
+<span class="lineNum">     200 </span>            :       assign(e);
+<span class="lineNum">     201 </span>            :    }
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+<span class="lineNum">     204 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR number(number&amp;&amp; r)
+<span class="lineNum">     205 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(Backend(std::declval&lt;Backend&gt;())))
+<span class="lineNum">     206 </span>            :       : m_backend(static_cast&lt;Backend&amp;&amp;&gt;(r.m_backend)){}
+<span class="lineNum">     207 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator=(number&amp;&amp; r) BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&amp;&gt;() = std::declval&lt;Backend&gt;()))
+<span class="lineNum">     208 </span>            :    {
+<span class="lineNum">     209 </span>            :       m_backend = static_cast&lt;Backend&amp;&amp;&gt;(r.m_backend);
+<span class="lineNum">     210 </span>            :       return *this;
+<span class="lineNum">     211 </span>            :    }
+<span class="lineNum">     212 </span>            : #endif
+<span class="lineNum">     213 </span>            : 
+<span class="lineNum">     214 </span>            :    number&amp; operator+=(const self_type&amp; val)
+<span class="lineNum">     215 </span>            :    {
+<span class="lineNum">     216 </span>            :       do_add(detail::expression&lt;detail::terminal, self_type&gt;(val), detail::terminal());
+<span class="lineNum">     217 </span>            :       return *this;
+<span class="lineNum">     218 </span>            :    }
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     221 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator+=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     222 </span>            :    {
+<span class="lineNum">     223 </span>            :       // Create a copy if e contains this, but not if we're just doing a
+<span class="lineNum">     224 </span>            :       //    x += x
+<span class="lineNum">     225 </span>            :       if(contains_self(e) &amp;&amp; !is_self(e))
+<span class="lineNum">     226 </span>            :       {
+<span class="lineNum">     227 </span>            :          self_type temp(e);
+<span class="lineNum">     228 </span>            :          do_add(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     229 </span>            :       }
+<span class="lineNum">     230 </span>            :       else
+<span class="lineNum">     231 </span>            :       {
+<span class="lineNum">     232 </span>            :          do_add(e, tag());
+<span class="lineNum">     233 </span>            :       }
+<span class="lineNum">     234 </span>            :       return *this;
+<span class="lineNum">     235 </span>            :    }
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :    template &lt;class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     238 </span>            :    number&amp; operator+=(const detail::expression&lt;detail::multiply_immediates, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     239 </span>            :    {
+<span class="lineNum">     240 </span>            :       //
+<span class="lineNum">     241 </span>            :       // Fused multiply-add:
+<span class="lineNum">     242 </span>            :       //
+<span class="lineNum">     243 </span>            :       using default_ops::eval_multiply_add;
+<span class="lineNum">     244 </span>            :       eval_multiply_add(m_backend, canonical_value(e.left_ref()), canonical_value(e.right_ref()));
+<span class="lineNum">     245 </span>            :       return *this;
+<span class="lineNum">     246 </span>            :    }
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     249 </span>            :    typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     250 </span>            :       operator+=(const V&amp; v)
+<span class="lineNum">     251 </span>            :    {
+<span class="lineNum">     252 </span>            :       using default_ops::eval_add;
+<span class="lineNum">     253 </span>            :       eval_add(m_backend, canonical_value(v));
+<span class="lineNum">     254 </span>            :       return *this;
+<span class="lineNum">     255 </span>            :    }
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            :    number&amp; operator-=(const self_type&amp; val)
+<span class="lineNum">     258 </span>            :    {
+<span class="lineNum">     259 </span>            :       do_subtract(detail::expression&lt;detail::terminal, self_type&gt;(val), detail::terminal());
+<span class="lineNum">     260 </span>            :       return *this;
+<span class="lineNum">     261 </span>            :    }
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     264 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator-=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     265 </span>            :    {
+<span class="lineNum">     266 </span>            :       // Create a copy if e contains this:
+<span class="lineNum">     267 </span>            :       if(contains_self(e))
+<span class="lineNum">     268 </span>            :       {
+<span class="lineNum">     269 </span>            :          self_type temp(e);
+<span class="lineNum">     270 </span>            :          do_subtract(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     271 </span>            :       }
+<span class="lineNum">     272 </span>            :       else
+<span class="lineNum">     273 </span>            :       {
+<span class="lineNum">     274 </span>            :          do_subtract(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     275 </span>            :       }
+<span class="lineNum">     276 </span>            :       return *this;
+<span class="lineNum">     277 </span>            :    }
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     280 </span>            :    typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     281 </span>            :       operator-=(const V&amp; v)
+<span class="lineNum">     282 </span>            :    {
+<span class="lineNum">     283 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">     284 </span>            :       eval_subtract(m_backend, canonical_value(v));
+<span class="lineNum">     285 </span>            :       return *this;
+<span class="lineNum">     286 </span>            :    }
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            :    template &lt;class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     289 </span>            :    number&amp; operator-=(const detail::expression&lt;detail::multiply_immediates, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     290 </span>            :    {
+<span class="lineNum">     291 </span>            :       //
+<span class="lineNum">     292 </span>            :       // Fused multiply-subtract:
+<span class="lineNum">     293 </span>            :       //
+<span class="lineNum">     294 </span>            :       using default_ops::eval_multiply_subtract;
+<span class="lineNum">     295 </span>            :       eval_multiply_subtract(m_backend, canonical_value(e.left_ref()), canonical_value(e.right_ref()));
+<span class="lineNum">     296 </span>            :       return *this;
+<span class="lineNum">     297 </span>            :    }
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :    number&amp; operator *= (const self_type&amp; e)
+<span class="lineNum">     301 </span>            :    {
+<span class="lineNum">     302 </span>            :       do_multiplies(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     303 </span>            :       return *this;
+<span class="lineNum">     304 </span>            :    }
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     307 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator*=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     308 </span>            :    {
+<span class="lineNum">     309 </span>            :       // Create a temporary if the RHS references *this, but not
+<span class="lineNum">     310 </span>            :       // if we're just doing an   x *= x;
+<span class="lineNum">     311 </span>            :       if(contains_self(e) &amp;&amp; !is_self(e))
+<span class="lineNum">     312 </span>            :       {
+<span class="lineNum">     313 </span>            :          self_type temp(e);
+<span class="lineNum">     314 </span>            :          do_multiplies(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     315 </span>            :       }
+<span class="lineNum">     316 </span>            :       else
+<span class="lineNum">     317 </span>            :       {
+<span class="lineNum">     318 </span>            :          do_multiplies(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     319 </span>            :       }
+<span class="lineNum">     320 </span>            :       return *this;
+<span class="lineNum">     321 </span>            :    }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     324 </span>            :    typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     325 </span>            :       operator*=(const V&amp; v)
+<span class="lineNum">     326 </span>            :    {
+<span class="lineNum">     327 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">     328 </span>            :       eval_multiply(m_backend, canonical_value(v));
+<span class="lineNum">     329 </span>            :       return *this;
+<span class="lineNum">     330 </span>            :    }
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            :    number&amp; operator%=(const self_type&amp; e)
+<span class="lineNum">     333 </span>            :    {
+<span class="lineNum">     334 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">     335 </span>            :       do_modulus(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     336 </span>            :       return *this;
+<span class="lineNum">     337 </span>            :    }
+<span class="lineNum">     338 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     339 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator%=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     340 </span>            :    {
+<span class="lineNum">     341 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">     342 </span>            :       // Create a temporary if the RHS references *this:
+<span class="lineNum">     343 </span>            :       if(contains_self(e))
+<span class="lineNum">     344 </span>            :       {
+<span class="lineNum">     345 </span>            :          self_type temp(e);
+<span class="lineNum">     346 </span>            :          do_modulus(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     347 </span>            :       }
+<span class="lineNum">     348 </span>            :       else
+<span class="lineNum">     349 </span>            :       {
+<span class="lineNum">     350 </span>            :          do_modulus(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     351 </span>            :       }
+<span class="lineNum">     352 </span>            :       return *this;
+<span class="lineNum">     353 </span>            :    }
+<span class="lineNum">     354 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     355 </span>            :    typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     356 </span>            :       operator%=(const V&amp; v)
+<span class="lineNum">     357 </span>            :    {
+<span class="lineNum">     358 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">     359 </span>            :       using default_ops::eval_modulus;
+<span class="lineNum">     360 </span>            :       eval_modulus(m_backend, canonical_value(v));
+<span class="lineNum">     361 </span>            :       return *this;
+<span class="lineNum">     362 </span>            :    }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :    //
+<span class="lineNum">     365 </span>            :    // These operators are *not* proto-ized.
+<span class="lineNum">     366 </span>            :    // The issue is that the increment/decrement must happen
+<span class="lineNum">     367 </span>            :    // even if the result of the operator *is never used*.
+<span class="lineNum">     368 </span>            :    // Possibly we could modify our expression wrapper to
+<span class="lineNum">     369 </span>            :    // execute the increment/decrement on destruction, but
+<span class="lineNum">     370 </span>            :    // correct implementation will be tricky, so defered for now...
+<span class="lineNum">     371 </span>            :    //
+<span class="lineNum">     372 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator++()
+<span class="lineNum">     373 </span>            :    {
+<span class="lineNum">     374 </span>            :       using default_ops::eval_increment;
+<span class="lineNum">     375 </span>            :       eval_increment(m_backend);
+<span class="lineNum">     376 </span>            :       return *this;
+<span class="lineNum">     377 </span>            :    }
+<span class="lineNum">     378 </span>            : 
+<span class="lineNum">     379 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator--()
+<span class="lineNum">     380 </span>            :    {
+<span class="lineNum">     381 </span>            :       using default_ops::eval_decrement;
+<span class="lineNum">     382 </span>            :       eval_decrement(m_backend);
+<span class="lineNum">     383 </span>            :       return *this;
+<span class="lineNum">     384 </span>            :    }
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :    inline number operator++(int)
+<span class="lineNum">     387 </span>            :    {
+<span class="lineNum">     388 </span>            :       using default_ops::eval_increment;
+<span class="lineNum">     389 </span>            :       self_type temp(*this);
+<span class="lineNum">     390 </span>            :       eval_increment(m_backend);
+<span class="lineNum">     391 </span>            :       return BOOST_MP_MOVE(temp);
+<span class="lineNum">     392 </span>            :    }
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            :    inline number operator--(int)
+<span class="lineNum">     395 </span>            :    {
+<span class="lineNum">     396 </span>            :       using default_ops::eval_decrement;
+<span class="lineNum">     397 </span>            :       self_type temp(*this);
+<span class="lineNum">     398 </span>            :       eval_decrement(m_backend);
+<span class="lineNum">     399 </span>            :       return BOOST_MP_MOVE(temp);
+<span class="lineNum">     400 </span>            :    }
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     403 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;is_integral&lt;V&gt;, number&amp;&gt;::type operator &lt;&lt;= (V val)
+<span class="lineNum">     404 </span>            :    {
+<span class="lineNum">     405 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The left-shift operation is only valid for integer types&quot;);
+<span class="lineNum">     406 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(V) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;V&gt;());
+<span class="lineNum">     407 </span>            :       eval_left_shift(m_backend, static_cast&lt;std::size_t&gt;(canonical_value(val)));
+<span class="lineNum">     408 </span>            :       return *this;
+<span class="lineNum">     409 </span>            :    }
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     412 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;is_integral&lt;V&gt;, number&amp;&gt;::type operator &gt;&gt;= (V val)
+<span class="lineNum">     413 </span>            :    {
+<span class="lineNum">     414 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The right-shift operation is only valid for integer types&quot;);
+<span class="lineNum">     415 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(V) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;V&gt;());
+<span class="lineNum">     416 </span>            :       eval_right_shift(m_backend, static_cast&lt;std::size_t&gt;(canonical_value(val)));
+<span class="lineNum">     417 </span>            :       return *this;
+<span class="lineNum">     418 </span>            :    }
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator /= (const self_type&amp; e)
+<span class="lineNum">     421 </span>            :    {
+<span class="lineNum">     422 </span>            :       do_divide(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     423 </span>            :       return *this;
+<span class="lineNum">     424 </span>            :    }
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     427 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator/=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     428 </span>            :    {
+<span class="lineNum">     429 </span>            :       // Create a temporary if the RHS references *this:
+<span class="lineNum">     430 </span>            :       if(contains_self(e))
+<span class="lineNum">     431 </span>            :       {
+<span class="lineNum">     432 </span>            :          self_type temp(e);
+<span class="lineNum">     433 </span>            :          do_divide(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     434 </span>            :       }
+<span class="lineNum">     435 </span>            :       else
+<span class="lineNum">     436 </span>            :       {
+<span class="lineNum">     437 </span>            :          do_divide(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     438 </span>            :       }
+<span class="lineNum">     439 </span>            :       return *this;
+<span class="lineNum">     440 </span>            :    }
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     443 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     444 </span>            :       operator/=(const V&amp; v)
+<span class="lineNum">     445 </span>            :    {
+<span class="lineNum">     446 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">     447 </span>            :       eval_divide(m_backend, canonical_value(v));
+<span class="lineNum">     448 </span>            :       return *this;
+<span class="lineNum">     449 </span>            :    }
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator&amp;=(const self_type&amp; e)
+<span class="lineNum">     452 </span>            :    {
+<span class="lineNum">     453 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">     454 </span>            :       do_bitwise_and(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     455 </span>            :       return *this;
+<span class="lineNum">     456 </span>            :    }
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     459 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator&amp;=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     460 </span>            :    {
+<span class="lineNum">     461 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">     462 </span>            :       // Create a temporary if the RHS references *this, but not
+<span class="lineNum">     463 </span>            :       // if we're just doing an   x &amp;= x;
+<span class="lineNum">     464 </span>            :       if(contains_self(e) &amp;&amp; !is_self(e))
+<span class="lineNum">     465 </span>            :       {
+<span class="lineNum">     466 </span>            :          self_type temp(e);
+<span class="lineNum">     467 </span>            :          do_bitwise_and(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     468 </span>            :       }
+<span class="lineNum">     469 </span>            :       else
+<span class="lineNum">     470 </span>            :       {
+<span class="lineNum">     471 </span>            :          do_bitwise_and(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     472 </span>            :       }
+<span class="lineNum">     473 </span>            :       return *this;
+<span class="lineNum">     474 </span>            :    }
+<span class="lineNum">     475 </span>            : 
+<span class="lineNum">     476 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     477 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     478 </span>            :       operator&amp;=(const V&amp; v)
+<span class="lineNum">     479 </span>            :    {
+<span class="lineNum">     480 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">     481 </span>            :       using default_ops::eval_bitwise_and;
+<span class="lineNum">     482 </span>            :       eval_bitwise_and(m_backend, canonical_value(v));
+<span class="lineNum">     483 </span>            :       return *this;
+<span class="lineNum">     484 </span>            :    }
+<span class="lineNum">     485 </span>            : 
+<span class="lineNum">     486 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator|=(const self_type&amp; e)
+<span class="lineNum">     487 </span>            :    {
+<span class="lineNum">     488 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">     489 </span>            :       do_bitwise_or(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     490 </span>            :       return *this;
+<span class="lineNum">     491 </span>            :    }
+<span class="lineNum">     492 </span>            : 
+<span class="lineNum">     493 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     494 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator|=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     495 </span>            :    {
+<span class="lineNum">     496 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">     497 </span>            :       // Create a temporary if the RHS references *this, but not
+<span class="lineNum">     498 </span>            :       // if we're just doing an   x |= x;
+<span class="lineNum">     499 </span>            :       if(contains_self(e) &amp;&amp; !is_self(e))
+<span class="lineNum">     500 </span>            :       {
+<span class="lineNum">     501 </span>            :          self_type temp(e);
+<span class="lineNum">     502 </span>            :          do_bitwise_or(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     503 </span>            :       }
+<span class="lineNum">     504 </span>            :       else
+<span class="lineNum">     505 </span>            :       {
+<span class="lineNum">     506 </span>            :          do_bitwise_or(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     507 </span>            :       }
+<span class="lineNum">     508 </span>            :       return *this;
+<span class="lineNum">     509 </span>            :    }
+<span class="lineNum">     510 </span>            : 
+<span class="lineNum">     511 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     512 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     513 </span>            :       operator|=(const V&amp; v)
+<span class="lineNum">     514 </span>            :    {
+<span class="lineNum">     515 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">     516 </span>            :       using default_ops::eval_bitwise_or;
+<span class="lineNum">     517 </span>            :       eval_bitwise_or(m_backend, canonical_value(v));
+<span class="lineNum">     518 </span>            :       return *this;
+<span class="lineNum">     519 </span>            :    }
+<span class="lineNum">     520 </span>            : 
+<span class="lineNum">     521 </span>            :    BOOST_MP_FORCEINLINE number&amp; operator^=(const self_type&amp; e)
+<span class="lineNum">     522 </span>            :    {
+<span class="lineNum">     523 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">     524 </span>            :       do_bitwise_xor(detail::expression&lt;detail::terminal, self_type&gt;(e), detail::terminal());
+<span class="lineNum">     525 </span>            :       return *this;
+<span class="lineNum">     526 </span>            :    }
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     529 </span>            :    typename boost::enable_if&lt;is_convertible&lt;typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type, self_type&gt;, number&amp;&gt;::type operator^=(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e)
+<span class="lineNum">     530 </span>            :    {
+<span class="lineNum">     531 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">     532 </span>            :       if(contains_self(e))
+<span class="lineNum">     533 </span>            :       {
+<span class="lineNum">     534 </span>            :          self_type temp(e);
+<span class="lineNum">     535 </span>            :          do_bitwise_xor(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">     536 </span>            :       }
+<span class="lineNum">     537 </span>            :       else
+<span class="lineNum">     538 </span>            :       {
+<span class="lineNum">     539 </span>            :          do_bitwise_xor(e, typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::tag_type());
+<span class="lineNum">     540 </span>            :       }
+<span class="lineNum">     541 </span>            :       return *this;
+<span class="lineNum">     542 </span>            :    }
+<span class="lineNum">     543 </span>            : 
+<span class="lineNum">     544 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     545 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;boost::is_convertible&lt;V, self_type&gt;, number&lt;Backend, ExpressionTemplates&gt;&amp; &gt;::type
+<span class="lineNum">     546 </span>            :       operator^=(const V&amp; v)
+<span class="lineNum">     547 </span>            :    {
+<span class="lineNum">     548 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">     549 </span>            :       using default_ops::eval_bitwise_xor;
+<span class="lineNum">     550 </span>            :       eval_bitwise_xor(m_backend, canonical_value(v));
+<span class="lineNum">     551 </span>            :       return *this;
+<span class="lineNum">     552 </span>            :    }
+<span class="lineNum">     553 </span>            :    //
+<span class="lineNum">     554 </span>            :    // swap:
+<span class="lineNum">     555 </span>            :    //
+<span class="lineNum">     556 </span>            :    BOOST_MP_FORCEINLINE void swap(self_type&amp; other) BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&gt;().swap(std::declval&lt;Backend&amp;&gt;())))
+<span class="lineNum">     557 </span>            :    {
+<span class="lineNum">     558 </span>            :       m_backend.swap(other.backend());
+<span class="lineNum">     559 </span>            :    }
+<span class="lineNum">     560 </span>            :    //
+<span class="lineNum">     561 </span>            :    // Zero and sign:
+<span class="lineNum">     562 </span>            :    //
+<span class="lineNum">     563 </span>            :    BOOST_MP_FORCEINLINE bool is_zero()const
+<span class="lineNum">     564 </span>            :    {
+<span class="lineNum">     565 </span>            :       using default_ops::eval_is_zero;
+<span class="lineNum">     566 </span>            :       return eval_is_zero(m_backend);
+<span class="lineNum">     567 </span>            :    }
+<span class="lineNum">     568 </span>            :    BOOST_MP_FORCEINLINE int sign()const
+<span class="lineNum">     569 </span>            :    {
+<span class="lineNum">     570 </span>            :       using default_ops::eval_get_sign;
+<span class="lineNum">     571 </span>            :       return eval_get_sign(m_backend);
+<span class="lineNum">     572 </span>            :    }
+<span class="lineNum">     573 </span>            :    //
+<a name="574"><span class="lineNum">     574 </span>            :    // String conversion functions:</a>
+<span class="lineNum">     575 </span>            :    //
+<span class="lineNum">     576 </span><span class="lineNoCov">          0 :    std::string str(std::streamsize digits = 0, std::ios_base::fmtflags f = std::ios_base::fmtflags(0))const</span>
+<span class="lineNum">     577 </span>            :    {
+<span class="lineNum">     578 </span><span class="lineNoCov">          0 :       return m_backend.str(digits, f);</span>
+<span class="lineNum">     579 </span>            :    }
+<span class="lineNum">     580 </span>            :    template&lt;class Archive&gt;
+<span class="lineNum">     581 </span>            :    void serialize(Archive &amp; ar, const unsigned int /*version*/)
+<span class="lineNum">     582 </span>            :    {
+<span class="lineNum">     583 </span>            :       ar &amp; m_backend;
+<span class="lineNum">     584 </span>            :    }
+<span class="lineNum">     585 </span>            : private:
+<span class="lineNum">     586 </span>            :    template &lt;class T&gt;
+<span class="lineNum">     587 </span>            :    void convert_to_imp(T* result)const
+<span class="lineNum">     588 </span>            :    {
+<span class="lineNum">     589 </span>            :       using default_ops::eval_convert_to;
+<span class="lineNum">     590 </span>            :       eval_convert_to(result, m_backend);
+<span class="lineNum">     591 </span>            :    }
+<span class="lineNum">     592 </span>            :    template &lt;class B2, expression_template_option ET&gt;
+<span class="lineNum">     593 </span>            :    void convert_to_imp(number&lt;B2, ET&gt;* result)const
+<span class="lineNum">     594 </span>            :    {
+<span class="lineNum">     595 </span>            :       result-&gt;assign(*this);
+<span class="lineNum">     596 </span>            :    }
+<span class="lineNum">     597 </span>            :    void convert_to_imp(std::string* result)const
+<span class="lineNum">     598 </span>            :    {
+<span class="lineNum">     599 </span>            :       *result = this-&gt;str();
+<span class="lineNum">     600 </span>            :    }
+<span class="lineNum">     601 </span>            : public:
+<span class="lineNum">     602 </span>            :    template &lt;class T&gt;
+<span class="lineNum">     603 </span>            :    T convert_to()const
+<span class="lineNum">     604 </span>            :    {
+<span class="lineNum">     605 </span>            :       T result;
+<span class="lineNum">     606 </span>            :       convert_to_imp(&amp;result);
+<span class="lineNum">     607 </span>            :       return result;
+<span class="lineNum">     608 </span>            :    }
+<span class="lineNum">     609 </span>            :    //
+<span class="lineNum">     610 </span>            :    // Use in boolean context, and explicit conversion operators:
+<span class="lineNum">     611 </span>            :    //
+<span class="lineNum">     612 </span>            : #ifndef BOOST_MP_NO_CXX11_EXPLICIT_CONVERSION_OPERATORS
+<span class="lineNum">     613 </span>            : #  if (defined(__GNUC__) &amp;&amp; (__GNUC__ == 4) &amp;&amp; (__GNUC_MINOR__ &lt; 7)) || (defined(BOOST_INTEL) &amp;&amp; (BOOST_INTEL &lt;= 1500))
+<span class="lineNum">     614 </span>            :    //
+<span class="lineNum">     615 </span>            :    // Horrible workaround for gcc-4.6.x which always prefers the template
+<span class="lineNum">     616 </span>            :    // operator bool() rather than the non-template operator when converting to
+<span class="lineNum">     617 </span>            :    // an arithmetic type:
+<span class="lineNum">     618 </span>            :    //
+<span class="lineNum">     619 </span>            :    template &lt;class T, typename boost::enable_if&lt;is_same&lt;T, bool&gt;, int&gt;::type = 0&gt;
+<span class="lineNum">     620 </span>            :    explicit operator T ()const
+<span class="lineNum">     621 </span>            :    {
+<span class="lineNum">     622 </span>            :       using default_ops::eval_is_zero;
+<span class="lineNum">     623 </span>            :       return !eval_is_zero(backend());
+<span class="lineNum">     624 </span>            :    }
+<span class="lineNum">     625 </span>            :    template &lt;class T, typename boost::disable_if_c&lt;is_same&lt;T, bool&gt;::value || is_void&lt;T&gt;::value, int&gt;::type = 0&gt;
+<span class="lineNum">     626 </span>            :    explicit operator T ()const
+<span class="lineNum">     627 </span>            :    {
+<span class="lineNum">     628 </span>            :       return this-&gt;template convert_to&lt;T&gt;();
+<span class="lineNum">     629 </span>            :    }
+<span class="lineNum">     630 </span>            : #  else
+<span class="lineNum">     631 </span>            :    template &lt;class T&gt;
+<span class="lineNum">     632 </span>            :    explicit operator T()const
+<span class="lineNum">     633 </span>            :    {
+<span class="lineNum">     634 </span>            :       return this-&gt;template convert_to&lt;T&gt;();
+<span class="lineNum">     635 </span>            :    }
+<span class="lineNum">     636 </span>            :    BOOST_MP_FORCEINLINE explicit operator bool()const
+<span class="lineNum">     637 </span>            :    {
+<span class="lineNum">     638 </span>            :       return !is_zero();
+<span class="lineNum">     639 </span>            :    }
+<span class="lineNum">     640 </span>            : #if BOOST_WORKAROUND(BOOST_GCC_VERSION, &lt; 40800)
+<span class="lineNum">     641 </span>            :    BOOST_MP_FORCEINLINE explicit operator void()const {}
+<span class="lineNum">     642 </span>            : #endif
+<span class="lineNum">     643 </span>            : #  endif
+<span class="lineNum">     644 </span>            : #else
+<span class="lineNum">     645 </span>            :    typedef bool (self_type::*unmentionable_type)()const;
+<span class="lineNum">     646 </span>            : 
+<span class="lineNum">     647 </span>            :    BOOST_MP_FORCEINLINE operator unmentionable_type()const
+<span class="lineNum">     648 </span>            :    {
+<span class="lineNum">     649 </span>            :       return is_zero() ? 0 : &amp;self_type::is_zero;
+<span class="lineNum">     650 </span>            :    }
+<span class="lineNum">     651 </span>            : #endif
+<span class="lineNum">     652 </span>            :    //
+<span class="lineNum">     653 </span>            :    // Default precision:
+<span class="lineNum">     654 </span>            :    //
+<span class="lineNum">     655 </span>            :    static unsigned default_precision() BOOST_NOEXCEPT
+<span class="lineNum">     656 </span>            :    {
+<span class="lineNum">     657 </span>            :       return Backend::default_precision();
+<span class="lineNum">     658 </span>            :    }
+<span class="lineNum">     659 </span>            :    static void default_precision(unsigned digits10)
+<span class="lineNum">     660 </span>            :    {
+<span class="lineNum">     661 </span>            :       Backend::default_precision(digits10);
+<span class="lineNum">     662 </span>            :    }
+<span class="lineNum">     663 </span>            :    unsigned precision()const BOOST_NOEXCEPT
+<span class="lineNum">     664 </span>            :    {
+<span class="lineNum">     665 </span>            :       return m_backend.precision();
+<span class="lineNum">     666 </span>            :    }
+<span class="lineNum">     667 </span>            :    void precision(unsigned digits10)
+<span class="lineNum">     668 </span>            :    {
+<span class="lineNum">     669 </span>            :       m_backend.precision(digits10);
+<span class="lineNum">     670 </span>            :    }
+<span class="lineNum">     671 </span>            :    //
+<span class="lineNum">     672 </span>            :    // Comparison:
+<span class="lineNum">     673 </span>            :    //
+<span class="lineNum">     674 </span>            :    BOOST_MP_FORCEINLINE int compare(const number&lt;Backend, ExpressionTemplates&gt;&amp; o)const
+<span class="lineNum">     675 </span>            :       BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;Backend&gt;().compare(std::declval&lt;Backend&gt;())))
+<span class="lineNum">     676 </span>            :    {
+<span class="lineNum">     677 </span>            :       return m_backend.compare(o.m_backend);
+<span class="lineNum">     678 </span>            :    }
+<span class="lineNum">     679 </span>            :    template &lt;class V&gt;
+<span class="lineNum">     680 </span>            :    BOOST_MP_FORCEINLINE typename boost::enable_if&lt;is_arithmetic&lt;V&gt;, int&gt;::type compare(const V&amp; o)const
+<span class="lineNum">     681 </span>            :    {
+<span class="lineNum">     682 </span>            :       using default_ops::eval_get_sign;
+<span class="lineNum">     683 </span>            :       if(o == 0)
+<span class="lineNum">     684 </span>            :          return eval_get_sign(m_backend);
+<span class="lineNum">     685 </span>            :       return m_backend.compare(canonical_value(o));
+<span class="lineNum">     686 </span>            :    }
+<span class="lineNum">     687 </span>            :    BOOST_MP_FORCEINLINE Backend&amp; backend() BOOST_NOEXCEPT
+<span class="lineNum">     688 </span>            :    {
+<a name="689"><span class="lineNum">     689 </span>            :       return m_backend;</a>
+<span class="lineNum">     690 </span>            :    }
+<span class="lineNum">     691 </span><span class="lineNoCov">          0 :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const Backend&amp; backend()const BOOST_NOEXCEPT</span>
+<span class="lineNum">     692 </span>            :    {
+<span class="lineNum">     693 </span><span class="lineNoCov">          0 :       return m_backend;</span>
+<span class="lineNum">     694 </span>            :    }
+<span class="lineNum">     695 </span>            : private:
+<span class="lineNum">     696 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     697 </span>            :    void do_assign(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e, const mpl::true_&amp;)
+<span class="lineNum">     698 </span>            :    {
+<span class="lineNum">     699 </span>            :       do_assign(e, tag());
+<span class="lineNum">     700 </span>            :    }
+<span class="lineNum">     701 </span>            :    template &lt;class tag, class Arg1, class Arg2, class Arg3, class Arg4&gt;
+<span class="lineNum">     702 </span>            :    void do_assign(const detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;&amp; e, const mpl::false_&amp;)
+<span class="lineNum">     703 </span>            :    {
+<span class="lineNum">     704 </span>            :       // The result of the expression isn't the same type as this -
+<span class="lineNum">     705 </span>            :       // create a temporary result and assign it to *this:
+<span class="lineNum">     706 </span>            :       typedef typename detail::expression&lt;tag, Arg1, Arg2, Arg3, Arg4&gt;::result_type temp_type;
+<span class="lineNum">     707 </span>            :       temp_type t(e);
+<span class="lineNum">     708 </span>            :       this-&gt;assign(t);
+<span class="lineNum">     709 </span>            :    }
+<span class="lineNum">     710 </span>            : 
+<span class="lineNum">     711 </span>            : 
+<span class="lineNum">     712 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     713 </span>            :    void do_assign(const Exp&amp; e, const detail::add_immediates&amp;)
+<span class="lineNum">     714 </span>            :    {
+<span class="lineNum">     715 </span>            :       using default_ops::eval_add;
+<span class="lineNum">     716 </span>            :       eval_add(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     717 </span>            :    }
+<span class="lineNum">     718 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     719 </span>            :    void do_assign(const Exp&amp; e, const detail::subtract_immediates&amp;)
+<span class="lineNum">     720 </span>            :    {
+<span class="lineNum">     721 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">     722 </span>            :       eval_subtract(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     723 </span>            :    }
+<span class="lineNum">     724 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     725 </span>            :    void do_assign(const Exp&amp; e, const detail::multiply_immediates&amp;)
+<span class="lineNum">     726 </span>            :    {
+<span class="lineNum">     727 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">     728 </span>            :       eval_multiply(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     729 </span>            :    }
+<span class="lineNum">     730 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     731 </span>            :    void do_assign(const Exp&amp; e, const detail::multiply_add&amp;)
+<span class="lineNum">     732 </span>            :    {
+<span class="lineNum">     733 </span>            :       using default_ops::eval_multiply_add;
+<span class="lineNum">     734 </span>            :       eval_multiply_add(m_backend, canonical_value(e.left().value()), canonical_value(e.middle().value()), canonical_value(e.right().value()));
+<span class="lineNum">     735 </span>            :    }
+<span class="lineNum">     736 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     737 </span>            :    void do_assign(const Exp&amp; e, const detail::multiply_subtract&amp;)
+<span class="lineNum">     738 </span>            :    {
+<span class="lineNum">     739 </span>            :       using default_ops::eval_multiply_subtract;
+<span class="lineNum">     740 </span>            :       eval_multiply_subtract(m_backend, canonical_value(e.left().value()), canonical_value(e.middle().value()), canonical_value(e.right().value()));
+<span class="lineNum">     741 </span>            :    }
+<span class="lineNum">     742 </span>            : 
+<span class="lineNum">     743 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     744 </span>            :    void do_assign(const Exp&amp; e, const detail::divide_immediates&amp;)
+<span class="lineNum">     745 </span>            :    {
+<span class="lineNum">     746 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">     747 </span>            :       eval_divide(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     748 </span>            :    }
+<span class="lineNum">     749 </span>            : 
+<span class="lineNum">     750 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     751 </span>            :    void do_assign(const Exp&amp; e, const detail::negate&amp;)
+<span class="lineNum">     752 </span>            :    {
+<span class="lineNum">     753 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     754 </span>            :       do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     755 </span>            :       m_backend.negate();
+<span class="lineNum">     756 </span>            :    }
+<span class="lineNum">     757 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     758 </span>            :    void do_assign(const Exp&amp; e, const detail::plus&amp;)
+<span class="lineNum">     759 </span>            :    {
+<span class="lineNum">     760 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     761 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     762 </span>            : 
+<span class="lineNum">     763 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">     764 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">     765 </span>            : 
+<span class="lineNum">     766 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     767 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     768 </span>            : 
+<span class="lineNum">     769 </span>            :       if(bl &amp;&amp; br)
+<span class="lineNum">     770 </span>            :       {
+<span class="lineNum">     771 </span>            :          self_type temp(e);
+<span class="lineNum">     772 </span>            :          temp.m_backend.swap(this-&gt;m_backend);
+<span class="lineNum">     773 </span>            :       }
+<span class="lineNum">     774 </span>            :       else if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     775 </span>            :       {
+<span class="lineNum">     776 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">     777 </span>            :          do_add(e.right(), typename right_type::tag_type());
+<span class="lineNum">     778 </span>            :       }
+<span class="lineNum">     779 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">     780 </span>            :       {
+<span class="lineNum">     781 </span>            :          // Ignore the right node, it's *this, just add the left:
+<span class="lineNum">     782 </span>            :          do_add(e.left(), typename left_type::tag_type());
+<span class="lineNum">     783 </span>            :       }
+<span class="lineNum">     784 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">     785 </span>            :       { // br is always false, but if bl is true we must take the this branch:
+<span class="lineNum">     786 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     787 </span>            :          do_add(e.right(), typename right_type::tag_type());
+<span class="lineNum">     788 </span>            :       }
+<span class="lineNum">     789 </span>            :       else
+<span class="lineNum">     790 </span>            :       {
+<span class="lineNum">     791 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">     792 </span>            :          do_add(e.left(), typename left_type::tag_type());
+<span class="lineNum">     793 </span>            :       }
+<span class="lineNum">     794 </span>            :    }
+<span class="lineNum">     795 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     796 </span>            :    void do_assign(const Exp&amp; e, const detail::minus&amp;)
+<span class="lineNum">     797 </span>            :    {
+<span class="lineNum">     798 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     799 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     800 </span>            : 
+<span class="lineNum">     801 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">     802 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">     803 </span>            : 
+<span class="lineNum">     804 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     805 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     806 </span>            : 
+<span class="lineNum">     807 </span>            :       if(bl &amp;&amp; br)
+<span class="lineNum">     808 </span>            :       {
+<span class="lineNum">     809 </span>            :          self_type temp(e);
+<span class="lineNum">     810 </span>            :          temp.m_backend.swap(this-&gt;m_backend);
+<span class="lineNum">     811 </span>            :       }
+<span class="lineNum">     812 </span>            :       else if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     813 </span>            :       {
+<span class="lineNum">     814 </span>            :          // Ignore the left node, it's *this, just subtract the right:
+<span class="lineNum">     815 </span>            :          do_subtract(e.right(), typename right_type::tag_type());
+<span class="lineNum">     816 </span>            :       }
+<span class="lineNum">     817 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">     818 </span>            :       {
+<span class="lineNum">     819 </span>            :          // Ignore the right node, it's *this, just subtract the left and negate the result:
+<span class="lineNum">     820 </span>            :          do_subtract(e.left(), typename left_type::tag_type());
+<span class="lineNum">     821 </span>            :          m_backend.negate();
+<span class="lineNum">     822 </span>            :       }
+<span class="lineNum">     823 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">     824 </span>            :       { // br is always false, but if bl is true we must take the this branch:
+<span class="lineNum">     825 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     826 </span>            :          do_subtract(e.right(), typename right_type::tag_type());
+<span class="lineNum">     827 </span>            :       }
+<span class="lineNum">     828 </span>            :       else
+<span class="lineNum">     829 </span>            :       {
+<span class="lineNum">     830 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">     831 </span>            :          do_subtract(e.left(), typename left_type::tag_type());
+<span class="lineNum">     832 </span>            :          m_backend.negate();
+<span class="lineNum">     833 </span>            :       }
+<span class="lineNum">     834 </span>            :    }
+<span class="lineNum">     835 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     836 </span>            :    void do_assign(const Exp&amp; e, const detail::multiplies&amp;)
+<span class="lineNum">     837 </span>            :    {
+<span class="lineNum">     838 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     839 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     840 </span>            : 
+<span class="lineNum">     841 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">     842 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">     843 </span>            : 
+<span class="lineNum">     844 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     845 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     846 </span>            : 
+<span class="lineNum">     847 </span>            :       if(bl &amp;&amp; br)
+<span class="lineNum">     848 </span>            :       {
+<span class="lineNum">     849 </span>            :          self_type temp(e);
+<span class="lineNum">     850 </span>            :          temp.m_backend.swap(this-&gt;m_backend);
+<span class="lineNum">     851 </span>            :       }
+<span class="lineNum">     852 </span>            :       else if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     853 </span>            :       {
+<span class="lineNum">     854 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">     855 </span>            :          do_multiplies(e.right(), typename right_type::tag_type());
+<span class="lineNum">     856 </span>            :       }
+<span class="lineNum">     857 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">     858 </span>            :       {
+<span class="lineNum">     859 </span>            :          // Ignore the right node, it's *this, just add the left:
+<span class="lineNum">     860 </span>            :          do_multiplies(e.left(), typename left_type::tag_type());
+<span class="lineNum">     861 </span>            :       }
+<span class="lineNum">     862 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">     863 </span>            :       { // br is always false, but if bl is true we must take the this branch:
+<span class="lineNum">     864 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     865 </span>            :          do_multiplies(e.right(), typename right_type::tag_type());
+<span class="lineNum">     866 </span>            :       }
+<span class="lineNum">     867 </span>            :       else
+<span class="lineNum">     868 </span>            :       {
+<span class="lineNum">     869 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">     870 </span>            :          do_multiplies(e.left(), typename left_type::tag_type());
+<span class="lineNum">     871 </span>            :       }
+<span class="lineNum">     872 </span>            :    }
+<span class="lineNum">     873 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     874 </span>            :    void do_assign(const Exp&amp; e, const detail::divides&amp;)
+<span class="lineNum">     875 </span>            :    {
+<span class="lineNum">     876 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     877 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     878 </span>            : 
+<span class="lineNum">     879 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     880 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     881 </span>            : 
+<span class="lineNum">     882 </span>            :       if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     883 </span>            :       {
+<span class="lineNum">     884 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">     885 </span>            :          do_divide(e.right(), typename right_type::tag_type());
+<span class="lineNum">     886 </span>            :       }
+<span class="lineNum">     887 </span>            :       else if(br)
+<span class="lineNum">     888 </span>            :       {
+<span class="lineNum">     889 </span>            :          self_type temp(e);
+<span class="lineNum">     890 </span>            :          temp.m_backend.swap(this-&gt;m_backend);
+<span class="lineNum">     891 </span>            :       }
+<span class="lineNum">     892 </span>            :       else
+<span class="lineNum">     893 </span>            :       {
+<span class="lineNum">     894 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     895 </span>            :          do_divide(e.right(), typename right_type::tag_type());
+<span class="lineNum">     896 </span>            :       }
+<span class="lineNum">     897 </span>            :    }
+<span class="lineNum">     898 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     899 </span>            :    void do_assign(const Exp&amp; e, const detail::modulus&amp;)
+<span class="lineNum">     900 </span>            :    {
+<span class="lineNum">     901 </span>            :       //
+<span class="lineNum">     902 </span>            :       // This operation is only valid for integer backends:
+<span class="lineNum">     903 </span>            :       //
+<span class="lineNum">     904 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">     905 </span>            : 
+<span class="lineNum">     906 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     907 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     908 </span>            : 
+<span class="lineNum">     909 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     910 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     911 </span>            : 
+<span class="lineNum">     912 </span>            :       if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     913 </span>            :       {
+<span class="lineNum">     914 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">     915 </span>            :          do_modulus(e.right(), typename right_type::tag_type());
+<span class="lineNum">     916 </span>            :       }
+<span class="lineNum">     917 </span>            :       else if(br)
+<span class="lineNum">     918 </span>            :       {
+<span class="lineNum">     919 </span>            :          self_type temp(e);
+<span class="lineNum">     920 </span>            :          temp.m_backend.swap(this-&gt;m_backend);
+<span class="lineNum">     921 </span>            :       }
+<span class="lineNum">     922 </span>            :       else
+<span class="lineNum">     923 </span>            :       {
+<span class="lineNum">     924 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     925 </span>            :          do_modulus(e.right(), typename right_type::tag_type());
+<span class="lineNum">     926 </span>            :       }
+<span class="lineNum">     927 </span>            :    }
+<span class="lineNum">     928 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     929 </span>            :    void do_assign(const Exp&amp; e, const detail::modulus_immediates&amp;)
+<span class="lineNum">     930 </span>            :    {
+<span class="lineNum">     931 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">     932 </span>            :       using default_ops::eval_modulus;
+<span class="lineNum">     933 </span>            :       eval_modulus(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     934 </span>            :    }
+<span class="lineNum">     935 </span>            : 
+<span class="lineNum">     936 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     937 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_and&amp;)
+<span class="lineNum">     938 </span>            :    {
+<span class="lineNum">     939 </span>            :       //
+<span class="lineNum">     940 </span>            :       // This operation is only valid for integer backends:
+<span class="lineNum">     941 </span>            :       //
+<span class="lineNum">     942 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">     943 </span>            : 
+<span class="lineNum">     944 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     945 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     946 </span>            : 
+<span class="lineNum">     947 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">     948 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">     949 </span>            : 
+<span class="lineNum">     950 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     951 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     952 </span>            : 
+<span class="lineNum">     953 </span>            :       if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     954 </span>            :       {
+<span class="lineNum">     955 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">     956 </span>            :          do_bitwise_and(e.right(), typename right_type::tag_type());
+<span class="lineNum">     957 </span>            :       }
+<span class="lineNum">     958 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">     959 </span>            :       {
+<span class="lineNum">     960 </span>            :          do_bitwise_and(e.left(), typename left_type::tag_type());
+<span class="lineNum">     961 </span>            :       }
+<span class="lineNum">     962 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">     963 </span>            :       {
+<span class="lineNum">     964 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">     965 </span>            :          do_bitwise_and(e.right(), typename right_type::tag_type());
+<span class="lineNum">     966 </span>            :       }
+<span class="lineNum">     967 </span>            :       else
+<span class="lineNum">     968 </span>            :       {
+<span class="lineNum">     969 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">     970 </span>            :          do_bitwise_and(e.left(), typename left_type::tag_type());
+<span class="lineNum">     971 </span>            :       }
+<span class="lineNum">     972 </span>            :    }
+<span class="lineNum">     973 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     974 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_and_immediates&amp;)
+<span class="lineNum">     975 </span>            :    {
+<span class="lineNum">     976 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">     977 </span>            :       using default_ops::eval_bitwise_and;
+<span class="lineNum">     978 </span>            :       eval_bitwise_and(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">     979 </span>            :    }
+<span class="lineNum">     980 </span>            : 
+<span class="lineNum">     981 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">     982 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_or&amp;)
+<span class="lineNum">     983 </span>            :    {
+<span class="lineNum">     984 </span>            :       //
+<span class="lineNum">     985 </span>            :       // This operation is only valid for integer backends:
+<span class="lineNum">     986 </span>            :       //
+<span class="lineNum">     987 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">     988 </span>            : 
+<span class="lineNum">     989 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">     990 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">     991 </span>            : 
+<span class="lineNum">     992 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">     993 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">     994 </span>            : 
+<span class="lineNum">     995 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">     996 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">     997 </span>            : 
+<span class="lineNum">     998 </span>            :       if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">     999 </span>            :       {
+<span class="lineNum">    1000 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">    1001 </span>            :          do_bitwise_or(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1002 </span>            :       }
+<span class="lineNum">    1003 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">    1004 </span>            :       {
+<span class="lineNum">    1005 </span>            :          do_bitwise_or(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1006 </span>            :       }
+<span class="lineNum">    1007 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">    1008 </span>            :       {
+<span class="lineNum">    1009 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1010 </span>            :          do_bitwise_or(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1011 </span>            :       }
+<span class="lineNum">    1012 </span>            :       else
+<span class="lineNum">    1013 </span>            :       {
+<span class="lineNum">    1014 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1015 </span>            :          do_bitwise_or(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1016 </span>            :       }
+<span class="lineNum">    1017 </span>            :    }
+<span class="lineNum">    1018 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1019 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_or_immediates&amp;)
+<span class="lineNum">    1020 </span>            :    {
+<span class="lineNum">    1021 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">    1022 </span>            :       using default_ops::eval_bitwise_or;
+<span class="lineNum">    1023 </span>            :       eval_bitwise_or(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">    1024 </span>            :    }
+<span class="lineNum">    1025 </span>            : 
+<span class="lineNum">    1026 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1027 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_xor&amp;)
+<span class="lineNum">    1028 </span>            :    {
+<span class="lineNum">    1029 </span>            :       //
+<span class="lineNum">    1030 </span>            :       // This operation is only valid for integer backends:
+<span class="lineNum">    1031 </span>            :       //
+<span class="lineNum">    1032 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">    1033 </span>            : 
+<span class="lineNum">    1034 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1035 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1036 </span>            : 
+<span class="lineNum">    1037 </span>            :       static int const left_depth = left_type::depth;
+<span class="lineNum">    1038 </span>            :       static int const right_depth = right_type::depth;
+<span class="lineNum">    1039 </span>            : 
+<span class="lineNum">    1040 </span>            :       bool bl = contains_self(e.left());
+<span class="lineNum">    1041 </span>            :       bool br = contains_self(e.right());
+<span class="lineNum">    1042 </span>            : 
+<span class="lineNum">    1043 </span>            :       if(bl &amp;&amp; is_self(e.left()))
+<span class="lineNum">    1044 </span>            :       {
+<span class="lineNum">    1045 </span>            :          // Ignore the left node, it's *this, just add the right:
+<span class="lineNum">    1046 </span>            :          do_bitwise_xor(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1047 </span>            :       }
+<span class="lineNum">    1048 </span>            :       else if(br &amp;&amp; is_self(e.right()))
+<span class="lineNum">    1049 </span>            :       {
+<span class="lineNum">    1050 </span>            :          do_bitwise_xor(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1051 </span>            :       }
+<span class="lineNum">    1052 </span>            :       else if(!br &amp;&amp; (bl || (left_depth &gt;= right_depth)))
+<span class="lineNum">    1053 </span>            :       {
+<span class="lineNum">    1054 </span>            :          do_assign(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1055 </span>            :          do_bitwise_xor(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1056 </span>            :       }
+<span class="lineNum">    1057 </span>            :       else
+<span class="lineNum">    1058 </span>            :       {
+<span class="lineNum">    1059 </span>            :          do_assign(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1060 </span>            :          do_bitwise_xor(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1061 </span>            :       }
+<span class="lineNum">    1062 </span>            :    }
+<span class="lineNum">    1063 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1064 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_xor_immediates&amp;)
+<span class="lineNum">    1065 </span>            :    {
+<span class="lineNum">    1066 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;Bitwise operations are only valid for integer types&quot;);
+<span class="lineNum">    1067 </span>            :       using default_ops::eval_bitwise_xor;
+<span class="lineNum">    1068 </span>            :       eval_bitwise_xor(m_backend, canonical_value(e.left().value()), canonical_value(e.right().value()));
+<span class="lineNum">    1069 </span>            :    }
+<span class="lineNum">    1070 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1071 </span>            :    void do_assign(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1072 </span>            :    {
+<span class="lineNum">    1073 </span>            :       if(!is_self(e))
+<span class="lineNum">    1074 </span>            :       {
+<span class="lineNum">    1075 </span>            :          m_backend = canonical_value(e.value());
+<span class="lineNum">    1076 </span>            :       }
+<span class="lineNum">    1077 </span>            :    }
+<span class="lineNum">    1078 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1079 </span>            :    void do_assign(const Exp&amp; e, const detail::function&amp;)
+<span class="lineNum">    1080 </span>            :    {
+<span class="lineNum">    1081 </span>            :       typedef typename Exp::arity tag_type;
+<span class="lineNum">    1082 </span>            :       do_assign_function(e, tag_type());
+<span class="lineNum">    1083 </span>            :    }
+<span class="lineNum">    1084 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1085 </span>            :    void do_assign(const Exp&amp; e, const detail::shift_left&amp;)
+<span class="lineNum">    1086 </span>            :    {
+<span class="lineNum">    1087 </span>            :       // We can only shift by an integer value, not an arbitrary expression:
+<span class="lineNum">    1088 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1089 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1090 </span>            :       typedef typename right_type::arity right_arity;
+<span class="lineNum">    1091 </span>            :       BOOST_STATIC_ASSERT_MSG(right_arity::value == 0, &quot;The left shift operator requires an integer value for the shift operand.&quot;);
+<span class="lineNum">    1092 </span>            :       typedef typename right_type::result_type right_value_type;
+<span class="lineNum">    1093 </span>            :       BOOST_STATIC_ASSERT_MSG(is_integral&lt;right_value_type&gt;::value, &quot;The left shift operator requires an integer value for the shift operand.&quot;);
+<span class="lineNum">    1094 </span>            :       typedef typename left_type::tag_type tag_type;
+<span class="lineNum">    1095 </span>            :       do_assign_left_shift(e.left(), canonical_value(e.right().value()), tag_type());
+<span class="lineNum">    1096 </span>            :    }
+<span class="lineNum">    1097 </span>            : 
+<span class="lineNum">    1098 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1099 </span>            :    void do_assign(const Exp&amp; e, const detail::shift_right&amp;)
+<span class="lineNum">    1100 </span>            :    {
+<span class="lineNum">    1101 </span>            :       // We can only shift by an integer value, not an arbitrary expression:
+<span class="lineNum">    1102 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1103 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1104 </span>            :       typedef typename right_type::arity right_arity;
+<span class="lineNum">    1105 </span>            :       BOOST_STATIC_ASSERT_MSG(right_arity::value == 0, &quot;The left shift operator requires an integer value for the shift operand.&quot;);
+<span class="lineNum">    1106 </span>            :       typedef typename right_type::result_type right_value_type;
+<span class="lineNum">    1107 </span>            :       BOOST_STATIC_ASSERT_MSG(is_integral&lt;right_value_type&gt;::value, &quot;The left shift operator requires an integer value for the shift operand.&quot;);
+<span class="lineNum">    1108 </span>            :       typedef typename left_type::tag_type tag_type;
+<span class="lineNum">    1109 </span>            :       do_assign_right_shift(e.left(), canonical_value(e.right().value()), tag_type());
+<span class="lineNum">    1110 </span>            :    }
+<span class="lineNum">    1111 </span>            : 
+<span class="lineNum">    1112 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1113 </span>            :    void do_assign(const Exp&amp; e, const detail::bitwise_complement&amp;)
+<span class="lineNum">    1114 </span>            :    {
+<span class="lineNum">    1115 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ~ operation is only valid for integer types&quot;);
+<span class="lineNum">    1116 </span>            :       using default_ops::eval_complement;
+<span class="lineNum">    1117 </span>            :       self_type temp(e.left());
+<span class="lineNum">    1118 </span>            :       eval_complement(m_backend, temp.backend());
+<span class="lineNum">    1119 </span>            :    }
+<span class="lineNum">    1120 </span>            : 
+<span class="lineNum">    1121 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1122 </span>            :    void do_assign(const Exp&amp; e, const detail::complement_immediates&amp;)
+<span class="lineNum">    1123 </span>            :    {
+<span class="lineNum">    1124 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ~ operation is only valid for integer types&quot;);
+<span class="lineNum">    1125 </span>            :       using default_ops::eval_complement;
+<span class="lineNum">    1126 </span>            :       eval_complement(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1127 </span>            :    }
+<span class="lineNum">    1128 </span>            : 
+<span class="lineNum">    1129 </span>            :    template &lt;class Exp, class Val&gt;
+<span class="lineNum">    1130 </span>            :    void do_assign_right_shift(const Exp&amp; e, const Val&amp; val, const detail::terminal&amp;)
+<span class="lineNum">    1131 </span>            :    {
+<span class="lineNum">    1132 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The right shift operation is only valid for integer types&quot;);
+<span class="lineNum">    1133 </span>            :       using default_ops::eval_right_shift;
+<span class="lineNum">    1134 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(Val) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;Val&gt;());
+<span class="lineNum">    1135 </span>            :       eval_right_shift(m_backend, canonical_value(e.value()), static_cast&lt;std::size_t&gt;(val));
+<span class="lineNum">    1136 </span>            :    }
+<span class="lineNum">    1137 </span>            : 
+<span class="lineNum">    1138 </span>            :    template &lt;class Exp, class Val&gt;
+<span class="lineNum">    1139 </span>            :    void do_assign_left_shift(const Exp&amp; e, const Val&amp; val, const detail::terminal&amp;)
+<span class="lineNum">    1140 </span>            :    {
+<span class="lineNum">    1141 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The left shift operation is only valid for integer types&quot;);
+<span class="lineNum">    1142 </span>            :       using default_ops::eval_left_shift;
+<span class="lineNum">    1143 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(Val) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;Val&gt;());
+<span class="lineNum">    1144 </span>            :       eval_left_shift(m_backend, canonical_value(e.value()), static_cast&lt;std::size_t&gt;(val));
+<span class="lineNum">    1145 </span>            :    }
+<span class="lineNum">    1146 </span>            : 
+<span class="lineNum">    1147 </span>            :    template &lt;class Exp, class Val, class Tag&gt;
+<span class="lineNum">    1148 </span>            :    void do_assign_right_shift(const Exp&amp; e, const Val&amp; val, const Tag&amp;)
+<span class="lineNum">    1149 </span>            :    {
+<span class="lineNum">    1150 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The right shift operation is only valid for integer types&quot;);
+<span class="lineNum">    1151 </span>            :       using default_ops::eval_right_shift;
+<span class="lineNum">    1152 </span>            :       self_type temp(e);
+<span class="lineNum">    1153 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(Val) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;Val&gt;());
+<span class="lineNum">    1154 </span>            :       eval_right_shift(m_backend, temp.backend(), static_cast&lt;std::size_t&gt;(val));
+<span class="lineNum">    1155 </span>            :    }
+<span class="lineNum">    1156 </span>            : 
+<span class="lineNum">    1157 </span>            :    template &lt;class Exp, class Val, class Tag&gt;
+<span class="lineNum">    1158 </span>            :    void do_assign_left_shift(const Exp&amp; e, const Val&amp; val, const Tag&amp;)
+<span class="lineNum">    1159 </span>            :    {
+<span class="lineNum">    1160 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The left shift operation is only valid for integer types&quot;);
+<span class="lineNum">    1161 </span>            :       using default_ops::eval_left_shift;
+<span class="lineNum">    1162 </span>            :       self_type temp(e);
+<span class="lineNum">    1163 </span>            :       detail::check_shift_range(val, mpl::bool_&lt;(sizeof(Val) &gt; sizeof(std::size_t))&gt;(), is_signed&lt;Val&gt;());
+<span class="lineNum">    1164 </span>            :       eval_left_shift(m_backend, temp.backend(), static_cast&lt;std::size_t&gt;(val));
+<span class="lineNum">    1165 </span>            :    }
+<span class="lineNum">    1166 </span>            : 
+<span class="lineNum">    1167 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1168 </span>            :    void do_assign_function(const Exp&amp; e, const mpl::int_&lt;1&gt;&amp;)
+<span class="lineNum">    1169 </span>            :    {
+<span class="lineNum">    1170 </span>            :       e.left().value()(&amp;m_backend);
+<span class="lineNum">    1171 </span>            :    }
+<span class="lineNum">    1172 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1173 </span>            :    void do_assign_function(const Exp&amp; e, const mpl::int_&lt;2&gt;&amp;)
+<span class="lineNum">    1174 </span>            :    {
+<span class="lineNum">    1175 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1176 </span>            :       typedef typename right_type::tag_type tag_type;
+<span class="lineNum">    1177 </span>            :       do_assign_function_1(e.left().value(), e.right_ref(), tag_type());
+<span class="lineNum">    1178 </span>            :    }
+<span class="lineNum">    1179 </span>            :    template &lt;class F, class Exp&gt;
+<span class="lineNum">    1180 </span>            :    void do_assign_function_1(const F&amp; f, const Exp&amp; val, const detail::terminal&amp;)
+<span class="lineNum">    1181 </span>            :    {
+<span class="lineNum">    1182 </span>            :       f(m_backend, function_arg_value(val));
+<span class="lineNum">    1183 </span>            :    }
+<span class="lineNum">    1184 </span>            :    template &lt;class F, class Exp, class Tag&gt;
+<span class="lineNum">    1185 </span>            :    void do_assign_function_1(const F&amp; f, const Exp&amp; val, const Tag&amp;)
+<span class="lineNum">    1186 </span>            :    {
+<span class="lineNum">    1187 </span>            :       number t(val);
+<span class="lineNum">    1188 </span>            :       f(m_backend, t.backend());
+<span class="lineNum">    1189 </span>            :    }
+<span class="lineNum">    1190 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1191 </span>            :    void do_assign_function(const Exp&amp; e, const mpl::int_&lt;3&gt;&amp;)
+<span class="lineNum">    1192 </span>            :    {
+<span class="lineNum">    1193 </span>            :       typedef typename Exp::middle_type middle_type;
+<span class="lineNum">    1194 </span>            :       typedef typename middle_type::tag_type tag_type;
+<span class="lineNum">    1195 </span>            :       typedef typename Exp::right_type end_type;
+<span class="lineNum">    1196 </span>            :       typedef typename end_type::tag_type end_tag;
+<span class="lineNum">    1197 </span>            :       do_assign_function_2(e.left().value(), e.middle_ref(), e.right_ref(), tag_type(), end_tag());
+<span class="lineNum">    1198 </span>            :    }
+<span class="lineNum">    1199 </span>            :    template &lt;class F, class Exp1, class Exp2&gt;
+<span class="lineNum">    1200 </span>            :    void do_assign_function_2(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const detail::terminal&amp;, const detail::terminal&amp;)
+<span class="lineNum">    1201 </span>            :    {
+<span class="lineNum">    1202 </span>            :       f(m_backend, function_arg_value(val1), function_arg_value(val2));
+<span class="lineNum">    1203 </span>            :    }
+<span class="lineNum">    1204 </span>            :    template &lt;class F, class Exp1, class Exp2, class Tag1&gt;
+<span class="lineNum">    1205 </span>            :    void do_assign_function_2(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Tag1&amp;, const detail::terminal&amp;)
+<span class="lineNum">    1206 </span>            :    {
+<span class="lineNum">    1207 </span>            :       self_type temp1(val1);
+<span class="lineNum">    1208 </span>            :       f(m_backend, BOOST_MP_MOVE(temp1.backend()), function_arg_value(val2));
+<span class="lineNum">    1209 </span>            :    }
+<span class="lineNum">    1210 </span>            :    template &lt;class F, class Exp1, class Exp2, class Tag2&gt;
+<span class="lineNum">    1211 </span>            :    void do_assign_function_2(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const detail::terminal&amp;, const Tag2&amp;)
+<span class="lineNum">    1212 </span>            :    {
+<span class="lineNum">    1213 </span>            :       self_type temp2(val2);
+<span class="lineNum">    1214 </span>            :       f(m_backend, function_arg_value(val1), BOOST_MP_MOVE(temp2.backend()));
+<span class="lineNum">    1215 </span>            :    }
+<span class="lineNum">    1216 </span>            :    template &lt;class F, class Exp1, class Exp2, class Tag1, class Tag2&gt;
+<span class="lineNum">    1217 </span>            :    void do_assign_function_2(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Tag1&amp;, const Tag2&amp;)
+<span class="lineNum">    1218 </span>            :    {
+<span class="lineNum">    1219 </span>            :       self_type temp1(val1);
+<span class="lineNum">    1220 </span>            :       self_type temp2(val2);
+<span class="lineNum">    1221 </span>            :       f(m_backend, BOOST_MP_MOVE(temp1.backend()), BOOST_MP_MOVE(temp2.backend()));
+<span class="lineNum">    1222 </span>            :    }
+<span class="lineNum">    1223 </span>            : 
+<span class="lineNum">    1224 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1225 </span>            :    void do_assign_function(const Exp&amp; e, const mpl::int_&lt;4&gt;&amp;)
+<span class="lineNum">    1226 </span>            :    {
+<span class="lineNum">    1227 </span>            :       typedef typename Exp::left_middle_type left_type;
+<span class="lineNum">    1228 </span>            :       typedef typename left_type::tag_type left_tag_type;
+<span class="lineNum">    1229 </span>            :       typedef typename Exp::right_middle_type middle_type;
+<span class="lineNum">    1230 </span>            :       typedef typename middle_type::tag_type middle_tag_type;
+<span class="lineNum">    1231 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1232 </span>            :       typedef typename right_type::tag_type right_tag_type;
+<span class="lineNum">    1233 </span>            :       do_assign_function_3a(e.left().value(), e.left_middle_ref(), e.right_middle_ref(), e.right_ref(), left_tag_type(), middle_tag_type(), right_tag_type());
+<span class="lineNum">    1234 </span>            :    }
+<span class="lineNum">    1235 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3, class Tag2, class Tag3&gt;
+<span class="lineNum">    1236 </span>            :    void do_assign_function_3a(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const detail::terminal&amp;, const Tag2&amp; t2, const Tag3&amp; t3)
+<span class="lineNum">    1237 </span>            :    {
+<span class="lineNum">    1238 </span>            :       do_assign_function_3b(f, val1, val2, val3, t2, t3);
+<span class="lineNum">    1239 </span>            :    }
+<span class="lineNum">    1240 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3, class Tag1, class Tag2, class Tag3&gt;
+<span class="lineNum">    1241 </span>            :    void do_assign_function_3a(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const Tag1&amp;, const Tag2&amp; t2, const Tag3&amp; t3)
+<span class="lineNum">    1242 </span>            :    {
+<span class="lineNum">    1243 </span>            :       number t(val1);
+<span class="lineNum">    1244 </span>            :       do_assign_function_3b(f, BOOST_MP_MOVE(t), val2, val3, t2, t3);
+<span class="lineNum">    1245 </span>            :    }
+<span class="lineNum">    1246 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3, class Tag3&gt;
+<span class="lineNum">    1247 </span>            :    void do_assign_function_3b(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const detail::terminal&amp;, const Tag3&amp; t3)
+<span class="lineNum">    1248 </span>            :    {
+<span class="lineNum">    1249 </span>            :       do_assign_function_3c(f, val1, val2, val3, t3);
+<span class="lineNum">    1250 </span>            :    }
+<span class="lineNum">    1251 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3, class Tag2, class Tag3&gt;
+<span class="lineNum">    1252 </span>            :    void do_assign_function_3b(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const Tag2&amp; /*t2*/, const Tag3&amp; t3)
+<span class="lineNum">    1253 </span>            :    {
+<span class="lineNum">    1254 </span>            :       number t(val2);
+<span class="lineNum">    1255 </span>            :       do_assign_function_3c(f, val1, BOOST_MP_MOVE(t), val3, t3);
+<span class="lineNum">    1256 </span>            :    }
+<span class="lineNum">    1257 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3&gt;
+<span class="lineNum">    1258 </span>            :    void do_assign_function_3c(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const detail::terminal&amp;)
+<span class="lineNum">    1259 </span>            :    {
+<span class="lineNum">    1260 </span>            :       f(m_backend, function_arg_value(val1), function_arg_value(val2), function_arg_value(val3));
+<span class="lineNum">    1261 </span>            :    }
+<span class="lineNum">    1262 </span>            :    template &lt;class F, class Exp1, class Exp2, class Exp3, class Tag3&gt;
+<span class="lineNum">    1263 </span>            :    void do_assign_function_3c(const F&amp; f, const Exp1&amp; val1, const Exp2&amp; val2, const Exp3&amp; val3, const Tag3&amp; /*t3*/)
+<span class="lineNum">    1264 </span>            :    {
+<span class="lineNum">    1265 </span>            :       number t(val3);
+<span class="lineNum">    1266 </span>            :       do_assign_function_3c(f, val1, val2, BOOST_MP_MOVE(t), detail::terminal());
+<span class="lineNum">    1267 </span>            :    }
+<span class="lineNum">    1268 </span>            : 
+<span class="lineNum">    1269 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1270 </span>            :    void do_add(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1271 </span>            :    {
+<span class="lineNum">    1272 </span>            :       using default_ops::eval_add;
+<span class="lineNum">    1273 </span>            :       eval_add(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1274 </span>            :    }
+<span class="lineNum">    1275 </span>            : 
+<span class="lineNum">    1276 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1277 </span>            :    void do_add(const Exp&amp; e, const detail::negate&amp;)
+<span class="lineNum">    1278 </span>            :    {
+<span class="lineNum">    1279 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1280 </span>            :       do_subtract(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1281 </span>            :    }
+<span class="lineNum">    1282 </span>            : 
+<span class="lineNum">    1283 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1284 </span>            :    void do_add(const Exp&amp; e, const detail::plus&amp;)
+<span class="lineNum">    1285 </span>            :    {
+<span class="lineNum">    1286 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1287 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1288 </span>            :       do_add(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1289 </span>            :       do_add(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1290 </span>            :    }
+<span class="lineNum">    1291 </span>            : 
+<span class="lineNum">    1292 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1293 </span>            :    void do_add(const Exp&amp; e, const detail::minus&amp;)
+<span class="lineNum">    1294 </span>            :    {
+<span class="lineNum">    1295 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1296 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1297 </span>            :       do_add(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1298 </span>            :       do_subtract(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1299 </span>            :    }
+<span class="lineNum">    1300 </span>            : 
+<span class="lineNum">    1301 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1302 </span>            :    void do_add(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1303 </span>            :    {
+<span class="lineNum">    1304 </span>            :       self_type temp(e);
+<span class="lineNum">    1305 </span>            :       do_add(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">    1306 </span>            :    }
+<span class="lineNum">    1307 </span>            : 
+<span class="lineNum">    1308 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1309 </span>            :    void do_add(const Exp&amp; e, const detail::add_immediates&amp;)
+<span class="lineNum">    1310 </span>            :    {
+<span class="lineNum">    1311 </span>            :       using default_ops::eval_add;
+<span class="lineNum">    1312 </span>            :       eval_add(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1313 </span>            :       eval_add(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1314 </span>            :    }
+<span class="lineNum">    1315 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1316 </span>            :    void do_add(const Exp&amp; e, const detail::subtract_immediates&amp;)
+<span class="lineNum">    1317 </span>            :    {
+<span class="lineNum">    1318 </span>            :       using default_ops::eval_add;
+<span class="lineNum">    1319 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">    1320 </span>            :       eval_add(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1321 </span>            :       eval_subtract(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1322 </span>            :    }
+<span class="lineNum">    1323 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1324 </span>            :    void do_subtract(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1325 </span>            :    {
+<span class="lineNum">    1326 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">    1327 </span>            :       eval_subtract(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1328 </span>            :    }
+<span class="lineNum">    1329 </span>            : 
+<span class="lineNum">    1330 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1331 </span>            :    void do_subtract(const Exp&amp; e, const detail::negate&amp;)
+<span class="lineNum">    1332 </span>            :    {
+<span class="lineNum">    1333 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1334 </span>            :       do_add(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1335 </span>            :    }
+<span class="lineNum">    1336 </span>            : 
+<span class="lineNum">    1337 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1338 </span>            :    void do_subtract(const Exp&amp; e, const detail::plus&amp;)
+<span class="lineNum">    1339 </span>            :    {
+<span class="lineNum">    1340 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1341 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1342 </span>            :       do_subtract(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1343 </span>            :       do_subtract(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1344 </span>            :    }
+<span class="lineNum">    1345 </span>            : 
+<span class="lineNum">    1346 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1347 </span>            :    void do_subtract(const Exp&amp; e, const detail::minus&amp;)
+<span class="lineNum">    1348 </span>            :    {
+<span class="lineNum">    1349 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1350 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1351 </span>            :       do_subtract(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1352 </span>            :       do_add(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1353 </span>            :    }
+<span class="lineNum">    1354 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1355 </span>            :    void do_subtract(const Exp&amp; e, const detail::add_immediates&amp;)
+<span class="lineNum">    1356 </span>            :    {
+<span class="lineNum">    1357 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">    1358 </span>            :       eval_subtract(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1359 </span>            :       eval_subtract(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1360 </span>            :    }
+<span class="lineNum">    1361 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1362 </span>            :    void do_subtract(const Exp&amp; e, const detail::subtract_immediates&amp;)
+<span class="lineNum">    1363 </span>            :    {
+<span class="lineNum">    1364 </span>            :       using default_ops::eval_add;
+<span class="lineNum">    1365 </span>            :       using default_ops::eval_subtract;
+<span class="lineNum">    1366 </span>            :       eval_subtract(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1367 </span>            :       eval_add(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1368 </span>            :    }
+<span class="lineNum">    1369 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1370 </span>            :    void do_subtract(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1371 </span>            :    {
+<span class="lineNum">    1372 </span>            :       self_type temp(e);
+<span class="lineNum">    1373 </span>            :       do_subtract(detail::expression&lt;detail::terminal, self_type&gt;(temp), detail::terminal());
+<span class="lineNum">    1374 </span>            :    }
+<span class="lineNum">    1375 </span>            : 
+<span class="lineNum">    1376 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1377 </span>            :    void do_multiplies(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1378 </span>            :    {
+<span class="lineNum">    1379 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1380 </span>            :       eval_multiply(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1381 </span>            :    }
+<span class="lineNum">    1382 </span>            : 
+<span class="lineNum">    1383 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1384 </span>            :    void do_multiplies(const Exp&amp; e, const detail::negate&amp;)
+<span class="lineNum">    1385 </span>            :    {
+<span class="lineNum">    1386 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1387 </span>            :       do_multiplies(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1388 </span>            :       m_backend.negate();
+<span class="lineNum">    1389 </span>            :    }
+<span class="lineNum">    1390 </span>            : 
+<span class="lineNum">    1391 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1392 </span>            :    void do_multiplies(const Exp&amp; e, const detail::multiplies&amp;)
+<span class="lineNum">    1393 </span>            :    {
+<span class="lineNum">    1394 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1395 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1396 </span>            :       do_multiplies(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1397 </span>            :       do_multiplies(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1398 </span>            :    }
+<span class="lineNum">    1399 </span>            :    //
+<span class="lineNum">    1400 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1401 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1402 </span>            :    //
+<span class="lineNum">    1403 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1404 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type 
+<span class="lineNum">    1405 </span>            :       do_multiplies(const Exp&amp; e, const detail::divides&amp;)
+<span class="lineNum">    1406 </span>            :    {
+<span class="lineNum">    1407 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1408 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1409 </span>            :       do_multiplies(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1410 </span>            :       do_divide(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1411 </span>            :    }
+<span class="lineNum">    1412 </span>            : 
+<span class="lineNum">    1413 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1414 </span>            :    void do_multiplies(const Exp&amp; e, const detail::multiply_immediates&amp;)
+<span class="lineNum">    1415 </span>            :    {
+<span class="lineNum">    1416 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1417 </span>            :       eval_multiply(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1418 </span>            :       eval_multiply(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1419 </span>            :    }
+<span class="lineNum">    1420 </span>            :    //
+<span class="lineNum">    1421 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1422 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1423 </span>            :    //
+<span class="lineNum">    1424 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1425 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type
+<span class="lineNum">    1426 </span>            :       do_multiplies(const Exp&amp; e, const detail::divide_immediates&amp;)
+<span class="lineNum">    1427 </span>            :    {
+<span class="lineNum">    1428 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1429 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">    1430 </span>            :       eval_multiply(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1431 </span>            :       eval_divide(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1432 </span>            :    }
+<span class="lineNum">    1433 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1434 </span>            :    void do_multiplies(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1435 </span>            :    {
+<span class="lineNum">    1436 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1437 </span>            :       self_type temp(e);
+<span class="lineNum">    1438 </span>            :       eval_multiply(m_backend, temp.m_backend);
+<span class="lineNum">    1439 </span>            :    }
+<span class="lineNum">    1440 </span>            : 
+<span class="lineNum">    1441 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1442 </span>            :    void do_divide(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1443 </span>            :    {
+<span class="lineNum">    1444 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">    1445 </span>            :       eval_divide(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1446 </span>            :    }
+<span class="lineNum">    1447 </span>            : 
+<span class="lineNum">    1448 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1449 </span>            :    void do_divide(const Exp&amp; e, const detail::negate&amp;)
+<span class="lineNum">    1450 </span>            :    {
+<span class="lineNum">    1451 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1452 </span>            :       do_divide(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1453 </span>            :       m_backend.negate();
+<span class="lineNum">    1454 </span>            :    }
+<span class="lineNum">    1455 </span>            :    //
+<span class="lineNum">    1456 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1457 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1458 </span>            :    //
+<span class="lineNum">    1459 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1460 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type
+<span class="lineNum">    1461 </span>            :       do_divide(const Exp&amp; e, const detail::multiplies&amp;)
+<span class="lineNum">    1462 </span>            :    {
+<span class="lineNum">    1463 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1464 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1465 </span>            :       do_divide(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1466 </span>            :       do_divide(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1467 </span>            :    }
+<span class="lineNum">    1468 </span>            :    //
+<span class="lineNum">    1469 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1470 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1471 </span>            :    //
+<span class="lineNum">    1472 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1473 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type
+<span class="lineNum">    1474 </span>            :       do_divide(const Exp&amp; e, const detail::divides&amp;)
+<span class="lineNum">    1475 </span>            :    {
+<span class="lineNum">    1476 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1477 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1478 </span>            :       do_divide(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1479 </span>            :       do_multiplies(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1480 </span>            :    }
+<span class="lineNum">    1481 </span>            :    //
+<span class="lineNum">    1482 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1483 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1484 </span>            :    //
+<span class="lineNum">    1485 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1486 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type
+<span class="lineNum">    1487 </span>            :       do_divides(const Exp&amp; e, const detail::multiply_immediates&amp;)
+<span class="lineNum">    1488 </span>            :    {
+<span class="lineNum">    1489 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">    1490 </span>            :       eval_divide(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1491 </span>            :       eval_divide(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1492 </span>            :    }
+<span class="lineNum">    1493 </span>            :    //
+<span class="lineNum">    1494 </span>            :    // This rearrangement is disabled for integer types, the test on sizeof(Exp) is simply to make
+<span class="lineNum">    1495 </span>            :    // the disable_if dependent on the template argument (the size of 1 can never occur in practice).
+<span class="lineNum">    1496 </span>            :    //
+<span class="lineNum">    1497 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1498 </span>            :    typename boost::disable_if_c&lt;boost::multiprecision::number_category&lt;self_type&gt;::value == boost::multiprecision::number_kind_integer || sizeof(Exp) == 1&gt;::type
+<span class="lineNum">    1499 </span>            :       do_divides(const Exp&amp; e, const detail::divide_immediates&amp;)
+<span class="lineNum">    1500 </span>            :    {
+<span class="lineNum">    1501 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1502 </span>            :       using default_ops::eval_divide;
+<span class="lineNum">    1503 </span>            :       eval_divide(m_backend, canonical_value(e.left().value()));
+<span class="lineNum">    1504 </span>            :       mutiply(m_backend, canonical_value(e.right().value()));
+<span class="lineNum">    1505 </span>            :    }
+<span class="lineNum">    1506 </span>            : 
+<span class="lineNum">    1507 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1508 </span>            :    void do_divide(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1509 </span>            :    {
+<span class="lineNum">    1510 </span>            :       using default_ops::eval_multiply;
+<span class="lineNum">    1511 </span>            :       self_type temp(e);
+<span class="lineNum">    1512 </span>            :       eval_divide(m_backend, temp.m_backend);
+<span class="lineNum">    1513 </span>            :    }
+<span class="lineNum">    1514 </span>            : 
+<span class="lineNum">    1515 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1516 </span>            :    void do_modulus(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1517 </span>            :    {
+<span class="lineNum">    1518 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">    1519 </span>            :       using default_ops::eval_modulus;
+<span class="lineNum">    1520 </span>            :       eval_modulus(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1521 </span>            :    }
+<span class="lineNum">    1522 </span>            : 
+<span class="lineNum">    1523 </span>            :    template &lt;class Exp, class Unknown&gt;
+<span class="lineNum">    1524 </span>            :    void do_modulus(const Exp&amp; e, const Unknown&amp;)
+<span class="lineNum">    1525 </span>            :    {
+<span class="lineNum">    1526 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The modulus operation is only valid for integer types&quot;);
+<span class="lineNum">    1527 </span>            :       using default_ops::eval_modulus;
+<span class="lineNum">    1528 </span>            :       self_type temp(e);
+<span class="lineNum">    1529 </span>            :       eval_modulus(m_backend, canonical_value(temp));
+<span class="lineNum">    1530 </span>            :    }
+<span class="lineNum">    1531 </span>            : 
+<span class="lineNum">    1532 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1533 </span>            :    void do_bitwise_and(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1534 </span>            :    {
+<span class="lineNum">    1535 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">    1536 </span>            :       using default_ops::eval_bitwise_and;
+<span class="lineNum">    1537 </span>            :       eval_bitwise_and(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1538 </span>            :    }
+<span class="lineNum">    1539 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1540 </span>            :    void do_bitwise_and(const Exp&amp; e, const detail::bitwise_and&amp;)
+<span class="lineNum">    1541 </span>            :    {
+<span class="lineNum">    1542 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">    1543 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1544 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1545 </span>            :       do_bitwise_and(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1546 </span>            :       do_bitwise_and(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1547 </span>            :    }
+<span class="lineNum">    1548 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1549 </span>            :    void do_bitwise_and(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1550 </span>            :    {
+<span class="lineNum">    1551 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise &amp; operation is only valid for integer types&quot;);
+<span class="lineNum">    1552 </span>            :       using default_ops::eval_bitwise_and;
+<span class="lineNum">    1553 </span>            :       self_type temp(e);
+<span class="lineNum">    1554 </span>            :       eval_bitwise_and(m_backend, temp.m_backend);
+<span class="lineNum">    1555 </span>            :    }
+<span class="lineNum">    1556 </span>            : 
+<span class="lineNum">    1557 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1558 </span>            :    void do_bitwise_or(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1559 </span>            :    {
+<span class="lineNum">    1560 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">    1561 </span>            :       using default_ops::eval_bitwise_or;
+<span class="lineNum">    1562 </span>            :       eval_bitwise_or(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1563 </span>            :    }
+<span class="lineNum">    1564 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1565 </span>            :    void do_bitwise_or(const Exp&amp; e, const detail::bitwise_or&amp;)
+<span class="lineNum">    1566 </span>            :    {
+<span class="lineNum">    1567 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">    1568 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1569 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1570 </span>            :       do_bitwise_or(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1571 </span>            :       do_bitwise_or(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1572 </span>            :    }
+<span class="lineNum">    1573 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1574 </span>            :    void do_bitwise_or(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1575 </span>            :    {
+<span class="lineNum">    1576 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise | operation is only valid for integer types&quot;);
+<span class="lineNum">    1577 </span>            :       using default_ops::eval_bitwise_or;
+<span class="lineNum">    1578 </span>            :       self_type temp(e);
+<span class="lineNum">    1579 </span>            :       eval_bitwise_or(m_backend, temp.m_backend);
+<span class="lineNum">    1580 </span>            :    }
+<span class="lineNum">    1581 </span>            : 
+<span class="lineNum">    1582 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1583 </span>            :    void do_bitwise_xor(const Exp&amp; e, const detail::terminal&amp;)
+<span class="lineNum">    1584 </span>            :    {
+<span class="lineNum">    1585 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">    1586 </span>            :       using default_ops::eval_bitwise_xor;
+<span class="lineNum">    1587 </span>            :       eval_bitwise_xor(m_backend, canonical_value(e.value()));
+<span class="lineNum">    1588 </span>            :    }
+<span class="lineNum">    1589 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1590 </span>            :    void do_bitwise_xor(const Exp&amp; e, const detail::bitwise_xor&amp;)
+<span class="lineNum">    1591 </span>            :    {
+<span class="lineNum">    1592 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">    1593 </span>            :       typedef typename Exp::left_type left_type;
+<span class="lineNum">    1594 </span>            :       typedef typename Exp::right_type right_type;
+<span class="lineNum">    1595 </span>            :       do_bitwise_xor(e.left(), typename left_type::tag_type());
+<span class="lineNum">    1596 </span>            :       do_bitwise_xor(e.right(), typename right_type::tag_type());
+<span class="lineNum">    1597 </span>            :    }
+<span class="lineNum">    1598 </span>            :    template &lt;class Exp, class unknown&gt;
+<span class="lineNum">    1599 </span>            :    void do_bitwise_xor(const Exp&amp; e, const unknown&amp;)
+<span class="lineNum">    1600 </span>            :    {
+<span class="lineNum">    1601 </span>            :       BOOST_STATIC_ASSERT_MSG(number_category&lt;Backend&gt;::value == number_kind_integer, &quot;The bitwise ^ operation is only valid for integer types&quot;);
+<span class="lineNum">    1602 </span>            :       using default_ops::eval_bitwise_xor;
+<span class="lineNum">    1603 </span>            :       self_type temp(e);
+<span class="lineNum">    1604 </span>            :       eval_bitwise_xor(m_backend, temp.m_backend);
+<span class="lineNum">    1605 </span>            :    }
+<span class="lineNum">    1606 </span>            : 
+<span class="lineNum">    1607 </span>            :    // Tests if the expression contains a reference to *this:
+<span class="lineNum">    1608 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1609 </span>            :    BOOST_MP_FORCEINLINE bool contains_self(const Exp&amp; e)const BOOST_NOEXCEPT
+<span class="lineNum">    1610 </span>            :    {
+<span class="lineNum">    1611 </span>            :       return contains_self(e, typename Exp::arity());
+<span class="lineNum">    1612 </span>            :    }
+<span class="lineNum">    1613 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1614 </span>            :    BOOST_MP_FORCEINLINE bool contains_self(const Exp&amp; e, mpl::int_&lt;0&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1615 </span>            :    {
+<span class="lineNum">    1616 </span>            :       return is_realy_self(e.value());
+<span class="lineNum">    1617 </span>            :    }
+<span class="lineNum">    1618 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1619 </span>            :    BOOST_MP_FORCEINLINE bool contains_self(const Exp&amp; e, mpl::int_&lt;1&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1620 </span>            :    {
+<span class="lineNum">    1621 </span>            :       typedef typename Exp::left_type child_type;
+<span class="lineNum">    1622 </span>            :       return contains_self(e.left(), typename child_type::arity());
+<span class="lineNum">    1623 </span>            :    }
+<span class="lineNum">    1624 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1625 </span>            :    BOOST_MP_FORCEINLINE bool contains_self(const Exp&amp; e, mpl::int_&lt;2&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1626 </span>            :    {
+<span class="lineNum">    1627 </span>            :       typedef typename Exp::left_type child0_type;
+<span class="lineNum">    1628 </span>            :       typedef typename Exp::right_type child1_type;
+<span class="lineNum">    1629 </span>            :       return contains_self(e.left(), typename child0_type::arity())
+<span class="lineNum">    1630 </span>            :          || contains_self(e.right(), typename child1_type::arity());
+<span class="lineNum">    1631 </span>            :    }
+<span class="lineNum">    1632 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1633 </span>            :    BOOST_MP_FORCEINLINE bool contains_self(const Exp&amp; e, mpl::int_&lt;3&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1634 </span>            :    {
+<span class="lineNum">    1635 </span>            :       typedef typename Exp::left_type child0_type;
+<span class="lineNum">    1636 </span>            :       typedef typename Exp::middle_type child1_type;
+<span class="lineNum">    1637 </span>            :       typedef typename Exp::right_type child2_type;
+<span class="lineNum">    1638 </span>            :       return contains_self(e.left(), typename child0_type::arity())
+<span class="lineNum">    1639 </span>            :          || contains_self(e.middle(), typename child1_type::arity())
+<span class="lineNum">    1640 </span>            :          || contains_self(e.right(), typename child2_type::arity());
+<span class="lineNum">    1641 </span>            :    }
+<span class="lineNum">    1642 </span>            : 
+<span class="lineNum">    1643 </span>            :    // Test if the expression is a reference to *this:
+<span class="lineNum">    1644 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1645 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR bool is_self(const Exp&amp; e)const BOOST_NOEXCEPT
+<span class="lineNum">    1646 </span>            :    {
+<span class="lineNum">    1647 </span>            :       return is_self(e, typename Exp::arity());
+<span class="lineNum">    1648 </span>            :    }
+<span class="lineNum">    1649 </span>            :    template &lt;class Exp&gt;
+<span class="lineNum">    1650 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR bool is_self(const Exp&amp; e, mpl::int_&lt;0&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1651 </span>            :    {
+<span class="lineNum">    1652 </span>            :       return is_realy_self(e.value());
+<span class="lineNum">    1653 </span>            :    }
+<span class="lineNum">    1654 </span>            :    template &lt;class Exp, int v&gt;
+<span class="lineNum">    1655 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR bool is_self(const Exp&amp;, mpl::int_&lt;v&gt; const&amp;)const BOOST_NOEXCEPT
+<span class="lineNum">    1656 </span>            :    {
+<span class="lineNum">    1657 </span>            :       return false;
+<span class="lineNum">    1658 </span>            :    }
+<span class="lineNum">    1659 </span>            : 
+<span class="lineNum">    1660 </span>            :    template &lt;class Val&gt;
+<span class="lineNum">    1661 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR bool is_realy_self(const Val&amp;)const BOOST_NOEXCEPT{ return false; }
+<span class="lineNum">    1662 </span>            :    BOOST_MP_FORCEINLINE BOOST_CONSTEXPR bool is_realy_self(const self_type&amp; v)const BOOST_NOEXCEPT{ return &amp;v == this; }
+<span class="lineNum">    1663 </span>            : 
+<span class="lineNum">    1664 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const Backend&amp; function_arg_value(const self_type&amp; v) BOOST_NOEXCEPT {  return v.backend();  }
+<span class="lineNum">    1665 </span>            :    template &lt;class V&gt;
+<span class="lineNum">    1666 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const V&amp; function_arg_value(const V&amp; v) BOOST_NOEXCEPT {  return v;  }
+<span class="lineNum">    1667 </span>            :    template &lt;class A1, class A2, class A3, class A4&gt;
+<span class="lineNum">    1668 </span>            :    static BOOST_MP_FORCEINLINE const A1&amp; function_arg_value(const detail::expression&lt;detail::terminal, A1, A2, A3, A4&gt;&amp; exp) BOOST_NOEXCEPT { return exp.value(); }
+<span class="lineNum">    1669 </span>            :    template &lt;class A2, class A3, class A4&gt;
+<span class="lineNum">    1670 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const Backend&amp; function_arg_value(const detail::expression&lt;detail::terminal, number&lt;Backend&gt;, A2, A3, A4&gt;&amp; exp) BOOST_NOEXCEPT { return exp.value().backend(); }
+<span class="lineNum">    1671 </span>            :    Backend m_backend;
+<span class="lineNum">    1672 </span>            : 
+<span class="lineNum">    1673 </span>            : public:
+<span class="lineNum">    1674 </span>            :    //
+<span class="lineNum">    1675 </span>            :    // These shouldn't really need to be public, or even member functions, but it makes implementing
+<span class="lineNum">    1676 </span>            :    // the non-member operators way easier if they are:
+<span class="lineNum">    1677 </span>            :    //
+<span class="lineNum">    1678 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const Backend&amp; canonical_value(const self_type&amp; v) BOOST_NOEXCEPT {  return v.m_backend;  }
+<span class="lineNum">    1679 </span>            :    template &lt;class B2, expression_template_option ET&gt;
+<span class="lineNum">    1680 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR const B2&amp; canonical_value(const number&lt;B2, ET&gt;&amp; v) BOOST_NOEXCEPT {  return v.backend();  }
+<a name="1681"><span class="lineNum">    1681 </span>            :    template &lt;class V&gt;</a>
+<span class="lineNum">    1682 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR typename boost::disable_if&lt;is_same&lt;typename detail::canonical&lt;V, Backend&gt;::type, V&gt;, typename detail::canonical&lt;V, Backend&gt;::type&gt;::type
+<span class="lineNum">    1683 </span><span class="lineCov">         12 :       canonical_value(const V&amp; v) BOOST_NOEXCEPT {  return static_cast&lt;typename detail::canonical&lt;V, Backend&gt;::type&gt;(v);  }</span>
+<span class="lineNum">    1684 </span>            :    template &lt;class V&gt;
+<span class="lineNum">    1685 </span>            :    static BOOST_MP_FORCEINLINE BOOST_CONSTEXPR typename boost::enable_if&lt;is_same&lt;typename detail::canonical&lt;V, Backend&gt;::type, V&gt;, const V&amp;&gt;::type
+<span class="lineNum">    1686 </span>            :       canonical_value(const V&amp; v) BOOST_NOEXCEPT {  return v;  }
+<span class="lineNum">    1687 </span>            :    static BOOST_MP_FORCEINLINE typename detail::canonical&lt;std::string, Backend&gt;::type canonical_value(const std::string&amp; v) BOOST_NOEXCEPT {  return v.c_str();  }
+<span class="lineNum">    1688 </span>            : 
+<span class="lineNum">    1689 </span>            : };
+<a name="1690"><span class="lineNum">    1690 </span>            : </a>
+<span class="lineNum">    1691 </span>            : template &lt;class Backend, expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1692 </span><span class="lineCov">          4 : inline std::ostream&amp; operator &lt;&lt; (std::ostream&amp; os, const number&lt;Backend, ExpressionTemplates&gt;&amp; r)</span>
+<span class="lineNum">    1693 </span>            : {
+<span class="lineNum">    1694 </span><span class="lineCov">          4 :    std::streamsize d = os.precision();</span>
+<span class="lineNum">    1695 </span><span class="lineCov">          8 :    std::string s = r.str(d, os.flags());</span>
+<span class="lineNum">    1696 </span><span class="lineCov">          4 :    std::streamsize ss = os.width();</span>
+<span class="lineNum">    1697 </span><span class="lineCov">          4 :    if(ss &gt; static_cast&lt;std::streamsize&gt;(s.size()))</span>
+<span class="lineNum">    1698 </span>            :    {
+<span class="lineNum">    1699 </span><span class="lineNoCov">          0 :       char fill = os.fill();</span>
+<span class="lineNum">    1700 </span><span class="lineNoCov">          0 :       if((os.flags() &amp; std::ios_base::left) == std::ios_base::left)</span>
+<span class="lineNum">    1701 </span><span class="lineNoCov">          0 :          s.append(static_cast&lt;std::string::size_type&gt;(ss - s.size()), fill);</span>
+<span class="lineNum">    1702 </span>            :       else
+<span class="lineNum">    1703 </span><span class="lineNoCov">          0 :          s.insert(static_cast&lt;std::string::size_type&gt;(0), static_cast&lt;std::string::size_type&gt;(ss - s.size()), fill);</span>
+<span class="lineNum">    1704 </span>            :    }
+<span class="lineNum">    1705 </span><span class="lineCov">          8 :    return os &lt;&lt; s;</span>
+<span class="lineNum">    1706 </span>            : }
+<span class="lineNum">    1707 </span>            : 
+<span class="lineNum">    1708 </span>            : namespace detail{
+<span class="lineNum">    1709 </span>            : 
+<span class="lineNum">    1710 </span>            : template &lt;class tag, class A1, class A2, class A3, class A4&gt;
+<span class="lineNum">    1711 </span>            : inline std::ostream&amp; operator &lt;&lt; (std::ostream&amp; os, const expression&lt;tag, A1, A2, A3, A4&gt;&amp; r)
+<span class="lineNum">    1712 </span>            : {
+<span class="lineNum">    1713 </span>            :    typedef typename expression&lt;tag, A1, A2, A3, A4&gt;::result_type value_type;
+<span class="lineNum">    1714 </span>            :    value_type temp(r);
+<span class="lineNum">    1715 </span>            :    return os &lt;&lt; temp;
+<span class="lineNum">    1716 </span>            : }
+<span class="lineNum">    1717 </span>            : //
+<span class="lineNum">    1718 </span>            : // What follows is the input streaming code: this is not &quot;proper&quot; iostream code at all
+<span class="lineNum">    1719 </span>            : // but that's fiendishly hard to write when dealing with multiple backends all
+<span class="lineNum">    1720 </span>            : // with different requirements... yes we could deligate this to the backend author...
+<span class="lineNum">    1721 </span>            : // but we really want backends to be EASY to write!
+<span class="lineNum">    1722 </span>            : // For now just pull in all the characters that could possibly form the number
+<span class="lineNum">    1723 </span>            : // and let the backend's string parser make use of it.  This fixes most use cases
+<span class="lineNum">    1724 </span>            : // including CSV type formats such as those used by the Random lib.
+<span class="lineNum">    1725 </span>            : //
+<span class="lineNum">    1726 </span>            : inline std::string read_string_while(std::istream&amp; is, std::string const&amp; permitted_chars)
+<span class="lineNum">    1727 </span>            : {
+<span class="lineNum">    1728 </span>            :    std::ios_base::iostate state = std::ios_base::goodbit;
+<span class="lineNum">    1729 </span>            :    const std::istream::sentry sentry_check(is);
+<span class="lineNum">    1730 </span>            :    std::string result;
+<span class="lineNum">    1731 </span>            : 
+<span class="lineNum">    1732 </span>            :    if(sentry_check)
+<span class="lineNum">    1733 </span>            :    {
+<span class="lineNum">    1734 </span>            :       int c = is.rdbuf()-&gt;sgetc();
+<span class="lineNum">    1735 </span>            : 
+<span class="lineNum">    1736 </span>            :       for(;; c = is.rdbuf()-&gt;snextc())
+<span class="lineNum">    1737 </span>            :          if(std::istream::traits_type::eq_int_type(std::istream::traits_type::eof(), c))
+<span class="lineNum">    1738 </span>            :          { // end of file:
+<span class="lineNum">    1739 </span>            :             state |= std::ios_base::eofbit;
+<span class="lineNum">    1740 </span>            :             break;
+<span class="lineNum">    1741 </span>            :          }
+<span class="lineNum">    1742 </span>            :          else if(permitted_chars.find_first_of(std::istream::traits_type::to_char_type(c)) == std::string::npos)
+<span class="lineNum">    1743 </span>            :          {
+<span class="lineNum">    1744 </span>            :             // Invalid numeric character, stop reading:
+<span class="lineNum">    1745 </span>            :             //is.rdbuf()-&gt;sputbackc(static_cast&lt;char&gt;(c));
+<span class="lineNum">    1746 </span>            :             break;
+<span class="lineNum">    1747 </span>            :          }
+<span class="lineNum">    1748 </span>            :          else
+<span class="lineNum">    1749 </span>            :          {
+<span class="lineNum">    1750 </span>            :             result.append(1, std::istream::traits_type::to_char_type(c));
+<span class="lineNum">    1751 </span>            :          }
+<span class="lineNum">    1752 </span>            :    }
+<span class="lineNum">    1753 </span>            : 
+<span class="lineNum">    1754 </span>            :    if(!result.size())
+<span class="lineNum">    1755 </span>            :       state |= std::ios_base::failbit;
+<span class="lineNum">    1756 </span>            :    is.setstate(state);
+<span class="lineNum">    1757 </span>            :    return result;
+<span class="lineNum">    1758 </span>            : }
+<span class="lineNum">    1759 </span>            : 
+<span class="lineNum">    1760 </span>            : } // namespace detail
+<span class="lineNum">    1761 </span>            : 
+<span class="lineNum">    1762 </span>            : template &lt;class Backend, expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1763 </span>            : inline std::istream&amp; operator &gt;&gt; (std::istream&amp; is, number&lt;Backend, ExpressionTemplates&gt;&amp; r)
+<span class="lineNum">    1764 </span>            : {
+<span class="lineNum">    1765 </span>            :    bool hex_format = (is.flags() &amp; std::ios_base::hex) == std::ios_base::hex;
+<span class="lineNum">    1766 </span>            :    bool oct_format = (is.flags() &amp; std::ios_base::oct) == std::ios_base::oct;
+<span class="lineNum">    1767 </span>            :    std::string s;
+<span class="lineNum">    1768 </span>            :    switch(boost::multiprecision::number_category&lt;number&lt;Backend, ExpressionTemplates&gt; &gt;::value)
+<span class="lineNum">    1769 </span>            :    {
+<span class="lineNum">    1770 </span>            :    case boost::multiprecision::number_kind_integer:
+<span class="lineNum">    1771 </span>            :       if(oct_format)
+<span class="lineNum">    1772 </span>            :          s = detail::read_string_while(is, &quot;+-01234567&quot;);
+<span class="lineNum">    1773 </span>            :       else if(hex_format)
+<span class="lineNum">    1774 </span>            :          s = detail::read_string_while(is, &quot;+-xXabcdefABCDEF0123456789&quot;);
+<span class="lineNum">    1775 </span>            :       else
+<span class="lineNum">    1776 </span>            :          s = detail::read_string_while(is, &quot;+-0123456789&quot;);
+<span class="lineNum">    1777 </span>            :       break;
+<span class="lineNum">    1778 </span>            :    case boost::multiprecision::number_kind_floating_point:
+<span class="lineNum">    1779 </span>            :       s = detail::read_string_while(is, &quot;+-eE.0123456789infINFnanNANinfinityINFINITY&quot;);
+<span class="lineNum">    1780 </span>            :       break;
+<span class="lineNum">    1781 </span>            :    default:
+<span class="lineNum">    1782 </span>            :       is &gt;&gt; s;
+<span class="lineNum">    1783 </span>            :    }
+<span class="lineNum">    1784 </span>            :    if(s.size())
+<span class="lineNum">    1785 </span>            :    {
+<span class="lineNum">    1786 </span>            :       if(hex_format &amp;&amp; (number_category&lt;Backend&gt;::value == number_kind_integer) &amp;&amp; ((s[0] != '0') || (s[1] != 'x')))
+<span class="lineNum">    1787 </span>            :          s.insert(s.find_first_not_of(&quot;+-&quot;), &quot;0x&quot;);
+<span class="lineNum">    1788 </span>            :       if(oct_format &amp;&amp; (number_category&lt;Backend&gt;::value == number_kind_integer) &amp;&amp; (s[0] != '0'))
+<span class="lineNum">    1789 </span>            :          s.insert(s.find_first_not_of(&quot;+-&quot;), &quot;0&quot;);
+<span class="lineNum">    1790 </span>            :       r.assign(s);
+<span class="lineNum">    1791 </span>            :    }
+<span class="lineNum">    1792 </span>            :    else if(!is.fail())
+<span class="lineNum">    1793 </span>            :       is.setstate(std::istream::failbit);
+<span class="lineNum">    1794 </span>            :    return is;
+<span class="lineNum">    1795 </span>            : }
+<span class="lineNum">    1796 </span>            : 
+<span class="lineNum">    1797 </span>            : template &lt;class Backend, expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1798 </span>            : BOOST_MP_FORCEINLINE void swap(number&lt;Backend, ExpressionTemplates&gt;&amp; a, number&lt;Backend, ExpressionTemplates&gt;&amp; b) 
+<span class="lineNum">    1799 </span>            :    BOOST_MP_NOEXCEPT_IF(noexcept(std::declval&lt;number&lt;Backend, ExpressionTemplates&gt;&amp;&gt;() = std::declval&lt;number&lt;Backend, ExpressionTemplates&gt;&amp;&gt;()))
+<span class="lineNum">    1800 </span>            : {
+<span class="lineNum">    1801 </span>            :    a.swap(b);
+<span class="lineNum">    1802 </span>            : }
+<span class="lineNum">    1803 </span>            : //
+<span class="lineNum">    1804 </span>            : // Boost.Hash support, just call hash_value for the backend, which may or may not be supported:
+<span class="lineNum">    1805 </span>            : //
+<span class="lineNum">    1806 </span>            : template &lt;class Backend, expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1807 </span>            : inline std::size_t hash_value(const number&lt;Backend, ExpressionTemplates&gt;&amp; val)
+<span class="lineNum">    1808 </span>            : {
+<span class="lineNum">    1809 </span>            :    return hash_value(val.backend());
+<span class="lineNum">    1810 </span>            : }
+<span class="lineNum">    1811 </span>            : 
+<span class="lineNum">    1812 </span>            : }  // namespace multiprecision
+<span class="lineNum">    1813 </span>            : 
+<span class="lineNum">    1814 </span>            : template &lt;class T&gt;
+<span class="lineNum">    1815 </span>            : class rational;
+<span class="lineNum">    1816 </span>            : 
+<span class="lineNum">    1817 </span>            : template &lt;class Backend, multiprecision::expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1818 </span>            : inline std::istream&amp; operator &gt;&gt; (std::istream&amp; is, rational&lt;multiprecision::number&lt;Backend, ExpressionTemplates&gt; &gt;&amp; r)
+<span class="lineNum">    1819 </span>            : {
+<span class="lineNum">    1820 </span>            :    std::string s1;
+<span class="lineNum">    1821 </span>            :    multiprecision::number&lt;Backend, ExpressionTemplates&gt; v1, v2;
+<span class="lineNum">    1822 </span>            :    char c;
+<span class="lineNum">    1823 </span>            :    bool have_hex = false;
+<span class="lineNum">    1824 </span>            :    bool hex_format = (is.flags() &amp; std::ios_base::hex) == std::ios_base::hex;
+<span class="lineNum">    1825 </span>            :    bool oct_format = (is.flags() &amp; std::ios_base::oct) == std::ios_base::oct;
+<span class="lineNum">    1826 </span>            : 
+<span class="lineNum">    1827 </span>            :    while((EOF != (c = static_cast&lt;char&gt;(is.peek()))) &amp;&amp; (c == 'x' || c == 'X' || c == '-' || c == '+' || (c &gt;= '0' &amp;&amp; c &lt;= '9') || (have_hex &amp;&amp; (c &gt;= 'a' &amp;&amp; c &lt;= 'f')) || (have_hex &amp;&amp; (c &gt;= 'A' &amp;&amp; c &lt;= 'F'))))
+<span class="lineNum">    1828 </span>            :    {
+<span class="lineNum">    1829 </span>            :       if(c == 'x' || c == 'X')
+<span class="lineNum">    1830 </span>            :          have_hex = true;
+<span class="lineNum">    1831 </span>            :       s1.append(1, c);
+<span class="lineNum">    1832 </span>            :       is.get();
+<span class="lineNum">    1833 </span>            :    }
+<span class="lineNum">    1834 </span>            :    if(hex_format &amp;&amp; ((s1[0] != '0') || (s1[1] != 'x')))
+<span class="lineNum">    1835 </span>            :       s1.insert(static_cast&lt;std::string::size_type&gt;(0), &quot;0x&quot;);
+<span class="lineNum">    1836 </span>            :    if(oct_format &amp;&amp; (s1[0] != '0'))
+<span class="lineNum">    1837 </span>            :       s1.insert(static_cast&lt;std::string::size_type&gt;(0), &quot;0&quot;);
+<span class="lineNum">    1838 </span>            :    v1.assign(s1);
+<span class="lineNum">    1839 </span>            :    s1.erase();
+<span class="lineNum">    1840 </span>            :    if(c == '/')
+<span class="lineNum">    1841 </span>            :    {
+<span class="lineNum">    1842 </span>            :       is.get();
+<span class="lineNum">    1843 </span>            :       while((EOF != (c = static_cast&lt;char&gt;(is.peek()))) &amp;&amp; (c == 'x' || c == 'X' || c == '-' || c == '+' || (c &gt;= '0' &amp;&amp; c &lt;= '9') || (have_hex &amp;&amp; (c &gt;= 'a' &amp;&amp; c &lt;= 'f')) || (have_hex &amp;&amp; (c &gt;= 'A' &amp;&amp; c &lt;= 'F'))))
+<span class="lineNum">    1844 </span>            :       {
+<span class="lineNum">    1845 </span>            :          if(c == 'x' || c == 'X')
+<span class="lineNum">    1846 </span>            :             have_hex = true;
+<span class="lineNum">    1847 </span>            :          s1.append(1, c);
+<span class="lineNum">    1848 </span>            :          is.get();
+<span class="lineNum">    1849 </span>            :       }
+<span class="lineNum">    1850 </span>            :       if(hex_format &amp;&amp; ((s1[0] != '0') || (s1[1] != 'x')))
+<span class="lineNum">    1851 </span>            :          s1.insert(static_cast&lt;std::string::size_type&gt;(0), &quot;0x&quot;);
+<span class="lineNum">    1852 </span>            :       if(oct_format &amp;&amp; (s1[0] != '0'))
+<span class="lineNum">    1853 </span>            :          s1.insert(static_cast&lt;std::string::size_type&gt;(0), &quot;0&quot;);
+<span class="lineNum">    1854 </span>            :       v2.assign(s1);
+<span class="lineNum">    1855 </span>            :    }
+<span class="lineNum">    1856 </span>            :    else
+<span class="lineNum">    1857 </span>            :       v2 = 1;
+<span class="lineNum">    1858 </span>            :    r.assign(v1, v2);
+<span class="lineNum">    1859 </span>            :    return is;
+<span class="lineNum">    1860 </span>            : }
+<span class="lineNum">    1861 </span>            : 
+<span class="lineNum">    1862 </span>            : template &lt;class T, multiprecision::expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1863 </span>            : inline multiprecision::number&lt;T, ExpressionTemplates&gt; numerator(const rational&lt;multiprecision::number&lt;T, ExpressionTemplates&gt; &gt;&amp; a)
+<span class="lineNum">    1864 </span>            : {
+<span class="lineNum">    1865 </span>            :    return a.numerator();
+<span class="lineNum">    1866 </span>            : }
+<span class="lineNum">    1867 </span>            : 
+<span class="lineNum">    1868 </span>            : template &lt;class T, multiprecision::expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1869 </span>            : inline multiprecision::number&lt;T, ExpressionTemplates&gt; denominator(const rational&lt;multiprecision::number&lt;T, ExpressionTemplates&gt; &gt;&amp; a)
+<span class="lineNum">    1870 </span>            : {
+<span class="lineNum">    1871 </span>            :    return a.denominator();
+<span class="lineNum">    1872 </span>            : }
+<span class="lineNum">    1873 </span>            : 
+<span class="lineNum">    1874 </span>            : namespace multiprecision
+<span class="lineNum">    1875 </span>            : {
+<span class="lineNum">    1876 </span>            : 
+<span class="lineNum">    1877 </span>            : template &lt;class I&gt;
+<span class="lineNum">    1878 </span>            : struct component_type&lt;boost::rational&lt;I&gt; &gt;
+<span class="lineNum">    1879 </span>            : {
+<span class="lineNum">    1880 </span>            :    typedef I type;
+<span class="lineNum">    1881 </span>            : };
+<span class="lineNum">    1882 </span>            : 
+<span class="lineNum">    1883 </span>            : }
+<span class="lineNum">    1884 </span>            : 
+<span class="lineNum">    1885 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">    1886 </span>            : #pragma warning(pop)
+<span class="lineNum">    1887 </span>            : #endif
+<span class="lineNum">    1888 </span>            : 
+<span class="lineNum">    1889 </span>            : } // namespaces
+<span class="lineNum">    1890 </span>            : 
+<span class="lineNum">    1891 </span>            : #ifndef BOOST_NO_CXX11_HDR_FUNCTIONAL
+<span class="lineNum">    1892 </span>            : 
+<span class="lineNum">    1893 </span>            : #include &lt;functional&gt;
+<span class="lineNum">    1894 </span>            : 
+<span class="lineNum">    1895 </span>            : namespace std {
+<span class="lineNum">    1896 </span>            : 
+<span class="lineNum">    1897 </span>            :    template &lt;class Backend, boost::multiprecision::expression_template_option ExpressionTemplates&gt;
+<span class="lineNum">    1898 </span>            :    struct hash&lt;boost::multiprecision::number&lt;Backend, ExpressionTemplates&gt; &gt;
+<span class="lineNum">    1899 </span>            :    {
+<span class="lineNum">    1900 </span>            :       std::size_t operator()(const boost::multiprecision::number&lt;Backend, ExpressionTemplates&gt;&amp; val)const { return hash_value(val); }
+<span class="lineNum">    1901 </span>            :    };
+<span class="lineNum">    1902 </span>            : 
+<span class="lineNum">    1903 </span>            : }
+<span class="lineNum">    1904 </span>            : 
+<span class="lineNum">    1905 </span>            : #endif
+<span class="lineNum">    1906 </span>            : 
+<span class="lineNum">    1907 </span>            : #include &lt;boost/multiprecision/detail/ublas_interop.hpp&gt;
+<span class="lineNum">    1908 </span>            : 
+<span class="lineNum">    1909 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

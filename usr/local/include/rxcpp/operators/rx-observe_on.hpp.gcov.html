@@ -1,0 +1,411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/operators/rx-observe_on.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/operators</a> - rx-observe_on.hpp<span style="font-size: 80%;"> (source / <a href="rx-observe_on.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : /*! \file rx-observe_on.hpp
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :     \brief All values are queued and delivered using the scheduler from the supplied coordination.
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            :     \tparam Coordination  the type of the scheduler.
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            :     \param  cn  the scheduler to notify observers on.
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            :     \return  The source observable modified so that its observers are notified on the specified scheduler.
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            :     \sample
+<span class="lineNum">      16 </span>            :     \snippet observe_on.cpp observe_on sample
+<span class="lineNum">      17 </span>            :     \snippet output.txt observe_on sample
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            :     Invoking rxcpp::observable::subscribe_on operator, instead of observe_on, gives following results:
+<span class="lineNum">      20 </span>            :     \snippet output.txt subscribe_on sample
+<span class="lineNum">      21 </span>            : */
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #if !defined(RXCPP_OPERATORS_RX_OBSERVE_ON_HPP)
+<span class="lineNum">      24 </span>            : #define RXCPP_OPERATORS_RX_OBSERVE_ON_HPP
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace rxcpp {
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace operators {
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : namespace detail {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      35 </span>            : struct observe_on_invalid_arguments {};
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      38 </span>            : struct observe_on_invalid : public rxo::operator_base&lt;observe_on_invalid_arguments&lt;AN...&gt;&gt; {
+<span class="lineNum">      39 </span>            :     using type = observable&lt;observe_on_invalid_arguments&lt;AN...&gt;, observe_on_invalid&lt;AN...&gt;&gt;;
+<span class="lineNum">      40 </span>            : };
+<span class="lineNum">      41 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      42 </span>            : using observe_on_invalid_t = typename observe_on_invalid&lt;AN...&gt;::type;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : template&lt;class T, class Coordination&gt;
+<span class="lineNum">      45 </span>            : struct observe_on
+<span class="lineNum">      46 </span>            : {
+<span class="lineNum">      47 </span>            :     typedef rxu::decay_t&lt;T&gt; source_value_type;
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            :     typedef rxu::decay_t&lt;Coordination&gt; coordination_type;
+<span class="lineNum">      50 </span>            :     typedef typename coordination_type::coordinator_type coordinator_type;
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :     coordination_type coordination;
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            :     observe_on(coordination_type cn)
+<span class="lineNum">      55 </span>            :         : coordination(std::move(cn))
+<span class="lineNum">      56 </span>            :     {
+<span class="lineNum">      57 </span>            :     }
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">      60 </span>            :     struct observe_on_observer
+<span class="lineNum">      61 </span>            :     {
+<span class="lineNum">      62 </span>            :         typedef observe_on_observer&lt;Subscriber&gt; this_type;
+<span class="lineNum">      63 </span>            :         typedef source_value_type value_type;
+<span class="lineNum">      64 </span>            :         typedef rxu::decay_t&lt;Subscriber&gt; dest_type;
+<span class="lineNum">      65 </span>            :         typedef observer&lt;value_type, this_type&gt; observer_type;
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :         typedef rxn::notification&lt;T&gt; notification_type;
+<span class="lineNum">      68 </span>            :         typedef typename notification_type::type base_notification_type;
+<span class="lineNum">      69 </span>            :         typedef std::deque&lt;base_notification_type&gt; queue_type;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :         struct mode
+<span class="lineNum">      72 </span>            :         {
+<span class="lineNum">      73 </span>            :             enum type {
+<span class="lineNum">      74 </span>            :                 Invalid = 0,
+<span class="lineNum">      75 </span>            :                 Processing,
+<span class="lineNum">      76 </span>            :                 Empty,
+<span class="lineNum">      77 </span>            :                 Disposed,
+<span class="lineNum">      78 </span>            :                 Errored
+<span class="lineNum">      79 </span>            :             };
+<span class="lineNum">      80 </span>            :         };
+<span class="lineNum">      81 </span>            :         struct observe_on_state : std::enable_shared_from_this&lt;observe_on_state&gt;
+<span class="lineNum">      82 </span>            :         {
+<span class="lineNum">      83 </span>            :             mutable std::mutex lock;
+<span class="lineNum">      84 </span>            :             mutable queue_type fill_queue;
+<span class="lineNum">      85 </span>            :             mutable queue_type drain_queue;
+<span class="lineNum">      86 </span>            :             composite_subscription lifetime;
+<span class="lineNum">      87 </span>            :             mutable typename mode::type current;
+<span class="lineNum">      88 </span>            :             coordinator_type coordinator;
+<span class="lineNum">      89 </span>            :             dest_type destination;
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :             observe_on_state(dest_type d, coordinator_type coor, composite_subscription cs)
+<span class="lineNum">      92 </span>            :                 : lifetime(std::move(cs))
+<span class="lineNum">      93 </span>            :                 , current(mode::Empty)
+<span class="lineNum">      94 </span>            :                 , coordinator(std::move(coor))
+<span class="lineNum">      95 </span>            :                 , destination(std::move(d))
+<span class="lineNum">      96 </span>            :             {
+<span class="lineNum">      97 </span>            :             }
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            :             void finish(std::unique_lock&lt;std::mutex&gt;&amp; guard, typename mode::type end) const {
+<span class="lineNum">     100 </span>            :                 if (!guard.owns_lock()) {
+<span class="lineNum">     101 </span>            :                     std::terminate();
+<span class="lineNum">     102 </span>            :                 }
+<span class="lineNum">     103 </span>            :                 if (current == mode::Errored || current == mode::Disposed) {return;}
+<span class="lineNum">     104 </span>            :                 current = end;
+<span class="lineNum">     105 </span>            :                 queue_type fill_expired;
+<span class="lineNum">     106 </span>            :                 swap(fill_expired, fill_queue);
+<span class="lineNum">     107 </span>            :                 queue_type drain_expired;
+<span class="lineNum">     108 </span>            :                 swap(drain_expired, drain_queue);
+<span class="lineNum">     109 </span>            :                 RXCPP_UNWIND_AUTO([&amp;](){guard.lock();});
+<span class="lineNum">     110 </span>            :                 guard.unlock();
+<span class="lineNum">     111 </span>            :                 lifetime.unsubscribe();
+<span class="lineNum">     112 </span>            :                 destination.unsubscribe();
+<span class="lineNum">     113 </span>            :             }
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            :             void ensure_processing(std::unique_lock&lt;std::mutex&gt;&amp; guard) const {
+<span class="lineNum">     116 </span>            :                 if (!guard.owns_lock()) {
+<span class="lineNum">     117 </span>            :                     std::terminate();
+<span class="lineNum">     118 </span>            :                 }
+<span class="lineNum">     119 </span>            :                 if (current == mode::Empty) {
+<span class="lineNum">     120 </span>            :                     current = mode::Processing;
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :                     if (!lifetime.is_subscribed() &amp;&amp; fill_queue.empty() &amp;&amp; drain_queue.empty()) {
+<span class="lineNum">     123 </span>            :                         finish(guard, mode::Disposed);
+<span class="lineNum">     124 </span>            :                     }
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            :                     auto keepAlive = this-&gt;shared_from_this();
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :                     auto drain = [keepAlive, this](const rxsc::schedulable&amp; self){
+<span class="lineNum">     129 </span>            :                         using std::swap;
+<span class="lineNum">     130 </span>            :                         try {
+<span class="lineNum">     131 </span>            :                             for (;;) {
+<span class="lineNum">     132 </span>            :                                 if (drain_queue.empty() || !destination.is_subscribed()) {
+<span class="lineNum">     133 </span>            :                                     std::unique_lock&lt;std::mutex&gt; guard(lock);
+<span class="lineNum">     134 </span>            :                                     if (!destination.is_subscribed() ||
+<span class="lineNum">     135 </span>            :                                         (!lifetime.is_subscribed() &amp;&amp; fill_queue.empty() &amp;&amp; drain_queue.empty())) {
+<span class="lineNum">     136 </span>            :                                         finish(guard, mode::Disposed);
+<span class="lineNum">     137 </span>            :                                         return;
+<span class="lineNum">     138 </span>            :                                     }
+<span class="lineNum">     139 </span>            :                                     if (drain_queue.empty()) {
+<span class="lineNum">     140 </span>            :                                         if (fill_queue.empty()) {
+<span class="lineNum">     141 </span>            :                                             current = mode::Empty;
+<span class="lineNum">     142 </span>            :                                             return;
+<span class="lineNum">     143 </span>            :                                         }
+<span class="lineNum">     144 </span>            :                                         swap(fill_queue, drain_queue);
+<span class="lineNum">     145 </span>            :                                     }
+<span class="lineNum">     146 </span>            :                                 }
+<span class="lineNum">     147 </span>            :                                 auto notification = std::move(drain_queue.front());
+<span class="lineNum">     148 </span>            :                                 drain_queue.pop_front();
+<span class="lineNum">     149 </span>            :                                 notification-&gt;accept(destination);
+<span class="lineNum">     150 </span>            :                                 std::unique_lock&lt;std::mutex&gt; guard(lock);
+<span class="lineNum">     151 </span>            :                                 self();
+<span class="lineNum">     152 </span>            :                                 if (lifetime.is_subscribed()) break;
+<span class="lineNum">     153 </span>            :                             }
+<span class="lineNum">     154 </span>            :                         } catch(...) {
+<span class="lineNum">     155 </span>            :                             destination.on_error(std::current_exception());
+<span class="lineNum">     156 </span>            :                             std::unique_lock&lt;std::mutex&gt; guard(lock);
+<span class="lineNum">     157 </span>            :                             finish(guard, mode::Errored);
+<span class="lineNum">     158 </span>            :                         }
+<span class="lineNum">     159 </span>            :                     };
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :                     auto selectedDrain = on_exception(
+<span class="lineNum">     162 </span>            :                         [&amp;](){return coordinator.act(drain);},
+<span class="lineNum">     163 </span>            :                         destination);
+<span class="lineNum">     164 </span>            :                     if (selectedDrain.empty()) {
+<span class="lineNum">     165 </span>            :                         finish(guard, mode::Errored);
+<span class="lineNum">     166 </span>            :                         return;
+<span class="lineNum">     167 </span>            :                     }
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            :                     auto processor = coordinator.get_worker();
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :                     RXCPP_UNWIND_AUTO([&amp;](){guard.lock();});
+<span class="lineNum">     172 </span>            :                     guard.unlock();
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            :                     processor.schedule(selectedDrain.get());
+<span class="lineNum">     175 </span>            :                 }
+<span class="lineNum">     176 </span>            :             }
+<span class="lineNum">     177 </span>            :         };
+<span class="lineNum">     178 </span>            :         std::shared_ptr&lt;observe_on_state&gt; state;
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            :         observe_on_observer(dest_type d, coordinator_type coor, composite_subscription cs)
+<span class="lineNum">     181 </span>            :             : state(std::make_shared&lt;observe_on_state&gt;(std::move(d), std::move(coor), std::move(cs)))
+<span class="lineNum">     182 </span>            :         {
+<span class="lineNum">     183 </span>            :         }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :         void on_next(source_value_type v) const {
+<span class="lineNum">     186 </span>            :             std::unique_lock&lt;std::mutex&gt; guard(state-&gt;lock);
+<span class="lineNum">     187 </span>            :             if (state-&gt;current == mode::Errored || state-&gt;current == mode::Disposed) { return; }
+<span class="lineNum">     188 </span>            :             state-&gt;fill_queue.push_back(notification_type::on_next(std::move(v)));
+<span class="lineNum">     189 </span>            :             state-&gt;ensure_processing(guard);
+<span class="lineNum">     190 </span>            :         }
+<span class="lineNum">     191 </span>            :         void on_error(std::exception_ptr e) const {
+<span class="lineNum">     192 </span>            :             std::unique_lock&lt;std::mutex&gt; guard(state-&gt;lock);
+<span class="lineNum">     193 </span>            :             if (state-&gt;current == mode::Errored || state-&gt;current == mode::Disposed) { return; }
+<span class="lineNum">     194 </span>            :             state-&gt;fill_queue.push_back(notification_type::on_error(e));
+<span class="lineNum">     195 </span>            :             state-&gt;ensure_processing(guard);
+<span class="lineNum">     196 </span>            :         }
+<span class="lineNum">     197 </span>            :         void on_completed() const {
+<span class="lineNum">     198 </span>            :             std::unique_lock&lt;std::mutex&gt; guard(state-&gt;lock);
+<span class="lineNum">     199 </span>            :             if (state-&gt;current == mode::Errored || state-&gt;current == mode::Disposed) { return; }
+<span class="lineNum">     200 </span>            :             state-&gt;fill_queue.push_back(notification_type::on_completed());
+<span class="lineNum">     201 </span>            :             state-&gt;ensure_processing(guard);
+<span class="lineNum">     202 </span>            :         }
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :         static subscriber&lt;value_type, observer&lt;value_type, this_type&gt;&gt; make(dest_type d, coordination_type cn, composite_subscription cs = composite_subscription()) {
+<span class="lineNum">     205 </span>            :             auto coor = cn.create_coordinator(d.get_subscription());
+<span class="lineNum">     206 </span>            :             d.add(cs);
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :             this_type o(d, std::move(coor), cs);
+<span class="lineNum">     209 </span>            :             auto keepAlive = o.state;
+<span class="lineNum">     210 </span>            :             cs.add([=](){
+<span class="lineNum">     211 </span>            :                 std::unique_lock&lt;std::mutex&gt; guard(keepAlive-&gt;lock);
+<span class="lineNum">     212 </span>            :                 keepAlive-&gt;ensure_processing(guard);
+<span class="lineNum">     213 </span>            :             });
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :             return make_subscriber&lt;value_type&gt;(d, cs, make_observer&lt;value_type&gt;(std::move(o)));
+<span class="lineNum">     216 </span>            :         }
+<span class="lineNum">     217 </span>            :     };
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">     220 </span>            :     auto operator()(Subscriber dest) const
+<span class="lineNum">     221 </span>            :         -&gt; decltype(observe_on_observer&lt;decltype(dest.as_dynamic())&gt;::make(dest.as_dynamic(), coordination)) {
+<span class="lineNum">     222 </span>            :         return      observe_on_observer&lt;decltype(dest.as_dynamic())&gt;::make(dest.as_dynamic(), coordination);
+<span class="lineNum">     223 </span>            :     }
+<span class="lineNum">     224 </span>            : };
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            : }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : /*! @copydoc rx-observe_on.hpp
+<span class="lineNum">     229 </span>            : */
+<span class="lineNum">     230 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     231 </span>            : auto observe_on(AN&amp;&amp;... an)
+<span class="lineNum">     232 </span>            :     -&gt;      operator_factory&lt;observe_on_tag, AN...&gt; {
+<span class="lineNum">     233 </span>            :      return operator_factory&lt;observe_on_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     234 </span>            : }
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            : }
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            : template&lt;&gt;
+<span class="lineNum">     239 </span>            : struct member_overload&lt;observe_on_tag&gt;
+<span class="lineNum">     240 </span>            : {
+<span class="lineNum">     241 </span>            :     template&lt;class Observable, class Coordination,
+<span class="lineNum">     242 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     243 </span>            :             is_observable&lt;Observable&gt;,
+<span class="lineNum">     244 </span>            :             is_coordination&lt;Coordination&gt;&gt;,
+<span class="lineNum">     245 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     246 </span>            :         class ObserveOn = rxo::detail::observe_on&lt;SourceValue, rxu::decay_t&lt;Coordination&gt;&gt;&gt;
+<span class="lineNum">     247 </span>            :     static auto member(Observable&amp;&amp; o, Coordination&amp;&amp; cn)
+<span class="lineNum">     248 </span>            :         -&gt; decltype(o.template lift&lt;SourceValue&gt;(ObserveOn(std::forward&lt;Coordination&gt;(cn)))) {
+<span class="lineNum">     249 </span>            :         return      o.template lift&lt;SourceValue&gt;(ObserveOn(std::forward&lt;Coordination&gt;(cn)));
+<span class="lineNum">     250 </span>            :     }
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     253 </span>            :     static operators::detail::observe_on_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     254 </span>            :         std::terminate();
+<span class="lineNum">     255 </span>            :         return {};
+<span class="lineNum">     256 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;observe_on takes (Coordination)&quot;);
+<span class="lineNum">     257 </span>            :     }
+<a name="258"><span class="lineNum">     258 </span>            : };</a>
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span><span class="lineCov">       2264 : class observe_on_one_worker : public coordination_base</span>
+<span class="lineNum">     261 </span>            : {
+<a name="262"><span class="lineNum">     262 </span>            :     rxsc::scheduler factory;</a>
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span><span class="lineCov">        336 :     class input_type</span>
+<span class="lineNum">     265 </span>            :     {
+<span class="lineNum">     266 </span>            :         rxsc::worker controller;
+<span class="lineNum">     267 </span>            :         rxsc::scheduler factory;
+<a name="268"><span class="lineNum">     268 </span>            :         identity_one_worker coordination;</a>
+<span class="lineNum">     269 </span>            :     public:
+<span class="lineNum">     270 </span><span class="lineCov">         56 :         explicit input_type(rxsc::worker w)</span>
+<span class="lineNum">     271 </span>            :             : controller(w)
+<span class="lineNum">     272 </span>            :             , factory(rxsc::make_same_worker(w))
+<span class="lineNum">     273 </span><span class="lineCov">         56 :             , coordination(factory)</span>
+<a name="274"><span class="lineNum">     274 </span>            :         {</a>
+<span class="lineNum">     275 </span><span class="lineCov">         56 :         }</span>
+<span class="lineNum">     276 </span><span class="lineCov">         56 :         inline rxsc::worker get_worker() const {</span>
+<span class="lineNum">     277 </span><span class="lineCov">         56 :             return controller;</span>
+<span class="lineNum">     278 </span>            :         }
+<span class="lineNum">     279 </span>            :         inline rxsc::scheduler get_scheduler() const {
+<span class="lineNum">     280 </span>            :             return factory;
+<span class="lineNum">     281 </span>            :         }
+<span class="lineNum">     282 </span>            :         inline rxsc::scheduler::clock_type::time_point now() const {
+<span class="lineNum">     283 </span>            :             return factory.now();
+<span class="lineNum">     284 </span>            :         }
+<span class="lineNum">     285 </span>            :         template&lt;class Observable&gt;
+<span class="lineNum">     286 </span>            :         auto in(Observable o) const
+<span class="lineNum">     287 </span>            :             -&gt; decltype(o.observe_on(coordination)) {
+<span class="lineNum">     288 </span>            :             return      o.observe_on(coordination);
+<span class="lineNum">     289 </span>            :         }
+<span class="lineNum">     290 </span>            :         template&lt;class Subscriber&gt;
+<span class="lineNum">     291 </span>            :         auto out(Subscriber s) const
+<span class="lineNum">     292 </span>            :             -&gt; Subscriber {
+<span class="lineNum">     293 </span>            :             return s;
+<a name="294"><span class="lineNum">     294 </span>            :         }</a>
+<span class="lineNum">     295 </span>            :         template&lt;class F&gt;
+<span class="lineNum">     296 </span><span class="lineCov">        112 :         auto act(F f) const</span>
+<span class="lineNum">     297 </span>            :             -&gt; F {
+<span class="lineNum">     298 </span><span class="lineCov">        112 :             return f;</span>
+<span class="lineNum">     299 </span>            :         }
+<span class="lineNum">     300 </span>            :     };
+<span class="lineNum">     301 </span>            : 
+<a name="302"><span class="lineNum">     302 </span>            : public:</a>
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span><span class="lineCov">         16 :     explicit observe_on_one_worker(rxsc::scheduler sc) : factory(sc) {}</span>
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            :     typedef coordinator&lt;input_type&gt; coordinator_type;
+<span class="lineNum">     307 </span>            : 
+<span class="lineNum">     308 </span>            :     inline rxsc::scheduler::clock_type::time_point now() const {
+<span class="lineNum">     309 </span>            :         return factory.now();
+<a name="310"><span class="lineNum">     310 </span>            :     }</a>
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span><span class="lineCov">         56 :     inline coordinator_type create_coordinator(composite_subscription cs = composite_subscription()) const {</span>
+<span class="lineNum">     313 </span><span class="lineCov">        112 :         auto w = factory.create_worker(std::move(cs));</span>
+<span class="lineNum">     314 </span><span class="lineCov">        112 :         return coordinator_type(input_type(std::move(w)));</span>
+<span class="lineNum">     315 </span>            :     }
+<span class="lineNum">     316 </span>            : };
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : inline observe_on_one_worker observe_on_run_loop(const rxsc::run_loop&amp; rl) {
+<span class="lineNum">     319 </span>            :     static observe_on_one_worker r(rxsc::make_run_loop(rl));
+<span class="lineNum">     320 </span>            :     return r;
+<span class="lineNum">     321 </span>            : }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            : inline observe_on_one_worker observe_on_event_loop() {
+<span class="lineNum">     324 </span>            :     static observe_on_one_worker r(rxsc::make_event_loop());
+<span class="lineNum">     325 </span>            :     return r;
+<a name="326"><span class="lineNum">     326 </span>            : }</a>
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span><span class="lineCov">         56 : inline observe_on_one_worker observe_on_new_thread() {</span>
+<span class="lineNum">     329 </span><span class="lineCov">         56 :     static observe_on_one_worker r(rxsc::make_new_thread());</span>
+<span class="lineNum">     330 </span><span class="lineCov">         56 :     return r;</span>
+<span class="lineNum">     331 </span>            : }
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

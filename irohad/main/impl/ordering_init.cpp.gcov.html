@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/main/impl/ordering_init.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">irohad/main/impl</a> - ordering_init.cpp<span style="font-size: 80%;"> (source / <a href="ordering_init.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntry">19</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;main/impl/ordering_init.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;ordering/impl/ordering_service_transport_grpc.hpp&quot;
+<span class="lineNum">      20 </span>                :            : 
+<a name="21"><span class="lineNum">      21 </span>                :            : namespace iroha {</a>
+<span class="lineNum">      22 </span>                :            :   namespace network {
+<span class="lineNum">      23 </span>                :<span class="lineCov">          3 :     auto OrderingInit::createGate(</span>
+<span class="lineNum">      24 </span>                :            :         std::shared_ptr&lt;OrderingGateTransport&gt; transport) {
+<span class="lineNum">      25 </span>                :<span class="lineCov">          3 :       auto gate = std::make_shared&lt;ordering::OrderingGateImpl&gt;(transport);</span>
+<span class="lineNum">      26 </span>        [<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          3 :       transport-&gt;subscribe(gate);</span>
+<span class="lineNum">      27 </span>                :<span class="lineCov">          3 :       return gate;</span>
+<a name="28"><span class="lineNum">      28 </span>                :            :     }</a>
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :<span class="lineCov">          3 :     auto OrderingInit::createService(</span>
+<span class="lineNum">      31 </span>                :            :         std::shared_ptr&lt;ametsuchi::PeerQuery&gt; wsv,
+<span class="lineNum">      32 </span>                :            :         size_t max_size,
+<span class="lineNum">      33 </span>                :            :         std::chrono::milliseconds delay_milliseconds,
+<span class="lineNum">      34 </span>                :            :         std::shared_ptr&lt;network::OrderingServiceTransport&gt; transport) {
+<span class="lineNum">      35 </span>                :            :       return std::make_shared&lt;ordering::OrderingServiceImpl&gt;(
+<span class="lineNum">      36 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :           wsv, max_size, delay_milliseconds.count(), transport);</span>
+<a name="37"><span class="lineNum">      37 </span>                :            :     }</a>
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :<span class="lineCov">          3 :     std::shared_ptr&lt;ordering::OrderingGateImpl&gt; OrderingInit::initOrderingGate(</span>
+<span class="lineNum">      40 </span>                :            :         std::shared_ptr&lt;ametsuchi::PeerQuery&gt; wsv,
+<span class="lineNum">      41 </span>                :            :         size_t max_size,
+<span class="lineNum">      42 </span>                :            :         std::chrono::milliseconds delay_milliseconds) {
+<span class="lineNum">      43 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          6 :       auto network_address = wsv-&gt;getLedgerPeers().value().front().address;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 9 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>]
+<span class="lineNum">      44 </span>                :<span class="lineCov">          3 :       ordering_gate_transport =</span>
+<span class="lineNum">      45 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           std::make_shared&lt;iroha::ordering::OrderingGateTransportGrpc&gt;(</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">          3 :               network_address);</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>                :<span class="lineCov">          3 :       ordering_service_transport =</span>
+<span class="lineNum">      49 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           std::make_shared&lt;ordering::OrderingServiceTransportGrpc&gt;();</span>
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :       ordering_service = createService(</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">          3 :           wsv, max_size, delay_milliseconds, ordering_service_transport);</span>
+<span class="lineNum">      52 </span>        [<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          3 :       ordering_service_transport-&gt;subscribe(ordering_service);</span>
+<span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       ordering_gate = createGate(ordering_gate_transport);</span>
+<span class="lineNum">      54 </span>                :<span class="lineCov">          6 :       return ordering_gate;</span>
+<a name="55"><span class="lineNum">      55 </span>                :            :     }</a>
+<span class="lineNum">      56 </span>                :            :   }  // namespace network
+<span class="lineNum">      57 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          8 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

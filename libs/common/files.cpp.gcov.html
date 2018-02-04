@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - libs/common/files.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">libs/common</a> - files.cpp<span style="font-size: 80%;"> (source / <a href="files.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntryLo">68.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntry">58</td>
+            <td class="headerCovTableEntryLo">44.8 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : #include &lt;boost/filesystem.hpp&gt;
+<span class="lineNum">      18 </span>                :            : 
+<span class="lineNum">      19 </span>                :            : #include &quot;common/files.hpp&quot;
+<a name="20"><span class="lineNum">      20 </span>                :            : #include &quot;logger/logger.hpp&quot;</a>
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :<span class="lineCov">         71 : void iroha::remove_all(const std::string &amp;dump_dir) {</span>
+<span class="lineNum">      23 </span>[<span class="branchCov" title="Branch 2 was taken 71 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 71 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        142 :   auto log = logger::log(&quot;common::remove_all&quot;);</span>
+<span class="lineNum">      24 </span>                :<span class="lineCov">         71 :   boost::system::error_code error_code;</span>
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>[<span class="branchCov" title="Branch 1 was taken 71 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 71 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         71 :   bool exists = boost::filesystem::exists(dump_dir, error_code);</span>
+<span class="lineNum">      27 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 70 times"> + </span>]:<span class="lineCov">         71 :   if (error_code != boost::system::errc::success) {</span>
+<span class="lineNum">      28 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :     log-&gt;error(error_code.message());</span>
+<span class="lineNum">      29 </span>                :<span class="lineCov">          1 :     return;</span>
+<span class="lineNum">      30 </span>                :            :   }
+<span class="lineNum">      31 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 70 times"> + </span>]:<span class="lineCov">         70 :   if (not exists) {</span>
+<span class="lineNum">      32 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :     log-&gt;error(&quot;Directory does not exist {}&quot;, dump_dir);</span>
+<span class="lineNum">      33 </span>                :<span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">      34 </span>                :            :   }
+<span class="lineNum">      35 </span>                :            : 
+<span class="lineNum">      36 </span>[<span class="branchCov" title="Branch 1 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         70 :   bool is_dir = boost::filesystem::is_directory(dump_dir, error_code);</span>
+<span class="lineNum">      37 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 70 times"> + </span>]:<span class="lineCov">         70 :   if (error_code != boost::system::errc::success) {</span>
+<span class="lineNum">      38 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :     log-&gt;error(error_code.message());</span>
+<span class="lineNum">      39 </span>                :<span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">      40 </span>                :            :   }
+<span class="lineNum">      41 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 70 times"> + </span>]:<span class="lineCov">         70 :   if (not is_dir) {</span>
+<span class="lineNum">      42 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :     log-&gt;error(&quot;{} is not a directory&quot;, dump_dir);</span>
+<span class="lineNum">      43 </span>                :<span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">      44 </span>                :            :   }
+<span class="lineNum">      45 </span>                :            : 
+<span class="lineNum">      46 </span>[<span class="branchCov" title="Branch 1 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        138 :   for (auto entry : boost::filesystem::directory_iterator(dump_dir)) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 137 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchCov" title="Branch 13 was taken 67 times"> + </span><span class="branchCov" title="Branch 14 was taken 70 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 19 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 23 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>][<span class="branchCov" title="Branch 29 was taken 70 times"> + </span><span class="branchCov" title="Branch 30 was taken 1 time"> + </span>]
+<span class="lineNum">      47 </span>                :<span class="lineCov">         67 :     boost::filesystem::remove_all(entry.path(), error_code);</span>
+<span class="lineNum">      48 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 67 times"> + </span>]:<span class="lineCov">         67 :     if (error_code != boost::system::errc::success)</span>
+<a name="49"><span class="lineNum">      49 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :       log-&gt;error(error_code.message());</span></a>
+<span class="lineNum">      50 </span>                :            :   }
+<span class="lineNum">      51 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         32 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

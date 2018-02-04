@@ -1,0 +1,618 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/tbb_stddef.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb</a> - tbb_stddef.h<span style="font-size: 80%;"> (source / <a href="tbb_stddef.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #ifndef __TBB_tbb_stddef_H
+<span class="lineNum">      22 </span>            : #define __TBB_tbb_stddef_H
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : // Marketing-driven product version
+<span class="lineNum">      25 </span>            : #define TBB_VERSION_MAJOR 2017
+<span class="lineNum">      26 </span>            : #define TBB_VERSION_MINOR 0
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : // Engineering-focused interface version
+<span class="lineNum">      29 </span>            : #define TBB_INTERFACE_VERSION 9107
+<span class="lineNum">      30 </span>            : #define TBB_INTERFACE_VERSION_MAJOR TBB_INTERFACE_VERSION/1000
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : // The oldest major interface version still supported
+<span class="lineNum">      33 </span>            : // To be used in SONAME, manifests, etc.
+<span class="lineNum">      34 </span>            : #define TBB_COMPATIBLE_INTERFACE_VERSION 2
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #define __TBB_STRING_AUX(x) #x
+<span class="lineNum">      37 </span>            : #define __TBB_STRING(x) __TBB_STRING_AUX(x)
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : // We do not need defines below for resource processing on windows
+<span class="lineNum">      40 </span>            : #if !defined RC_INVOKED
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : // Define groups for Doxygen documentation
+<span class="lineNum">      43 </span>            : /**
+<span class="lineNum">      44 </span>            :  * @defgroup algorithms         Algorithms
+<span class="lineNum">      45 </span>            :  * @defgroup containers         Containers
+<span class="lineNum">      46 </span>            :  * @defgroup memory_allocation  Memory Allocation
+<span class="lineNum">      47 </span>            :  * @defgroup synchronization    Synchronization
+<span class="lineNum">      48 </span>            :  * @defgroup timing             Timing
+<span class="lineNum">      49 </span>            :  * @defgroup task_scheduling    Task Scheduling
+<span class="lineNum">      50 </span>            :  */
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : // Simple text that is displayed on the main page of Doxygen documentation.
+<span class="lineNum">      53 </span>            : /**
+<span class="lineNum">      54 </span>            :  * \mainpage Main Page
+<span class="lineNum">      55 </span>            :  *
+<span class="lineNum">      56 </span>            :  * Click the tabs above for information about the
+<span class="lineNum">      57 </span>            :  * - &lt;a href=&quot;./modules.html&quot;&gt;Modules&lt;/a&gt; (groups of functionality) implemented by the library
+<span class="lineNum">      58 </span>            :  * - &lt;a href=&quot;./annotated.html&quot;&gt;Classes&lt;/a&gt; provided by the library
+<span class="lineNum">      59 </span>            :  * - &lt;a href=&quot;./files.html&quot;&gt;Files&lt;/a&gt; constituting the library.
+<span class="lineNum">      60 </span>            :  * .
+<span class="lineNum">      61 </span>            :  * Please note that significant part of TBB functionality is implemented in the form of
+<span class="lineNum">      62 </span>            :  * template functions, descriptions of which are not accessible on the &lt;a href=&quot;./annotated.html&quot;&gt;Classes&lt;/a&gt;
+<span class="lineNum">      63 </span>            :  * tab. Use &lt;a href=&quot;./modules.html&quot;&gt;Modules&lt;/a&gt; or &lt;a href=&quot;./namespacemembers.html&quot;&gt;Namespace/Namespace Members&lt;/a&gt;
+<span class="lineNum">      64 </span>            :  * tabs to find them.
+<span class="lineNum">      65 </span>            :  *
+<span class="lineNum">      66 </span>            :  * Additional pieces of information can be found here
+<span class="lineNum">      67 </span>            :  * - \subpage concepts
+<span class="lineNum">      68 </span>            :  * .
+<span class="lineNum">      69 </span>            :  */
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : /** \page concepts TBB concepts
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :     A concept is a set of requirements to a type, which are necessary and sufficient
+<span class="lineNum">      74 </span>            :     for the type to model a particular behavior or a set of behaviors. Some concepts
+<span class="lineNum">      75 </span>            :     are specific to a particular algorithm (e.g. algorithm body), while other ones
+<span class="lineNum">      76 </span>            :     are common to several algorithms (e.g. range concept).
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :     All TBB algorithms make use of different classes implementing various concepts.
+<span class="lineNum">      79 </span>            :     Implementation classes are supplied by the user as type arguments of template
+<span class="lineNum">      80 </span>            :     parameters and/or as objects passed as function call arguments. The library
+<span class="lineNum">      81 </span>            :     provides predefined  implementations of some concepts (e.g. several kinds of
+<span class="lineNum">      82 </span>            :     \ref range_req &quot;ranges&quot;), while other ones must always be implemented by the user.
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :     TBB defines a set of minimal requirements each concept must conform to. Here is
+<span class="lineNum">      85 </span>            :     the list of different concepts hyperlinked to the corresponding requirements specifications:
+<span class="lineNum">      86 </span>            :     - \subpage range_req
+<span class="lineNum">      87 </span>            :     - \subpage parallel_do_body_req
+<span class="lineNum">      88 </span>            :     - \subpage parallel_for_body_req
+<span class="lineNum">      89 </span>            :     - \subpage parallel_reduce_body_req
+<span class="lineNum">      90 </span>            :     - \subpage parallel_scan_body_req
+<span class="lineNum">      91 </span>            :     - \subpage parallel_sort_iter_req
+<span class="lineNum">      92 </span>            : **/
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            : // tbb_config.h should be included the first since it contains macro definitions used in other headers
+<span class="lineNum">      95 </span>            : #include &quot;tbb_config.h&quot;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            : #if _MSC_VER &gt;=1400
+<span class="lineNum">      98 </span>            :     #define __TBB_EXPORTED_FUNC   __cdecl
+<span class="lineNum">      99 </span>            :     #define __TBB_EXPORTED_METHOD __thiscall
+<span class="lineNum">     100 </span>            : #else
+<span class="lineNum">     101 </span>            :     #define __TBB_EXPORTED_FUNC
+<span class="lineNum">     102 </span>            :     #define __TBB_EXPORTED_METHOD
+<span class="lineNum">     103 </span>            : #endif
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : #if __INTEL_COMPILER || _MSC_VER
+<span class="lineNum">     106 </span>            : #define __TBB_NOINLINE(decl) __declspec(noinline) decl
+<span class="lineNum">     107 </span>            : #elif __GNUC__
+<span class="lineNum">     108 </span>            : #define __TBB_NOINLINE(decl) decl __attribute__ ((noinline))
+<span class="lineNum">     109 </span>            : #else
+<span class="lineNum">     110 </span>            : #define __TBB_NOINLINE(decl) decl
+<span class="lineNum">     111 </span>            : #endif
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            : #if __TBB_NOEXCEPT_PRESENT
+<span class="lineNum">     114 </span>            : #define __TBB_NOEXCEPT(expression) noexcept(expression)
+<span class="lineNum">     115 </span>            : #else
+<span class="lineNum">     116 </span>            : #define __TBB_NOEXCEPT(expression)
+<span class="lineNum">     117 </span>            : #endif
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            : #include &lt;cstddef&gt;      /* Need size_t and ptrdiff_t */
+<span class="lineNum">     120 </span>            : 
+<span class="lineNum">     121 </span>            : #if _MSC_VER
+<span class="lineNum">     122 </span>            :     #define __TBB_tbb_windef_H
+<span class="lineNum">     123 </span>            :     #include &quot;internal/_tbb_windef.h&quot;
+<span class="lineNum">     124 </span>            :     #undef __TBB_tbb_windef_H
+<span class="lineNum">     125 </span>            : #endif
+<span class="lineNum">     126 </span>            : #if !defined(_MSC_VER) || _MSC_VER&gt;=1600
+<span class="lineNum">     127 </span>            :     #include &lt;stdint.h&gt;
+<span class="lineNum">     128 </span>            : #endif
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            : //! Type for an assertion handler
+<span class="lineNum">     131 </span>            : typedef void(*assertion_handler_type)( const char* filename, int line, const char* expression, const char * comment );
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span>            : #if __TBBMALLOC_BUILD
+<span class="lineNum">     134 </span>            : namespace rml { namespace internal {
+<span class="lineNum">     135 </span>            :  #define __TBB_ASSERT_RELEASE(predicate,message) ((predicate)?((void)0) : rml::internal::assertion_failure(__FILE__,__LINE__,#predicate,message))
+<span class="lineNum">     136 </span>            : #else
+<span class="lineNum">     137 </span>            : namespace tbb {
+<span class="lineNum">     138 </span>            :  #define __TBB_ASSERT_RELEASE(predicate,message) ((predicate)?((void)0) : tbb::assertion_failure(__FILE__,__LINE__,#predicate,message))
+<span class="lineNum">     139 </span>            : #endif
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :     //! Set assertion handler and return previous value of it.
+<span class="lineNum">     142 </span>            :     assertion_handler_type __TBB_EXPORTED_FUNC set_assertion_handler( assertion_handler_type new_handler );
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :     //! Process an assertion failure.
+<span class="lineNum">     145 </span>            :     /** Normally called from __TBB_ASSERT macro.
+<span class="lineNum">     146 </span>            :         If assertion handler is null, print message for assertion failure and abort.
+<span class="lineNum">     147 </span>            :         Otherwise call the assertion handler. */
+<span class="lineNum">     148 </span>            :     void __TBB_EXPORTED_FUNC assertion_failure( const char* filename, int line, const char* expression, const char* comment );
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : #if __TBBMALLOC_BUILD
+<span class="lineNum">     151 </span>            : }}  // namespace rml::internal
+<span class="lineNum">     152 </span>            : #else
+<span class="lineNum">     153 </span>            : } // namespace tbb
+<span class="lineNum">     154 </span>            : #endif
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : #if TBB_USE_ASSERT
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :     //! Assert that x is true.
+<span class="lineNum">     159 </span>            :     /** If x is false, print assertion failure message.
+<span class="lineNum">     160 </span>            :         If the comment argument is not NULL, it is printed as part of the failure message.
+<span class="lineNum">     161 </span>            :         The comment argument has no other effect. */
+<span class="lineNum">     162 </span>            :     #define __TBB_ASSERT(predicate,message) __TBB_ASSERT_RELEASE(predicate,message)
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :     #define __TBB_ASSERT_EX __TBB_ASSERT
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : #else /* !TBB_USE_ASSERT */
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :     //! No-op version of __TBB_ASSERT.
+<span class="lineNum">     169 </span>            :     #define __TBB_ASSERT(predicate,comment) ((void)0)
+<span class="lineNum">     170 </span>            :     //! &quot;Extended&quot; version is useful to suppress warnings if a variable is only used with an assert
+<span class="lineNum">     171 </span>            :     #define __TBB_ASSERT_EX(predicate,comment) ((void)(1 &amp;&amp; (predicate)))
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : #endif /* !TBB_USE_ASSERT */
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            : //! The namespace tbb contains all components of the library.
+<span class="lineNum">     176 </span>            : namespace tbb {
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :     namespace internal {
+<span class="lineNum">     179 </span>            : #if _MSC_VER &amp;&amp; _MSC_VER&lt;1600
+<span class="lineNum">     180 </span>            :         typedef __int8 int8_t;
+<span class="lineNum">     181 </span>            :         typedef __int16 int16_t;
+<span class="lineNum">     182 </span>            :         typedef __int32 int32_t;
+<span class="lineNum">     183 </span>            :         typedef __int64 int64_t;
+<span class="lineNum">     184 </span>            :         typedef unsigned __int8 uint8_t;
+<span class="lineNum">     185 </span>            :         typedef unsigned __int16 uint16_t;
+<span class="lineNum">     186 </span>            :         typedef unsigned __int32 uint32_t;
+<span class="lineNum">     187 </span>            :         typedef unsigned __int64 uint64_t;
+<span class="lineNum">     188 </span>            : #else /* Posix */
+<span class="lineNum">     189 </span>            :         using ::int8_t;
+<span class="lineNum">     190 </span>            :         using ::int16_t;
+<span class="lineNum">     191 </span>            :         using ::int32_t;
+<span class="lineNum">     192 </span>            :         using ::int64_t;
+<span class="lineNum">     193 </span>            :         using ::uint8_t;
+<span class="lineNum">     194 </span>            :         using ::uint16_t;
+<span class="lineNum">     195 </span>            :         using ::uint32_t;
+<span class="lineNum">     196 </span>            :         using ::uint64_t;
+<span class="lineNum">     197 </span>            : #endif /* Posix */
+<span class="lineNum">     198 </span>            :     } // namespace internal
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :     using std::size_t;
+<span class="lineNum">     201 </span>            :     using std::ptrdiff_t;
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            : //! The function returns the interface version of the TBB shared library being used.
+<span class="lineNum">     204 </span>            : /**
+<span class="lineNum">     205 </span>            :  * The version it returns is determined at runtime, not at compile/link time.
+<span class="lineNum">     206 </span>            :  * So it can be different than the value of TBB_INTERFACE_VERSION obtained at compile time.
+<span class="lineNum">     207 </span>            :  */
+<span class="lineNum">     208 </span>            : extern &quot;C&quot; int __TBB_EXPORTED_FUNC TBB_runtime_interface_version();
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : /**
+<span class="lineNum">     211 </span>            :  * @cond INTERNAL
+<span class="lineNum">     212 </span>            :  * @brief Identifiers declared inside namespace internal should never be used directly by client code.
+<span class="lineNum">     213 </span>            :  */
+<span class="lineNum">     214 </span>            : namespace internal {
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            : //! Compile-time constant that is upper bound on cache line/sector size.
+<span class="lineNum">     217 </span>            : /** It should be used only in situations where having a compile-time upper
+<span class="lineNum">     218 </span>            :     bound is more useful than a run-time exact answer.
+<span class="lineNum">     219 </span>            :     @ingroup memory_allocation */
+<span class="lineNum">     220 </span>            : const size_t NFS_MaxLineSize = 128;
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            : /** Label for data that may be accessed from different threads, and that may eventually become wrapped
+<span class="lineNum">     223 </span>            :     in a formal atomic type.
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            :     Note that no problems have yet been observed relating to the definition currently being empty,
+<span class="lineNum">     226 </span>            :     even if at least &quot;volatile&quot; would seem to be in order to avoid data sometimes temporarily hiding
+<span class="lineNum">     227 </span>            :     in a register (although &quot;volatile&quot; as a &quot;poor man's atomic&quot; lacks several other features of a proper
+<span class="lineNum">     228 </span>            :     atomic, some of which are now provided instead through specialized functions).
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            :     Note that usage is intentionally compatible with a definition as qualifier &quot;volatile&quot;,
+<span class="lineNum">     231 </span>            :     both as a way to have the compiler help enforce use of the label and to quickly rule out
+<span class="lineNum">     232 </span>            :     one potential issue.
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            :     Note however that, with some architecture/compiler combinations, e.g. on IA-64 architecture, &quot;volatile&quot;
+<span class="lineNum">     235 </span>            :     also has non-portable memory semantics that are needlessly expensive for &quot;relaxed&quot; operations.
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :     Note that this must only be applied to data that will not change bit patterns when cast to/from
+<span class="lineNum">     238 </span>            :     an integral type of the same length; tbb::atomic must be used instead for, e.g., floating-point types.
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            :     TODO: apply wherever relevant **/
+<span class="lineNum">     241 </span>            : #define __TBB_atomic // intentionally empty, see above
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : #if __TBB_OVERRIDE_PRESENT
+<span class="lineNum">     244 </span>            : #define __TBB_override override
+<span class="lineNum">     245 </span>            : #else
+<span class="lineNum">     246 </span>            : #define __TBB_override // formal comment only
+<span class="lineNum">     247 </span>            : #endif
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            : template&lt;class T, size_t S, size_t R&gt;
+<span class="lineNum">     250 </span>            : struct padded_base : T {
+<span class="lineNum">     251 </span>            :     char pad[S - R];
+<span class="lineNum">     252 </span>            : };
+<span class="lineNum">     253 </span>            : template&lt;class T, size_t S&gt; struct padded_base&lt;T, S, 0&gt; : T {};
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            : //! Pads type T to fill out to a multiple of cache line size.
+<span class="lineNum">     256 </span>            : template&lt;class T, size_t S = NFS_MaxLineSize&gt;
+<span class="lineNum">     257 </span>            : struct padded : padded_base&lt;T, S, sizeof(T) % S&gt; {};
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : //! Extended variant of the standard offsetof macro
+<span class="lineNum">     260 </span>            : /** The standard offsetof macro is not sufficient for TBB as it can be used for
+<span class="lineNum">     261 </span>            :     POD-types only. The constant 0x1000 (not NULL) is necessary to appease GCC. **/
+<span class="lineNum">     262 </span>            : #define __TBB_offsetof(class_name, member_name) \
+<span class="lineNum">     263 </span>            :     ((ptrdiff_t)&amp;(reinterpret_cast&lt;class_name*&gt;(0x1000)-&gt;member_name) - 0x1000)
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span>            : //! Returns address of the object containing a member with the given name and address
+<span class="lineNum">     266 </span>            : #define __TBB_get_object_ref(class_name, member_name, member_addr) \
+<span class="lineNum">     267 </span>            :     (*reinterpret_cast&lt;class_name*&gt;((char*)member_addr - __TBB_offsetof(class_name, member_name)))
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            : //! Throws std::runtime_error with what() returning error_code description prefixed with aux_info
+<span class="lineNum">     270 </span>            : void __TBB_EXPORTED_FUNC handle_perror( int error_code, const char* aux_info );
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : #if TBB_USE_EXCEPTIONS
+<span class="lineNum">     273 </span>            :     #define __TBB_TRY try
+<span class="lineNum">     274 </span>            :     #define __TBB_CATCH(e) catch(e)
+<span class="lineNum">     275 </span>            :     #define __TBB_THROW(e) throw e
+<span class="lineNum">     276 </span>            :     #define __TBB_RETHROW() throw
+<span class="lineNum">     277 </span>            : #else /* !TBB_USE_EXCEPTIONS */
+<span class="lineNum">     278 </span>            :     inline bool __TBB_false() { return false; }
+<span class="lineNum">     279 </span>            :     #define __TBB_TRY
+<span class="lineNum">     280 </span>            :     #define __TBB_CATCH(e) if ( tbb::internal::__TBB_false() )
+<span class="lineNum">     281 </span>            :     #define __TBB_THROW(e) ((void)0)
+<span class="lineNum">     282 </span>            :     #define __TBB_RETHROW() ((void)0)
+<span class="lineNum">     283 </span>            : #endif /* !TBB_USE_EXCEPTIONS */
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            : //! Report a runtime warning.
+<span class="lineNum">     286 </span>            : void __TBB_EXPORTED_FUNC runtime_warning( const char* format, ... );
+<span class="lineNum">     287 </span>            : 
+<span class="lineNum">     288 </span>            : #if TBB_USE_ASSERT
+<span class="lineNum">     289 </span>            : static void* const poisoned_ptr = reinterpret_cast&lt;void*&gt;(-1);
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            : //! Set p to invalid pointer value.
+<span class="lineNum">     292 </span>            : //  Also works for regular (non-__TBB_atomic) pointers.
+<span class="lineNum">     293 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     294 </span>            : inline void poison_pointer( T* __TBB_atomic &amp; p ) { p = reinterpret_cast&lt;T*&gt;(poisoned_ptr); }
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span>            : /** Expected to be used in assertions only, thus no empty form is defined. **/
+<span class="lineNum">     297 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     298 </span>            : inline bool is_poisoned( T* p ) { return p == reinterpret_cast&lt;T*&gt;(poisoned_ptr); }
+<span class="lineNum">     299 </span>            : #else
+<span class="lineNum">     300 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     301 </span>            : inline void poison_pointer( T* __TBB_atomic &amp; ) {/*do nothing*/}
+<span class="lineNum">     302 </span>            : #endif /* !TBB_USE_ASSERT */
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span>            : //! Cast between unrelated pointer types.
+<span class="lineNum">     305 </span>            : /** This method should be used sparingly as a last resort for dealing with
+<span class="lineNum">     306 </span>            :     situations that inherently break strict ISO C++ aliasing rules. */
+<span class="lineNum">     307 </span>            : // T is a pointer type because it will be explicitly provided by the programmer as a template argument;
+<span class="lineNum">     308 </span>            : // U is a referent type to enable the compiler to check that &quot;ptr&quot; is a pointer, deducing U in the process.
+<span class="lineNum">     309 </span>            : template&lt;typename T, typename U&gt;
+<span class="lineNum">     310 </span>            : inline T punned_cast( U* ptr ) {
+<span class="lineNum">     311 </span>            :     uintptr_t x = reinterpret_cast&lt;uintptr_t&gt;(ptr);
+<span class="lineNum">     312 </span>            :     return reinterpret_cast&lt;T&gt;(x);
+<span class="lineNum">     313 </span>            : }
+<span class="lineNum">     314 </span>            : 
+<span class="lineNum">     315 </span>            : //! Base class for types that should not be assigned.
+<span class="lineNum">     316 </span>            : class no_assign {
+<span class="lineNum">     317 </span>            :     // Deny assignment
+<span class="lineNum">     318 </span>            :     void operator=( const no_assign&amp; );
+<span class="lineNum">     319 </span>            : public:
+<a name="320"><span class="lineNum">     320 </span>            : #if __GNUC__</a>
+<span class="lineNum">     321 </span>            :     //! Explicitly define default construction, because otherwise gcc issues gratuitous warning.
+<span class="lineNum">     322 </span><span class="lineCov">        229 :     no_assign() {}</span>
+<span class="lineNum">     323 </span>            : #endif /* __GNUC__ */
+<span class="lineNum">     324 </span>            : };
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            : //! Base class for types that should not be copied or assigned.
+<span class="lineNum">     327 </span>            : class no_copy: no_assign {
+<span class="lineNum">     328 </span>            :     //! Deny copy construction
+<span class="lineNum">     329 </span>            :     no_copy( const no_copy&amp; );
+<a name="330"><span class="lineNum">     330 </span>            : public:</a>
+<span class="lineNum">     331 </span>            :     //! Allow default construction
+<span class="lineNum">     332 </span><span class="lineCov">        432 :     no_copy() {}</span>
+<span class="lineNum">     333 </span>            : };
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            : #if TBB_DEPRECATED_MUTEX_COPYING
+<span class="lineNum">     336 </span>            : class mutex_copy_deprecated_and_disabled {};
+<span class="lineNum">     337 </span>            : #else
+<span class="lineNum">     338 </span>            : // By default various implementations of mutexes are not copy constructible
+<span class="lineNum">     339 </span>            : // and not copy assignable.
+<span class="lineNum">     340 </span>            : class mutex_copy_deprecated_and_disabled : no_copy {};
+<span class="lineNum">     341 </span>            : #endif
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : //! A function to check if passed in pointer is aligned on a specific border
+<span class="lineNum">     344 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     345 </span>            : inline bool is_aligned(T* pointer, uintptr_t alignment) {
+<span class="lineNum">     346 </span>            :     return 0==((uintptr_t)pointer &amp; (alignment-1));
+<span class="lineNum">     347 </span>            : }
+<span class="lineNum">     348 </span>            : 
+<span class="lineNum">     349 </span>            : //! A function to check if passed integer is a power of 2
+<span class="lineNum">     350 </span>            : template&lt;typename integer_type&gt;
+<span class="lineNum">     351 </span>            : inline bool is_power_of_two(integer_type arg) {
+<span class="lineNum">     352 </span>            :     return arg &amp;&amp; (0 == (arg &amp; (arg - 1)));
+<span class="lineNum">     353 </span>            : }
+<span class="lineNum">     354 </span>            : 
+<a name="355"><span class="lineNum">     355 </span>            : //! A function to compute arg modulo divisor where divisor is a power of 2.</a>
+<span class="lineNum">     356 </span>            : template&lt;typename argument_integer_type, typename divisor_integer_type&gt;
+<span class="lineNum">     357 </span><span class="lineCov">        130 : inline argument_integer_type modulo_power_of_two(argument_integer_type arg, divisor_integer_type divisor) {</span>
+<span class="lineNum">     358 </span>            :     __TBB_ASSERT( is_power_of_two(divisor), &quot;Divisor should be a power of two&quot; );
+<span class="lineNum">     359 </span><span class="lineCov">        130 :     return (arg &amp; (divisor - 1));</span>
+<span class="lineNum">     360 </span>            : }
+<span class="lineNum">     361 </span>            : 
+<span class="lineNum">     362 </span>            : 
+<span class="lineNum">     363 </span>            : //! A function to determine if arg is a power of 2 at least as big as another power of 2.
+<span class="lineNum">     364 </span>            : // i.e. for strictly positive i and j, with j being a power of 2,
+<span class="lineNum">     365 </span>            : // determines whether i==j&lt;&lt;k for some nonnegative k (so i==j yields true).
+<span class="lineNum">     366 </span>            : template&lt;typename argument_integer_type, typename power2_integer_type&gt;
+<span class="lineNum">     367 </span>            : inline bool is_power_of_two_at_least(argument_integer_type arg, power2_integer_type power2) {
+<span class="lineNum">     368 </span>            :     __TBB_ASSERT( is_power_of_two(power2), &quot;Divisor should be a power of two&quot; );
+<span class="lineNum">     369 </span>            :     return 0 == (arg &amp; (arg - power2));
+<span class="lineNum">     370 </span>            : }
+<a name="371"><span class="lineNum">     371 </span>            : </a>
+<span class="lineNum">     372 </span>            : //! Utility template function to prevent &quot;unused&quot; warnings by various compilers.
+<span class="lineNum">     373 </span><span class="lineCov">         53 : template&lt;typename T1&gt; void suppress_unused_warning( const T1&amp; ) {}</span>
+<span class="lineNum">     374 </span>            : template&lt;typename T1, typename T2&gt; void suppress_unused_warning( const T1&amp;, const T2&amp; ) {}
+<span class="lineNum">     375 </span>            : template&lt;typename T1, typename T2, typename T3&gt; void suppress_unused_warning( const T1&amp;, const T2&amp;, const T3&amp; ) {}
+<span class="lineNum">     376 </span>            : 
+<span class="lineNum">     377 </span>            : // Struct to be used as a version tag for inline functions.
+<span class="lineNum">     378 </span>            : /** Version tag can be necessary to prevent loader on Linux from using the wrong
+<span class="lineNum">     379 </span>            :     symbol in debug builds (when inline functions are compiled as out-of-line). **/
+<span class="lineNum">     380 </span>            : struct version_tag_v3 {};
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : typedef version_tag_v3 version_tag;
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span>            : } // internal
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            : //! Dummy type that distinguishes splitting constructor from copy constructor.
+<span class="lineNum">     387 </span>            : /**
+<span class="lineNum">     388 </span>            :  * See description of parallel_for and parallel_reduce for example usages.
+<span class="lineNum">     389 </span>            :  * @ingroup algorithms
+<span class="lineNum">     390 </span>            :  */
+<span class="lineNum">     391 </span>            : class split {
+<span class="lineNum">     392 </span>            : };
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            : //! Type enables transmission of splitting proportion from partitioners to range objects
+<span class="lineNum">     395 </span>            : /**
+<span class="lineNum">     396 </span>            :  * In order to make use of such facility Range objects must implement
+<span class="lineNum">     397 </span>            :  * splitting constructor with this type passed and initialize static
+<span class="lineNum">     398 </span>            :  * constant boolean field 'is_splittable_in_proportion' with the value
+<span class="lineNum">     399 </span>            :  * of 'true'
+<span class="lineNum">     400 </span>            :  */
+<span class="lineNum">     401 </span>            : class proportional_split: internal::no_assign {
+<span class="lineNum">     402 </span>            : public:
+<span class="lineNum">     403 </span>            :     proportional_split(size_t _left = 1, size_t _right = 1) : my_left(_left), my_right(_right) { }
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :     size_t left() const { return my_left; }
+<span class="lineNum">     406 </span>            :     size_t right() const { return my_right; }
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :     // used when range does not support proportional split
+<span class="lineNum">     409 </span>            :     operator split() const { return split(); }
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : #if __TBB_ENABLE_RANGE_FEEDBACK
+<span class="lineNum">     412 </span>            :     void set_proportion(size_t _left, size_t _right) {
+<span class="lineNum">     413 </span>            :         my_left = _left;
+<span class="lineNum">     414 </span>            :         my_right = _right;
+<span class="lineNum">     415 </span>            :     }
+<span class="lineNum">     416 </span>            : #endif
+<span class="lineNum">     417 </span>            : private:
+<span class="lineNum">     418 </span>            :     size_t my_left, my_right;
+<span class="lineNum">     419 </span>            : };
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            : } // tbb
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            : // Following is a set of classes and functions typically used in compile-time &quot;metaprogramming&quot;.
+<span class="lineNum">     424 </span>            : // TODO: move all that to a separate header
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            : #if __TBB_ALLOCATOR_TRAITS_PRESENT
+<span class="lineNum">     427 </span>            : #include &lt;memory&gt; //for allocator_traits
+<span class="lineNum">     428 </span>            : #endif
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT || _LIBCPP_VERSION
+<span class="lineNum">     431 </span>            : #include &lt;utility&gt; // for std::move
+<span class="lineNum">     432 </span>            : #endif
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span>            : namespace tbb {
+<span class="lineNum">     435 </span>            : namespace internal {
+<span class="lineNum">     436 </span>            : 
+<span class="lineNum">     437 </span>            : //! Class for determining type of std::allocator&lt;T&gt;::value_type.
+<span class="lineNum">     438 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     439 </span>            : struct allocator_type {
+<span class="lineNum">     440 </span>            :     typedef T value_type;
+<span class="lineNum">     441 </span>            : };
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            : #if _MSC_VER
+<span class="lineNum">     444 </span>            : //! Microsoft std::allocator has non-standard extension that strips const from a type.
+<span class="lineNum">     445 </span>            : template&lt;typename T&gt;
+<span class="lineNum">     446 </span>            : struct allocator_type&lt;const T&gt; {
+<span class="lineNum">     447 </span>            :     typedef T value_type;
+<span class="lineNum">     448 </span>            : };
+<span class="lineNum">     449 </span>            : #endif
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            : // Ad-hoc implementation of true_type &amp; false_type
+<span class="lineNum">     452 </span>            : // Intended strictly for internal use! For public APIs (traits etc), use C++11 analogues.
+<span class="lineNum">     453 </span>            : template &lt;bool v&gt;
+<span class="lineNum">     454 </span>            : struct bool_constant {
+<span class="lineNum">     455 </span>            :     static /*constexpr*/ const bool value = v;
+<span class="lineNum">     456 </span>            : };
+<span class="lineNum">     457 </span>            : typedef bool_constant&lt;true&gt; true_type;
+<span class="lineNum">     458 </span>            : typedef bool_constant&lt;false&gt; false_type;
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            : #if __TBB_ALLOCATOR_TRAITS_PRESENT
+<span class="lineNum">     461 </span>            : using std::allocator_traits;
+<span class="lineNum">     462 </span>            : #else
+<span class="lineNum">     463 </span>            : template&lt;typename allocator&gt;
+<span class="lineNum">     464 </span>            : struct allocator_traits{
+<span class="lineNum">     465 </span>            :     typedef tbb::internal::false_type propagate_on_container_move_assignment;
+<span class="lineNum">     466 </span>            : };
+<span class="lineNum">     467 </span>            : #endif
+<span class="lineNum">     468 </span>            : 
+<span class="lineNum">     469 </span>            : //! A template to select either 32-bit or 64-bit constant as compile time, depending on machine word size.
+<span class="lineNum">     470 </span>            : template &lt;unsigned u, unsigned long long ull &gt;
+<span class="lineNum">     471 </span>            : struct select_size_t_constant {
+<span class="lineNum">     472 </span>            :     //Explicit cast is needed to avoid compiler warnings about possible truncation.
+<span class="lineNum">     473 </span>            :     //The value of the right size,   which is selected by ?:, is anyway not truncated or promoted.
+<span class="lineNum">     474 </span>            :     static const size_t value = (size_t)((sizeof(size_t)==sizeof(u)) ? u : ull);
+<span class="lineNum">     475 </span>            : };
+<span class="lineNum">     476 </span>            : 
+<span class="lineNum">     477 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     478 </span>            : using std::move;
+<span class="lineNum">     479 </span>            : using std::forward;
+<span class="lineNum">     480 </span>            : #elif defined(_LIBCPP_NAMESPACE)
+<span class="lineNum">     481 </span>            : // libc++ defines &quot;pre-C++11 move and forward&quot; similarly to ours; use it to avoid name conflicts in some cases.
+<span class="lineNum">     482 </span>            : using std::_LIBCPP_NAMESPACE::move;
+<span class="lineNum">     483 </span>            : using std::_LIBCPP_NAMESPACE::forward;
+<span class="lineNum">     484 </span>            : #else
+<span class="lineNum">     485 </span>            : // It is assumed that cv qualifiers, if any, are part of the deduced type.
+<span class="lineNum">     486 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     487 </span>            : T&amp; move( T&amp; x ) { return x; }
+<span class="lineNum">     488 </span>            : template &lt;typename T&gt;
+<span class="lineNum">     489 </span>            : T&amp; forward( T&amp; x ) { return x; }
+<span class="lineNum">     490 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            : // Helper macros to simplify writing templates working with both C++03 and C++11.
+<span class="lineNum">     493 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     494 </span>            : #define  __TBB_FORWARDING_REF(A) A&amp;&amp;
+<span class="lineNum">     495 </span>            : #else
+<span class="lineNum">     496 </span>            : // It is assumed that cv qualifiers, if any, are part of a deduced type.
+<span class="lineNum">     497 </span>            : // Thus this macro should not be used in public interfaces.
+<span class="lineNum">     498 </span>            : #define  __TBB_FORWARDING_REF(A) A&amp;
+<span class="lineNum">     499 </span>            : #endif
+<span class="lineNum">     500 </span>            : #if __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
+<span class="lineNum">     501 </span>            : #define __TBB_PARAMETER_PACK ...
+<span class="lineNum">     502 </span>            : #define __TBB_PACK_EXPANSION(A) A...
+<span class="lineNum">     503 </span>            : #else
+<span class="lineNum">     504 </span>            : #define __TBB_PARAMETER_PACK
+<span class="lineNum">     505 </span>            : #define __TBB_PACK_EXPANSION(A) A
+<span class="lineNum">     506 </span>            : #endif /* __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT */
+<span class="lineNum">     507 </span>            : 
+<span class="lineNum">     508 </span>            : #if __TBB_CPP11_DECLTYPE_PRESENT
+<span class="lineNum">     509 </span>            : #if __TBB_CPP11_DECLVAL_BROKEN
+<span class="lineNum">     510 </span>            : // Ad-hoc implementation of std::declval
+<span class="lineNum">     511 </span>            : template &lt;class T&gt; __TBB_FORWARDING_REF(T) declval() /*noexcept*/;
+<span class="lineNum">     512 </span>            : #else
+<span class="lineNum">     513 </span>            : using std::declval;
+<span class="lineNum">     514 </span>            : #endif
+<span class="lineNum">     515 </span>            : #endif
+<span class="lineNum">     516 </span>            : 
+<span class="lineNum">     517 </span>            : template &lt;bool condition&gt;
+<span class="lineNum">     518 </span>            : struct STATIC_ASSERTION_FAILED;
+<span class="lineNum">     519 </span>            : 
+<span class="lineNum">     520 </span>            : template &lt;&gt;
+<span class="lineNum">     521 </span>            : struct STATIC_ASSERTION_FAILED&lt;false&gt; { enum {value=1};};
+<span class="lineNum">     522 </span>            : 
+<span class="lineNum">     523 </span>            : template&lt;&gt;
+<span class="lineNum">     524 </span>            : struct STATIC_ASSERTION_FAILED&lt;true&gt;; //intentionally left undefined to cause compile time error
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span>            : //! @endcond
+<span class="lineNum">     527 </span>            : }} // namespace tbb::internal
+<span class="lineNum">     528 </span>            : 
+<span class="lineNum">     529 </span>            : #if    __TBB_STATIC_ASSERT_PRESENT
+<span class="lineNum">     530 </span>            : #define __TBB_STATIC_ASSERT(condition,msg) static_assert(condition,msg)
+<span class="lineNum">     531 </span>            : #else
+<span class="lineNum">     532 </span>            : //please note condition is intentionally inverted to get a bit more understandable error msg
+<span class="lineNum">     533 </span>            : #define __TBB_STATIC_ASSERT_IMPL1(condition,msg,line)       \
+<span class="lineNum">     534 </span>            :     enum {static_assert_on_line_##line = tbb::internal::STATIC_ASSERTION_FAILED&lt;!(condition)&gt;::value}
+<span class="lineNum">     535 </span>            : 
+<span class="lineNum">     536 </span>            : #define __TBB_STATIC_ASSERT_IMPL(condition,msg,line) __TBB_STATIC_ASSERT_IMPL1(condition,msg,line)
+<span class="lineNum">     537 </span>            : //! Verify condition, at compile time
+<span class="lineNum">     538 </span>            : #define __TBB_STATIC_ASSERT(condition,msg) __TBB_STATIC_ASSERT_IMPL(condition,msg,__LINE__)
+<span class="lineNum">     539 </span>            : #endif
+<span class="lineNum">     540 </span>            : 
+<span class="lineNum">     541 </span>            : #endif /* RC_INVOKED */
+<span class="lineNum">     542 </span>            : #endif /* __TBB_tbb_stddef_H */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

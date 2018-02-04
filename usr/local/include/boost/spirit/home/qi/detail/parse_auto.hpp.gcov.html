@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/qi/detail/parse_auto.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/qi/detail</a> - parse_auto.hpp<span style="font-size: 80%;"> (source / <a href="parse_auto.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Hartmut Kaiser
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       5 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       6 </span>            : =============================================================================*/
+<span class="lineNum">       7 </span>            : #if !defined(BOOST_SPIRIT_DETAIL_PARSE_AUTO_DEC_02_2009_0426PM)
+<span class="lineNum">       8 </span>            : #define BOOST_SPIRIT_DETAIL_PARSE_AUTO_DEC_02_2009_0426PM
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      11 </span>            : #pragma once
+<span class="lineNum">      12 </span>            : #endif
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/spirit/home/qi/parse.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/spirit/home/qi/auto/create_parser.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/utility/enable_if.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/mpl/not.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/mpl/and.hpp&gt;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace boost { namespace spirit { namespace qi { namespace detail
+<span class="lineNum">      21 </span>            : {
+<span class="lineNum">      22 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      23 </span>            :     template &lt;typename Expr&gt;
+<span class="lineNum">      24 </span>            :     struct parse_impl&lt;Expr
+<span class="lineNum">      25 </span>            :       , typename enable_if&lt;
+<span class="lineNum">      26 </span>            :             mpl::and_&lt;
+<span class="lineNum">      27 </span>            :                 traits::meta_create_exists&lt;qi::domain, Expr&gt;
+<span class="lineNum">      28 </span>            :               , mpl::not_&lt;traits::matches&lt;qi::domain, Expr&gt; &gt; &gt;
+<span class="lineNum">      29 </span>            :         &gt;::type&gt;
+<span class="lineNum">      30 </span>            :     {
+<span class="lineNum">      31 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      32 </span>            :         static bool call(Iterator&amp; first, Iterator last, Expr&amp; expr)
+<span class="lineNum">      33 </span>            :         {
+<span class="lineNum">      34 </span>            :             return qi::parse(first, last, create_parser&lt;Expr&gt;(), expr);
+<span class="lineNum">      35 </span>            :         }
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      38 </span>            :         static bool call(Iterator&amp; first, Iterator last, Expr const&amp; expr)
+<span class="lineNum">      39 </span>            :         {
+<span class="lineNum">      40 </span>            :             return qi::parse(first, last, create_parser&lt;Expr&gt;()
+<span class="lineNum">      41 </span>            :               , const_cast&lt;Expr&amp;&gt;(expr));
+<span class="lineNum">      42 </span>            :         }
+<span class="lineNum">      43 </span>            :     };
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            :     // the following specializations are needed to explicitly disambiguate 
+<span class="lineNum">      46 </span>            :     // the two possible specializations for parse_impl&lt;char&gt; and 
+<span class="lineNum">      47 </span>            :     // parse_impl&lt;wchar_t&gt;
+<span class="lineNum">      48 </span>            :     template &lt;&gt;
+<span class="lineNum">      49 </span>            :     struct parse_impl&lt;char&gt;
+<span class="lineNum">      50 </span>            :     {
+<span class="lineNum">      51 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      52 </span>            :         static bool call(Iterator&amp; first, Iterator last, char&amp; expr)
+<span class="lineNum">      53 </span>            :         {
+<span class="lineNum">      54 </span>            :             return qi::parse(first, last, create_parser&lt;char&gt;(), expr);
+<span class="lineNum">      55 </span>            :         }
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      58 </span>            :         static bool call(Iterator&amp; first, Iterator last, char const&amp;)
+<span class="lineNum">      59 </span>            :         {
+<span class="lineNum">      60 </span>            :             return qi::parse(first, last, create_parser&lt;char&gt;());
+<span class="lineNum">      61 </span>            :         }
+<span class="lineNum">      62 </span>            :     };
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :     template &lt;&gt;
+<span class="lineNum">      65 </span>            :     struct parse_impl&lt;wchar_t&gt;
+<span class="lineNum">      66 </span>            :     {
+<span class="lineNum">      67 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      68 </span>            :         static bool call(Iterator&amp; first, Iterator last, wchar_t&amp; expr)
+<span class="lineNum">      69 </span>            :         {
+<span class="lineNum">      70 </span>            :             return qi::parse(first, last, create_parser&lt;wchar_t&gt;(), expr);
+<span class="lineNum">      71 </span>            :         }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :         template &lt;typename Iterator&gt;
+<span class="lineNum">      74 </span>            :         static bool call(Iterator&amp; first, Iterator last, wchar_t const&amp;)
+<span class="lineNum">      75 </span>            :         {
+<span class="lineNum">      76 </span>            :             return qi::parse(first, last, create_parser&lt;wchar_t&gt;());
+<span class="lineNum">      77 </span>            :         }
+<span class="lineNum">      78 </span>            :     };
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      81 </span>            :     template &lt;typename Expr&gt;
+<span class="lineNum">      82 </span>            :     struct phrase_parse_impl&lt;Expr
+<span class="lineNum">      83 </span>            :       , typename enable_if&lt;
+<span class="lineNum">      84 </span>            :             mpl::and_&lt;
+<span class="lineNum">      85 </span>            :                 traits::meta_create_exists&lt;qi::domain, Expr&gt;
+<span class="lineNum">      86 </span>            :               , mpl::not_&lt;traits::matches&lt;qi::domain, Expr&gt; &gt; &gt;
+<span class="lineNum">      87 </span>            :         &gt;::type&gt;
+<span class="lineNum">      88 </span>            :     {
+<span class="lineNum">      89 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">      90 </span>            :         static bool call(Iterator&amp; first, Iterator last, Expr&amp; expr
+<span class="lineNum">      91 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">      92 </span>            :         {
+<span class="lineNum">      93 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;Expr&gt;()
+<span class="lineNum">      94 </span>            :               , skipper, post_skip, expr);
+<span class="lineNum">      95 </span>            :         }
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">      98 </span>            :         static bool call(Iterator&amp; first, Iterator last, Expr const&amp; expr
+<span class="lineNum">      99 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">     100 </span>            :         {
+<span class="lineNum">     101 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;Expr&gt;()
+<span class="lineNum">     102 </span>            :               , skipper, post_skip, const_cast&lt;Expr&amp;&gt;(expr));
+<span class="lineNum">     103 </span>            :         }
+<span class="lineNum">     104 </span>            :     };
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     // the following specializations are needed to explicitly disambiguate 
+<span class="lineNum">     107 </span>            :     // the two possible specializations for phrase_parse_impl&lt;char&gt; and 
+<span class="lineNum">     108 </span>            :     // phrase_parse_impl&lt;wchar_t&gt;
+<span class="lineNum">     109 </span>            :     template &lt;&gt;
+<span class="lineNum">     110 </span>            :     struct phrase_parse_impl&lt;char&gt;
+<span class="lineNum">     111 </span>            :     {
+<span class="lineNum">     112 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">     113 </span>            :         static bool call(Iterator&amp; first, Iterator last, char&amp; expr
+<span class="lineNum">     114 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">     115 </span>            :         {
+<span class="lineNum">     116 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;char&gt;()
+<span class="lineNum">     117 </span>            :               , skipper, post_skip, expr);
+<span class="lineNum">     118 </span>            :         }
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">     121 </span>            :         static bool call(Iterator&amp; first, Iterator last, char const&amp;
+<span class="lineNum">     122 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">     123 </span>            :         {
+<span class="lineNum">     124 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;char&gt;()
+<span class="lineNum">     125 </span>            :               , skipper, post_skip);
+<span class="lineNum">     126 </span>            :         }
+<span class="lineNum">     127 </span>            :     };
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :     template &lt;&gt;
+<span class="lineNum">     130 </span>            :     struct phrase_parse_impl&lt;wchar_t&gt;
+<span class="lineNum">     131 </span>            :     {
+<span class="lineNum">     132 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">     133 </span>            :         static bool call(Iterator&amp; first, Iterator last, wchar_t&amp; expr
+<span class="lineNum">     134 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">     135 </span>            :         {
+<span class="lineNum">     136 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;wchar_t&gt;()
+<span class="lineNum">     137 </span>            :               , skipper, post_skip, expr);
+<span class="lineNum">     138 </span>            :         }
+<span class="lineNum">     139 </span>            : 
+<span class="lineNum">     140 </span>            :         template &lt;typename Iterator, typename Skipper&gt;
+<span class="lineNum">     141 </span>            :         static bool call(Iterator&amp; first, Iterator last, wchar_t const&amp;
+<span class="lineNum">     142 </span>            :           , Skipper const&amp; skipper, BOOST_SCOPED_ENUM(skip_flag) post_skip)
+<span class="lineNum">     143 </span>            :         {
+<span class="lineNum">     144 </span>            :             return qi::phrase_parse(first, last, create_parser&lt;wchar_t&gt;()
+<span class="lineNum">     145 </span>            :               , skipper, post_skip);
+<span class="lineNum">     146 </span>            :         }
+<span class="lineNum">     147 </span>            :     };
+<span class="lineNum">     148 </span>            : }}}}
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            : namespace boost { namespace spirit { namespace qi
+<span class="lineNum">     151 </span>            : {
+<span class="lineNum">     152 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<a name="153"><span class="lineNum">     153 </span>            :     template &lt;typename Iterator, typename Expr&gt;</a>
+<span class="lineNum">     154 </span>            :     inline bool
+<span class="lineNum">     155 </span><span class="lineCov">         23 :     parse(</span>
+<span class="lineNum">     156 </span>            :         Iterator&amp; first
+<span class="lineNum">     157 </span>            :       , Iterator last
+<span class="lineNum">     158 </span>            :       , Expr&amp; expr)
+<span class="lineNum">     159 </span>            :     {
+<span class="lineNum">     160 </span>            :         // Make sure the iterator is at least a forward_iterator. If you got a 
+<span class="lineNum">     161 </span>            :         // compilation error here, then you are using an input_iterator while
+<span class="lineNum">     162 </span>            :         // calling this function, you need to supply at least a 
+<span class="lineNum">     163 </span>            :         // forward_iterator instead.
+<span class="lineNum">     164 </span>            :         BOOST_CONCEPT_ASSERT((ForwardIterator&lt;Iterator&gt;));
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineCov">         23 :         return detail::parse_impl&lt;Expr&gt;::call(first, last, expr);</span>
+<span class="lineNum">     167 </span>            :     }
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     170 </span>            :     template &lt;typename Iterator, typename Expr, typename Skipper&gt;
+<span class="lineNum">     171 </span>            :     inline bool
+<span class="lineNum">     172 </span>            :     phrase_parse(
+<span class="lineNum">     173 </span>            :         Iterator&amp; first
+<span class="lineNum">     174 </span>            :       , Iterator last
+<span class="lineNum">     175 </span>            :       , Expr&amp; expr
+<span class="lineNum">     176 </span>            :       , Skipper const&amp; skipper
+<span class="lineNum">     177 </span>            :       , BOOST_SCOPED_ENUM(skip_flag) post_skip = skip_flag::postskip)
+<span class="lineNum">     178 </span>            :     {
+<span class="lineNum">     179 </span>            :         // Make sure the iterator is at least a forward_iterator. If you got a 
+<span class="lineNum">     180 </span>            :         // compilation error here, then you are using an input_iterator while
+<span class="lineNum">     181 </span>            :         // calling this function, you need to supply at least a 
+<span class="lineNum">     182 </span>            :         // forward_iterator instead.
+<span class="lineNum">     183 </span>            :         BOOST_CONCEPT_ASSERT((ForwardIterator&lt;Iterator&gt;));
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :         return detail::phrase_parse_impl&lt;Expr&gt;::call(
+<span class="lineNum">     186 </span>            :             first, last, expr, skipper, post_skip);
+<span class="lineNum">     187 </span>            :     }
+<span class="lineNum">     188 </span>            : }}}
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            : #endif
+<span class="lineNum">     191 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

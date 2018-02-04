@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - shared_model/backend/protobuf/queries/proto_query.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">shared_model/backend/protobuf/queries</a> - proto_query.hpp<span style="font-size: 80%;"> (source / <a href="proto_query.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntry">43</td>
+            <td class="headerCovTableEntryLo">74.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">18</td>
+            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntryLo">47.4 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntry">96</td>
+            <td class="headerCovTableEntryLo">29.2 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_SHARED_MODEL_PROTO_QUERY_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_SHARED_MODEL_PROTO_QUERY_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/range/numeric.hpp&gt;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : #include &quot;backend/protobuf/common_objects/signature.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;backend/protobuf/common_objects/trivial_proto.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;interfaces/queries/query.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;queries.pb.h&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;utils/lazy_initializer.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;utils/variant_deserializer.hpp&quot;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_account.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_account_asset_transactions.hpp&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_account_assets.hpp&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_account_detail.hpp&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_account_transactions.hpp&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_asset_info.hpp&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_role_permissions.hpp&quot;
+<span class="lineNum">      37 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_roles.hpp&quot;
+<span class="lineNum">      38 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_signatories.hpp&quot;
+<span class="lineNum">      39 </span>                :            : #include &quot;backend/protobuf/queries/proto_get_transactions.hpp&quot;
+<span class="lineNum">      40 </span>                :            : #include &quot;backend/protobuf/util.hpp&quot;
+<a name="41"><span class="lineNum">      41 </span>                :            : </a>
+<span class="lineNum">      42 </span>                :            : template &lt;typename... T, typename Archive&gt;
+<span class="lineNum">      43 </span>                :<span class="lineCov">         32 : shared_model::interface::Query::QueryVariantType loadQuery(Archive &amp;&amp;ar) {</span>
+<span class="lineNum">      44 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 32 times"> + </span>]:<span class="lineCov">         32 :   if (not ar.has_payload()) {</span>
+<span class="lineNum">      45 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :     throw std::invalid_argument(&quot;Query missing payload&quot;);</span>
+<span class="lineNum">      46 </span>                :            :   }
+<span class="lineNum">      47 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 31 times"> + </span>]:<span class="lineCov">         32 :   if (ar.payload().query_case()</span>
+<span class="lineNum">      48 </span>                :<span class="lineCov">         32 :       == iroha::protocol::Query_Payload::QueryCase::QUERY_NOT_SET) {</span>
+<span class="lineNum">      49 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :     throw std::invalid_argument(&quot;Missing concrete query&quot;);</span>
+<span class="lineNum">      50 </span>                :            :   }
+<span class="lineNum">      51 </span>                :<span class="lineCov">         31 :   int which = ar.payload()</span>
+<span class="lineNum">      52 </span>                :            :                   .GetDescriptor()
+<span class="lineNum">      53 </span>                :            :                   -&gt;FindFieldByNumber(ar.payload().query_case())
+<span class="lineNum">      54 </span>                :<span class="lineCov">         31 :                   -&gt;index_in_oneof();</span>
+<span class="lineNum">      55 </span>                :            :   return shared_model::detail::variant_impl&lt;T...&gt;::template load&lt;
+<span class="lineNum">      56 </span>                :            :       shared_model::interface::Query::QueryVariantType&gt;(
+<span class="lineNum">      57 </span>                :<span class="lineCov">         31 :       std::forward&lt;Archive&gt;(ar), which);</span>
+<span class="lineNum">      58 </span>                :            : }
+<span class="lineNum">      59 </span>                :            : 
+<a name="60"><span class="lineNum">      60 </span>                :            : namespace shared_model {</a>
+<span class="lineNum">      61 </span>                :            :   namespace proto {
+<span class="lineNum">      62 </span>        [<span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchCov" title="Branch 8 was taken 35 times"> + </span>]:<span class="lineCov">         70 :     class Query FINAL : public CopyableProto&lt;interface::Query,</span>
+<span class="lineNum">      63 </span>                :            :                                              iroha::protocol::Query,
+<span class="lineNum">      64 </span>                :            :                                              Query&gt; {
+<span class="lineNum">      65 </span>                :            :      private:
+<span class="lineNum">      66 </span>                :            :       /// polymorphic wrapper type shortcut
+<span class="lineNum">      67 </span>                :            :       template &lt;typename Value&gt;
+<span class="lineNum">      68 </span>                :            :       using wrap = detail::PolymorphicWrapper&lt;Value&gt;;
+<span class="lineNum">      69 </span>                :            : 
+<span class="lineNum">      70 </span>                :            :       /// lazy variant shortcut
+<span class="lineNum">      71 </span>                :            :       template &lt;typename T&gt;
+<span class="lineNum">      72 </span>                :            :       using Lazy = detail::LazyInitializer&lt;T&gt;;
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            :       using LazyVariantType = Lazy&lt;QueryVariantType&gt;;
+<span class="lineNum">      75 </span>                :            : 
+<span class="lineNum">      76 </span>                :            :      public:
+<span class="lineNum">      77 </span>                :            :       /// type of proto variant
+<span class="lineNum">      78 </span>                :            :       using ProtoQueryVariantType =
+<span class="lineNum">      79 </span>                :            :           boost::variant&lt;wrap&lt;GetAccount&gt;,
+<span class="lineNum">      80 </span>                :            :                          wrap&lt;GetSignatories&gt;,
+<span class="lineNum">      81 </span>                :            :                          wrap&lt;GetAccountTransactions&gt;,
+<span class="lineNum">      82 </span>                :            :                          wrap&lt;GetAccountAssetTransactions&gt;,
+<span class="lineNum">      83 </span>                :            :                          wrap&lt;GetTransactions&gt;,
+<span class="lineNum">      84 </span>                :            :                          wrap&lt;GetAccountAssets&gt;,
+<span class="lineNum">      85 </span>                :            :                          wrap&lt;GetAccountDetail&gt;,
+<span class="lineNum">      86 </span>                :            :                          wrap&lt;GetRoles&gt;,
+<span class="lineNum">      87 </span>                :            :                          wrap&lt;GetRolePermissions&gt;,
+<span class="lineNum">      88 </span>                :            :                          wrap&lt;GetAssetInfo&gt;&gt;;
+<span class="lineNum">      89 </span>                :            : 
+<span class="lineNum">      90 </span>                :            :       /// list of types in proto variant
+<span class="lineNum">      91 </span>                :            :       using ProtoQueryListType = ProtoQueryVariantType::types;
+<a name="92"><span class="lineNum">      92 </span>                :            : </a>
+<span class="lineNum">      93 </span>                :            :       template &lt;typename QueryType&gt;
+<a name="94"><span class="lineNum">      94 </span>                :<span class="lineCov">         35 :       explicit Query(QueryType &amp;&amp;query)</span></a>
+<a name="95"><span class="lineNum">      95 </span>                :<span class="lineCov">         35 :           : CopyableProto(std::forward&lt;QueryType&gt;(query)),</span></a>
+<a name="96"><span class="lineNum">      96 </span>                :<span class="lineCov">         63 :             variant_([this] { return loadQuery&lt;ProtoQueryListType&gt;(*proto_); }),</span></a>
+<a name="97"><span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :             blob_([this] { return makeBlob(*proto_); }),</span></a>
+<span class="lineNum">      98 </span>                :<span class="lineCov">          2 :             payload_([this] { return makeBlob(proto_-&gt;payload()); }),</span>
+<span class="lineNum">      99 </span>                :<span class="lineNoCov">          0 :             signatures_([this] {</span>
+<span class="lineNum">     100 </span>                :<span class="lineNoCov">          0 :               SignatureSetType set;</span>
+<span class="lineNum">     101 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :               set.emplace(new Signature(proto_-&gt;signature()));</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 20 was not executed"> # </span><span class="branchNoExec" title="Branch 21 was not executed"> # </span>][<span class="branchNoExec" title="Branch 23 was not executed"> # </span><span class="branchNoExec" title="Branch 24 was not executed"> # </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 26 was not executed"> # </span><span class="branchNoExec" title="Branch 27 was not executed"> # </span><span class="branchNoExec" title="Branch 31 was not executed"> # </span><span class="branchNoExec" title="Branch 32 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 35 was not executed"> # </span><span class="branchNoExec" title="Branch 36 was not executed"> # </span>][<span class="branchNoExec" title="Branch 38 was not executed"> # </span><span class="branchNoExec" title="Branch 39 was not executed"> # </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 41 was not executed"> # </span><span class="branchNoExec" title="Branch 42 was not executed"> # </span><span class="branchNoExec" title="Branch 46 was not executed"> # </span><span class="branchNoExec" title="Branch 47 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 50 was not executed"> # </span><span class="branchNoExec" title="Branch 51 was not executed"> # </span>][<span class="branchNoExec" title="Branch 53 was not executed"> # </span><span class="branchNoExec" title="Branch 54 was not executed"> # </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 56 was not executed"> # </span><span class="branchNoExec" title="Branch 57 was not executed"> # </span><span class="branchNoExec" title="Branch 61 was not executed"> # </span><span class="branchNoExec" title="Branch 62 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 65 was not executed"> # </span><span class="branchNoExec" title="Branch 66 was not executed"> # </span>][<span class="branchNoExec" title="Branch 68 was not executed"> # </span><span class="branchNoExec" title="Branch 69 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 71 was not executed"> # </span><span class="branchNoExec" title="Branch 72 was not executed"> # </span>]
+<span class="lineNum">     102 </span>                :<span class="lineNoCov">          0 :               return set;</span>
+<a name="103"><span class="lineNum">     103 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         35 :             }) {}</span></a>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 36 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>][<span class="branchCov" title="Branch 39 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 40 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 42 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 43 was not taken"> - </span>][<span class="branchCov" title="Branch 45 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 46 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 53 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 54 was not taken"> - </span>][<span class="branchCov" title="Branch 56 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 57 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 59 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 60 was not taken"> - </span>][<span class="branchCov" title="Branch 62 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 63 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 70 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 71 was not taken"> - </span>][<span class="branchCov" title="Branch 73 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 74 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 76 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 77 was not taken"> - </span>][<span class="branchCov" title="Branch 79 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 80 was not taken"> - </span>]
+<span class="lineNum">     104 </span>                :            : 
+<a name="105"><span class="lineNum">     105 </span>                :<span class="lineCov">          2 :       Query(const Query &amp;o) : Query(o.proto_) {}</span></a>
+<span class="lineNum">     106 </span>                :            : 
+<a name="107"><span class="lineNum">     107 </span>                :<span class="lineCov">          2 :       Query(Query &amp;&amp;o) noexcept : Query(std::move(o.proto_)) {}</span></a>
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">         32 :       const Query::QueryVariantType &amp;get() const override {</span>
+<span class="lineNum">     110 </span>                :<span class="lineCov">         32 :         return *variant_;</span>
+<a name="111"><span class="lineNum">     111 </span>                :            :       }</a>
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :<span class="lineCov">         22 :       const interface::types::AccountIdType &amp;creatorAccountId() const override {</span>
+<span class="lineNum">     114 </span>                :<span class="lineCov">         22 :         return proto_-&gt;payload().creator_account_id();</span>
+<a name="115"><span class="lineNum">     115 </span>                :            :       }</a>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineCov">         22 :       interface::types::CounterType queryCounter() const override {</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">         22 :         return proto_-&gt;payload().query_counter();</span>
+<a name="119"><span class="lineNum">     119 </span>                :            :       }</a>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :<span class="lineNoCov">          0 :       const Query::BlobType &amp;blob() const override {</span>
+<span class="lineNum">     122 </span>                :<span class="lineNoCov">          0 :         return *blob_;</span>
+<a name="123"><span class="lineNum">     123 </span>                :            :       }</a>
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :<span class="lineCov">          1 :       const Query::BlobType &amp;payload() const override {</span>
+<span class="lineNum">     126 </span>                :<span class="lineCov">          1 :         return *payload_;</span>
+<span class="lineNum">     127 </span>                :            :       }
+<a name="128"><span class="lineNum">     128 </span>                :            : </a>
+<span class="lineNum">     129 </span>                :            :       // ------------------------| Signable override  |-------------------------
+<span class="lineNum">     130 </span>                :<span class="lineNoCov">          0 :       const Query::SignatureSetType &amp;signatures() const override {</span>
+<span class="lineNum">     131 </span>                :<span class="lineNoCov">          0 :         return *signatures_;</span>
+<a name="132"><span class="lineNum">     132 </span>                :            :       }</a>
+<span class="lineNum">     133 </span>                :            : 
+<span class="lineNum">     134 </span>                :<span class="lineCov">          1 :       bool addSignature(</span>
+<span class="lineNum">     135 </span>                :            :           const interface::types::SignatureType &amp;signature) override {
+<span class="lineNum">     136 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">          1 :         if (proto_-&gt;has_signature()) {</span>
+<span class="lineNum">     137 </span>                :<span class="lineNoCov">          0 :           return false;</span>
+<span class="lineNum">     138 </span>                :            :         }
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :<span class="lineCov">          1 :         auto sig = proto_-&gt;mutable_signature();</span>
+<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :         sig-&gt;set_pubkey(crypto::toBinaryString(signature-&gt;publicKey()));</span>
+<span class="lineNum">     142 </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :         sig-&gt;set_signature(crypto::toBinaryString(signature-&gt;signedData()));</span>
+<span class="lineNum">     143 </span>                :<span class="lineCov">          1 :         return true;</span>
+<a name="144"><span class="lineNum">     144 </span>                :            :       }</a>
+<span class="lineNum">     145 </span>                :            : 
+<span class="lineNum">     146 </span>                :<span class="lineCov">         22 :       interface::types::TimestampType createdTime() const override {</span>
+<span class="lineNum">     147 </span>                :<span class="lineCov">         22 :         return proto_-&gt;payload().created_time();</span>
+<span class="lineNum">     148 </span>                :            :       }
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :      private:
+<span class="lineNum">     151 </span>                :            :       // ------------------------------| fields |-------------------------------
+<span class="lineNum">     152 </span>                :            :       // lazy
+<span class="lineNum">     153 </span>                :            :       const LazyVariantType variant_;
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :            :       const Lazy&lt;BlobType&gt; blob_;
+<span class="lineNum">     156 </span>                :            :       const Lazy&lt;BlobType&gt; payload_;
+<span class="lineNum">     157 </span>                :            :       const Lazy&lt;SignatureSetType&gt; signatures_;
+<span class="lineNum">     158 </span>                :            :     };
+<span class="lineNum">     159 </span>                :            :   }  // namespace proto
+<span class="lineNum">     160 </span>                :            : }  // namespace shared_model
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            : #endif  // IROHA_SHARED_MODEL_PROTO_QUERY_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

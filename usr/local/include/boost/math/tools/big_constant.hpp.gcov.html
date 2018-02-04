@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/math/tools/big_constant.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/math/tools</a> - big_constant.hpp<span style="font-size: 80%;"> (source / <a href="big_constant.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : </a>
+<span class="lineNum">       2 </span>            : //  Copyright (c) 2011 John Maddock
+<span class="lineNum">       3 </span>            : //  Use, modification and distribution are subject to the
+<span class="lineNum">       4 </span>            : //  Boost Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       5 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            : #ifndef BOOST_MATH_TOOLS_BIG_CONSTANT_HPP
+<span class="lineNum">       8 </span>            : #define BOOST_MATH_TOOLS_BIG_CONSTANT_HPP
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #include &lt;boost/math/tools/config.hpp&gt;
+<span class="lineNum">      11 </span>            : #ifndef BOOST_MATH_NO_LEXICAL_CAST
+<span class="lineNum">      12 </span>            : #include &lt;boost/lexical_cast.hpp&gt;
+<span class="lineNum">      13 </span>            : #endif
+<span class="lineNum">      14 </span>            : #include &lt;boost/type_traits/is_convertible.hpp&gt;
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : namespace boost{ namespace math{ 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : namespace tools{
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : template &lt;class T&gt;
+<span class="lineNum">      21 </span>            : struct numeric_traits : public std::numeric_limits&lt; T &gt; {};
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #ifdef BOOST_MATH_USE_FLOAT128
+<span class="lineNum">      24 </span>            : typedef __float128 largest_float;
+<span class="lineNum">      25 </span>            : #define BOOST_MATH_LARGEST_FLOAT_C(x) x##Q
+<span class="lineNum">      26 </span>            : template &lt;&gt;
+<span class="lineNum">      27 </span>            : struct numeric_traits&lt;__float128&gt;
+<span class="lineNum">      28 </span>            : {
+<span class="lineNum">      29 </span>            :    static const int digits = 113;
+<span class="lineNum">      30 </span>            :    static const int digits10 = 33;
+<span class="lineNum">      31 </span>            :    static const int max_exponent = 16384;
+<span class="lineNum">      32 </span>            :    static const bool is_specialized = true;
+<span class="lineNum">      33 </span>            : };
+<span class="lineNum">      34 </span>            : #else
+<span class="lineNum">      35 </span>            : typedef long double largest_float;
+<span class="lineNum">      36 </span>            : #define BOOST_MATH_LARGEST_FLOAT_C(x) x##L
+<span class="lineNum">      37 </span>            : #endif
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<span class="lineNum">      39 </span>            : template &lt;class T&gt;
+<span class="lineNum">      40 </span><span class="lineCov">        309 : inline BOOST_CONSTEXPR_OR_CONST T make_big_value(largest_float v, const char*, mpl::true_ const&amp;, mpl::false_ const&amp;) BOOST_MATH_NOEXCEPT(T)</span>
+<span class="lineNum">      41 </span>            : {
+<span class="lineNum">      42 </span><span class="lineCov">        309 :    return static_cast&lt;T&gt;(v);</span>
+<span class="lineNum">      43 </span>            : }
+<span class="lineNum">      44 </span>            : template &lt;class T&gt;
+<span class="lineNum">      45 </span>            : inline BOOST_CONSTEXPR_OR_CONST T make_big_value(largest_float v, const char*, mpl::true_ const&amp;, mpl::true_ const&amp;) BOOST_MATH_NOEXCEPT(T)
+<span class="lineNum">      46 </span>            : {
+<span class="lineNum">      47 </span>            :    return static_cast&lt;T&gt;(v);
+<span class="lineNum">      48 </span>            : }
+<span class="lineNum">      49 </span>            : #ifndef BOOST_MATH_NO_LEXICAL_CAST
+<span class="lineNum">      50 </span>            : template &lt;class T&gt;
+<span class="lineNum">      51 </span>            : inline T make_big_value(largest_float, const char* s, mpl::false_ const&amp;, mpl::false_ const&amp;)
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span>            :    return boost::lexical_cast&lt;T&gt;(s);
+<span class="lineNum">      54 </span>            : }
+<span class="lineNum">      55 </span>            : #endif
+<span class="lineNum">      56 </span>            : template &lt;class T&gt;
+<span class="lineNum">      57 </span>            : inline BOOST_MATH_CONSTEXPR const char* make_big_value(largest_float, const char* s, mpl::false_ const&amp;, mpl::true_ const&amp;) BOOST_MATH_NOEXCEPT(T)
+<span class="lineNum">      58 </span>            : {
+<span class="lineNum">      59 </span>            :    return s;
+<span class="lineNum">      60 </span>            : }
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : //
+<span class="lineNum">      63 </span>            : // For constants which might fit in a long double (if it's big enough):
+<span class="lineNum">      64 </span>            : //
+<span class="lineNum">      65 </span>            : #define BOOST_MATH_BIG_CONSTANT(T, D, x)\
+<span class="lineNum">      66 </span>            :    boost::math::tools::make_big_value&lt;T&gt;(\
+<span class="lineNum">      67 </span>            :       BOOST_MATH_LARGEST_FLOAT_C(x), \
+<span class="lineNum">      68 </span>            :       BOOST_STRINGIZE(x), \
+<span class="lineNum">      69 </span>            :       mpl::bool_&lt; (is_convertible&lt;boost::math::tools::largest_float, T&gt;::value) &amp;&amp; \
+<span class="lineNum">      70 </span>            :       ((D &lt;= boost::math::tools::numeric_traits&lt;boost::math::tools::largest_float&gt;::digits) \
+<span class="lineNum">      71 </span>            :           || is_floating_point&lt;T&gt;::value \
+<span class="lineNum">      72 </span>            :           || (boost::math::tools::numeric_traits&lt;T&gt;::is_specialized &amp;&amp; \
+<span class="lineNum">      73 </span>            :           (boost::math::tools::numeric_traits&lt;T&gt;::digits10 &lt;= boost::math::tools::numeric_traits&lt;boost::math::tools::largest_float&gt;::digits10))) &gt;(), \
+<span class="lineNum">      74 </span>            :       boost::is_convertible&lt;const char*, T&gt;())
+<span class="lineNum">      75 </span>            : //
+<span class="lineNum">      76 </span>            : // For constants too huge for any conceivable long double (and which generate compiler errors if we try and declare them as such):
+<span class="lineNum">      77 </span>            : //
+<span class="lineNum">      78 </span>            : #define BOOST_MATH_HUGE_CONSTANT(T, D, x)\
+<span class="lineNum">      79 </span>            :    boost::math::tools::make_big_value&lt;T&gt;(0.0L, BOOST_STRINGIZE(x), \
+<span class="lineNum">      80 </span>            :    mpl::bool_&lt;is_floating_point&lt;T&gt;::value || (boost::math::tools::numeric_traits&lt;T&gt;::is_specialized &amp;&amp; boost::math::tools::numeric_traits&lt;T&gt;::max_exponent &lt;= boost::math::tools::numeric_traits&lt;boost::math::tools::largest_float&gt;::max_exponent &amp;&amp; boost::math::tools::numeric_traits&lt;T&gt;::digits &lt;= boost::math::tools::numeric_traits&lt;boost::math::tools::largest_float&gt;::digits)&gt;(), \
+<span class="lineNum">      81 </span>            :    boost::is_convertible&lt;const char*, T&gt;())
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : }}} // namespaces
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : #endif
+<span class="lineNum">      86 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

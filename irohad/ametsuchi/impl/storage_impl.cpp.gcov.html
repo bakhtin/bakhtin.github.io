@@ -1,0 +1,358 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/ametsuchi/impl/storage_impl.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">irohad/ametsuchi/impl</a> - storage_impl.cpp<span style="font-size: 80%;"> (source / <a href="storage_impl.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">115</td>
+            <td class="headerCovTableEntry">137</td>
+            <td class="headerCovTableEntryMed">83.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">99</td>
+            <td class="headerCovTableEntry">226</td>
+            <td class="headerCovTableEntryLo">43.8 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;ametsuchi/impl/storage_impl.hpp&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &quot;ametsuchi/impl/mutable_storage_impl.hpp&quot;
+<span class="lineNum">      21 </span>                :            : #include &quot;ametsuchi/impl/postgres_wsv_query.hpp&quot;
+<span class="lineNum">      22 </span>                :            : #include &quot;ametsuchi/impl/redis_block_query.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;ametsuchi/impl/temporary_wsv_impl.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;model/converters/json_common.hpp&quot;
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            : namespace iroha {
+<span class="lineNum">      27 </span>                :            :   namespace ametsuchi {
+<span class="lineNum">      28 </span>                :            : 
+<span class="lineNum">      29 </span>                :            :     const char *kCommandExecutorError = &quot;Cannot create CommandExecutorFactory&quot;;
+<span class="lineNum">      30 </span>                :            :     const char *kPsqlBroken = &quot;Connection to PostgreSQL broken: {}&quot;;
+<span class="lineNum">      31 </span>                :            :     const char *kRedisBroken = &quot;Connection {}:{} with Redis broken {}&quot;;
+<a name="32"><span class="lineNum">      32 </span>                :            :     const char *kTmpWsv = &quot;TemporaryWsv&quot;;</a>
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :<span class="lineCov">         14 :     StorageImpl::StorageImpl(</span>
+<span class="lineNum">      35 </span>                :            :         std::string block_store_dir,
+<span class="lineNum">      36 </span>                :            :         std::string redis_host,
+<span class="lineNum">      37 </span>                :            :         std::size_t redis_port,
+<span class="lineNum">      38 </span>                :            :         std::string postgres_options,
+<span class="lineNum">      39 </span>                :            :         std::unique_ptr&lt;FlatFile&gt; block_store,
+<span class="lineNum">      40 </span>                :            :         std::unique_ptr&lt;cpp_redis::client&gt; index,
+<span class="lineNum">      41 </span>                :            :         std::unique_ptr&lt;pqxx::lazyconnection&gt; wsv_connection,
+<span class="lineNum">      42 </span>                :            :         std::unique_ptr&lt;pqxx::nontransaction&gt; wsv_transaction)
+<span class="lineNum">      43 </span>                :<span class="lineCov">         14 :         : block_store_dir_(std::move(block_store_dir)),</span>
+<span class="lineNum">      44 </span>                :<span class="lineCov">         14 :           redis_host_(std::move(redis_host)),</span>
+<span class="lineNum">      45 </span>                :            :           redis_port_(redis_port),
+<span class="lineNum">      46 </span>                :<span class="lineCov">         14 :           postgres_options_(std::move(postgres_options)),</span>
+<span class="lineNum">      47 </span>                :<span class="lineCov">         14 :           block_store_(std::move(block_store)),</span>
+<span class="lineNum">      48 </span>                :<span class="lineCov">         14 :           index_(std::move(index)),</span>
+<span class="lineNum">      49 </span>                :<span class="lineCov">         14 :           wsv_connection_(std::move(wsv_connection)),</span>
+<span class="lineNum">      50 </span>                :<span class="lineCov">         14 :           wsv_transaction_(std::move(wsv_transaction)),</span>
+<span class="lineNum">      51 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         28 :           wsv_(std::make_shared&lt;PostgresWsvQuery&gt;(*wsv_transaction_)),</span>
+<span class="lineNum">      52 </span>[<span class="branchCov" title="Branch 12 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>][<span class="branchCov" title="Branch 17 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>]:<span class="lineCov">        140 :           blocks_(std::make_shared&lt;RedisBlockQuery&gt;(*index_, *block_store_)) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 23 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>]
+<span class="lineNum">      53 </span>[<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         14 :       log_ = logger::log(&quot;StorageImpl&quot;);</span>
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 3 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         14 :       wsv_transaction_-&gt;exec(init_);</span>
+<span class="lineNum">      56 </span>                :<span class="lineCov">         14 :       wsv_transaction_-&gt;exec(</span>
+<span class="lineNum">      57 </span>  [<span class="branchCov" title="Branch 3 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         28 :           &quot;SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY;&quot;);</span>
+<a name="58"><span class="lineNum">      58 </span>                :<span class="lineCov">         14 :     }</span></a>
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>                :<span class="lineCov">          5 :     std::unique_ptr&lt;TemporaryWsv&gt; StorageImpl::createTemporaryWsv() {</span>
+<span class="lineNum">      61 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         10 :       auto command_executors = model::CommandExecutorFactory::create();</span>
+<span class="lineNum">      62 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 5 times"> + </span>]:<span class="lineCov">          5 :       if (not command_executors.has_value()) {</span>
+<span class="lineNum">      63 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kCommandExecutorError);</span>
+<span class="lineNum">      64 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">      65 </span>                :            :       }
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :       auto postgres_connection =
+<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :           std::make_unique&lt;pqxx::lazyconnection&gt;(postgres_options_);</span>
+<span class="lineNum">      69 </span>                :            :       try {
+<span class="lineNum">      70 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          5 :         postgres_connection-&gt;activate();</span>
+<span class="lineNum">      71 </span>                :<span class="lineNoCov">          0 :       } catch (const pqxx::broken_connection &amp;e) {</span>
+<span class="lineNum">      72 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kPsqlBroken, e.what());</span>
+<span class="lineNum">      73 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">      74 </span>                :            :       }
+<span class="lineNum">      75 </span>                :            :       auto wsv_transaction =
+<span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         10 :           std::make_unique&lt;pqxx::nontransaction&gt;(*postgres_connection, kTmpWsv);</span>
+<span class="lineNum">      77 </span>                :            : 
+<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       return std::make_unique&lt;TemporaryWsvImpl&gt;(</span>
+<span class="lineNum">      79 </span>                :<span class="lineCov">          5 :           std::move(postgres_connection),</span>
+<span class="lineNum">      80 </span>                :<span class="lineCov">          5 :           std::move(wsv_transaction),</span>
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :           std::move(command_executors.value()));</span>
+<a name="82"><span class="lineNum">      82 </span>                :            :     }</a>
+<span class="lineNum">      83 </span>                :            : 
+<span class="lineNum">      84 </span>                :<span class="lineCov">         26 :     std::unique_ptr&lt;MutableStorage&gt; StorageImpl::createMutableStorage() {</span>
+<span class="lineNum">      85 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         52 :       auto command_executors = model::CommandExecutorFactory::create();</span>
+<span class="lineNum">      86 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 26 times"> + </span>]:<span class="lineCov">         26 :       if (not command_executors.has_value()) {</span>
+<span class="lineNum">      87 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kCommandExecutorError);</span>
+<span class="lineNum">      88 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">      89 </span>                :            :       }
+<span class="lineNum">      90 </span>                :            : 
+<span class="lineNum">      91 </span>                :            :       auto postgres_connection =
+<span class="lineNum">      92 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :           std::make_unique&lt;pqxx::lazyconnection&gt;(postgres_options_);</span>
+<span class="lineNum">      93 </span>                :            :       try {
+<span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         26 :         postgres_connection-&gt;activate();</span>
+<span class="lineNum">      95 </span>                :<span class="lineNoCov">          0 :       } catch (const pqxx::broken_connection &amp;e) {</span>
+<span class="lineNum">      96 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kPsqlBroken, e.what());</span>
+<span class="lineNum">      97 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">      98 </span>                :            :       }
+<span class="lineNum">      99 </span>                :            :       auto wsv_transaction =
+<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         52 :           std::make_unique&lt;pqxx::nontransaction&gt;(*postgres_connection, kTmpWsv);</span>
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :       auto index = std::make_unique&lt;cpp_redis::client&gt;();</span>
+<span class="lineNum">     103 </span>                :            :       try {
+<span class="lineNum">     104 </span>[<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         26 :         index-&gt;connect(redis_host_, redis_port_);</span>
+<span class="lineNum">     105 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (const cpp_redis::redis_error &amp;e) {</span>
+<span class="lineNum">     106 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kRedisBroken, redis_host_, redis_port_, e.what());</span>
+<span class="lineNum">     107 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">     108 </span>                :            :       }
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :<span class="lineCov">         52 :       nonstd::optional&lt;hash256_t&gt; top_hash;</span>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         52 :       blocks_-&gt;getTopBlocks(1)</span>
+<a name="113"><span class="lineNum">     113 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        104 :           .subscribe_on(rxcpp::observe_on_new_thread())</span></a>
+<span class="lineNum">     114 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :           .as_blocking()</span>
+<span class="lineNum">     115 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         52 :           .subscribe([&amp;top_hash](auto block) { top_hash = block.hash; });</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :       return std::make_unique&lt;MutableStorageImpl&gt;(</span>
+<span class="lineNum">     118 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         26 :           top_hash.value_or(hash256_t{}),</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">         26 :           std::move(index),</span>
+<span class="lineNum">     120 </span>                :<span class="lineCov">         26 :           std::move(postgres_connection),</span>
+<span class="lineNum">     121 </span>                :<span class="lineCov">         26 :           std::move(wsv_transaction),</span>
+<span class="lineNum">     122 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :           std::move(command_executors.value()));</span>
+<a name="123"><span class="lineNum">     123 </span>                :            :     }</a>
+<span class="lineNum">     124 </span>                :            : 
+<span class="lineNum">     125 </span>                :<span class="lineCov">          5 :     bool StorageImpl::insertBlock(model::Block block) {</span>
+<span class="lineNum">     126 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          5 :       log_-&gt;info(&quot;create mutable storage&quot;);</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :       auto storage = createMutableStorage();</span>
+<a name="128"><span class="lineNum">     128 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          5 :       auto inserted = storage-&gt;apply(</span></a>
+<span class="lineNum">     129 </span>                :            :           block,
+<span class="lineNum">     130 </span>                :<span class="lineCov">          5 :           [](const auto &amp;current_block, auto &amp;query, const auto &amp;top_hash) {</span>
+<span class="lineNum">     131 </span>                :            :             return true;
+<span class="lineNum">     132 </span>                :<span class="lineCov">          5 :           });</span>
+<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          5 :       log_-&gt;info(&quot;block inserted: {}&quot;, inserted);</span>
+<span class="lineNum">     134 </span>        [<span class="branchCov" title="Branch 3 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 :       commit(std::move(storage));</span>
+<span class="lineNum">     135 </span>                :<span class="lineCov">          5 :       return inserted;</span>
+<a name="136"><span class="lineNum">     136 </span>                :            :     }</a>
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :<span class="lineCov">          3 :     void StorageImpl::dropStorage() {</span>
+<span class="lineNum">     139 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       log_-&gt;info(&quot;Drop ledger&quot;);</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">          3 :       auto drop = R&quot;(</span>
+<span class="lineNum">     141 </span>                :            : DROP TABLE IF EXISTS account_has_signatory;
+<span class="lineNum">     142 </span>                :            : DROP TABLE IF EXISTS account_has_asset;
+<span class="lineNum">     143 </span>                :            : DROP TABLE IF EXISTS role_has_permissions;
+<span class="lineNum">     144 </span>                :            : DROP TABLE IF EXISTS account_has_roles;
+<span class="lineNum">     145 </span>                :            : DROP TABLE IF EXISTS account_has_grantable_permissions;
+<span class="lineNum">     146 </span>                :            : DROP TABLE IF EXISTS account;
+<span class="lineNum">     147 </span>                :            : DROP TABLE IF EXISTS asset;
+<span class="lineNum">     148 </span>                :            : DROP TABLE IF EXISTS domain;
+<span class="lineNum">     149 </span>                :            : DROP TABLE IF EXISTS signatory;
+<span class="lineNum">     150 </span>                :            : DROP TABLE IF EXISTS peer;
+<span class="lineNum">     151 </span>                :            : DROP TABLE IF EXISTS role;
+<span class="lineNum">     152 </span>                :            : )&quot;;
+<span class="lineNum">     153 </span>                :            : 
+<span class="lineNum">     154 </span>                :            :       // erase db
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       log_-&gt;info(&quot;drop dp&quot;);</span>
+<span class="lineNum">     156 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       pqxx::connection connection(postgres_options_);</span>
+<span class="lineNum">     157 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       pqxx::work txn(connection);</span>
+<span class="lineNum">     158 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">          3 :       txn.exec(drop);</span>
+<span class="lineNum">     159 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       txn.commit();</span>
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       pqxx::work init_txn(connection);</span>
+<span class="lineNum">     162 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       init_txn.exec(init_);</span>
+<span class="lineNum">     163 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       init_txn.commit();</span>
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            :       // erase tx index
+<span class="lineNum">     166 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       log_-&gt;info(&quot;drop redis&quot;);</span>
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :       cpp_redis::client client;</span>
+<span class="lineNum">     168 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       client.connect(redis_host_, redis_port_);</span>
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       client.flushall();</span>
+<span class="lineNum">     170 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       client.sync_commit();</span>
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            :       // erase blocks
+<span class="lineNum">     173 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       log_-&gt;info(&quot;drop block store&quot;);</span>
+<span class="lineNum">     174 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :       block_store_-&gt;dropAll();</span>
+<a name="175"><span class="lineNum">     175 </span>                :<span class="lineCov">          3 :     }</span></a>
+<span class="lineNum">     176 </span>                :            : 
+<span class="lineNum">     177 </span>                :<span class="lineCov">         14 :     nonstd::optional&lt;ConnectionContext&gt; StorageImpl::initConnections(</span>
+<span class="lineNum">     178 </span>                :            :         std::string block_store_dir,
+<span class="lineNum">     179 </span>                :            :         std::string redis_host,
+<span class="lineNum">     180 </span>                :            :         std::size_t redis_port,
+<span class="lineNum">     181 </span>                :            :         std::string postgres_options) {
+<span class="lineNum">     182 </span>[<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         28 :       auto log_ = logger::log(&quot;StorageImpl:initConnection&quot;);</span>
+<span class="lineNum">     183 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :       log_-&gt;info(&quot;Start storage creation&quot;);</span>
+<span class="lineNum">     184 </span>                :            : 
+<span class="lineNum">     185 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       auto block_store = FlatFile::create(block_store_dir);</span>
+<span class="lineNum">     186 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 14 times"> + </span>]:<span class="lineCov">         14 :       if (not block_store) {</span>
+<span class="lineNum">     187 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(&quot;Cannot create block store in {}&quot;, block_store_dir);</span>
+<span class="lineNum">     188 </span>                :<span class="lineNoCov">          0 :         return nonstd::nullopt;</span>
+<span class="lineNum">     189 </span>                :            :       }
+<span class="lineNum">     190 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :       log_-&gt;info(&quot;block store created&quot;);</span>
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :       auto index = std::make_unique&lt;cpp_redis::client&gt;();</span>
+<span class="lineNum">     193 </span>                :            :       try {
+<span class="lineNum">     194 </span>[<span class="branchCov" title="Branch 3 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]:<span class="lineCov">         14 :         index-&gt;connect(redis_host, redis_port);</span>
+<span class="lineNum">     195 </span>  [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :       } catch (const cpp_redis::redis_error &amp;e) {</span>
+<span class="lineNum">     196 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kRedisBroken, redis_host, redis_port, e.what());</span>
+<span class="lineNum">     197 </span>                :<span class="lineNoCov">          0 :         return nonstd::nullopt;</span>
+<span class="lineNum">     198 </span>                :            :       }
+<span class="lineNum">     199 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :       log_-&gt;info(&quot;connection to Redis completed&quot;);</span>
+<span class="lineNum">     200 </span>                :            : 
+<span class="lineNum">     201 </span>                :            :       auto postgres_connection =
+<span class="lineNum">     202 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :           std::make_unique&lt;pqxx::lazyconnection&gt;(postgres_options);</span>
+<span class="lineNum">     203 </span>                :            :       try {
+<span class="lineNum">     204 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :         postgres_connection-&gt;activate();</span>
+<span class="lineNum">     205 </span>                :<span class="lineNoCov">          0 :       } catch (const pqxx::broken_connection &amp;e) {</span>
+<span class="lineNum">     206 </span>        [<span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span>]:<span class="lineNoCov">          0 :         log_-&gt;error(kPsqlBroken, e.what());</span>
+<span class="lineNum">     207 </span>                :<span class="lineNoCov">          0 :         return nonstd::nullopt;</span>
+<span class="lineNum">     208 </span>                :            :       }
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :       log_-&gt;info(&quot;connection to PostgreSQL completed&quot;);</span>
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :            :       auto wsv_transaction = std::make_unique&lt;pqxx::nontransaction&gt;(
+<span class="lineNum">     212 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         28 :           *postgres_connection, &quot;Storage&quot;);</span>
+<span class="lineNum">     213 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :       log_-&gt;info(&quot;transaction to PostgreSQL initialized&quot;);</span>
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :            :       return nonstd::make_optional&lt;ConnectionContext&gt;(
+<span class="lineNum">     216 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :           std::move(*block_store),</span>
+<span class="lineNum">     217 </span>                :<span class="lineCov">         14 :           std::move(index),</span>
+<span class="lineNum">     218 </span>                :<span class="lineCov">         14 :           std::move(postgres_connection),</span>
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         28 :           std::move(wsv_transaction));</span>
+<a name="220"><span class="lineNum">     220 </span>                :            :     }</a>
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :<span class="lineCov">         14 :     std::shared_ptr&lt;StorageImpl&gt; StorageImpl::create(</span>
+<span class="lineNum">     223 </span>                :            :         std::string block_store_dir,
+<span class="lineNum">     224 </span>                :            :         std::string redis_host,
+<span class="lineNum">     225 </span>                :            :         std::size_t redis_port,
+<span class="lineNum">     226 </span>                :            :         std::string postgres_options) {
+<span class="lineNum">     227 </span>                :            :       auto ctx = initConnections(
+<span class="lineNum">     228 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         28 :           block_store_dir, redis_host, redis_port, postgres_options);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     229 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 14 times"> + </span>]:<span class="lineCov">         14 :       if (not ctx.has_value()) {</span>
+<span class="lineNum">     230 </span>                :<span class="lineNoCov">          0 :         return nullptr;</span>
+<span class="lineNum">     231 </span>                :            :       }
+<span class="lineNum">     232 </span>                :            : 
+<span class="lineNum">     233 </span>                :            :       return std::shared_ptr&lt;StorageImpl&gt;(
+<span class="lineNum">     234 </span>                :            :           new StorageImpl(block_store_dir,
+<span class="lineNum">     235 </span>                :            :                           redis_host,
+<span class="lineNum">     236 </span>                :            :                           redis_port,
+<span class="lineNum">     237 </span>                :            :                           postgres_options,
+<span class="lineNum">     238 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :                           std::move(ctx-&gt;block_store),</span>
+<span class="lineNum">     239 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :                           std::move(ctx-&gt;index),</span>
+<span class="lineNum">     240 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :                           std::move(ctx-&gt;pg_lazy),</span>
+<span class="lineNum">     241 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         56 :                           std::move(ctx-&gt;pg_nontx)));</span>
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 7 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span><span class="branchCov" title="Branch 13 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 18 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>][<span class="branchCov" title="Branch 21 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 24 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span>]
+<a name="242"><span class="lineNum">     242 </span>                :            :     }</a>
+<span class="lineNum">     243 </span>                :            : 
+<span class="lineNum">     244 </span>                :<span class="lineCov">         26 :     void StorageImpl::commit(std::unique_ptr&lt;MutableStorage&gt; mutableStorage) {</span>
+<span class="lineNum">     245 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         52 :       std::unique_lock&lt;std::shared_timed_mutex&gt; write(rw_lock_);</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">         52 :       auto storage_ptr = std::move(mutableStorage);  // get ownership of storage</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">         26 :       auto storage = static_cast&lt;MutableStorageImpl *&gt;(storage_ptr.get());</span>
+<span class="lineNum">     248 </span>        [<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchCov" title="Branch 4 was taken 26 times"> + </span>]:<span class="lineCov">         52 :       for (const auto &amp;block : storage-&gt;block_store_) {</span>
+<span class="lineNum">     249 </span>                :<span class="lineCov">         26 :         block_store_-&gt;add(block.first,</span>
+<span class="lineNum">     250 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         52 :                           stringToBytes(model::converters::jsonToString(</span>
+<span class="lineNum">     251 </span>  [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         78 :                               serializer_.serialize(block.second))));</span>
+<span class="lineNum">     252 </span>                :            :       }
+<span class="lineNum">     253 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         26 :       storage-&gt;index_-&gt;exec();</span>
+<span class="lineNum">     254 </span>        [<span class="branchCov" title="Branch 2 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         26 :       storage-&gt;index_-&gt;sync_commit();</span>
+<span class="lineNum">     255 </span>                :            : 
+<span class="lineNum">     256 </span>[<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">         26 :       storage-&gt;transaction_-&gt;exec(&quot;COMMIT;&quot;);</span>
+<span class="lineNum">     257 </span>                :<span class="lineCov">         26 :       storage-&gt;committed = true;</span>
+<a name="258"><span class="lineNum">     258 </span>                :<span class="lineCov">         26 :     }</span></a>
+<span class="lineNum">     259 </span>                :            : 
+<span class="lineNum">     260 </span>                :<span class="lineCov">         14 :     std::shared_ptr&lt;WsvQuery&gt; StorageImpl::getWsvQuery() const {</span>
+<span class="lineNum">     261 </span>                :<span class="lineCov">         14 :       return wsv_;</span>
+<a name="262"><span class="lineNum">     262 </span>                :            :     }</a>
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :<span class="lineCov">         15 :     std::shared_ptr&lt;BlockQuery&gt; StorageImpl::getBlockQuery() const {</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">         15 :       return blocks_;</span>
+<a name="266"><span class="lineNum">     266 </span>                :            :     }</a>
+<span class="lineNum">     267 </span>                :            :   }  // namespace ametsuchi
+<span class="lineNum">     268 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         16 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

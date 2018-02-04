@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/tbb_exception.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb</a> - tbb_exception.h<span style="font-size: 80%;"> (source / <a href="tbb_exception.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #ifndef __TBB_exception_H
+<span class="lineNum">      22 </span>            : #define __TBB_exception_H
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &quot;tbb_stddef.h&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #if !TBB_USE_EXCEPTIONS &amp;&amp; _MSC_VER
+<span class="lineNum">      27 </span>            :     // Suppress &quot;C++ exception handler used, but unwind semantics are not enabled&quot; warning in STL headers
+<span class="lineNum">      28 </span>            :     #pragma warning (push)
+<span class="lineNum">      29 </span>            :     #pragma warning (disable: 4530)
+<span class="lineNum">      30 </span>            : #endif
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : #include &lt;exception&gt;
+<span class="lineNum">      33 </span>            : #include &lt;new&gt;    //required for bad_alloc definition, operators new
+<span class="lineNum">      34 </span>            : #include &lt;string&gt; // required to construct std exception classes
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #if !TBB_USE_EXCEPTIONS &amp;&amp; _MSC_VER
+<span class="lineNum">      37 </span>            :     #pragma warning (pop)
+<span class="lineNum">      38 </span>            : #endif
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace tbb {
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : //! Exception for concurrent containers
+<span class="lineNum">      43 </span>            : class bad_last_alloc : public std::bad_alloc {
+<span class="lineNum">      44 </span>            : public:
+<span class="lineNum">      45 </span>            :     const char* what() const throw() __TBB_override;
+<span class="lineNum">      46 </span>            : #if __TBB_DEFAULT_DTOR_THROW_SPEC_BROKEN
+<span class="lineNum">      47 </span>            :     ~bad_last_alloc() throw() __TBB_override {}
+<span class="lineNum">      48 </span>            : #endif
+<span class="lineNum">      49 </span>            : };
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : //! Exception for PPL locks
+<span class="lineNum">      52 </span>            : class improper_lock : public std::exception {
+<span class="lineNum">      53 </span>            : public:
+<span class="lineNum">      54 </span>            :     const char* what() const throw() __TBB_override;
+<span class="lineNum">      55 </span>            : };
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : //! Exception for user-initiated abort
+<span class="lineNum">      58 </span>            : class user_abort : public std::exception {
+<span class="lineNum">      59 </span>            : public:
+<span class="lineNum">      60 </span>            :     const char* what() const throw() __TBB_override;
+<span class="lineNum">      61 </span>            : };
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            : //! Exception for missing wait on structured_task_group
+<span class="lineNum">      64 </span>            : class missing_wait : public std::exception {
+<span class="lineNum">      65 </span>            : public:
+<span class="lineNum">      66 </span>            :     const char* what() const throw() __TBB_override;
+<span class="lineNum">      67 </span>            : };
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            : //! Exception for repeated scheduling of the same task_handle
+<span class="lineNum">      70 </span>            : class invalid_multiple_scheduling : public std::exception {
+<span class="lineNum">      71 </span>            : public:
+<span class="lineNum">      72 </span>            :     const char* what() const throw() __TBB_override;
+<span class="lineNum">      73 </span>            : };
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            : namespace internal {
+<span class="lineNum">      76 </span>            : //! Obsolete
+<span class="lineNum">      77 </span>            : void __TBB_EXPORTED_FUNC throw_bad_last_alloc_exception_v4();
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : enum exception_id {
+<span class="lineNum">      80 </span>            :     eid_bad_alloc = 1,
+<span class="lineNum">      81 </span>            :     eid_bad_last_alloc,
+<span class="lineNum">      82 </span>            :     eid_nonpositive_step,
+<span class="lineNum">      83 </span>            :     eid_out_of_range,
+<span class="lineNum">      84 </span>            :     eid_segment_range_error,
+<span class="lineNum">      85 </span>            :     eid_index_range_error,
+<span class="lineNum">      86 </span>            :     eid_missing_wait,
+<span class="lineNum">      87 </span>            :     eid_invalid_multiple_scheduling,
+<span class="lineNum">      88 </span>            :     eid_improper_lock,
+<span class="lineNum">      89 </span>            :     eid_possible_deadlock,
+<span class="lineNum">      90 </span>            :     eid_operation_not_permitted,
+<span class="lineNum">      91 </span>            :     eid_condvar_wait_failed,
+<span class="lineNum">      92 </span>            :     eid_invalid_load_factor,
+<span class="lineNum">      93 </span>            :     eid_reserved, // free slot for backward compatibility, can be reused.
+<span class="lineNum">      94 </span>            :     eid_invalid_swap,
+<span class="lineNum">      95 </span>            :     eid_reservation_length_error,
+<span class="lineNum">      96 </span>            :     eid_invalid_key,
+<span class="lineNum">      97 </span>            :     eid_user_abort,
+<span class="lineNum">      98 </span>            :     eid_reserved1,
+<span class="lineNum">      99 </span>            : #if __TBB_SUPPORTS_WORKERS_WAITING_IN_TERMINATE
+<span class="lineNum">     100 </span>            :     // This id is used only from inside the library and only for support of CPF functionality.
+<span class="lineNum">     101 </span>            :     // So, if we drop the functionality, eid_reserved1 can be safely renamed and reused.
+<span class="lineNum">     102 </span>            :     eid_blocking_thread_join_impossible = eid_reserved1,
+<span class="lineNum">     103 </span>            : #endif
+<span class="lineNum">     104 </span>            :     eid_bad_tagged_msg_cast,
+<span class="lineNum">     105 </span>            :     //! The last enumerator tracks the number of defined IDs. It must remain the last one.
+<span class="lineNum">     106 </span>            :     /** When adding new IDs, place them immediately _before_ this comment (that is
+<span class="lineNum">     107 </span>            :         _after_ all the existing IDs. NEVER insert new IDs between the existing ones. **/
+<span class="lineNum">     108 </span>            :     eid_max
+<span class="lineNum">     109 </span>            : };
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : //! Gathers all throw operators in one place.
+<span class="lineNum">     112 </span>            : /** Its purpose is to minimize code bloat that can be caused by throw operators
+<span class="lineNum">     113 </span>            :     scattered in multiple places, especially in templates. **/
+<span class="lineNum">     114 </span>            : void __TBB_EXPORTED_FUNC throw_exception_v4 ( exception_id );
+<a name="115"><span class="lineNum">     115 </span>            : </a>
+<span class="lineNum">     116 </span>            : //! Versionless convenience wrapper for throw_exception_v4()
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 : inline void throw_exception ( exception_id eid ) { throw_exception_v4(eid); }</span>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            : } // namespace internal
+<span class="lineNum">     120 </span>            : } // namespace tbb
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            : #if __TBB_TASK_GROUP_CONTEXT
+<span class="lineNum">     123 </span>            : #include &quot;tbb_allocator.h&quot;
+<span class="lineNum">     124 </span>            : #include &lt;typeinfo&gt; //for typeid
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            : namespace tbb {
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            : //! Interface to be implemented by all exceptions TBB recognizes and propagates across the threads.
+<span class="lineNum">     129 </span>            : /** If an unhandled exception of the type derived from tbb::tbb_exception is intercepted
+<span class="lineNum">     130 </span>            :     by the TBB scheduler in one of the worker threads, it is delivered to and re-thrown in
+<span class="lineNum">     131 </span>            :     the root thread. The root thread is the thread that has started the outermost algorithm
+<span class="lineNum">     132 </span>            :     or root task sharing the same task_group_context with the guilty algorithm/task (the one
+<span class="lineNum">     133 </span>            :     that threw the exception first).
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :     Note: when documentation mentions workers with respect to exception handling,
+<span class="lineNum">     136 </span>            :     masters are implied as well, because they are completely equivalent in this context.
+<span class="lineNum">     137 </span>            :     Consequently a root thread can be master or worker thread.
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :     NOTE: In case of nested algorithms or complex task hierarchies when the nested
+<span class="lineNum">     140 </span>            :     levels share (explicitly or by means of implicit inheritance) the task group
+<span class="lineNum">     141 </span>            :     context of the outermost level, the exception may be (re-)thrown multiple times
+<span class="lineNum">     142 </span>            :     (ultimately - in each worker on each nesting level) before reaching the root
+<span class="lineNum">     143 </span>            :     thread at the outermost level. IMPORTANT: if you intercept an exception derived
+<span class="lineNum">     144 </span>            :     from this class on a nested level, you must re-throw it in the catch block by means
+<span class="lineNum">     145 </span>            :     of the &quot;throw;&quot; operator.
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :     TBB provides two implementations of this interface: tbb::captured_exception and
+<span class="lineNum">     148 </span>            :     template class tbb::movable_exception. See their declarations for more info. **/
+<span class="lineNum">     149 </span>            : class tbb_exception : public std::exception
+<span class="lineNum">     150 </span>            : {
+<span class="lineNum">     151 </span>            :     /** No operator new is provided because the TBB usage model assumes dynamic
+<span class="lineNum">     152 </span>            :         creation of the TBB exception objects only by means of applying move()
+<span class="lineNum">     153 </span>            :         operation on an exception thrown out of TBB scheduler. **/
+<span class="lineNum">     154 </span>            :     void* operator new ( size_t );
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span>            : public:
+<span class="lineNum">     157 </span>            : #if __clang__
+<span class="lineNum">     158 </span>            :     // At -O3 or even -O2 optimization level, Clang may fully throw away an empty destructor
+<span class="lineNum">     159 </span>            :     // of tbb_exception from destructors of derived classes. As a result, it does not create
+<span class="lineNum">     160 </span>            :     // vtable for tbb_exception, which is a required part of TBB binary interface.
+<span class="lineNum">     161 </span>            :     // Making the destructor non-empty (with just a semicolon) prevents that optimization.
+<span class="lineNum">     162 </span>            :     ~tbb_exception() throw() { /* keep the semicolon! */ ; }
+<span class="lineNum">     163 </span>            : #endif
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :     //! Creates and returns pointer to the deep copy of this exception object.
+<span class="lineNum">     166 </span>            :     /** Move semantics is allowed. **/
+<span class="lineNum">     167 </span>            :     virtual tbb_exception* move () throw() = 0;
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            :     //! Destroys objects created by the move() method.
+<span class="lineNum">     170 </span>            :     /** Frees memory and calls destructor for this exception object.
+<span class="lineNum">     171 </span>            :         Can and must be used only on objects created by the move method. **/
+<span class="lineNum">     172 </span>            :     virtual void destroy () throw() = 0;
+<span class="lineNum">     173 </span>            : 
+<span class="lineNum">     174 </span>            :     //! Throws this exception object.
+<span class="lineNum">     175 </span>            :     /** Make sure that if you have several levels of derivation from this interface
+<span class="lineNum">     176 </span>            :         you implement or override this method on the most derived level. The implementation
+<span class="lineNum">     177 </span>            :         is as simple as &quot;throw *this;&quot;. Failure to do this will result in exception
+<span class="lineNum">     178 </span>            :         of a base class type being thrown. **/
+<span class="lineNum">     179 </span>            :     virtual void throw_self () = 0;
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :     //! Returns RTTI name of the originally intercepted exception
+<span class="lineNum">     182 </span>            :     virtual const char* name() const throw() = 0;
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :     //! Returns the result of originally intercepted exception's what() method.
+<span class="lineNum">     185 </span>            :     virtual const char* what() const throw() __TBB_override = 0;
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            :     /** Operator delete is provided only to allow using existing smart pointers
+<span class="lineNum">     188 </span>            :         with TBB exception objects obtained as the result of applying move()
+<span class="lineNum">     189 </span>            :         operation on an exception thrown out of TBB scheduler.
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :         When overriding method move() make sure to override operator delete as well
+<span class="lineNum">     192 </span>            :         if memory is allocated not by TBB's scalable allocator. **/
+<span class="lineNum">     193 </span>            :     void operator delete ( void* p ) {
+<span class="lineNum">     194 </span>            :         internal::deallocate_via_handler_v3(p);
+<span class="lineNum">     195 </span>            :     }
+<span class="lineNum">     196 </span>            : };
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            : //! This class is used by TBB to propagate information about unhandled exceptions into the root thread.
+<span class="lineNum">     199 </span>            : /** Exception of this type is thrown by TBB in the root thread (thread that started a parallel
+<span class="lineNum">     200 </span>            :     algorithm ) if an unhandled exception was intercepted during the algorithm execution in one
+<span class="lineNum">     201 </span>            :     of the workers.
+<span class="lineNum">     202 </span>            :     \sa tbb::tbb_exception **/
+<span class="lineNum">     203 </span>            : class captured_exception : public tbb_exception
+<span class="lineNum">     204 </span>            : {
+<span class="lineNum">     205 </span>            : public:
+<span class="lineNum">     206 </span>            :     captured_exception ( const captured_exception&amp; src )
+<span class="lineNum">     207 </span>            :         : tbb_exception(src), my_dynamic(false)
+<span class="lineNum">     208 </span>            :     {
+<span class="lineNum">     209 </span>            :         set(src.my_exception_name, src.my_exception_info);
+<span class="lineNum">     210 </span>            :     }
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span>            :     captured_exception ( const char* name_, const char* info )
+<span class="lineNum">     213 </span>            :         : my_dynamic(false)
+<span class="lineNum">     214 </span>            :     {
+<span class="lineNum">     215 </span>            :         set(name_, info);
+<span class="lineNum">     216 </span>            :     }
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            :     __TBB_EXPORTED_METHOD ~captured_exception () throw();
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :     captured_exception&amp; operator= ( const captured_exception&amp; src ) {
+<span class="lineNum">     221 </span>            :         if ( this != &amp;src ) {
+<span class="lineNum">     222 </span>            :             clear();
+<span class="lineNum">     223 </span>            :             set(src.my_exception_name, src.my_exception_info);
+<span class="lineNum">     224 </span>            :         }
+<span class="lineNum">     225 </span>            :         return *this;
+<span class="lineNum">     226 </span>            :     }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :     captured_exception* __TBB_EXPORTED_METHOD move () throw() __TBB_override;
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            :     void __TBB_EXPORTED_METHOD destroy () throw() __TBB_override;
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            :     void throw_self () __TBB_override { __TBB_THROW(*this); }
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span>            :     const char* __TBB_EXPORTED_METHOD name() const throw() __TBB_override;
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            :     const char* __TBB_EXPORTED_METHOD what() const throw() __TBB_override;
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     void __TBB_EXPORTED_METHOD set ( const char* name, const char* info ) throw();
+<span class="lineNum">     239 </span>            :     void __TBB_EXPORTED_METHOD clear () throw();
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : private:
+<span class="lineNum">     242 </span>            :     //! Used only by method clone().
+<span class="lineNum">     243 </span>            :     captured_exception() {}
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :     //! Functionally equivalent to {captured_exception e(name,info); return e.clone();}
+<span class="lineNum">     246 </span>            :     static captured_exception* allocate ( const char* name, const char* info );
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span>            :     bool my_dynamic;
+<span class="lineNum">     249 </span>            :     const char* my_exception_name;
+<span class="lineNum">     250 </span>            :     const char* my_exception_info;
+<span class="lineNum">     251 </span>            : };
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            : //! Template that can be used to implement exception that transfers arbitrary ExceptionData to the root thread
+<span class="lineNum">     254 </span>            : /** Code using TBB can instantiate this template with an arbitrary ExceptionData type
+<span class="lineNum">     255 </span>            :     and throw this exception object. Such exceptions are intercepted by the TBB scheduler
+<span class="lineNum">     256 </span>            :     and delivered to the root thread ().
+<span class="lineNum">     257 </span>            :     \sa tbb::tbb_exception **/
+<span class="lineNum">     258 </span>            : template&lt;typename ExceptionData&gt;
+<span class="lineNum">     259 </span>            : class movable_exception : public tbb_exception
+<span class="lineNum">     260 </span>            : {
+<span class="lineNum">     261 </span>            :     typedef movable_exception&lt;ExceptionData&gt; self_type;
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span>            : public:
+<span class="lineNum">     264 </span>            :     movable_exception ( const ExceptionData&amp; data_ )
+<span class="lineNum">     265 </span>            :         : my_exception_data(data_)
+<span class="lineNum">     266 </span>            :         , my_dynamic(false)
+<span class="lineNum">     267 </span>            :         , my_exception_name(
+<span class="lineNum">     268 </span>            : #if TBB_USE_EXCEPTIONS
+<span class="lineNum">     269 </span>            :         typeid(self_type).name()
+<span class="lineNum">     270 </span>            : #else /* !TBB_USE_EXCEPTIONS */
+<span class="lineNum">     271 </span>            :         &quot;movable_exception&quot;
+<span class="lineNum">     272 </span>            : #endif /* !TBB_USE_EXCEPTIONS */
+<span class="lineNum">     273 </span>            :         )
+<span class="lineNum">     274 </span>            :     {}
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            :     movable_exception ( const movable_exception&amp; src ) throw ()
+<span class="lineNum">     277 </span>            :         : tbb_exception(src)
+<span class="lineNum">     278 </span>            :         , my_exception_data(src.my_exception_data)
+<span class="lineNum">     279 </span>            :         , my_dynamic(false)
+<span class="lineNum">     280 </span>            :         , my_exception_name(src.my_exception_name)
+<span class="lineNum">     281 </span>            :     {}
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            :     ~movable_exception () throw() {}
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :     const movable_exception&amp; operator= ( const movable_exception&amp; src ) {
+<span class="lineNum">     286 </span>            :         if ( this != &amp;src ) {
+<span class="lineNum">     287 </span>            :             my_exception_data = src.my_exception_data;
+<span class="lineNum">     288 </span>            :             my_exception_name = src.my_exception_name;
+<span class="lineNum">     289 </span>            :         }
+<span class="lineNum">     290 </span>            :         return *this;
+<span class="lineNum">     291 </span>            :     }
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     ExceptionData&amp; data () throw() { return my_exception_data; }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :     const ExceptionData&amp; data () const throw() { return my_exception_data; }
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :     const char* name () const throw() __TBB_override { return my_exception_name; }
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :     const char* what () const throw() __TBB_override { return &quot;tbb::movable_exception&quot;; }
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :     movable_exception* move () throw() __TBB_override {
+<span class="lineNum">     302 </span>            :         void* e = internal::allocate_via_handler_v3(sizeof(movable_exception));
+<span class="lineNum">     303 </span>            :         if ( e ) {
+<span class="lineNum">     304 </span>            :             ::new (e) movable_exception(*this);
+<span class="lineNum">     305 </span>            :             ((movable_exception*)e)-&gt;my_dynamic = true;
+<span class="lineNum">     306 </span>            :         }
+<span class="lineNum">     307 </span>            :         return (movable_exception*)e;
+<span class="lineNum">     308 </span>            :     }
+<span class="lineNum">     309 </span>            :     void destroy () throw() __TBB_override {
+<span class="lineNum">     310 </span>            :         __TBB_ASSERT ( my_dynamic, &quot;Method destroy can be called only on dynamically allocated movable_exceptions&quot; );
+<span class="lineNum">     311 </span>            :         if ( my_dynamic ) {
+<span class="lineNum">     312 </span>            :             this-&gt;~movable_exception();
+<span class="lineNum">     313 </span>            :             internal::deallocate_via_handler_v3(this);
+<span class="lineNum">     314 </span>            :         }
+<span class="lineNum">     315 </span>            :     }
+<span class="lineNum">     316 </span>            :     void throw_self () __TBB_override { __TBB_THROW( *this ); }
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            : protected:
+<span class="lineNum">     319 </span>            :     //! User data
+<span class="lineNum">     320 </span>            :     ExceptionData  my_exception_data;
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            : private:
+<span class="lineNum">     323 </span>            :     //! Flag specifying whether this object has been dynamically allocated (by the move method)
+<span class="lineNum">     324 </span>            :     bool my_dynamic;
+<span class="lineNum">     325 </span>            : 
+<span class="lineNum">     326 </span>            :     //! RTTI name of this class
+<span class="lineNum">     327 </span>            :     /** We rely on the fact that RTTI names are static string constants. **/
+<span class="lineNum">     328 </span>            :     const char* my_exception_name;
+<span class="lineNum">     329 </span>            : };
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            : #if !TBB_USE_CAPTURED_EXCEPTION
+<span class="lineNum">     332 </span>            : namespace internal {
+<span class="lineNum">     333 </span>            : 
+<span class="lineNum">     334 </span>            : //! Exception container that preserves the exact copy of the original exception
+<span class="lineNum">     335 </span>            : /** This class can be used only when the appropriate runtime support (mandated
+<span class="lineNum">     336 </span>            :     by C++0x) is present **/
+<span class="lineNum">     337 </span>            : class tbb_exception_ptr {
+<span class="lineNum">     338 </span>            :     std::exception_ptr  my_ptr;
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            : public:
+<span class="lineNum">     341 </span>            :     static tbb_exception_ptr* allocate ();
+<span class="lineNum">     342 </span>            :     static tbb_exception_ptr* allocate ( const tbb_exception&amp; tag );
+<span class="lineNum">     343 </span>            :     //! This overload uses move semantics (i.e. it empties src)
+<span class="lineNum">     344 </span>            :     static tbb_exception_ptr* allocate ( captured_exception&amp; src );
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            :     //! Destroys this objects
+<span class="lineNum">     347 </span>            :     /** Note that objects of this type can be created only by the allocate() method. **/
+<span class="lineNum">     348 </span>            :     void destroy () throw();
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            :     //! Throws the contained exception .
+<span class="lineNum">     351 </span>            :     void throw_self () { std::rethrow_exception(my_ptr); }
+<span class="lineNum">     352 </span>            : 
+<span class="lineNum">     353 </span>            : private:
+<span class="lineNum">     354 </span>            :     tbb_exception_ptr ( const std::exception_ptr&amp; src ) : my_ptr(src) {}
+<span class="lineNum">     355 </span>            :     tbb_exception_ptr ( const captured_exception&amp; src ) :
+<span class="lineNum">     356 </span>            :         #if __TBB_MAKE_EXCEPTION_PTR_PRESENT
+<span class="lineNum">     357 </span>            :             my_ptr(std::make_exception_ptr(src))  // the final function name in C++11
+<span class="lineNum">     358 </span>            :         #else
+<span class="lineNum">     359 </span>            :             my_ptr(std::copy_exception(src))      // early C++0x drafts name
+<span class="lineNum">     360 </span>            :         #endif
+<span class="lineNum">     361 </span>            :     {}
+<span class="lineNum">     362 </span>            : }; // class tbb::internal::tbb_exception_ptr
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            : } // namespace internal
+<span class="lineNum">     365 </span>            : #endif /* !TBB_USE_CAPTURED_EXCEPTION */
+<span class="lineNum">     366 </span>            : 
+<span class="lineNum">     367 </span>            : } // namespace tbb
+<span class="lineNum">     368 </span>            : 
+<span class="lineNum">     369 </span>            : #endif /* __TBB_TASK_GROUP_CONTEXT */
+<span class="lineNum">     370 </span>            : 
+<span class="lineNum">     371 </span>            : #endif /* __TBB_exception_H */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

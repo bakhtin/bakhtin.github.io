@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/operators/rx-delay.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/operators</a> - rx-delay.hpp<span style="font-size: 80%;"> (source / <a href="rx-delay.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">59</td>
+            <td class="headerCovTableEntry">72</td>
+            <td class="headerCovTableEntryMed">81.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntry">47</td>
+            <td class="headerCovTableEntryMed">87.2 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : /*! \file rx-delay.hpp
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :     \brief Return an observable that emits each item emitted by the source observable after the specified delay.
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            :     \tparam Duration      the type of time interval
+<span class="lineNum">      10 </span>            :     \tparam Coordination  the type of the scheduler
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            :     \param period        the period of time each item is delayed
+<span class="lineNum">      13 </span>            :     \param coordination  the scheduler for the delays
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            :     \return  Observable that emits each item emitted by the source observable after the specified delay.
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            :     \sample
+<span class="lineNum">      18 </span>            :     \snippet delay.cpp delay period+coordination sample
+<span class="lineNum">      19 </span>            :     \snippet output.txt delay period+coordination sample
+<span class="lineNum">      20 </span>            : */
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #if !defined(RXCPP_OPERATORS_RX_DELAY_HPP)
+<span class="lineNum">      23 </span>            : #define RXCPP_OPERATORS_RX_DELAY_HPP
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : namespace rxcpp {
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace operators {
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : namespace detail {
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      34 </span>            : struct delay_invalid_arguments {};
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      37 </span>            : struct delay_invalid : public rxo::operator_base&lt;delay_invalid_arguments&lt;AN...&gt;&gt; {
+<span class="lineNum">      38 </span>            :     using type = observable&lt;delay_invalid_arguments&lt;AN...&gt;, delay_invalid&lt;AN...&gt;&gt;;
+<span class="lineNum">      39 </span>            : };
+<span class="lineNum">      40 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      41 </span>            : using delay_invalid_t = typename delay_invalid&lt;AN...&gt;::type;
+<a name="42"><span class="lineNum">      42 </span>            :     </a>
+<span class="lineNum">      43 </span>            : template&lt;class T, class Duration, class Coordination&gt;
+<span class="lineNum">      44 </span><span class="lineCov">        162 : struct delay</span>
+<span class="lineNum">      45 </span>            : {
+<span class="lineNum">      46 </span>            :     typedef rxu::decay_t&lt;T&gt; source_value_type;
+<span class="lineNum">      47 </span>            :     typedef rxu::decay_t&lt;Coordination&gt; coordination_type;
+<span class="lineNum">      48 </span>            :     typedef typename coordination_type::coordinator_type coordinator_type;
+<a name="49"><span class="lineNum">      49 </span>            :     typedef rxu::decay_t&lt;Duration&gt; duration_type;</a>
+<span class="lineNum">      50 </span>            : 
+<a name="51"><span class="lineNum">      51 </span><span class="lineCov">        182 :     struct delay_values</span></a>
+<span class="lineNum">      52 </span>            :     {
+<span class="lineNum">      53 </span><span class="lineCov">          1 :         delay_values(duration_type p, coordination_type c)</span>
+<span class="lineNum">      54 </span>            :             : period(p)
+<span class="lineNum">      55 </span><span class="lineCov">          1 :             , coordination(c)</span>
+<span class="lineNum">      56 </span>            :         {
+<span class="lineNum">      57 </span><span class="lineCov">          1 :         }</span>
+<span class="lineNum">      58 </span>            :         duration_type period;
+<span class="lineNum">      59 </span>            :         coordination_type coordination;
+<span class="lineNum">      60 </span>            :     };
+<a name="61"><span class="lineNum">      61 </span>            :     delay_values initial;</a>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span><span class="lineCov">          1 :     delay(duration_type period, coordination_type coordination)</span>
+<span class="lineNum">      64 </span><span class="lineCov">          1 :         : initial(period, coordination)</span>
+<span class="lineNum">      65 </span>            :     {
+<span class="lineNum">      66 </span><span class="lineCov">          1 :     }</span>
+<a name="67"><span class="lineNum">      67 </span>            : </a>
+<span class="lineNum">      68 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">      69 </span><span class="lineCov">         54 :     struct delay_observer</span>
+<span class="lineNum">      70 </span>            :     {
+<span class="lineNum">      71 </span>            :         typedef delay_observer&lt;Subscriber&gt; this_type;
+<span class="lineNum">      72 </span>            :         typedef rxu::decay_t&lt;T&gt; value_type;
+<span class="lineNum">      73 </span>            :         typedef rxu::decay_t&lt;Subscriber&gt; dest_type;
+<a name="74"><span class="lineNum">      74 </span>            :         typedef observer&lt;T, this_type&gt; observer_type;</a>
+<span class="lineNum">      75 </span>            : 
+<a name="76"><span class="lineNum">      76 </span><span class="lineCov">          5 :         struct delay_subscriber_values : public delay_values</span></a>
+<span class="lineNum">      77 </span>            :         {
+<span class="lineNum">      78 </span><span class="lineCov">          1 :             delay_subscriber_values(composite_subscription cs, dest_type d, delay_values v, coordinator_type c)</span>
+<span class="lineNum">      79 </span>            :                 : delay_values(v)
+<span class="lineNum">      80 </span><span class="lineCov">          1 :                 , cs(std::move(cs))</span>
+<span class="lineNum">      81 </span><span class="lineCov">          1 :                 , dest(std::move(d))</span>
+<span class="lineNum">      82 </span><span class="lineCov">          1 :                 , coordinator(std::move(c))</span>
+<span class="lineNum">      83 </span>            :                 , worker(coordinator.get_worker())
+<span class="lineNum">      84 </span><span class="lineCov">          4 :                 , expected(worker.now())</span>
+<span class="lineNum">      85 </span>            :             {
+<span class="lineNum">      86 </span><span class="lineCov">          1 :             }</span>
+<span class="lineNum">      87 </span>            :             composite_subscription cs;
+<span class="lineNum">      88 </span>            :             dest_type dest;
+<span class="lineNum">      89 </span>            :             coordinator_type coordinator;
+<span class="lineNum">      90 </span>            :             rxsc::worker worker;
+<span class="lineNum">      91 </span>            :             rxsc::scheduler::clock_type::time_point expected;
+<span class="lineNum">      92 </span>            :         };
+<a name="93"><span class="lineNum">      93 </span>            :         std::shared_ptr&lt;delay_subscriber_values&gt; state;</a>
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span><span class="lineCov">          1 :         delay_observer(composite_subscription cs, dest_type d, delay_values v, coordinator_type c)</span>
+<span class="lineNum">      96 </span><span class="lineCov">          1 :             : state(std::make_shared&lt;delay_subscriber_values&gt;(delay_subscriber_values(std::move(cs), std::move(d), v, std::move(c))))</span>
+<span class="lineNum">      97 </span>            :         {
+<a name="98"><span class="lineNum">      98 </span><span class="lineCov">          2 :             auto localState = state;</span></a>
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineCov">         83 :             auto disposer = [=](const rxsc::schedulable&amp;){</span>
+<span class="lineNum">     101 </span><span class="lineCov">          1 :                 localState-&gt;cs.unsubscribe();</span>
+<span class="lineNum">     102 </span><span class="lineCov">          1 :                 localState-&gt;dest.unsubscribe();</span>
+<span class="lineNum">     103 </span><span class="lineCov">          1 :                 localState-&gt;worker.unsubscribe();</span>
+<a name="104"><span class="lineNum">     104 </span><span class="lineCov">          2 :             };</span></a>
+<span class="lineNum">     105 </span>            :             auto selectedDisposer = on_exception(
+<span class="lineNum">     106 </span><span class="lineCov">          1 :                 [&amp;](){return localState-&gt;coordinator.act(disposer);},</span>
+<span class="lineNum">     107 </span><span class="lineCov">          2 :                 localState-&gt;dest);</span>
+<span class="lineNum">     108 </span><span class="lineCov">          1 :             if (selectedDisposer.empty()) {</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :                 return;</span>
+<a name="110"><span class="lineNum">     110 </span>            :             }</a>
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span><span class="lineCov">         16 :             localState-&gt;dest.add([=](){</span>
+<a name="113"><span class="lineNum">     113 </span><span class="lineCov">          1 :                 localState-&gt;worker.schedule(selectedDisposer.get());</span></a>
+<span class="lineNum">     114 </span><span class="lineCov">          1 :             });</span>
+<span class="lineNum">     115 </span><span class="lineCov">         16 :             localState-&gt;cs.add([=](){</span>
+<span class="lineNum">     116 </span><span class="lineCov">          1 :                 localState-&gt;worker.schedule(localState-&gt;worker.now() + localState-&gt;period, selectedDisposer.get());</span>
+<span class="lineNum">     117 </span><span class="lineCov">          1 :             });</span>
+<a name="118"><span class="lineNum">     118 </span>            :         }</a>
+<span class="lineNum">     119 </span>            : 
+<a name="120"><span class="lineNum">     120 </span><span class="lineCov">          1 :         void on_next(T v) const {</span></a>
+<span class="lineNum">     121 </span><span class="lineCov">          2 :             auto localState = state;</span>
+<span class="lineNum">     122 </span><span class="lineCov">         31 :             auto work = [v, localState](const rxsc::schedulable&amp;){</span>
+<span class="lineNum">     123 </span><span class="lineCov">          1 :                 localState-&gt;dest.on_next(v);</span>
+<a name="124"><span class="lineNum">     124 </span><span class="lineCov">          2 :             };</span></a>
+<span class="lineNum">     125 </span>            :             auto selectedWork = on_exception(
+<span class="lineNum">     126 </span><span class="lineCov">          1 :                 [&amp;](){return localState-&gt;coordinator.act(work);},</span>
+<span class="lineNum">     127 </span><span class="lineCov">          2 :                 localState-&gt;dest);</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 :             if (selectedWork.empty()) {</span>
+<span class="lineNum">     129 </span><span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     130 </span>            :             }
+<span class="lineNum">     131 </span><span class="lineCov">          1 :             localState-&gt;worker.schedule(localState-&gt;worker.now() + localState-&gt;period, selectedWork.get());</span>
+<a name="132"><span class="lineNum">     132 </span>            :         }</a>
+<span class="lineNum">     133 </span>            : 
+<a name="134"><span class="lineNum">     134 </span><span class="lineNoCov">          0 :         void on_error(std::exception_ptr e) const {</span></a>
+<span class="lineNum">     135 </span><span class="lineNoCov">          0 :             auto localState = state;</span>
+<span class="lineNum">     136 </span><span class="lineNoCov">          0 :             auto work = [e, localState](const rxsc::schedulable&amp;){</span>
+<span class="lineNum">     137 </span><span class="lineNoCov">          0 :                 localState-&gt;dest.on_error(e);</span>
+<a name="138"><span class="lineNum">     138 </span><span class="lineNoCov">          0 :             };</span></a>
+<span class="lineNum">     139 </span>            :             auto selectedWork = on_exception(
+<span class="lineNum">     140 </span><span class="lineNoCov">          0 :                 [&amp;](){return localState-&gt;coordinator.act(work);},</span>
+<span class="lineNum">     141 </span><span class="lineNoCov">          0 :                 localState-&gt;dest);</span>
+<span class="lineNum">     142 </span><span class="lineNoCov">          0 :             if (selectedWork.empty()) {</span>
+<span class="lineNum">     143 </span><span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     144 </span>            :             }
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :             localState-&gt;worker.schedule(selectedWork.get());</span>
+<a name="146"><span class="lineNum">     146 </span>            :         }</a>
+<span class="lineNum">     147 </span>            : 
+<a name="148"><span class="lineNum">     148 </span><span class="lineCov">          1 :         void on_completed() const {</span></a>
+<span class="lineNum">     149 </span><span class="lineCov">          2 :             auto localState = state;</span>
+<span class="lineNum">     150 </span><span class="lineCov">         31 :             auto work = [localState](const rxsc::schedulable&amp;){</span>
+<span class="lineNum">     151 </span><span class="lineCov">          1 :                 localState-&gt;dest.on_completed();</span>
+<a name="152"><span class="lineNum">     152 </span><span class="lineCov">          2 :             };</span></a>
+<span class="lineNum">     153 </span>            :             auto selectedWork = on_exception(
+<span class="lineNum">     154 </span><span class="lineCov">          1 :                 [&amp;](){return localState-&gt;coordinator.act(work);},</span>
+<span class="lineNum">     155 </span><span class="lineCov">          2 :                 localState-&gt;dest);</span>
+<span class="lineNum">     156 </span><span class="lineCov">          1 :             if (selectedWork.empty()) {</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :                 return;</span>
+<span class="lineNum">     158 </span>            :             }
+<span class="lineNum">     159 </span><span class="lineCov">          1 :             localState-&gt;worker.schedule(localState-&gt;worker.now() + localState-&gt;period, selectedWork.get());</span>
+<a name="160"><span class="lineNum">     160 </span>            :         }</a>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span><span class="lineCov">          1 :         static subscriber&lt;T, observer_type&gt; make(dest_type d, delay_values v) {</span>
+<span class="lineNum">     163 </span><span class="lineCov">          2 :             auto cs = composite_subscription();</span>
+<span class="lineNum">     164 </span><span class="lineCov">          2 :             auto coordinator = v.coordination.create_coordinator();</span>
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineCov">          2 :             return make_subscriber&lt;T&gt;(cs, observer_type(this_type(cs, std::move(d), std::move(v), std::move(coordinator))));</span>
+<span class="lineNum">     167 </span>            :         }
+<span class="lineNum">     168 </span>            :     };
+<a name="169"><span class="lineNum">     169 </span>            : </a>
+<span class="lineNum">     170 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">     171 </span><span class="lineCov">          1 :     auto operator()(Subscriber dest) const</span>
+<span class="lineNum">     172 </span>            :         -&gt; decltype(delay_observer&lt;Subscriber&gt;::make(std::move(dest), initial)) {
+<span class="lineNum">     173 </span><span class="lineCov">          1 :         return      delay_observer&lt;Subscriber&gt;::make(std::move(dest), initial);</span>
+<span class="lineNum">     174 </span>            :     }
+<span class="lineNum">     175 </span>            : };
+<span class="lineNum">     176 </span>            : 
+<span class="lineNum">     177 </span>            : }
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            : /*! @copydoc rx-delay.hpp
+<span class="lineNum">     180 </span>            : */
+<span class="lineNum">     181 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     182 </span>            : auto delay(AN&amp;&amp;... an)
+<span class="lineNum">     183 </span>            :     -&gt;      operator_factory&lt;delay_tag, AN...&gt; {
+<span class="lineNum">     184 </span>            :      return operator_factory&lt;delay_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     185 </span>            : }
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            : }
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : template&lt;&gt;
+<span class="lineNum">     190 </span>            : struct member_overload&lt;delay_tag&gt;
+<span class="lineNum">     191 </span>            : {
+<span class="lineNum">     192 </span>            :     template&lt;class Observable, class Duration,
+<span class="lineNum">     193 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     194 </span>            :             is_observable&lt;Observable&gt;,
+<span class="lineNum">     195 </span>            :             rxu::is_duration&lt;Duration&gt;&gt;,
+<a name="196"><span class="lineNum">     196 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,</a>
+<span class="lineNum">     197 </span>            :         class delay = rxo::detail::delay&lt;SourceValue, rxu::decay_t&lt;Duration&gt;, identity_one_worker&gt;&gt;
+<span class="lineNum">     198 </span><span class="lineCov">          1 :     static auto member(Observable&amp;&amp; o, Duration&amp;&amp; d)</span>
+<span class="lineNum">     199 </span>            :         -&gt; decltype(o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), identity_current_thread()))) {
+<span class="lineNum">     200 </span><span class="lineCov">          1 :         return      o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), identity_current_thread()));</span>
+<span class="lineNum">     201 </span>            :     }
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            :     template&lt;class Observable, class Coordination, class Duration,
+<span class="lineNum">     204 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     205 </span>            :             is_observable&lt;Observable&gt;,
+<span class="lineNum">     206 </span>            :             is_coordination&lt;Coordination&gt;,
+<span class="lineNum">     207 </span>            :             rxu::is_duration&lt;Duration&gt;&gt;,
+<span class="lineNum">     208 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     209 </span>            :         class delay = rxo::detail::delay&lt;SourceValue, rxu::decay_t&lt;Duration&gt;, rxu::decay_t&lt;Coordination&gt;&gt;&gt;
+<span class="lineNum">     210 </span>            :     static auto member(Observable&amp;&amp; o, Coordination&amp;&amp; cn, Duration&amp;&amp; d)
+<span class="lineNum">     211 </span>            :         -&gt; decltype(o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), std::forward&lt;Coordination&gt;(cn)))) {
+<span class="lineNum">     212 </span>            :         return      o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), std::forward&lt;Coordination&gt;(cn)));
+<span class="lineNum">     213 </span>            :     }
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :     template&lt;class Observable, class Coordination, class Duration,
+<span class="lineNum">     216 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     217 </span>            :             is_observable&lt;Observable&gt;,
+<span class="lineNum">     218 </span>            :             is_coordination&lt;Coordination&gt;,
+<span class="lineNum">     219 </span>            :             rxu::is_duration&lt;Duration&gt;&gt;,
+<span class="lineNum">     220 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     221 </span>            :         class delay = rxo::detail::delay&lt;SourceValue, rxu::decay_t&lt;Duration&gt;, rxu::decay_t&lt;Coordination&gt;&gt;&gt;
+<span class="lineNum">     222 </span>            :     static auto member(Observable&amp;&amp; o, Duration&amp;&amp; d, Coordination&amp;&amp; cn)
+<span class="lineNum">     223 </span>            :         -&gt; decltype(o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), std::forward&lt;Coordination&gt;(cn)))) {
+<span class="lineNum">     224 </span>            :         return      o.template lift&lt;SourceValue&gt;(delay(std::forward&lt;Duration&gt;(d), std::forward&lt;Coordination&gt;(cn)));
+<span class="lineNum">     225 </span>            :     }
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     228 </span>            :     static operators::detail::delay_invalid_t&lt;AN...&gt; member(const AN&amp;...) {
+<span class="lineNum">     229 </span>            :         std::terminate();
+<span class="lineNum">     230 </span>            :         return {};
+<span class="lineNum">     231 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;delay takes (optional Coordination, required Duration) or (required Duration, optional Coordination)&quot;);
+<span class="lineNum">     232 </span>            :     }
+<span class="lineNum">     233 </span>            : }; 
+<span class="lineNum">     234 </span>            :     
+<span class="lineNum">     235 </span>            : }
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

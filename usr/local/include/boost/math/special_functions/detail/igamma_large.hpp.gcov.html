@@ -1,0 +1,844 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/math/special_functions/detail/igamma_large.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/math/special_functions/detail</a> - igamma_large.hpp<span style="font-size: 80%;"> (source / <a href="igamma_large.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">164</td>
+            <td class="headerCovTableEntry">166</td>
+            <td class="headerCovTableEntryHi">98.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //  Copyright John Maddock 2006.</a>
+<span class="lineNum">       2 </span>            : //  Use, modification and distribution are subject to the
+<span class="lineNum">       3 </span>            : //  Boost Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : //
+<span class="lineNum">       6 </span>            : // This file implements the asymptotic expansions of the incomplete
+<span class="lineNum">       7 </span>            : // gamma functions P(a, x) and Q(a, x), used when a is large and
+<span class="lineNum">       8 </span>            : // x ~ a.
+<span class="lineNum">       9 </span>            : //
+<span class="lineNum">      10 </span>            : // The primary reference is:
+<span class="lineNum">      11 </span>            : //
+<span class="lineNum">      12 </span>            : // &quot;The Asymptotic Expansion of the Incomplete Gamma Functions&quot;
+<span class="lineNum">      13 </span>            : // N. M. Temme.
+<span class="lineNum">      14 </span>            : // Siam J. Math Anal. Vol 10 No 4, July 1979, p757.
+<span class="lineNum">      15 </span>            : //
+<span class="lineNum">      16 </span>            : // A different way of evaluating these expansions,
+<span class="lineNum">      17 </span>            : // plus a lot of very useful background information is in:
+<span class="lineNum">      18 </span>            : // 
+<span class="lineNum">      19 </span>            : // &quot;A Set of Algorithms For the Incomplete Gamma Functions.&quot;
+<span class="lineNum">      20 </span>            : // N. M. Temme.
+<span class="lineNum">      21 </span>            : // Probability in the Engineering and Informational Sciences,
+<span class="lineNum">      22 </span>            : // 8, 1994, 291.
+<span class="lineNum">      23 </span>            : //
+<span class="lineNum">      24 </span>            : // An alternative implementation is in:
+<span class="lineNum">      25 </span>            : //
+<span class="lineNum">      26 </span>            : // &quot;Computation of the Incomplete Gamma Function Ratios and their Inverse.&quot;
+<span class="lineNum">      27 </span>            : // A. R. Didonato and A. H. Morris.
+<span class="lineNum">      28 </span>            : // ACM TOMS, Vol 12, No 4, Dec 1986, p377.
+<span class="lineNum">      29 </span>            : //
+<span class="lineNum">      30 </span>            : // There are various versions of the same code below, each accurate
+<span class="lineNum">      31 </span>            : // to a different precision.  To understand the code, refer to Didonato
+<span class="lineNum">      32 </span>            : // and Morris, from Eq 17 and 18 onwards.
+<span class="lineNum">      33 </span>            : //
+<span class="lineNum">      34 </span>            : // The coefficients used here are not taken from Didonato and Morris:
+<span class="lineNum">      35 </span>            : // the domain over which these expansions are used is slightly different
+<span class="lineNum">      36 </span>            : // to theirs, and their constants are not quite accurate enough for
+<span class="lineNum">      37 </span>            : // 128-bit long double's.  Instead the coefficients were calculated
+<span class="lineNum">      38 </span>            : // using the methods described by Temme p762 from Eq 3.8 onwards.
+<span class="lineNum">      39 </span>            : // The values obtained agree with those obtained by Didonato and Morris
+<span class="lineNum">      40 </span>            : // (at least to the first 30 digits that they provide).
+<span class="lineNum">      41 </span>            : // At double precision the degrees of polynomial required for full
+<span class="lineNum">      42 </span>            : // machine precision are close to those recomended to Didonato and Morris,
+<span class="lineNum">      43 </span>            : // but of course many more terms are needed for larger types.
+<span class="lineNum">      44 </span>            : //
+<span class="lineNum">      45 </span>            : #ifndef BOOST_MATH_DETAIL_IGAMMA_LARGE
+<span class="lineNum">      46 </span>            : #define BOOST_MATH_DETAIL_IGAMMA_LARGE
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : #ifdef _MSC_VER
+<span class="lineNum">      49 </span>            : #pragma once
+<span class="lineNum">      50 </span>            : #endif
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : namespace boost{ namespace math{ namespace detail{
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            : // This version will never be called (at runtime), it's a stub used
+<span class="lineNum">      55 </span>            : // when T is unsuitable to be passed to these routines:
+<span class="lineNum">      56 </span>            : //
+<span class="lineNum">      57 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">      58 </span>            : inline T igamma_temme_large(T, T, const Policy&amp; /* pol */, mpl::int_&lt;0&gt; const *)
+<span class="lineNum">      59 </span>            : {
+<span class="lineNum">      60 </span>            :    // stub function, should never actually be called
+<span class="lineNum">      61 </span>            :    BOOST_ASSERT(0);
+<span class="lineNum">      62 </span>            :    return 0;
+<span class="lineNum">      63 </span>            : }
+<span class="lineNum">      64 </span>            : //
+<span class="lineNum">      65 </span>            : // This version is accurate for up to 64-bit mantissa's, 
+<span class="lineNum">      66 </span>            : // (80-bit long double, or 10^-20).
+<a name="67"><span class="lineNum">      67 </span>            : //</a>
+<span class="lineNum">      68 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">      69 </span><span class="lineCov">          1 : T igamma_temme_large(T a, T x, const Policy&amp; pol, mpl::int_&lt;64&gt; const *)</span>
+<span class="lineNum">      70 </span>            : {
+<span class="lineNum">      71 </span>            :    BOOST_MATH_STD_USING // ADL of std functions
+<span class="lineNum">      72 </span><span class="lineCov">          1 :    T sigma = (x - a) / a;</span>
+<span class="lineNum">      73 </span><span class="lineCov">          1 :    T phi = -boost::math::log1pmx(sigma, pol);</span>
+<span class="lineNum">      74 </span><span class="lineCov">          1 :    T y = a * phi;</span>
+<span class="lineNum">      75 </span><span class="lineCov">          1 :    T z = sqrt(2 * phi);</span>
+<span class="lineNum">      76 </span><span class="lineCov">          1 :    if(x &lt; a)</span>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :       z = -z;</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            :    T workspace[13];
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :    static const T C0[] = {
+<span class="lineNum">      82 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.333333333333333333333),</span>
+<span class="lineNum">      83 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.0833333333333333333333),</span>
+<span class="lineNum">      84 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.0148148148148148148148),</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00115740740740740740741),</span>
+<span class="lineNum">      86 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000352733686067019400353),</span>
+<span class="lineNum">      87 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.0001787551440329218107),</span>
+<span class="lineNum">      88 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.39192631785224377817e-4),</span>
+<span class="lineNum">      89 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.218544851067999216147e-5),</span>
+<span class="lineNum">      90 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.18540622107151599607e-5),</span>
+<span class="lineNum">      91 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.829671134095308600502e-6),</span>
+<span class="lineNum">      92 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.176659527368260793044e-6),</span>
+<span class="lineNum">      93 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.670785354340149858037e-8),</span>
+<span class="lineNum">      94 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.102618097842403080426e-7),</span>
+<span class="lineNum">      95 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.438203601845335318655e-8),</span>
+<span class="lineNum">      96 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.914769958223679023418e-9),</span>
+<span class="lineNum">      97 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.255141939949462497669e-10),</span>
+<span class="lineNum">      98 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.583077213255042506746e-10),</span>
+<span class="lineNum">      99 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.243619480206674162437e-10),</span>
+<span class="lineNum">     100 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.502766928011417558909e-11),</span>
+<span class="lineNum">     101 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     102 </span><span class="lineCov">          1 :    workspace[0] = tools::evaluate_polynomial(C0, z);</span>
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :    static const T C1[] = {
+<span class="lineNum">     105 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00185185185185185185185),</span>
+<span class="lineNum">     106 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00347222222222222222222),</span>
+<span class="lineNum">     107 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00264550264550264550265),</span>
+<span class="lineNum">     108 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000990226337448559670782),</span>
+<span class="lineNum">     109 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000205761316872427983539),</span>
+<span class="lineNum">     110 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.40187757201646090535e-6),</span>
+<span class="lineNum">     111 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.18098550334489977837e-4),</span>
+<span class="lineNum">     112 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.764916091608111008464e-5),</span>
+<span class="lineNum">     113 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.161209008945634460038e-5),</span>
+<span class="lineNum">     114 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.464712780280743434226e-8),</span>
+<span class="lineNum">     115 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.137863344691572095931e-6),</span>
+<span class="lineNum">     116 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.575254560351770496402e-7),</span>
+<span class="lineNum">     117 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.119516285997781473243e-7),</span>
+<span class="lineNum">     118 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.175432417197476476238e-10),</span>
+<span class="lineNum">     119 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.100915437106004126275e-8),</span>
+<span class="lineNum">     120 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.416279299184258263623e-9),</span>
+<span class="lineNum">     121 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.856390702649298063807e-10),</span>
+<span class="lineNum">     122 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     123 </span><span class="lineCov">          1 :    workspace[1] = tools::evaluate_polynomial(C1, z);</span>
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :    static const T C2[] = {
+<span class="lineNum">     126 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00413359788359788359788),</span>
+<span class="lineNum">     127 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00268132716049382716049),</span>
+<span class="lineNum">     128 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000771604938271604938272),</span>
+<span class="lineNum">     129 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.200938786008230452675e-5),</span>
+<span class="lineNum">     130 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000107366532263651605215),</span>
+<span class="lineNum">     131 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.529234488291201254164e-4),</span>
+<span class="lineNum">     132 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.127606351886187277134e-4),</span>
+<span class="lineNum">     133 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.342357873409613807419e-7),</span>
+<span class="lineNum">     134 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.137219573090629332056e-5),</span>
+<span class="lineNum">     135 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.629899213838005502291e-6),</span>
+<span class="lineNum">     136 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.142806142060642417916e-6),</span>
+<span class="lineNum">     137 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.204770984219908660149e-9),</span>
+<span class="lineNum">     138 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.140925299108675210533e-7),</span>
+<span class="lineNum">     139 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.622897408492202203356e-8),</span>
+<span class="lineNum">     140 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.136704883966171134993e-8),</span>
+<span class="lineNum">     141 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     142 </span><span class="lineCov">          1 :    workspace[2] = tools::evaluate_polynomial(C2, z);</span>
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :    static const T C3[] = {
+<span class="lineNum">     145 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000649434156378600823045),</span>
+<span class="lineNum">     146 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000229472093621399176955),</span>
+<span class="lineNum">     147 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000469189494395255712128),</span>
+<span class="lineNum">     148 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000267720632062838852962),</span>
+<span class="lineNum">     149 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.756180167188397641073e-4),</span>
+<span class="lineNum">     150 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.239650511386729665193e-6),</span>
+<span class="lineNum">     151 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.110826541153473023615e-4),</span>
+<span class="lineNum">     152 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.56749528269915965675e-5),</span>
+<span class="lineNum">     153 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.142309007324358839146e-5),</span>
+<span class="lineNum">     154 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.278610802915281422406e-10),</span>
+<span class="lineNum">     155 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.169584040919302772899e-6),</span>
+<span class="lineNum">     156 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.809946490538808236335e-7),</span>
+<span class="lineNum">     157 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.191111684859736540607e-7),</span>
+<span class="lineNum">     158 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     159 </span><span class="lineCov">          1 :    workspace[3] = tools::evaluate_polynomial(C3, z);</span>
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :    static const T C4[] = {
+<span class="lineNum">     162 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000861888290916711698605),</span>
+<span class="lineNum">     163 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000784039221720066627474),</span>
+<span class="lineNum">     164 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000299072480303190179733),</span>
+<span class="lineNum">     165 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.146384525788434181781e-5),</span>
+<span class="lineNum">     166 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.664149821546512218666e-4),</span>
+<span class="lineNum">     167 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.396836504717943466443e-4),</span>
+<span class="lineNum">     168 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.113757269706784190981e-4),</span>
+<span class="lineNum">     169 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.250749722623753280165e-9),</span>
+<span class="lineNum">     170 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.169541495365583060147e-5),</span>
+<span class="lineNum">     171 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.890750753220530968883e-6),</span>
+<span class="lineNum">     172 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.229293483400080487057e-6),</span>
+<span class="lineNum">     173 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     174 </span><span class="lineCov">          1 :    workspace[4] = tools::evaluate_polynomial(C4, z);</span>
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            :    static const T C5[] = {
+<span class="lineNum">     177 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000336798553366358150309),</span>
+<span class="lineNum">     178 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.697281375836585777429e-4),</span>
+<span class="lineNum">     179 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000277275324495939207873),</span>
+<span class="lineNum">     180 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000199325705161888477003),</span>
+<span class="lineNum">     181 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.679778047793720783882e-4),</span>
+<span class="lineNum">     182 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.141906292064396701483e-6),</span>
+<span class="lineNum">     183 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.135940481897686932785e-4),</span>
+<span class="lineNum">     184 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.801847025633420153972e-5),</span>
+<span class="lineNum">     185 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.229148117650809517038e-5),</span>
+<span class="lineNum">     186 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     187 </span><span class="lineCov">          1 :    workspace[5] = tools::evaluate_polynomial(C5, z);</span>
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            :    static const T C6[] = {
+<span class="lineNum">     190 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000531307936463992223166),</span>
+<span class="lineNum">     191 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000592166437353693882865),</span>
+<span class="lineNum">     192 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000270878209671804482771),</span>
+<span class="lineNum">     193 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.790235323266032787212e-6),</span>
+<span class="lineNum">     194 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.815396936756196875093e-4),</span>
+<span class="lineNum">     195 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.561168275310624965004e-4),</span>
+<span class="lineNum">     196 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.183291165828433755673e-4),</span>
+<span class="lineNum">     197 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.307961345060330478256e-8),</span>
+<span class="lineNum">     198 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.346515536880360908674e-5),</span>
+<span class="lineNum">     199 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.20291327396058603727e-5),</span>
+<span class="lineNum">     200 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.57887928631490037089e-6),</span>
+<span class="lineNum">     201 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     202 </span><span class="lineCov">          1 :    workspace[6] = tools::evaluate_polynomial(C6, z);</span>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :    static const T C7[] = {
+<span class="lineNum">     205 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000344367606892377671254),</span>
+<span class="lineNum">     206 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.517179090826059219337e-4),</span>
+<span class="lineNum">     207 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000334931610811422363117),</span>
+<span class="lineNum">     208 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000281269515476323702274),</span>
+<span class="lineNum">     209 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000109765822446847310235),</span>
+<span class="lineNum">     210 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.127410090954844853795e-6),</span>
+<span class="lineNum">     211 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.277444515115636441571e-4),</span>
+<span class="lineNum">     212 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.182634888057113326614e-4),</span>
+<span class="lineNum">     213 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.578769494973505239894e-5),</span>
+<span class="lineNum">     214 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     215 </span><span class="lineCov">          1 :    workspace[7] = tools::evaluate_polynomial(C7, z);</span>
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :    static const T C8[] = {
+<span class="lineNum">     218 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000652623918595309418922),</span>
+<span class="lineNum">     219 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000839498720672087279993),</span>
+<span class="lineNum">     220 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000438297098541721005061),</span>
+<span class="lineNum">     221 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.696909145842055197137e-6),</span>
+<span class="lineNum">     222 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000166448466420675478374),</span>
+<span class="lineNum">     223 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000127835176797692185853),</span>
+<span class="lineNum">     224 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.462995326369130429061e-4),</span>
+<span class="lineNum">     225 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     226 </span><span class="lineCov">          1 :    workspace[8] = tools::evaluate_polynomial(C8, z);</span>
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :    static const T C9[] = {
+<span class="lineNum">     229 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.000596761290192746250124),</span>
+<span class="lineNum">     230 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.720489541602001055909e-4),</span>
+<span class="lineNum">     231 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000678230883766732836162),</span>
+<span class="lineNum">     232 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.0006401475260262758451),</span>
+<span class="lineNum">     233 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000277501076343287044992),</span>
+<span class="lineNum">     234 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     235 </span><span class="lineCov">          1 :    workspace[9] = tools::evaluate_polynomial(C9, z);</span>
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :    static const T C10[] = {
+<span class="lineNum">     238 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00133244544948006563713),</span>
+<span class="lineNum">     239 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.0019144384985654775265),</span>
+<span class="lineNum">     240 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00110893691345966373396),</span>
+<span class="lineNum">     241 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     242 </span><span class="lineCov">          1 :    workspace[10] = tools::evaluate_polynomial(C10, z);</span>
+<span class="lineNum">     243 </span>            : 
+<span class="lineNum">     244 </span>            :    static const T C11[] = {
+<span class="lineNum">     245 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00157972766073083495909),</span>
+<span class="lineNum">     246 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.000162516262783915816899),</span>
+<span class="lineNum">     247 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00206334210355432762645),</span>
+<span class="lineNum">     248 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00213896861856890981541),</span>
+<span class="lineNum">     249 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00101085593912630031708),</span>
+<span class="lineNum">     250 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     251 </span><span class="lineCov">          1 :    workspace[11] = tools::evaluate_polynomial(C11, z);</span>
+<span class="lineNum">     252 </span>            : 
+<span class="lineNum">     253 </span>            :    static const T C12[] = {
+<span class="lineNum">     254 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00407251211951401664727),</span>
+<span class="lineNum">     255 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.00640336283380806979482),</span>
+<span class="lineNum">     256 </span><span class="lineCov">          1 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.00404101610816766177474),</span>
+<span class="lineNum">     257 </span><span class="lineCov">          2 :    };</span>
+<span class="lineNum">     258 </span><span class="lineCov">          1 :    workspace[12] = tools::evaluate_polynomial(C12, z);</span>
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span><span class="lineCov">          1 :    T result = tools::evaluate_polynomial&lt;13, T, T&gt;(workspace, 1/a);</span>
+<span class="lineNum">     261 </span><span class="lineCov">          1 :    result *= exp(-y) / sqrt(2 * constants::pi&lt;T&gt;() * a);</span>
+<span class="lineNum">     262 </span><span class="lineCov">          1 :    if(x &lt; a)</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :       result = -result;</span>
+<span class="lineNum">     264 </span>            : 
+<span class="lineNum">     265 </span><span class="lineCov">          1 :    result += boost::math::erfc(sqrt(y), pol) / 2;</span>
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span><span class="lineCov">          1 :    return result;</span>
+<span class="lineNum">     268 </span>            : }
+<span class="lineNum">     269 </span>            : //
+<span class="lineNum">     270 </span>            : // This one is accurate for 53-bit mantissa's
+<span class="lineNum">     271 </span>            : // (IEEE double precision or 10^-17).
+<span class="lineNum">     272 </span>            : //
+<span class="lineNum">     273 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     274 </span>            : T igamma_temme_large(T a, T x, const Policy&amp; pol, mpl::int_&lt;53&gt; const *)
+<span class="lineNum">     275 </span>            : {
+<span class="lineNum">     276 </span>            :    BOOST_MATH_STD_USING // ADL of std functions
+<span class="lineNum">     277 </span>            :    T sigma = (x - a) / a;
+<span class="lineNum">     278 </span>            :    T phi = -boost::math::log1pmx(sigma, pol);
+<span class="lineNum">     279 </span>            :    T y = a * phi;
+<span class="lineNum">     280 </span>            :    T z = sqrt(2 * phi);
+<span class="lineNum">     281 </span>            :    if(x &lt; a)
+<span class="lineNum">     282 </span>            :       z = -z;
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :    T workspace[10];
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            :    static const T C0[] = {
+<span class="lineNum">     287 </span>            :       static_cast&lt;T&gt;(-0.33333333333333333L),
+<span class="lineNum">     288 </span>            :       static_cast&lt;T&gt;(0.083333333333333333L),
+<span class="lineNum">     289 </span>            :       static_cast&lt;T&gt;(-0.014814814814814815L),
+<span class="lineNum">     290 </span>            :       static_cast&lt;T&gt;(0.0011574074074074074L),
+<span class="lineNum">     291 </span>            :       static_cast&lt;T&gt;(0.0003527336860670194L),
+<span class="lineNum">     292 </span>            :       static_cast&lt;T&gt;(-0.00017875514403292181L),
+<span class="lineNum">     293 </span>            :       static_cast&lt;T&gt;(0.39192631785224378e-4L),
+<span class="lineNum">     294 </span>            :       static_cast&lt;T&gt;(-0.21854485106799922e-5L),
+<span class="lineNum">     295 </span>            :       static_cast&lt;T&gt;(-0.185406221071516e-5L),
+<span class="lineNum">     296 </span>            :       static_cast&lt;T&gt;(0.8296711340953086e-6L),
+<span class="lineNum">     297 </span>            :       static_cast&lt;T&gt;(-0.17665952736826079e-6L),
+<span class="lineNum">     298 </span>            :       static_cast&lt;T&gt;(0.67078535434014986e-8L),
+<span class="lineNum">     299 </span>            :       static_cast&lt;T&gt;(0.10261809784240308e-7L),
+<span class="lineNum">     300 </span>            :       static_cast&lt;T&gt;(-0.43820360184533532e-8L),
+<span class="lineNum">     301 </span>            :       static_cast&lt;T&gt;(0.91476995822367902e-9L),
+<span class="lineNum">     302 </span>            :    };
+<span class="lineNum">     303 </span>            :    workspace[0] = tools::evaluate_polynomial(C0, z);
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            :    static const T C1[] = {
+<span class="lineNum">     306 </span>            :       static_cast&lt;T&gt;(-0.0018518518518518519L),
+<span class="lineNum">     307 </span>            :       static_cast&lt;T&gt;(-0.0034722222222222222L),
+<span class="lineNum">     308 </span>            :       static_cast&lt;T&gt;(0.0026455026455026455L),
+<span class="lineNum">     309 </span>            :       static_cast&lt;T&gt;(-0.00099022633744855967L),
+<span class="lineNum">     310 </span>            :       static_cast&lt;T&gt;(0.00020576131687242798L),
+<span class="lineNum">     311 </span>            :       static_cast&lt;T&gt;(-0.40187757201646091e-6L),
+<span class="lineNum">     312 </span>            :       static_cast&lt;T&gt;(-0.18098550334489978e-4L),
+<span class="lineNum">     313 </span>            :       static_cast&lt;T&gt;(0.76491609160811101e-5L),
+<span class="lineNum">     314 </span>            :       static_cast&lt;T&gt;(-0.16120900894563446e-5L),
+<span class="lineNum">     315 </span>            :       static_cast&lt;T&gt;(0.46471278028074343e-8L),
+<span class="lineNum">     316 </span>            :       static_cast&lt;T&gt;(0.1378633446915721e-6L),
+<span class="lineNum">     317 </span>            :       static_cast&lt;T&gt;(-0.5752545603517705e-7L),
+<span class="lineNum">     318 </span>            :       static_cast&lt;T&gt;(0.11951628599778147e-7L),
+<span class="lineNum">     319 </span>            :    };
+<span class="lineNum">     320 </span>            :    workspace[1] = tools::evaluate_polynomial(C1, z);
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :    static const T C2[] = {
+<span class="lineNum">     323 </span>            :       static_cast&lt;T&gt;(0.0041335978835978836L),
+<span class="lineNum">     324 </span>            :       static_cast&lt;T&gt;(-0.0026813271604938272L),
+<span class="lineNum">     325 </span>            :       static_cast&lt;T&gt;(0.00077160493827160494L),
+<span class="lineNum">     326 </span>            :       static_cast&lt;T&gt;(0.20093878600823045e-5L),
+<span class="lineNum">     327 </span>            :       static_cast&lt;T&gt;(-0.00010736653226365161L),
+<span class="lineNum">     328 </span>            :       static_cast&lt;T&gt;(0.52923448829120125e-4L),
+<span class="lineNum">     329 </span>            :       static_cast&lt;T&gt;(-0.12760635188618728e-4L),
+<span class="lineNum">     330 </span>            :       static_cast&lt;T&gt;(0.34235787340961381e-7L),
+<span class="lineNum">     331 </span>            :       static_cast&lt;T&gt;(0.13721957309062933e-5L),
+<span class="lineNum">     332 </span>            :       static_cast&lt;T&gt;(-0.6298992138380055e-6L),
+<span class="lineNum">     333 </span>            :       static_cast&lt;T&gt;(0.14280614206064242e-6L),
+<span class="lineNum">     334 </span>            :    };
+<span class="lineNum">     335 </span>            :    workspace[2] = tools::evaluate_polynomial(C2, z);
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            :    static const T C3[] = {
+<span class="lineNum">     338 </span>            :       static_cast&lt;T&gt;(0.00064943415637860082L),
+<span class="lineNum">     339 </span>            :       static_cast&lt;T&gt;(0.00022947209362139918L),
+<span class="lineNum">     340 </span>            :       static_cast&lt;T&gt;(-0.00046918949439525571L),
+<span class="lineNum">     341 </span>            :       static_cast&lt;T&gt;(0.00026772063206283885L),
+<span class="lineNum">     342 </span>            :       static_cast&lt;T&gt;(-0.75618016718839764e-4L),
+<span class="lineNum">     343 </span>            :       static_cast&lt;T&gt;(-0.23965051138672967e-6L),
+<span class="lineNum">     344 </span>            :       static_cast&lt;T&gt;(0.11082654115347302e-4L),
+<span class="lineNum">     345 </span>            :       static_cast&lt;T&gt;(-0.56749528269915966e-5L),
+<span class="lineNum">     346 </span>            :       static_cast&lt;T&gt;(0.14230900732435884e-5L),
+<span class="lineNum">     347 </span>            :    };
+<span class="lineNum">     348 </span>            :    workspace[3] = tools::evaluate_polynomial(C3, z);
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            :    static const T C4[] = {
+<span class="lineNum">     351 </span>            :       static_cast&lt;T&gt;(-0.0008618882909167117L),
+<span class="lineNum">     352 </span>            :       static_cast&lt;T&gt;(0.00078403922172006663L),
+<span class="lineNum">     353 </span>            :       static_cast&lt;T&gt;(-0.00029907248030319018L),
+<span class="lineNum">     354 </span>            :       static_cast&lt;T&gt;(-0.14638452578843418e-5L),
+<span class="lineNum">     355 </span>            :       static_cast&lt;T&gt;(0.66414982154651222e-4L),
+<span class="lineNum">     356 </span>            :       static_cast&lt;T&gt;(-0.39683650471794347e-4L),
+<span class="lineNum">     357 </span>            :       static_cast&lt;T&gt;(0.11375726970678419e-4L),
+<span class="lineNum">     358 </span>            :    };
+<span class="lineNum">     359 </span>            :    workspace[4] = tools::evaluate_polynomial(C4, z);
+<span class="lineNum">     360 </span>            : 
+<span class="lineNum">     361 </span>            :    static const T C5[] = {
+<span class="lineNum">     362 </span>            :       static_cast&lt;T&gt;(-0.00033679855336635815L),
+<span class="lineNum">     363 </span>            :       static_cast&lt;T&gt;(-0.69728137583658578e-4L),
+<span class="lineNum">     364 </span>            :       static_cast&lt;T&gt;(0.00027727532449593921L),
+<span class="lineNum">     365 </span>            :       static_cast&lt;T&gt;(-0.00019932570516188848L),
+<span class="lineNum">     366 </span>            :       static_cast&lt;T&gt;(0.67977804779372078e-4L),
+<span class="lineNum">     367 </span>            :       static_cast&lt;T&gt;(0.1419062920643967e-6L),
+<span class="lineNum">     368 </span>            :       static_cast&lt;T&gt;(-0.13594048189768693e-4L),
+<span class="lineNum">     369 </span>            :       static_cast&lt;T&gt;(0.80184702563342015e-5L),
+<span class="lineNum">     370 </span>            :       static_cast&lt;T&gt;(-0.22914811765080952e-5L),
+<span class="lineNum">     371 </span>            :    };
+<span class="lineNum">     372 </span>            :    workspace[5] = tools::evaluate_polynomial(C5, z);
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            :    static const T C6[] = {
+<span class="lineNum">     375 </span>            :       static_cast&lt;T&gt;(0.00053130793646399222L),
+<span class="lineNum">     376 </span>            :       static_cast&lt;T&gt;(-0.00059216643735369388L),
+<span class="lineNum">     377 </span>            :       static_cast&lt;T&gt;(0.00027087820967180448L),
+<span class="lineNum">     378 </span>            :       static_cast&lt;T&gt;(0.79023532326603279e-6L),
+<span class="lineNum">     379 </span>            :       static_cast&lt;T&gt;(-0.81539693675619688e-4L),
+<span class="lineNum">     380 </span>            :       static_cast&lt;T&gt;(0.56116827531062497e-4L),
+<span class="lineNum">     381 </span>            :       static_cast&lt;T&gt;(-0.18329116582843376e-4L),
+<span class="lineNum">     382 </span>            :    };
+<span class="lineNum">     383 </span>            :    workspace[6] = tools::evaluate_polynomial(C6, z);
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            :    static const T C7[] = {
+<span class="lineNum">     386 </span>            :       static_cast&lt;T&gt;(0.00034436760689237767L),
+<span class="lineNum">     387 </span>            :       static_cast&lt;T&gt;(0.51717909082605922e-4L),
+<span class="lineNum">     388 </span>            :       static_cast&lt;T&gt;(-0.00033493161081142236L),
+<span class="lineNum">     389 </span>            :       static_cast&lt;T&gt;(0.0002812695154763237L),
+<span class="lineNum">     390 </span>            :       static_cast&lt;T&gt;(-0.00010976582244684731L),
+<span class="lineNum">     391 </span>            :    };
+<span class="lineNum">     392 </span>            :    workspace[7] = tools::evaluate_polynomial(C7, z);
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            :    static const T C8[] = {
+<span class="lineNum">     395 </span>            :       static_cast&lt;T&gt;(-0.00065262391859530942L),
+<span class="lineNum">     396 </span>            :       static_cast&lt;T&gt;(0.00083949872067208728L),
+<span class="lineNum">     397 </span>            :       static_cast&lt;T&gt;(-0.00043829709854172101L),
+<span class="lineNum">     398 </span>            :    };
+<span class="lineNum">     399 </span>            :    workspace[8] = tools::evaluate_polynomial(C8, z);
+<span class="lineNum">     400 </span>            :    workspace[9] = static_cast&lt;T&gt;(-0.00059676129019274625L);
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :    T result = tools::evaluate_polynomial&lt;10, T, T&gt;(workspace, 1/a);
+<span class="lineNum">     403 </span>            :    result *= exp(-y) / sqrt(2 * constants::pi&lt;T&gt;() * a);
+<span class="lineNum">     404 </span>            :    if(x &lt; a)
+<span class="lineNum">     405 </span>            :       result = -result;
+<span class="lineNum">     406 </span>            : 
+<span class="lineNum">     407 </span>            :    result += boost::math::erfc(sqrt(y), pol) / 2;
+<span class="lineNum">     408 </span>            : 
+<span class="lineNum">     409 </span>            :    return result;
+<span class="lineNum">     410 </span>            : }
+<span class="lineNum">     411 </span>            : //
+<span class="lineNum">     412 </span>            : // This one is accurate for 24-bit mantissa's
+<span class="lineNum">     413 </span>            : // (IEEE float precision, or 10^-8)
+<span class="lineNum">     414 </span>            : //
+<span class="lineNum">     415 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     416 </span>            : T igamma_temme_large(T a, T x, const Policy&amp; pol, mpl::int_&lt;24&gt; const *)
+<span class="lineNum">     417 </span>            : {
+<span class="lineNum">     418 </span>            :    BOOST_MATH_STD_USING // ADL of std functions
+<span class="lineNum">     419 </span>            :    T sigma = (x - a) / a;
+<span class="lineNum">     420 </span>            :    T phi = -boost::math::log1pmx(sigma, pol);
+<span class="lineNum">     421 </span>            :    T y = a * phi;
+<span class="lineNum">     422 </span>            :    T z = sqrt(2 * phi);
+<span class="lineNum">     423 </span>            :    if(x &lt; a)
+<span class="lineNum">     424 </span>            :       z = -z;
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            :    T workspace[3];
+<span class="lineNum">     427 </span>            : 
+<span class="lineNum">     428 </span>            :    static const T C0[] = {
+<span class="lineNum">     429 </span>            :       static_cast&lt;T&gt;(-0.333333333L),
+<span class="lineNum">     430 </span>            :       static_cast&lt;T&gt;(0.0833333333L),
+<span class="lineNum">     431 </span>            :       static_cast&lt;T&gt;(-0.0148148148L),
+<span class="lineNum">     432 </span>            :       static_cast&lt;T&gt;(0.00115740741L),
+<span class="lineNum">     433 </span>            :       static_cast&lt;T&gt;(0.000352733686L),
+<span class="lineNum">     434 </span>            :       static_cast&lt;T&gt;(-0.000178755144L),
+<span class="lineNum">     435 </span>            :       static_cast&lt;T&gt;(0.391926318e-4L),
+<span class="lineNum">     436 </span>            :    };
+<span class="lineNum">     437 </span>            :    workspace[0] = tools::evaluate_polynomial(C0, z);
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span>            :    static const T C1[] = {
+<span class="lineNum">     440 </span>            :       static_cast&lt;T&gt;(-0.00185185185L),
+<span class="lineNum">     441 </span>            :       static_cast&lt;T&gt;(-0.00347222222L),
+<span class="lineNum">     442 </span>            :       static_cast&lt;T&gt;(0.00264550265L),
+<span class="lineNum">     443 </span>            :       static_cast&lt;T&gt;(-0.000990226337L),
+<span class="lineNum">     444 </span>            :       static_cast&lt;T&gt;(0.000205761317L),
+<span class="lineNum">     445 </span>            :    };
+<span class="lineNum">     446 </span>            :    workspace[1] = tools::evaluate_polynomial(C1, z);
+<span class="lineNum">     447 </span>            : 
+<span class="lineNum">     448 </span>            :    static const T C2[] = {
+<span class="lineNum">     449 </span>            :       static_cast&lt;T&gt;(0.00413359788L),
+<span class="lineNum">     450 </span>            :       static_cast&lt;T&gt;(-0.00268132716L),
+<span class="lineNum">     451 </span>            :       static_cast&lt;T&gt;(0.000771604938L),
+<span class="lineNum">     452 </span>            :    };
+<span class="lineNum">     453 </span>            :    workspace[2] = tools::evaluate_polynomial(C2, z);
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span>            :    T result = tools::evaluate_polynomial(workspace, 1/a);
+<span class="lineNum">     456 </span>            :    result *= exp(-y) / sqrt(2 * constants::pi&lt;T&gt;() * a);
+<span class="lineNum">     457 </span>            :    if(x &lt; a)
+<span class="lineNum">     458 </span>            :       result = -result;
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            :    result += boost::math::erfc(sqrt(y), pol) / 2;
+<span class="lineNum">     461 </span>            : 
+<span class="lineNum">     462 </span>            :    return result;
+<span class="lineNum">     463 </span>            : }
+<span class="lineNum">     464 </span>            : //
+<span class="lineNum">     465 </span>            : // And finally, a version for 113-bit mantissa's
+<span class="lineNum">     466 </span>            : // (128-bit long doubles, or 10^-34).
+<span class="lineNum">     467 </span>            : // Note this one has been optimised for a &gt; 200
+<span class="lineNum">     468 </span>            : // It's use for a &lt; 200 is not recomended, that would
+<span class="lineNum">     469 </span>            : // require many more terms in the polynomials.
+<span class="lineNum">     470 </span>            : //
+<span class="lineNum">     471 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     472 </span>            : T igamma_temme_large(T a, T x, const Policy&amp; pol, mpl::int_&lt;113&gt; const *)
+<span class="lineNum">     473 </span>            : {
+<span class="lineNum">     474 </span>            :    BOOST_MATH_STD_USING // ADL of std functions
+<span class="lineNum">     475 </span>            :    T sigma = (x - a) / a;
+<span class="lineNum">     476 </span>            :    T phi = -boost::math::log1pmx(sigma, pol);
+<span class="lineNum">     477 </span>            :    T y = a * phi;
+<span class="lineNum">     478 </span>            :    T z = sqrt(2 * phi);
+<span class="lineNum">     479 </span>            :    if(x &lt; a)
+<span class="lineNum">     480 </span>            :       z = -z;
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            :    T workspace[14];
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            :    static const T C0[] = {
+<span class="lineNum">     485 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.333333333333333333333333333333333333),
+<span class="lineNum">     486 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.0833333333333333333333333333333333333),
+<span class="lineNum">     487 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.0148148148148148148148148148148148148),
+<span class="lineNum">     488 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00115740740740740740740740740740740741),
+<span class="lineNum">     489 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.0003527336860670194003527336860670194),
+<span class="lineNum">     490 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000178755144032921810699588477366255144),
+<span class="lineNum">     491 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.391926317852243778169704095630021556e-4),
+<span class="lineNum">     492 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.218544851067999216147364295512443661e-5),
+<span class="lineNum">     493 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.185406221071515996070179883622956325e-5),
+<span class="lineNum">     494 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.829671134095308600501624213166443227e-6),
+<span class="lineNum">     495 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.17665952736826079304360054245742403e-6),
+<span class="lineNum">     496 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.670785354340149858036939710029613572e-8),
+<span class="lineNum">     497 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.102618097842403080425739573227252951e-7),
+<span class="lineNum">     498 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.438203601845335318655297462244719123e-8),
+<span class="lineNum">     499 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.914769958223679023418248817633113681e-9),
+<span class="lineNum">     500 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.255141939949462497668779537993887013e-10),
+<span class="lineNum">     501 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.583077213255042506746408945040035798e-10),
+<span class="lineNum">     502 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.243619480206674162436940696707789943e-10),
+<span class="lineNum">     503 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.502766928011417558909054985925744366e-11),
+<span class="lineNum">     504 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.110043920319561347708374174497293411e-12),
+<span class="lineNum">     505 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.337176326240098537882769884169200185e-12),
+<span class="lineNum">     506 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.13923887224181620659193661848957998e-12),
+<span class="lineNum">     507 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.285348938070474432039669099052828299e-13),
+<span class="lineNum">     508 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.513911183424257261899064580300494205e-15),
+<span class="lineNum">     509 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.197522882943494428353962401580710912e-14),
+<span class="lineNum">     510 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.809952115670456133407115668702575255e-15),
+<span class="lineNum">     511 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.165225312163981618191514820265351162e-15),
+<span class="lineNum">     512 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.253054300974788842327061090060267385e-17),
+<span class="lineNum">     513 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.116869397385595765888230876507793475e-16),
+<span class="lineNum">     514 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.477003704982048475822167804084816597e-17),
+<span class="lineNum">     515 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.969912605905623712420709685898585354e-18),
+<span class="lineNum">     516 </span>            :    };
+<span class="lineNum">     517 </span>            :    workspace[0] = tools::evaluate_polynomial(C0, z);
+<span class="lineNum">     518 </span>            : 
+<span class="lineNum">     519 </span>            :    static const T C1[] = {
+<span class="lineNum">     520 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00185185185185185185185185185185185185),
+<span class="lineNum">     521 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00347222222222222222222222222222222222),
+<span class="lineNum">     522 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.0026455026455026455026455026455026455),
+<span class="lineNum">     523 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000990226337448559670781893004115226337),
+<span class="lineNum">     524 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000205761316872427983539094650205761317),
+<span class="lineNum">     525 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.401877572016460905349794238683127572e-6),
+<span class="lineNum">     526 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.180985503344899778370285914867533523e-4),
+<span class="lineNum">     527 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.76491609160811100846374214980916921e-5),
+<span class="lineNum">     528 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.16120900894563446003775221882217767e-5),
+<span class="lineNum">     529 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.464712780280743434226135033938722401e-8),
+<span class="lineNum">     530 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.137863344691572095931187533077488877e-6),
+<span class="lineNum">     531 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.575254560351770496402194531835048307e-7),
+<span class="lineNum">     532 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.119516285997781473243076536699698169e-7),
+<span class="lineNum">     533 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.175432417197476476237547551202312502e-10),
+<span class="lineNum">     534 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.100915437106004126274577504686681675e-8),
+<span class="lineNum">     535 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.416279299184258263623372347219858628e-9),
+<span class="lineNum">     536 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.856390702649298063807431562579670208e-10),
+<span class="lineNum">     537 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.606721510160475861512701762169919581e-13),
+<span class="lineNum">     538 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.716249896481148539007961017165545733e-11),
+<span class="lineNum">     539 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.293318664377143711740636683615595403e-11),
+<span class="lineNum">     540 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.599669636568368872330374527568788909e-12),
+<span class="lineNum">     541 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.216717865273233141017100472779701734e-15),
+<span class="lineNum">     542 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.497833997236926164052815522048108548e-13),
+<span class="lineNum">     543 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.202916288237134247736694804325894226e-13),
+<span class="lineNum">     544 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.413125571381061004935108332558187111e-14),
+<span class="lineNum">     545 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.828651623988309644380188591057589316e-18),
+<span class="lineNum">     546 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.341003088693333279336339355910600992e-15),
+<span class="lineNum">     547 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.138541953028939715357034547426313703e-15),
+<span class="lineNum">     548 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.281234665322887466568860332727259483e-16),
+<span class="lineNum">     549 </span>            :    };
+<span class="lineNum">     550 </span>            :    workspace[1] = tools::evaluate_polynomial(C1, z);
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            :    static const T C2[] = {
+<span class="lineNum">     553 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.0041335978835978835978835978835978836),
+<span class="lineNum">     554 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00268132716049382716049382716049382716),
+<span class="lineNum">     555 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000771604938271604938271604938271604938),
+<span class="lineNum">     556 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.200938786008230452674897119341563786e-5),
+<span class="lineNum">     557 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000107366532263651605215391223621676297),
+<span class="lineNum">     558 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.529234488291201254164217127180090143e-4),
+<span class="lineNum">     559 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.127606351886187277133779191392360117e-4),
+<span class="lineNum">     560 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.34235787340961380741902003904747389e-7),
+<span class="lineNum">     561 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.137219573090629332055943852926020279e-5),
+<span class="lineNum">     562 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.629899213838005502290672234278391876e-6),
+<span class="lineNum">     563 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.142806142060642417915846008822771748e-6),
+<span class="lineNum">     564 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.204770984219908660149195854409200226e-9),
+<span class="lineNum">     565 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.140925299108675210532930244154315272e-7),
+<span class="lineNum">     566 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.622897408492202203356394293530327112e-8),
+<span class="lineNum">     567 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.136704883966171134992724380284402402e-8),
+<span class="lineNum">     568 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.942835615901467819547711211663208075e-12),
+<span class="lineNum">     569 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.128722524000893180595479368872770442e-9),
+<span class="lineNum">     570 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.556459561343633211465414765894951439e-10),
+<span class="lineNum">     571 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.119759355463669810035898150310311343e-10),
+<span class="lineNum">     572 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.416897822518386350403836626692480096e-14),
+<span class="lineNum">     573 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.109406404278845944099299008640802908e-11),
+<span class="lineNum">     574 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.4662239946390135746326204922464679e-12),
+<span class="lineNum">     575 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.990510576390690597844122258212382301e-13),
+<span class="lineNum">     576 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.189318767683735145056885183170630169e-16),
+<span class="lineNum">     577 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.885922187259112726176031067028740667e-14),
+<span class="lineNum">     578 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.373782039804640545306560251777191937e-14),
+<span class="lineNum">     579 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.786883363903515525774088394065960751e-15),
+<span class="lineNum">     580 </span>            :    };
+<span class="lineNum">     581 </span>            :    workspace[2] = tools::evaluate_polynomial(C2, z);
+<span class="lineNum">     582 </span>            : 
+<span class="lineNum">     583 </span>            :    static const T C3[] = {
+<span class="lineNum">     584 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000649434156378600823045267489711934156),
+<span class="lineNum">     585 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000229472093621399176954732510288065844),
+<span class="lineNum">     586 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000469189494395255712128140111679206329),
+<span class="lineNum">     587 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000267720632062838852962309752433209223),
+<span class="lineNum">     588 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.756180167188397641072538191879755666e-4),
+<span class="lineNum">     589 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.239650511386729665193314027333231723e-6),
+<span class="lineNum">     590 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.110826541153473023614770299726861227e-4),
+<span class="lineNum">     591 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.567495282699159656749963105701560205e-5),
+<span class="lineNum">     592 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.14230900732435883914551894470580433e-5),
+<span class="lineNum">     593 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.278610802915281422405802158211174452e-10),
+<span class="lineNum">     594 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.16958404091930277289864168795820267e-6),
+<span class="lineNum">     595 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.809946490538808236335278504852724081e-7),
+<span class="lineNum">     596 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.191111684859736540606728140872727635e-7),
+<span class="lineNum">     597 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.239286204398081179686413514022282056e-11),
+<span class="lineNum">     598 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.206201318154887984369925818486654549e-8),
+<span class="lineNum">     599 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.946049666185513217375417988510192814e-9),
+<span class="lineNum">     600 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.215410497757749078380130268468744512e-9),
+<span class="lineNum">     601 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.138882333681390304603424682490735291e-13),
+<span class="lineNum">     602 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.218947616819639394064123400466489455e-10),
+<span class="lineNum">     603 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.979099895117168512568262802255883368e-11),
+<span class="lineNum">     604 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.217821918801809621153859472011393244e-11),
+<span class="lineNum">     605 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.62088195734079014258166361684972205e-16),
+<span class="lineNum">     606 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.212697836327973697696702537114614471e-12),
+<span class="lineNum">     607 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.934468879151743333127396765626749473e-13),
+<span class="lineNum">     608 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.204536712267828493249215913063207436e-13),
+<span class="lineNum">     609 </span>            :    };
+<span class="lineNum">     610 </span>            :    workspace[3] = tools::evaluate_polynomial(C3, z);
+<span class="lineNum">     611 </span>            : 
+<span class="lineNum">     612 </span>            :    static const T C4[] = {
+<span class="lineNum">     613 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000861888290916711698604702719929057378),
+<span class="lineNum">     614 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00078403922172006662747403488144228885),
+<span class="lineNum">     615 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000299072480303190179733389609932819809),
+<span class="lineNum">     616 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.146384525788434181781232535690697556e-5),
+<span class="lineNum">     617 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.664149821546512218665853782451862013e-4),
+<span class="lineNum">     618 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.396836504717943466443123507595386882e-4),
+<span class="lineNum">     619 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.113757269706784190980552042885831759e-4),
+<span class="lineNum">     620 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.250749722623753280165221942390057007e-9),
+<span class="lineNum">     621 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.169541495365583060147164356781525752e-5),
+<span class="lineNum">     622 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.890750753220530968882898422505515924e-6),
+<span class="lineNum">     623 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.229293483400080487057216364891158518e-6),
+<span class="lineNum">     624 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.295679413754404904696572852500004588e-10),
+<span class="lineNum">     625 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.288658297427087836297341274604184504e-7),
+<span class="lineNum">     626 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.141897394378032193894774303903982717e-7),
+<span class="lineNum">     627 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.344635804994648970659527720474194356e-8),
+<span class="lineNum">     628 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.230245171745280671320192735850147087e-12),
+<span class="lineNum">     629 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.394092330280464052750697640085291799e-9),
+<span class="lineNum">     630 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.186023389685045019134258533045185639e-9),
+<span class="lineNum">     631 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.435632300505661804380678327446262424e-10),
+<span class="lineNum">     632 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.127860010162962312660550463349930726e-14),
+<span class="lineNum">     633 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.467927502665791946200382739991760062e-11),
+<span class="lineNum">     634 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.214924647061348285410535341910721086e-11),
+<span class="lineNum">     635 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.490881561480965216323649688463984082e-12),
+<span class="lineNum">     636 </span>            :    };
+<span class="lineNum">     637 </span>            :    workspace[4] = tools::evaluate_polynomial(C4, z);
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span>            :    static const T C5[] = {
+<span class="lineNum">     640 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000336798553366358150308767592718210002),
+<span class="lineNum">     641 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.697281375836585777429398828575783308e-4),
+<span class="lineNum">     642 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00027727532449593920787336425196507501),
+<span class="lineNum">     643 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000199325705161888477003360405280844238),
+<span class="lineNum">     644 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.679778047793720783881640176604435742e-4),
+<span class="lineNum">     645 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.141906292064396701483392727105575757e-6),
+<span class="lineNum">     646 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.135940481897686932784583938837504469e-4),
+<span class="lineNum">     647 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.80184702563342015397192571980419684e-5),
+<span class="lineNum">     648 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.229148117650809517038048790128781806e-5),
+<span class="lineNum">     649 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.325247355129845395166230137750005047e-9),
+<span class="lineNum">     650 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.346528464910852649559195496827579815e-6),
+<span class="lineNum">     651 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.184471871911713432765322367374920978e-6),
+<span class="lineNum">     652 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.482409670378941807563762631738989002e-7),
+<span class="lineNum">     653 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.179894667217435153025754291716644314e-13),
+<span class="lineNum">     654 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.630619450001352343517516981425944698e-8),
+<span class="lineNum">     655 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.316241762877456793773762181540969623e-8),
+<span class="lineNum">     656 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.784092425369742929000839303523267545e-9),
+<span class="lineNum">     657 </span>            :    };
+<span class="lineNum">     658 </span>            :    workspace[5] = tools::evaluate_polynomial(C5, z);
+<span class="lineNum">     659 </span>            : 
+<span class="lineNum">     660 </span>            :    static const T C6[] = {
+<span class="lineNum">     661 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00053130793646399222316574854297762391),
+<span class="lineNum">     662 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000592166437353693882864836225604401187),
+<span class="lineNum">     663 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000270878209671804482771279183488328692),
+<span class="lineNum">     664 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.790235323266032787212032944390816666e-6),
+<span class="lineNum">     665 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.815396936756196875092890088464682624e-4),
+<span class="lineNum">     666 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.561168275310624965003775619041471695e-4),
+<span class="lineNum">     667 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.183291165828433755673259749374098313e-4),
+<span class="lineNum">     668 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.307961345060330478256414192546677006e-8),
+<span class="lineNum">     669 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.346515536880360908673728529745376913e-5),
+<span class="lineNum">     670 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.202913273960586037269527254582695285e-5),
+<span class="lineNum">     671 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.578879286314900370889997586203187687e-6),
+<span class="lineNum">     672 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.233863067382665698933480579231637609e-12),
+<span class="lineNum">     673 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.88286007463304835250508524317926246e-7),
+<span class="lineNum">     674 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.474359588804081278032150770595852426e-7),
+<span class="lineNum">     675 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.125454150207103824457130611214783073e-7),
+<span class="lineNum">     676 </span>            :    };
+<span class="lineNum">     677 </span>            :    workspace[6] = tools::evaluate_polynomial(C6, z);
+<span class="lineNum">     678 </span>            : 
+<span class="lineNum">     679 </span>            :    static const T C7[] = {
+<span class="lineNum">     680 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000344367606892377671254279625108523655),
+<span class="lineNum">     681 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.517179090826059219337057843002058823e-4),
+<span class="lineNum">     682 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000334931610811422363116635090580012327),
+<span class="lineNum">     683 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000281269515476323702273722110707777978),
+<span class="lineNum">     684 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000109765822446847310235396824500789005),
+<span class="lineNum">     685 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.127410090954844853794579954588107623e-6),
+<span class="lineNum">     686 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.277444515115636441570715073933712622e-4),
+<span class="lineNum">     687 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.182634888057113326614324442681892723e-4),
+<span class="lineNum">     688 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.578769494973505239894178121070843383e-5),
+<span class="lineNum">     689 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.493875893393627039981813418398565502e-9),
+<span class="lineNum">     690 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.105953670140260427338098566209633945e-5),
+<span class="lineNum">     691 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.616671437611040747858836254004890765e-6),
+<span class="lineNum">     692 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.175629733590604619378669693914265388e-6),
+<span class="lineNum">     693 </span>            :    };
+<span class="lineNum">     694 </span>            :    workspace[7] = tools::evaluate_polynomial(C7, z);
+<span class="lineNum">     695 </span>            : 
+<span class="lineNum">     696 </span>            :    static const T C8[] = {
+<span class="lineNum">     697 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000652623918595309418922034919726622692),
+<span class="lineNum">     698 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000839498720672087279993357516764983445),
+<span class="lineNum">     699 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000438297098541721005061087953050560377),
+<span class="lineNum">     700 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.696909145842055197136911097362072702e-6),
+<span class="lineNum">     701 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00016644846642067547837384572662326101),
+<span class="lineNum">     702 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000127835176797692185853344001461664247),
+<span class="lineNum">     703 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.462995326369130429061361032704489636e-4),
+<span class="lineNum">     704 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.455790986792270771162749294232219616e-8),
+<span class="lineNum">     705 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.105952711258051954718238500312872328e-4),
+<span class="lineNum">     706 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.678334290486516662273073740749269432e-5),
+<span class="lineNum">     707 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.210754766662588042469972680229376445e-5),
+<span class="lineNum">     708 </span>            :    };
+<span class="lineNum">     709 </span>            :    workspace[8] = tools::evaluate_polynomial(C8, z);
+<span class="lineNum">     710 </span>            : 
+<span class="lineNum">     711 </span>            :    static const T C9[] = {
+<span class="lineNum">     712 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000596761290192746250124390067179459605),
+<span class="lineNum">     713 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.720489541602001055908571930225015052e-4),
+<span class="lineNum">     714 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000678230883766732836161951166000673426),
+<span class="lineNum">     715 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000640147526026275845100045652582354779),
+<span class="lineNum">     716 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000277501076343287044992374518205845463),
+<span class="lineNum">     717 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.181970083804651510461686554030325202e-6),
+<span class="lineNum">     718 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.847950711706850318239732559632810086e-4),
+<span class="lineNum">     719 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.610519208250153101764709122740859458e-4),
+<span class="lineNum">     720 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.210739201834048624082975255893773306e-4),
+<span class="lineNum">     721 </span>            :    };
+<span class="lineNum">     722 </span>            :    workspace[9] = tools::evaluate_polynomial(C9, z);
+<span class="lineNum">     723 </span>            : 
+<span class="lineNum">     724 </span>            :    static const T C10[] = {
+<span class="lineNum">     725 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00133244544948006563712694993432717968),
+<span class="lineNum">     726 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00191443849856547752650089885832852254),
+<span class="lineNum">     727 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.0011089369134596637339607446329267522),
+<span class="lineNum">     728 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.993240412264229896742295262075817566e-6),
+<span class="lineNum">     729 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000508745012930931989848393025305956774),
+<span class="lineNum">     730 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00042735056665392884328432271160040444),
+<span class="lineNum">     731 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.000168588537679107988033552814662382059),
+<span class="lineNum">     732 </span>            :    };
+<span class="lineNum">     733 </span>            :    workspace[10] = tools::evaluate_polynomial(C10, z);
+<span class="lineNum">     734 </span>            : 
+<span class="lineNum">     735 </span>            :    static const T C11[] = {
+<span class="lineNum">     736 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00157972766073083495908785631307733022),
+<span class="lineNum">     737 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.000162516262783915816898635123980270998),
+<span class="lineNum">     738 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00206334210355432762645284467690276817),
+<span class="lineNum">     739 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00213896861856890981541061922797693947),
+<span class="lineNum">     740 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00101085593912630031708085801712479376),
+<span class="lineNum">     741 </span>            :    };
+<span class="lineNum">     742 </span>            :    workspace[11] = tools::evaluate_polynomial(C11, z);
+<span class="lineNum">     743 </span>            : 
+<span class="lineNum">     744 </span>            :    static const T C12[] = {
+<span class="lineNum">     745 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00407251211951401664727281097914544601),
+<span class="lineNum">     746 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.00640336283380806979482363809026579583),
+<span class="lineNum">     747 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.00404101610816766177473974858518094879),
+<span class="lineNum">     748 </span>            :    };
+<span class="lineNum">     749 </span>            :    workspace[12] = tools::evaluate_polynomial(C12, z);
+<span class="lineNum">     750 </span>            :    workspace[13] = -0.0059475779383993002845382844736066323L;
+<span class="lineNum">     751 </span>            : 
+<span class="lineNum">     752 </span>            :    T result = tools::evaluate_polynomial(workspace, T(1/a));
+<span class="lineNum">     753 </span>            :    result *= exp(-y) / sqrt(2 * constants::pi&lt;T&gt;() * a);
+<span class="lineNum">     754 </span>            :    if(x &lt; a)
+<span class="lineNum">     755 </span>            :       result = -result;
+<span class="lineNum">     756 </span>            : 
+<span class="lineNum">     757 </span>            :    result += boost::math::erfc(sqrt(y), pol) / 2;
+<span class="lineNum">     758 </span>            : 
+<span class="lineNum">     759 </span>            :    return result;
+<span class="lineNum">     760 </span>            : }
+<span class="lineNum">     761 </span>            : 
+<span class="lineNum">     762 </span>            : }  // namespace detail
+<span class="lineNum">     763 </span>            : }  // namespace math
+<span class="lineNum">     764 </span>            : }  // namespace math
+<span class="lineNum">     765 </span>            : 
+<span class="lineNum">     766 </span>            : 
+<span class="lineNum">     767 </span>            : #endif // BOOST_MATH_DETAIL_IGAMMA_LARGE
+<span class="lineNum">     768 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

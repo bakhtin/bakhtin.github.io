@@ -1,0 +1,741 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/rx-observer.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp</a> - rx-observer.hpp<span style="font-size: 80%;"> (source / <a href="rx-observer.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">95</td>
+            <td class="headerCovTableEntry">134</td>
+            <td class="headerCovTableEntryLo">70.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">758</td>
+            <td class="headerCovTableEntry">1104</td>
+            <td class="headerCovTableEntryLo">68.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #if !defined(RXCPP_RX_OBSERVER_HPP)
+<span class="lineNum">       6 </span>            : #define RXCPP_RX_OBSERVER_HPP
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;rx-includes.hpp&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : namespace rxcpp {
+<span class="lineNum">      11 </span>            : 
+<a name="12"><span class="lineNum">      12 </span>            : </a>
+<span class="lineNum">      13 </span>            : template&lt;class T&gt;
+<span class="lineNum">      14 </span><span class="lineCov">      11390 : struct observer_base</span>
+<span class="lineNum">      15 </span>            : {
+<span class="lineNum">      16 </span>            :     typedef T value_type;
+<span class="lineNum">      17 </span>            :     typedef tag_observer observer_tag;
+<span class="lineNum">      18 </span>            : };
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace detail {
+<span class="lineNum">      21 </span>            : template&lt;class T&gt;
+<span class="lineNum">      22 </span>            : struct OnNextEmpty
+<span class="lineNum">      23 </span>            : {
+<span class="lineNum">      24 </span>            :     void operator()(const T&amp;) const {}
+<span class="lineNum">      25 </span>            : };
+<a name="26"><span class="lineNum">      26 </span>            : struct OnErrorEmpty</a>
+<span class="lineNum">      27 </span>            : {
+<span class="lineNum">      28 </span><span class="lineNoCov">          0 :     void operator()(std::exception_ptr) const {</span>
+<span class="lineNum">      29 </span>            :         // error implicitly ignored, abort
+<span class="lineNum">      30 </span><span class="lineNoCov">          0 :         std::terminate();</span>
+<span class="lineNum">      31 </span>            :     }
+<span class="lineNum">      32 </span>            : };
+<span class="lineNum">      33 </span>            : struct OnErrorIgnore
+<span class="lineNum">      34 </span>            : {
+<span class="lineNum">      35 </span>            :     void operator()(std::exception_ptr) const {
+<span class="lineNum">      36 </span>            :     }
+<span class="lineNum">      37 </span>            : };
+<a name="38"><span class="lineNum">      38 </span>            : struct OnCompletedEmpty</a>
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span><span class="lineCov">         78 :     void operator()() const {}</span>
+<span class="lineNum">      41 </span>            : };
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : template&lt;class T, class State, class OnNext&gt;
+<span class="lineNum">      44 </span>            : struct OnNextForward
+<span class="lineNum">      45 </span>            : {
+<span class="lineNum">      46 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;
+<span class="lineNum">      47 </span>            :     using onnext_t = rxu::decay_t&lt;OnNext&gt;;
+<span class="lineNum">      48 </span>            :     OnNextForward() : onnext() {}
+<span class="lineNum">      49 </span>            :     explicit OnNextForward(onnext_t on) : onnext(std::move(on)) {}
+<span class="lineNum">      50 </span>            :     onnext_t onnext;
+<span class="lineNum">      51 </span>            :     void operator()(state_t&amp; s, T&amp; t) const {
+<span class="lineNum">      52 </span>            :         onnext(s, t);
+<span class="lineNum">      53 </span>            :     }
+<span class="lineNum">      54 </span>            :     void operator()(state_t&amp; s, T&amp;&amp; t) const {
+<span class="lineNum">      55 </span>            :         onnext(s, t);
+<span class="lineNum">      56 </span>            :     }
+<span class="lineNum">      57 </span>            : };
+<span class="lineNum">      58 </span>            : template&lt;class T, class State&gt;
+<span class="lineNum">      59 </span>            : struct OnNextForward&lt;T, State, void&gt;
+<a name="60"><span class="lineNum">      60 </span>            : {</a>
+<a name="61"><span class="lineNum">      61 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;</a>
+<span class="lineNum">      62 </span><span class="lineCov">        310 :     OnNextForward() {}</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :     void operator()(state_t&amp; s, T&amp; t) const {</span>
+<a name="64"><span class="lineNum">      64 </span><span class="lineNoCov">          0 :         s.on_next(t);</span></a>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">      66 </span><span class="lineCov">        145 :     void operator()(state_t&amp; s, T&amp;&amp; t) const {</span>
+<span class="lineNum">      67 </span><span class="lineCov">        145 :         s.on_next(t);</span>
+<span class="lineNum">      68 </span><span class="lineCov">        145 :     }</span>
+<span class="lineNum">      69 </span>            : };
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : template&lt;class State, class OnError&gt;
+<span class="lineNum">      72 </span>            : struct OnErrorForward
+<span class="lineNum">      73 </span>            : {
+<span class="lineNum">      74 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;
+<span class="lineNum">      75 </span>            :     using onerror_t = rxu::decay_t&lt;OnError&gt;;
+<span class="lineNum">      76 </span>            :     OnErrorForward() : onerror() {}
+<span class="lineNum">      77 </span>            :     explicit OnErrorForward(onerror_t oe) : onerror(std::move(oe)) {}
+<span class="lineNum">      78 </span>            :     onerror_t onerror;
+<span class="lineNum">      79 </span>            :     void operator()(state_t&amp; s, std::exception_ptr ep) const {
+<span class="lineNum">      80 </span>            :         onerror(s, ep);
+<span class="lineNum">      81 </span>            :     }
+<span class="lineNum">      82 </span>            : };
+<span class="lineNum">      83 </span>            : template&lt;class State&gt;
+<span class="lineNum">      84 </span>            : struct OnErrorForward&lt;State, void&gt;
+<a name="85"><span class="lineNum">      85 </span>            : {</a>
+<a name="86"><span class="lineNum">      86 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;</a>
+<span class="lineNum">      87 </span><span class="lineCov">        310 :     OnErrorForward() {}</span>
+<span class="lineNum">      88 </span><span class="lineNoCov">          0 :     void operator()(state_t&amp; s, std::exception_ptr ep) const {</span>
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :         s.on_error(ep);</span>
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">      91 </span>            : };
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            : template&lt;class State, class OnCompleted&gt;
+<span class="lineNum">      94 </span>            : struct OnCompletedForward
+<span class="lineNum">      95 </span>            : {
+<span class="lineNum">      96 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;
+<span class="lineNum">      97 </span>            :     using oncompleted_t = rxu::decay_t&lt;OnCompleted&gt;;
+<span class="lineNum">      98 </span>            :     OnCompletedForward() : oncompleted() {}
+<span class="lineNum">      99 </span>            :     explicit OnCompletedForward(oncompleted_t oc) : oncompleted(std::move(oc)) {}
+<span class="lineNum">     100 </span>            :     oncompleted_t oncompleted;
+<span class="lineNum">     101 </span>            :     void operator()(state_t&amp; s) const {
+<span class="lineNum">     102 </span>            :         oncompleted(s);
+<span class="lineNum">     103 </span>            :     }
+<span class="lineNum">     104 </span>            : };
+<span class="lineNum">     105 </span>            : template&lt;class State&gt;
+<a name="106"><span class="lineNum">     106 </span>            : struct OnCompletedForward&lt;State, void&gt;</a>
+<a name="107"><span class="lineNum">     107 </span>            : {</a>
+<span class="lineNum">     108 </span><span class="lineCov">        310 :     OnCompletedForward() {}</span>
+<span class="lineNum">     109 </span><span class="lineCov">         12 :     void operator()(State&amp; s) const {</span>
+<span class="lineNum">     110 </span><span class="lineCov">         12 :         s.on_completed();</span>
+<span class="lineNum">     111 </span><span class="lineCov">         12 :     }</span>
+<span class="lineNum">     112 </span>            : };
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            : template&lt;class T, class F&gt;
+<span class="lineNum">     115 </span>            : struct is_on_next_of
+<span class="lineNum">     116 </span>            : {
+<span class="lineNum">     117 </span>            :     struct not_void {};
+<span class="lineNum">     118 </span>            :     template&lt;class CT, class CF&gt;
+<span class="lineNum">     119 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)(*(CT*)nullptr));
+<span class="lineNum">     120 </span>            :     template&lt;class CT, class CF&gt;
+<span class="lineNum">     121 </span>            :     static not_void check(...);
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :     typedef decltype(check&lt;T, rxu::decay_t&lt;F&gt;&gt;(0)) detail_result;
+<span class="lineNum">     124 </span>            :     static const bool value = std::is_same&lt;detail_result, void&gt;::value;
+<span class="lineNum">     125 </span>            : };
+<span class="lineNum">     126 </span>            : 
+<span class="lineNum">     127 </span>            : template&lt;class F&gt;
+<span class="lineNum">     128 </span>            : struct is_on_error
+<span class="lineNum">     129 </span>            : {
+<span class="lineNum">     130 </span>            :     struct not_void {};
+<span class="lineNum">     131 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     132 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)(*(std::exception_ptr*)nullptr));
+<span class="lineNum">     133 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     134 </span>            :     static not_void check(...);
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            :     static const bool value = std::is_same&lt;decltype(check&lt;rxu::decay_t&lt;F&gt;&gt;(0)), void&gt;::value;
+<span class="lineNum">     137 </span>            : };
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            : template&lt;class State, class F&gt;
+<span class="lineNum">     140 </span>            : struct is_on_error_for
+<span class="lineNum">     141 </span>            : {
+<span class="lineNum">     142 </span>            :     struct not_void {};
+<span class="lineNum">     143 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     144 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)(*(State*)nullptr, *(std::exception_ptr*)nullptr));
+<span class="lineNum">     145 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     146 </span>            :     static not_void check(...);
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span>            :     static const bool value = std::is_same&lt;decltype(check&lt;rxu::decay_t&lt;F&gt;&gt;(0)), void&gt;::value;
+<span class="lineNum">     149 </span>            : };
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            : template&lt;class F&gt;
+<span class="lineNum">     152 </span>            : struct is_on_completed
+<span class="lineNum">     153 </span>            : {
+<span class="lineNum">     154 </span>            :     struct not_void {};
+<span class="lineNum">     155 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     156 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)());
+<span class="lineNum">     157 </span>            :     template&lt;class CF&gt;
+<span class="lineNum">     158 </span>            :     static not_void check(...);
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span>            :     static const bool value = std::is_same&lt;decltype(check&lt;rxu::decay_t&lt;F&gt;&gt;(0)), void&gt;::value;
+<span class="lineNum">     161 </span>            : };
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : }
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : /*!
+<span class="lineNum">     167 </span>            :     \brief consumes values from an observable using `State` that may implement on_next, on_error and on_completed with optional overrides of each function.
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span>            :     \tparam T            - the type of value in the stream
+<span class="lineNum">     170 </span>            :     \tparam State        - the type of the stored state
+<span class="lineNum">     171 </span>            :     \tparam OnNext       - the type of a function that matches `void(State&amp;, T)`. Called 0 or more times. If `void` State::on_next will be called.
+<span class="lineNum">     172 </span>            :     \tparam OnError      - the type of a function that matches `void(State&amp;, std::exception_ptr)`. Called 0 or 1 times, no further calls will be made. If `void` State::on_error will be called.
+<span class="lineNum">     173 </span>            :     \tparam OnCompleted  - the type of a function that matches `void(State&amp;)`. Called 0 or 1 times, no further calls will be made. If `void` State::on_completed will be called.
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :     \ingroup group-core
+<span class="lineNum">     176 </span>            : 
+<a name="177"><span class="lineNum">     177 </span>            : */</a>
+<span class="lineNum">     178 </span>            : template&lt;class T, class State, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     179 </span><span class="lineCov">       1388 : class observer : public observer_base&lt;T&gt;</span>
+<span class="lineNum">     180 </span>            : {
+<span class="lineNum">     181 </span>            : public:
+<span class="lineNum">     182 </span>            :     using this_type = observer&lt;T, State, OnNext, OnError, OnCompleted&gt;;
+<span class="lineNum">     183 </span>            :     using state_t = rxu::decay_t&lt;State&gt;;
+<span class="lineNum">     184 </span>            :     using on_next_t = typename std::conditional&lt;
+<span class="lineNum">     185 </span>            :         !std::is_same&lt;void, OnNext&gt;::value,
+<span class="lineNum">     186 </span>            :         rxu::decay_t&lt;OnNext&gt;,
+<span class="lineNum">     187 </span>            :         detail::OnNextForward&lt;T, State, OnNext&gt;&gt;::type;
+<span class="lineNum">     188 </span>            :     using on_error_t = typename std::conditional&lt;
+<span class="lineNum">     189 </span>            :         !std::is_same&lt;void, OnError&gt;::value,
+<span class="lineNum">     190 </span>            :         rxu::decay_t&lt;OnError&gt;,
+<span class="lineNum">     191 </span>            :         detail::OnErrorForward&lt;State, OnError&gt;&gt;::type;
+<span class="lineNum">     192 </span>            :     using on_completed_t = typename std::conditional&lt;
+<span class="lineNum">     193 </span>            :         !std::is_same&lt;void, OnCompleted&gt;::value,
+<span class="lineNum">     194 </span>            :         rxu::decay_t&lt;OnCompleted&gt;,
+<span class="lineNum">     195 </span>            :         detail::OnCompletedForward&lt;State, OnCompleted&gt;&gt;::type;
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : private:
+<span class="lineNum">     198 </span>            :     mutable state_t state;
+<span class="lineNum">     199 </span>            :     on_next_t onnext;
+<span class="lineNum">     200 </span>            :     on_error_t onerror;
+<span class="lineNum">     201 </span>            :     on_completed_t oncompleted;
+<span class="lineNum">     202 </span>            : 
+<a name="203"><span class="lineNum">     203 </span>            : public:</a>
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span><span class="lineCov">        310 :     explicit observer(state_t s, on_next_t n = on_next_t(), on_error_t e = on_error_t(), on_completed_t c = on_completed_t())</span>
+<span class="lineNum">     206 </span><span class="lineCov">        310 :         : state(std::move(s))</span>
+<span class="lineNum">     207 </span><span class="lineCov">        310 :         , onnext(std::move(n))</span>
+<span class="lineNum">     208 </span><span class="lineCov">        310 :         , onerror(std::move(e))</span>
+<span class="lineNum">     209 </span><span class="lineCov">        930 :         , oncompleted(std::move(c))</span>
+<span class="lineNum">     210 </span>            :     {
+<span class="lineNum">     211 </span><span class="lineCov">        310 :     }</span>
+<span class="lineNum">     212 </span>            :     explicit observer(state_t s, on_next_t n, on_completed_t c)
+<span class="lineNum">     213 </span>            :         : state(std::move(s))
+<span class="lineNum">     214 </span>            :         , onnext(std::move(n))
+<span class="lineNum">     215 </span>            :         , onerror(on_error_t())
+<span class="lineNum">     216 </span>            :         , oncompleted(std::move(c))
+<a name="217"><span class="lineNum">     217 </span>            :     {</a>
+<span class="lineNum">     218 </span>            :     }
+<span class="lineNum">     219 </span><span class="lineCov">        320 :     observer(const this_type&amp; o)</span>
+<span class="lineNum">     220 </span>            :         : state(o.state)
+<span class="lineNum">     221 </span>            :         , onnext(o.onnext)
+<span class="lineNum">     222 </span>            :         , onerror(o.onerror)
+<span class="lineNum">     223 </span><span class="lineCov">        320 :         , oncompleted(o.oncompleted)</span>
+<a name="224"><span class="lineNum">     224 </span>            :     {</a>
+<span class="lineNum">     225 </span><span class="lineCov">        320 :     }</span>
+<span class="lineNum">     226 </span><span class="lineCov">         64 :     observer(this_type&amp;&amp; o)</span>
+<span class="lineNum">     227 </span><span class="lineCov">         64 :         : state(std::move(o.state))</span>
+<span class="lineNum">     228 </span><span class="lineCov">         64 :         , onnext(std::move(o.onnext))</span>
+<span class="lineNum">     229 </span><span class="lineCov">         64 :         , onerror(std::move(o.onerror))</span>
+<span class="lineNum">     230 </span><span class="lineCov">        192 :         , oncompleted(std::move(o.oncompleted))</span>
+<span class="lineNum">     231 </span>            :     {
+<span class="lineNum">     232 </span><span class="lineCov">         64 :     }</span>
+<span class="lineNum">     233 </span>            :     this_type&amp; operator=(this_type o) {
+<span class="lineNum">     234 </span>            :         state = std::move(o.state);
+<span class="lineNum">     235 </span>            :         onnext = std::move(o.onnext);
+<span class="lineNum">     236 </span>            :         onerror = std::move(o.onerror);
+<span class="lineNum">     237 </span>            :         oncompleted = std::move(o.oncompleted);
+<span class="lineNum">     238 </span>            :         return *this;
+<a name="239"><span class="lineNum">     239 </span>            :     }</a>
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :     void on_next(T&amp; t) const {</span>
+<a name="242"><span class="lineNum">     242 </span><span class="lineNoCov">          0 :         onnext(state, t);</span></a>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     244 </span><span class="lineCov">        145 :     void on_next(T&amp;&amp; t) const {</span>
+<a name="245"><span class="lineNum">     245 </span><span class="lineCov">        145 :         onnext(state, std::move(t));</span></a>
+<span class="lineNum">     246 </span><span class="lineCov">        145 :     }</span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :     void on_error(std::exception_ptr e) const {</span>
+<a name="248"><span class="lineNum">     248 </span><span class="lineNoCov">          0 :         onerror(state, e);</span></a>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     250 </span><span class="lineCov">         12 :     void on_completed() const {</span>
+<a name="251"><span class="lineNum">     251 </span><span class="lineCov">         12 :         oncompleted(state);</span></a>
+<span class="lineNum">     252 </span><span class="lineCov">         12 :     }</span>
+<span class="lineNum">     253 </span><span class="lineCov">          7 :     observer&lt;T&gt; as_dynamic() const {</span>
+<span class="lineNum">     254 </span><span class="lineCov">          7 :         return observer&lt;T&gt;(*this);</span>
+<span class="lineNum">     255 </span>            :     }
+<span class="lineNum">     256 </span>            : };
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : /*!
+<span class="lineNum">     259 </span>            :     \brief consumes values from an observable using default empty method implementations with optional overrides of each function.
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            :     \tparam T            - the type of value in the stream
+<span class="lineNum">     262 </span>            :     \tparam OnNext       - the type of a function that matches `void(T)`. Called 0 or more times. If `void` OnNextEmpty&lt;T&gt; is used.
+<span class="lineNum">     263 </span>            :     \tparam OnError      - the type of a function that matches `void(std::exception_ptr)`. Called 0 or 1 times, no further calls will be made. If `void` OnErrorEmpty is used.
+<span class="lineNum">     264 </span>            :     \tparam OnCompleted  - the type of a function that matches `void()`. Called 0 or 1 times, no further calls will be made. If `void` OnCompletedEmpty is used.
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     \ingroup group-core
+<span class="lineNum">     267 </span>            : 
+<a name="268"><span class="lineNum">     268 </span>            : */</a>
+<span class="lineNum">     269 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     270 </span><span class="lineCov">       3078 : class observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt; : public observer_base&lt;T&gt;</span>
+<span class="lineNum">     271 </span>            : {
+<span class="lineNum">     272 </span>            : public:
+<span class="lineNum">     273 </span>            :     using this_type = observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;;
+<span class="lineNum">     274 </span>            :     using on_next_t = typename std::conditional&lt;
+<span class="lineNum">     275 </span>            :         !std::is_same&lt;void, OnNext&gt;::value,
+<span class="lineNum">     276 </span>            :         rxu::decay_t&lt;OnNext&gt;,
+<span class="lineNum">     277 </span>            :         detail::OnNextEmpty&lt;T&gt;&gt;::type;
+<span class="lineNum">     278 </span>            :     using on_error_t = typename std::conditional&lt;
+<span class="lineNum">     279 </span>            :         !std::is_same&lt;void, OnError&gt;::value,
+<span class="lineNum">     280 </span>            :         rxu::decay_t&lt;OnError&gt;,
+<span class="lineNum">     281 </span>            :         detail::OnErrorEmpty&gt;::type;
+<span class="lineNum">     282 </span>            :     using on_completed_t = typename std::conditional&lt;
+<span class="lineNum">     283 </span>            :         !std::is_same&lt;void, OnCompleted&gt;::value,
+<span class="lineNum">     284 </span>            :         rxu::decay_t&lt;OnCompleted&gt;,
+<span class="lineNum">     285 </span>            :         detail::OnCompletedEmpty&gt;::type;
+<span class="lineNum">     286 </span>            : 
+<span class="lineNum">     287 </span>            : private:
+<span class="lineNum">     288 </span>            :     on_next_t onnext;
+<span class="lineNum">     289 </span>            :     on_error_t onerror;
+<span class="lineNum">     290 </span>            :     on_completed_t oncompleted;
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            : public:
+<span class="lineNum">     293 </span>            :     static_assert(detail::is_on_next_of&lt;T, on_next_t&gt;::value,     &quot;Function supplied for on_next must be a function with the signature void(T);&quot;);
+<span class="lineNum">     294 </span>            :     static_assert(detail::is_on_error&lt;on_error_t&gt;::value,         &quot;Function supplied for on_error must be a function with the signature void(std::exception_ptr);&quot;);
+<span class="lineNum">     295 </span>            :     static_assert(detail::is_on_completed&lt;on_completed_t&gt;::value, &quot;Function supplied for on_completed must be a function with the signature void();&quot;);
+<span class="lineNum">     296 </span>            : 
+<span class="lineNum">     297 </span>            :     observer()
+<span class="lineNum">     298 </span>            :         : onnext(on_next_t())
+<span class="lineNum">     299 </span>            :         , onerror(on_error_t())
+<span class="lineNum">     300 </span>            :         , oncompleted(on_completed_t())
+<span class="lineNum">     301 </span>            :     {
+<a name="302"><span class="lineNum">     302 </span>            :     }</a>
+<span class="lineNum">     303 </span>            : 
+<span class="lineNum">     304 </span><span class="lineCov">        439 :     explicit observer(on_next_t n, on_error_t e = on_error_t(), on_completed_t c = on_completed_t())</span>
+<span class="lineNum">     305 </span><span class="lineCov">        439 :         : onnext(std::move(n))</span>
+<span class="lineNum">     306 </span><span class="lineCov">        439 :         , onerror(std::move(e))</span>
+<span class="lineNum">     307 </span><span class="lineCov">       1042 :         , oncompleted(std::move(c))</span>
+<a name="308"><span class="lineNum">     308 </span>            :     {</a>
+<span class="lineNum">     309 </span><span class="lineCov">        407 :     }</span>
+<span class="lineNum">     310 </span><span class="lineCov">       1115 :     observer(const this_type&amp; o)</span>
+<span class="lineNum">     311 </span>            :         : onnext(o.onnext)
+<span class="lineNum">     312 </span>            :         , onerror(o.onerror)
+<span class="lineNum">     313 </span><span class="lineCov">       1115 :         , oncompleted(o.oncompleted)</span>
+<a name="314"><span class="lineNum">     314 </span>            :     {</a>
+<span class="lineNum">     315 </span><span class="lineCov">       1034 :     }</span>
+<span class="lineNum">     316 </span><span class="lineCov">       1993 :     observer(this_type&amp;&amp; o)</span>
+<span class="lineNum">     317 </span><span class="lineCov">       1993 :         : onnext(std::move(o.onnext))</span>
+<span class="lineNum">     318 </span><span class="lineCov">       1993 :         , onerror(std::move(o.onerror))</span>
+<span class="lineNum">     319 </span><span class="lineCov">       4880 :         , oncompleted(std::move(o.oncompleted))</span>
+<span class="lineNum">     320 </span>            :     {
+<span class="lineNum">     321 </span><span class="lineCov">       1820 :     }</span>
+<span class="lineNum">     322 </span>            :     this_type&amp; operator=(this_type o) {
+<span class="lineNum">     323 </span>            :         onnext = std::move(o.onnext);
+<span class="lineNum">     324 </span>            :         onerror = std::move(o.onerror);
+<span class="lineNum">     325 </span>            :         oncompleted = std::move(o.oncompleted);
+<span class="lineNum">     326 </span>            :         return *this;
+<a name="327"><span class="lineNum">     327 </span>            :     }</a>
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span><span class="lineNoCov">          0 :     void on_next(T&amp; t) const {</span>
+<a name="330"><span class="lineNum">     330 </span><span class="lineNoCov">          0 :         onnext(t);</span></a>
+<span class="lineNum">     331 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     332 </span><span class="lineCov">        427 :     void on_next(T&amp;&amp; t) const {</span>
+<a name="333"><span class="lineNum">     333 </span><span class="lineCov">        427 :         onnext(std::move(t));</span></a>
+<span class="lineNum">     334 </span><span class="lineCov">        386 :     }</span>
+<span class="lineNum">     335 </span><span class="lineNoCov">          0 :     void on_error(std::exception_ptr e) const {</span>
+<a name="336"><span class="lineNum">     336 </span><span class="lineNoCov">          0 :         onerror(e);</span></a>
+<span class="lineNum">     337 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     338 </span><span class="lineCov">        255 :     void on_completed() const {</span>
+<a name="339"><span class="lineNum">     339 </span><span class="lineCov">        255 :         oncompleted();</span></a>
+<span class="lineNum">     340 </span><span class="lineCov">        255 :     }</span>
+<span class="lineNum">     341 </span><span class="lineCov">        312 :     observer&lt;T&gt; as_dynamic() const {</span>
+<span class="lineNum">     342 </span><span class="lineCov">        312 :         return observer&lt;T&gt;(*this);</span>
+<span class="lineNum">     343 </span>            :     }
+<span class="lineNum">     344 </span>            : };
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : namespace detail
+<span class="lineNum">     347 </span>            : {
+<a name="348"><span class="lineNum">     348 </span>            : </a>
+<span class="lineNum">     349 </span>            : template&lt;class T&gt;
+<a name="350"><span class="lineNum">     350 </span><span class="lineCov">        638 : struct virtual_observer : public std::enable_shared_from_this&lt;virtual_observer&lt;T&gt;&gt;</span></a>
+<a name="351"><span class="lineNum">     351 </span>            : {</a>
+<a name="352"><span class="lineNum">     352 </span><span class="lineCov">        626 :     virtual ~virtual_observer() {}</span></a>
+<a name="353"><span class="lineNum">     353 </span><span class="lineNoCov">          0 :     virtual void on_next(T&amp;) const {};</span></a>
+<a name="354"><span class="lineNum">     354 </span><span class="lineNoCov">          0 :     virtual void on_next(T&amp;&amp;) const {};</span></a>
+<span class="lineNum">     355 </span><span class="lineNoCov">          0 :     virtual void on_error(std::exception_ptr) const {};</span>
+<span class="lineNum">     356 </span><span class="lineNoCov">          0 :     virtual void on_completed() const {};</span>
+<span class="lineNum">     357 </span>            : };
+<a name="358"><span class="lineNum">     358 </span>            : </a>
+<span class="lineNum">     359 </span>            : template&lt;class T, class Observer&gt;
+<a name="360"><span class="lineNum">     360 </span><span class="lineCov">        626 : struct specific_observer : public virtual_observer&lt;T&gt;</span></a>
+<span class="lineNum">     361 </span>            : {
+<span class="lineNum">     362 </span><span class="lineCov">        319 :     explicit specific_observer(Observer o)</span>
+<span class="lineNum">     363 </span><span class="lineCov">        319 :         : destination(std::move(o))</span>
+<span class="lineNum">     364 </span>            :     {
+<span class="lineNum">     365 </span><span class="lineCov">        309 :     }</span>
+<a name="366"><span class="lineNum">     366 </span>            : </a>
+<span class="lineNum">     367 </span>            :     Observer destination;
+<span class="lineNum">     368 </span><span class="lineNoCov">          0 :     virtual void on_next(T&amp; t) const {</span>
+<a name="369"><span class="lineNum">     369 </span><span class="lineNoCov">          0 :         destination.on_next(t);</span></a>
+<span class="lineNum">     370 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     371 </span><span class="lineCov">        322 :     virtual void on_next(T&amp;&amp; t) const {</span>
+<a name="372"><span class="lineNum">     372 </span><span class="lineCov">        322 :         destination.on_next(std::move(t));</span></a>
+<span class="lineNum">     373 </span><span class="lineCov">        322 :     }</span>
+<span class="lineNum">     374 </span><span class="lineNoCov">          0 :     virtual void on_error(std::exception_ptr e) const {</span>
+<a name="375"><span class="lineNum">     375 </span><span class="lineNoCov">          0 :         destination.on_error(e);</span></a>
+<span class="lineNum">     376 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     377 </span><span class="lineCov">        146 :     virtual void on_completed() const {</span>
+<span class="lineNum">     378 </span><span class="lineCov">        146 :         destination.on_completed();</span>
+<span class="lineNum">     379 </span><span class="lineCov">        146 :     }</span>
+<span class="lineNum">     380 </span>            : };
+<span class="lineNum">     381 </span>            : 
+<span class="lineNum">     382 </span>            : }
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span>            : /*!
+<span class="lineNum">     385 </span>            :     \brief consumes values from an observable using type-forgetting (shared allocated state with virtual methods)
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span>            :     \tparam T            - the type of value in the stream
+<span class="lineNum">     388 </span>            : 
+<span class="lineNum">     389 </span>            :     \ingroup group-core
+<span class="lineNum">     390 </span>            : 
+<a name="391"><span class="lineNum">     391 </span>            : */</a>
+<span class="lineNum">     392 </span>            : template&lt;class T&gt;
+<span class="lineNum">     393 </span><span class="lineCov">       5239 : class observer&lt;T, void, void, void, void&gt; : public observer_base&lt;T&gt;</span>
+<span class="lineNum">     394 </span>            : {
+<span class="lineNum">     395 </span>            : public:
+<span class="lineNum">     396 </span>            :     typedef tag_dynamic_observer dynamic_observer_tag;
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            : private:
+<span class="lineNum">     399 </span>            :     using this_type = observer&lt;T, void, void, void, void&gt;;
+<span class="lineNum">     400 </span>            :     using base_type = observer_base&lt;T&gt;;
+<span class="lineNum">     401 </span>            :     using virtual_observer = detail::virtual_observer&lt;T&gt;;
+<span class="lineNum">     402 </span>            : 
+<span class="lineNum">     403 </span>            :     std::shared_ptr&lt;virtual_observer&gt; destination;
+<a name="404"><span class="lineNum">     404 </span>            : </a>
+<span class="lineNum">     405 </span>            :     template&lt;class Observer&gt;
+<span class="lineNum">     406 </span><span class="lineCov">        319 :     static auto make_destination(Observer o)</span>
+<span class="lineNum">     407 </span>            :         -&gt; std::shared_ptr&lt;virtual_observer&gt; {
+<span class="lineNum">     408 </span><span class="lineCov">        319 :         return std::make_shared&lt;detail::specific_observer&lt;T, Observer&gt;&gt;(std::move(o));</span>
+<span class="lineNum">     409 </span>            :     }
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            : public:
+<span class="lineNum">     412 </span>            :     observer()
+<a name="413"><span class="lineNum">     413 </span>            :     {</a>
+<span class="lineNum">     414 </span>            :     }
+<span class="lineNum">     415 </span><span class="lineCov">        569 :     observer(const this_type&amp; o)</span>
+<span class="lineNum">     416 </span><span class="lineCov">        569 :         : destination(o.destination)</span>
+<a name="417"><span class="lineNum">     417 </span>            :     {</a>
+<span class="lineNum">     418 </span><span class="lineCov">        569 :     }</span>
+<span class="lineNum">     419 </span><span class="lineCov">       1738 :     observer(this_type&amp;&amp; o)</span>
+<span class="lineNum">     420 </span><span class="lineCov">       1738 :         : destination(std::move(o.destination))</span>
+<span class="lineNum">     421 </span>            :     {
+<span class="lineNum">     422 </span><span class="lineCov">       1738 :     }</span>
+<a name="423"><span class="lineNum">     423 </span>            : </a>
+<span class="lineNum">     424 </span>            :     template&lt;class Observer&gt;
+<span class="lineNum">     425 </span><span class="lineCov">        319 :     explicit observer(Observer o)</span>
+<span class="lineNum">     426 </span><span class="lineCov">        319 :         : destination(make_destination(std::move(o)))</span>
+<span class="lineNum">     427 </span>            :     {
+<a name="428"><span class="lineNum">     428 </span><span class="lineCov">        319 :     }</span></a>
+<span class="lineNum">     429 </span>            : 
+<span class="lineNum">     430 </span><span class="lineNoCov">          0 :     this_type&amp; operator=(this_type o) {</span>
+<span class="lineNum">     431 </span><span class="lineNoCov">          0 :         destination = std::move(o.destination);</span>
+<span class="lineNum">     432 </span><span class="lineNoCov">          0 :         return *this;</span>
+<span class="lineNum">     433 </span>            :     }
+<span class="lineNum">     434 </span>            : 
+<a name="435"><span class="lineNum">     435 </span>            :     // perfect forwarding delays the copy of the value.</a>
+<span class="lineNum">     436 </span>            :     template&lt;class V&gt;
+<span class="lineNum">     437 </span><span class="lineCov">        322 :     void on_next(V&amp;&amp; v) const {</span>
+<span class="lineNum">     438 </span><span class="lineCov">        322 :         if (destination) {</span>
+<span class="lineNum">     439 </span><span class="lineCov">        322 :             destination-&gt;on_next(std::forward&lt;V&gt;(v));</span>
+<a name="440"><span class="lineNum">     440 </span>            :         }</a>
+<span class="lineNum">     441 </span><span class="lineCov">        322 :     }</span>
+<span class="lineNum">     442 </span><span class="lineNoCov">          0 :     void on_error(std::exception_ptr e) const {</span>
+<span class="lineNum">     443 </span><span class="lineNoCov">          0 :         if (destination) {</span>
+<span class="lineNum">     444 </span><span class="lineNoCov">          0 :             destination-&gt;on_error(e);</span>
+<a name="445"><span class="lineNum">     445 </span>            :         }</a>
+<span class="lineNum">     446 </span><span class="lineNoCov">          0 :     }</span>
+<span class="lineNum">     447 </span><span class="lineCov">        146 :     void on_completed() const {</span>
+<span class="lineNum">     448 </span><span class="lineCov">        146 :         if (destination) {</span>
+<span class="lineNum">     449 </span><span class="lineCov">        146 :             destination-&gt;on_completed();</span>
+<span class="lineNum">     450 </span>            :         }
+<span class="lineNum">     451 </span><span class="lineCov">        146 :     }</span>
+<span class="lineNum">     452 </span>            : 
+<span class="lineNum">     453 </span>            :     observer&lt;T&gt; as_dynamic() const {
+<span class="lineNum">     454 </span>            :         return *this;
+<span class="lineNum">     455 </span>            :     }
+<span class="lineNum">     456 </span>            : };
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty&gt;
+<span class="lineNum">     459 </span>            : auto make_observer()
+<span class="lineNum">     460 </span>            :     -&gt;      observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;, DefaultOnError&gt; {
+<span class="lineNum">     461 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;, DefaultOnError&gt;();
+<span class="lineNum">     462 </span>            : }
+<span class="lineNum">     463 </span>            : 
+<span class="lineNum">     464 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class U, class State, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     465 </span>            : auto make_observer(observer&lt;U, State, OnNext, OnError, OnCompleted&gt; o)
+<span class="lineNum">     466 </span>            :     -&gt;      observer&lt;T, State, OnNext, OnError, OnCompleted&gt; {
+<span class="lineNum">     467 </span>            :     return  observer&lt;T, State, OnNext, OnError, OnCompleted&gt;(std::move(o));
+<span class="lineNum">     468 </span>            : }
+<span class="lineNum">     469 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class Observer&gt;
+<span class="lineNum">     470 </span>            : auto make_observer(Observer ob)
+<span class="lineNum">     471 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     472 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     473 </span>            :         !detail::is_on_error&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     474 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     475 </span>            :             Observer&gt;::type {
+<span class="lineNum">     476 </span>            :     return  std::move(ob);
+<a name="477"><span class="lineNum">     477 </span>            : }</a>
+<span class="lineNum">     478 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class Observer&gt;
+<span class="lineNum">     479 </span><span class="lineCov">          4 : auto make_observer(Observer ob)</span>
+<span class="lineNum">     480 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     481 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     482 </span>            :         !detail::is_on_error&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     483 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     484 </span>            :             observer&lt;T, Observer&gt;&gt;::type {
+<span class="lineNum">     485 </span><span class="lineCov">          4 :     return  observer&lt;T, Observer&gt;(std::move(ob));</span>
+<span class="lineNum">     486 </span>            : }
+<span class="lineNum">     487 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class OnNext&gt;
+<span class="lineNum">     488 </span>            : auto make_observer(OnNext on)
+<span class="lineNum">     489 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     490 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     491 </span>            :             observer&lt;T, detail::stateless_observer_tag, OnNext, DefaultOnError&gt;&gt;::type {
+<span class="lineNum">     492 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, OnNext, DefaultOnError&gt;(
+<span class="lineNum">     493 </span>            :                         std::move(on));
+<span class="lineNum">     494 </span>            : }
+<span class="lineNum">     495 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class OnError&gt;
+<span class="lineNum">     496 </span>            : auto make_observer(OnError oe)
+<span class="lineNum">     497 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     498 </span>            :         !detail::is_on_next_of&lt;T, OnError&gt;::value &amp;&amp;
+<span class="lineNum">     499 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     500 </span>            :             observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;, OnError&gt;&gt;::type {
+<span class="lineNum">     501 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;, OnError&gt;(
+<span class="lineNum">     502 </span>            :                         detail::OnNextEmpty&lt;T&gt;(), std::move(oe));
+<span class="lineNum">     503 </span>            : }
+<span class="lineNum">     504 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class OnNext, class OnError&gt;
+<span class="lineNum">     505 </span>            : auto make_observer(OnNext on, OnError oe)
+<span class="lineNum">     506 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     507 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     508 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     509 </span>            :             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;::type {
+<span class="lineNum">     510 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(
+<span class="lineNum">     511 </span>            :                         std::move(on), std::move(oe));
+<span class="lineNum">     512 </span>            : }
+<span class="lineNum">     513 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     514 </span>            : auto make_observer(OnNext on, OnCompleted oc)
+<span class="lineNum">     515 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     516 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     517 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     518 </span>            :             observer&lt;T, detail::stateless_observer_tag, OnNext, DefaultOnError, OnCompleted&gt;&gt;::type {
+<span class="lineNum">     519 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, OnNext, DefaultOnError, OnCompleted&gt;(
+<span class="lineNum">     520 </span>            :                         std::move(on), DefaultOnError(), std::move(oc));
+<span class="lineNum">     521 </span>            : }
+<span class="lineNum">     522 </span>            : template&lt;class T, class DefaultOnError = detail::OnErrorEmpty, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     523 </span>            : auto make_observer(OnNext on, OnError oe, OnCompleted oc)
+<span class="lineNum">     524 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     525 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     526 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     527 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     528 </span>            :             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;::type {
+<span class="lineNum">     529 </span>            :     return  observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(
+<span class="lineNum">     530 </span>            :                         std::move(on), std::move(oe), std::move(oc));
+<span class="lineNum">     531 </span>            : }
+<span class="lineNum">     532 </span>            : 
+<span class="lineNum">     533 </span>            : 
+<span class="lineNum">     534 </span>            : template&lt;class T, class State, class OnNext&gt;
+<span class="lineNum">     535 </span>            : auto make_observer(State os, OnNext on)
+<span class="lineNum">     536 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     537 </span>            :         !detail::is_on_next_of&lt;T, State&gt;::value &amp;&amp;
+<span class="lineNum">     538 </span>            :         !detail::is_on_error&lt;State&gt;::value,
+<span class="lineNum">     539 </span>            :             observer&lt;T, State, OnNext&gt;&gt;::type {
+<span class="lineNum">     540 </span>            :     return  observer&lt;T, State, OnNext&gt;(
+<span class="lineNum">     541 </span>            :                         std::move(os), std::move(on));
+<span class="lineNum">     542 </span>            : }
+<span class="lineNum">     543 </span>            : template&lt;class T, class State, class OnError&gt;
+<span class="lineNum">     544 </span>            : auto make_observer(State os, OnError oe)
+<span class="lineNum">     545 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     546 </span>            :         !detail::is_on_next_of&lt;T, State&gt;::value &amp;&amp;
+<span class="lineNum">     547 </span>            :         !detail::is_on_error&lt;State&gt;::value &amp;&amp;
+<span class="lineNum">     548 </span>            :         detail::is_on_error_for&lt;State, OnError&gt;::value,
+<span class="lineNum">     549 </span>            :             observer&lt;T, State, detail::OnNextEmpty&lt;T&gt;, OnError&gt;&gt;::type {
+<span class="lineNum">     550 </span>            :     return  observer&lt;T, State, detail::OnNextEmpty&lt;T&gt;, OnError&gt;(
+<span class="lineNum">     551 </span>            :                         std::move(os), detail::OnNextEmpty&lt;T&gt;(), std::move(oe));
+<span class="lineNum">     552 </span>            : }
+<span class="lineNum">     553 </span>            : template&lt;class T, class State, class OnNext, class OnError&gt;
+<span class="lineNum">     554 </span>            : auto make_observer(State os, OnNext on, OnError oe)
+<span class="lineNum">     555 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     556 </span>            :         !detail::is_on_next_of&lt;T, State&gt;::value &amp;&amp;
+<span class="lineNum">     557 </span>            :         !detail::is_on_error&lt;State&gt;::value &amp;&amp;
+<span class="lineNum">     558 </span>            :         detail::is_on_error_for&lt;State, OnError&gt;::value,
+<span class="lineNum">     559 </span>            :             observer&lt;T, State, OnNext, OnError&gt;&gt;::type {
+<span class="lineNum">     560 </span>            :     return  observer&lt;T, State, OnNext, OnError&gt;(
+<span class="lineNum">     561 </span>            :                         std::move(os), std::move(on), std::move(oe));
+<span class="lineNum">     562 </span>            : }
+<span class="lineNum">     563 </span>            : template&lt;class T, class State, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     564 </span>            : auto make_observer(State os, OnNext on, OnCompleted oc)
+<span class="lineNum">     565 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     566 </span>            :         !detail::is_on_next_of&lt;T, State&gt;::value &amp;&amp;
+<span class="lineNum">     567 </span>            :         !detail::is_on_error&lt;State&gt;::value,
+<span class="lineNum">     568 </span>            :             observer&lt;T, State, OnNext, void, OnCompleted&gt;&gt;::type {
+<span class="lineNum">     569 </span>            :     return  observer&lt;T, State, OnNext, void, OnCompleted&gt;(
+<span class="lineNum">     570 </span>            :                         std::move(os), std::move(on), std::move(oc));
+<span class="lineNum">     571 </span>            : }
+<span class="lineNum">     572 </span>            : template&lt;class T, class State, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     573 </span>            : auto make_observer(State os, OnNext on, OnError oe, OnCompleted oc)
+<span class="lineNum">     574 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     575 </span>            :         !detail::is_on_next_of&lt;T, State&gt;::value &amp;&amp;
+<span class="lineNum">     576 </span>            :         !detail::is_on_error&lt;State&gt;::value &amp;&amp;
+<span class="lineNum">     577 </span>            :         detail::is_on_error_for&lt;State, OnError&gt;::value,
+<span class="lineNum">     578 </span>            :             observer&lt;T, State, OnNext, OnError, OnCompleted&gt;&gt;::type {
+<span class="lineNum">     579 </span>            :     return  observer&lt;T, State, OnNext, OnError, OnCompleted&gt;(
+<span class="lineNum">     580 </span>            :                         std::move(os), std::move(on), std::move(oe), std::move(oc));
+<span class="lineNum">     581 </span>            : }
+<span class="lineNum">     582 </span>            : 
+<span class="lineNum">     583 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     584 </span>            : auto make_observer_dynamic(Observer o)
+<span class="lineNum">     585 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     586 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value,
+<span class="lineNum">     587 </span>            :             observer&lt;T&gt;&gt;::type {
+<span class="lineNum">     588 </span>            :     return  observer&lt;T&gt;(std::move(o));
+<span class="lineNum">     589 </span>            : }
+<span class="lineNum">     590 </span>            : template&lt;class T, class OnNext&gt;
+<span class="lineNum">     591 </span>            : auto make_observer_dynamic(OnNext&amp;&amp; on)
+<span class="lineNum">     592 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     593 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     594 </span>            :             observer&lt;T&gt;&gt;::type {
+<span class="lineNum">     595 </span>            :     return  observer&lt;T&gt;(
+<span class="lineNum">     596 </span>            :                 make_observer&lt;T&gt;(std::forward&lt;OnNext&gt;(on)));
+<span class="lineNum">     597 </span>            : }
+<span class="lineNum">     598 </span>            : template&lt;class T, class OnNext, class OnError&gt;
+<span class="lineNum">     599 </span>            : auto make_observer_dynamic(OnNext&amp;&amp; on, OnError&amp;&amp; oe)
+<span class="lineNum">     600 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     601 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     602 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     603 </span>            :             observer&lt;T&gt;&gt;::type {
+<span class="lineNum">     604 </span>            :     return  observer&lt;T&gt;(
+<span class="lineNum">     605 </span>            :                 make_observer&lt;T&gt;(std::forward&lt;OnNext&gt;(on), std::forward&lt;OnError&gt;(oe)));
+<span class="lineNum">     606 </span>            : }
+<span class="lineNum">     607 </span>            : template&lt;class T, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     608 </span>            : auto make_observer_dynamic(OnNext&amp;&amp; on, OnCompleted&amp;&amp; oc)
+<span class="lineNum">     609 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     610 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     611 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     612 </span>            :             observer&lt;T&gt;&gt;::type {
+<span class="lineNum">     613 </span>            :     return  observer&lt;T&gt;(
+<span class="lineNum">     614 </span>            :                 make_observer&lt;T&gt;(std::forward&lt;OnNext&gt;(on), std::forward&lt;OnCompleted&gt;(oc)));
+<span class="lineNum">     615 </span>            : }
+<span class="lineNum">     616 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     617 </span>            : auto make_observer_dynamic(OnNext&amp;&amp; on, OnError&amp;&amp; oe, OnCompleted&amp;&amp; oc)
+<span class="lineNum">     618 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     619 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     620 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     621 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     622 </span>            :             observer&lt;T&gt;&gt;::type {
+<span class="lineNum">     623 </span>            :     return  observer&lt;T&gt;(
+<span class="lineNum">     624 </span>            :                 make_observer&lt;T&gt;(std::forward&lt;OnNext&gt;(on), std::forward&lt;OnError&gt;(oe), std::forward&lt;OnCompleted&gt;(oc)));
+<span class="lineNum">     625 </span>            : }
+<span class="lineNum">     626 </span>            : 
+<span class="lineNum">     627 </span>            : namespace detail {
+<span class="lineNum">     628 </span>            : 
+<span class="lineNum">     629 </span>            : template&lt;class F&gt;
+<span class="lineNum">     630 </span>            : struct maybe_from_result
+<span class="lineNum">     631 </span>            : {
+<span class="lineNum">     632 </span>            :     typedef decltype((*(F*)nullptr)()) decl_result_type;
+<span class="lineNum">     633 </span>            :     typedef rxu::decay_t&lt;decl_result_type&gt; result_type;
+<span class="lineNum">     634 </span>            :     typedef rxu::maybe&lt;result_type&gt; type;
+<span class="lineNum">     635 </span>            : };
+<span class="lineNum">     636 </span>            : 
+<span class="lineNum">     637 </span>            : }
+<span class="lineNum">     638 </span>            : 
+<span class="lineNum">     639 </span>            : template&lt;class F, class OnError&gt;
+<span class="lineNum">     640 </span>            : auto on_exception(const F&amp; f, const OnError&amp; c)
+<span class="lineNum">     641 </span>            :     -&gt;  typename std::enable_if&lt;detail::is_on_error&lt;OnError&gt;::value, typename detail::maybe_from_result&lt;F&gt;::type&gt;::type {
+<span class="lineNum">     642 </span>            :     typename detail::maybe_from_result&lt;F&gt;::type r;
+<span class="lineNum">     643 </span>            :     try {
+<span class="lineNum">     644 </span>            :         r.reset(f());
+<span class="lineNum">     645 </span>            :     } catch (...) {
+<span class="lineNum">     646 </span>            :         c(std::current_exception());
+<span class="lineNum">     647 </span>            :     }
+<span class="lineNum">     648 </span>            :     return r;
+<span class="lineNum">     649 </span>            : }
+<a name="650"><span class="lineNum">     650 </span>            : </a>
+<span class="lineNum">     651 </span>            : template&lt;class F, class Subscriber&gt;
+<span class="lineNum">     652 </span><span class="lineCov">        387 : auto on_exception(const F&amp; f, const Subscriber&amp; s)</span>
+<span class="lineNum">     653 </span>            :     -&gt;  typename std::enable_if&lt;is_subscriber&lt;Subscriber&gt;::value, typename detail::maybe_from_result&lt;F&gt;::type&gt;::type {
+<span class="lineNum">     654 </span><span class="lineCov">        387 :     typename detail::maybe_from_result&lt;F&gt;::type r;</span>
+<span class="lineNum">     655 </span>            :     try {
+<span class="lineNum">     656 </span><span class="lineCov">        387 :         r.reset(f());</span>
+<span class="lineNum">     657 </span><span class="lineNoCov">          0 :     } catch (...) {</span>
+<span class="lineNum">     658 </span><span class="lineNoCov">          0 :         s.on_error(std::current_exception());</span>
+<span class="lineNum">     659 </span>            :     }
+<span class="lineNum">     660 </span><span class="lineCov">        387 :     return r;</span>
+<span class="lineNum">     661 </span>            : }
+<span class="lineNum">     662 </span>            : 
+<span class="lineNum">     663 </span>            : }
+<span class="lineNum">     664 </span>            : 
+<span class="lineNum">     665 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/machine/linux_intel64.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb/machine</a> - linux_intel64.h<span style="font-size: 80%;"> (source / <a href="linux_intel64.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #if !defined(__TBB_machine_H) || defined(__TBB_machine_linux_intel64_H)
+<span class="lineNum">      22 </span>            : #error Do not #include this internal file directly; use public TBB headers instead.
+<span class="lineNum">      23 </span>            : #endif
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #define __TBB_machine_linux_intel64_H
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : #include &lt;stdint.h&gt;
+<span class="lineNum">      28 </span>            : #include &quot;gcc_ia32_common.h&quot;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : #define __TBB_WORDSIZE 8
+<span class="lineNum">      31 </span>            : #define __TBB_ENDIANNESS __TBB_ENDIAN_LITTLE
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : #define __TBB_compiler_fence() __asm__ __volatile__(&quot;&quot;: : :&quot;memory&quot;)
+<span class="lineNum">      34 </span>            : #define __TBB_control_consistency_helper() __TBB_compiler_fence()
+<span class="lineNum">      35 </span>            : #define __TBB_acquire_consistency_helper() __TBB_compiler_fence()
+<span class="lineNum">      36 </span>            : #define __TBB_release_consistency_helper() __TBB_compiler_fence()
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : #ifndef __TBB_full_memory_fence
+<span class="lineNum">      39 </span>            : #define __TBB_full_memory_fence() __asm__ __volatile__(&quot;mfence&quot;: : :&quot;memory&quot;)
+<span class="lineNum">      40 </span>            : #endif
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : #define __TBB_MACHINE_DEFINE_ATOMICS(S,T,X)                                          \
+<span class="lineNum">      43 </span>            : static inline T __TBB_machine_cmpswp##S (volatile void *ptr, T value, T comparand )  \
+<span class="lineNum">      44 </span>            : {                                                                                    \
+<span class="lineNum">      45 </span>            :     T result;                                                                        \
+<span class="lineNum">      46 </span>            :                                                                                      \
+<span class="lineNum">      47 </span>            :     __asm__ __volatile__(&quot;lock\ncmpxchg&quot; X &quot; %2,%1&quot;                                  \
+<span class="lineNum">      48 </span>            :                           : &quot;=a&quot;(result), &quot;=m&quot;(*(volatile T*)ptr)                    \
+<span class="lineNum">      49 </span>            :                           : &quot;q&quot;(value), &quot;0&quot;(comparand), &quot;m&quot;(*(volatile T*)ptr)       \
+<span class="lineNum">      50 </span>            :                           : &quot;memory&quot;);                                               \
+<span class="lineNum">      51 </span>            :     return result;                                                                   \
+<span class="lineNum">      52 </span>            : }                                                                                    \
+<span class="lineNum">      53 </span>            :                                                                                      \
+<span class="lineNum">      54 </span>            : static inline T __TBB_machine_fetchadd##S(volatile void *ptr, T addend)              \
+<span class="lineNum">      55 </span>            : {                                                                                    \
+<span class="lineNum">      56 </span>            :     T result;                                                                        \
+<span class="lineNum">      57 </span>            :     __asm__ __volatile__(&quot;lock\nxadd&quot; X &quot; %0,%1&quot;                                     \
+<span class="lineNum">      58 </span>            :                           : &quot;=r&quot;(result),&quot;=m&quot;(*(volatile T*)ptr)                     \
+<span class="lineNum">      59 </span>            :                           : &quot;0&quot;(addend), &quot;m&quot;(*(volatile T*)ptr)                      \
+<span class="lineNum">      60 </span>            :                           : &quot;memory&quot;);                                               \
+<span class="lineNum">      61 </span>            :     return result;                                                                   \
+<span class="lineNum">      62 </span>            : }                                                                                    \
+<span class="lineNum">      63 </span>            :                                                                                      \
+<span class="lineNum">      64 </span>            : static inline  T __TBB_machine_fetchstore##S(volatile void *ptr, T value)            \
+<span class="lineNum">      65 </span>            : {                                                                                    \
+<span class="lineNum">      66 </span>            :     T result;                                                                        \
+<span class="lineNum">      67 </span>            :     __asm__ __volatile__(&quot;lock\nxchg&quot; X &quot; %0,%1&quot;                                     \
+<span class="lineNum">      68 </span>            :                           : &quot;=r&quot;(result),&quot;=m&quot;(*(volatile T*)ptr)                     \
+<span class="lineNum">      69 </span>            :                           : &quot;0&quot;(value), &quot;m&quot;(*(volatile T*)ptr)                       \
+<span class="lineNum">      70 </span>            :                           : &quot;memory&quot;);                                               \
+<span class="lineNum">      71 </span>            :     return result;                                                                   \
+<a name="72"><span class="lineNum">      72 </span>            : }                                                                                    \</a>
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span><span class="lineCov">        106 : __TBB_MACHINE_DEFINE_ATOMICS(1,int8_t,&quot;&quot;)</span>
+<a name="75"><span class="lineNum">      75 </span>            : __TBB_MACHINE_DEFINE_ATOMICS(2,int16_t,&quot;&quot;)</a>
+<span class="lineNum">      76 </span>            : __TBB_MACHINE_DEFINE_ATOMICS(4,int32_t,&quot;&quot;)
+<span class="lineNum">      77 </span><span class="lineCov">        330 : __TBB_MACHINE_DEFINE_ATOMICS(8,int64_t,&quot;q&quot;)</span>
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : #undef __TBB_MACHINE_DEFINE_ATOMICS
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : static inline void __TBB_machine_or( volatile void *ptr, uint64_t value ) {
+<span class="lineNum">      82 </span>            :     __asm__ __volatile__(&quot;lock\norq %1,%0&quot; : &quot;=m&quot;(*(volatile uint64_t*)ptr) : &quot;r&quot;(value), &quot;m&quot;(*(volatile uint64_t*)ptr) : &quot;memory&quot;);
+<span class="lineNum">      83 </span>            : }
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : static inline void __TBB_machine_and( volatile void *ptr, uint64_t value ) {
+<span class="lineNum">      86 </span>            :     __asm__ __volatile__(&quot;lock\nandq %1,%0&quot; : &quot;=m&quot;(*(volatile uint64_t*)ptr) : &quot;r&quot;(value), &quot;m&quot;(*(volatile uint64_t*)ptr) : &quot;memory&quot;);
+<span class="lineNum">      87 </span>            : }
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            : #define __TBB_AtomicOR(P,V) __TBB_machine_or(P,V)
+<span class="lineNum">      90 </span>            : #define __TBB_AtomicAND(P,V) __TBB_machine_and(P,V)
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : #define __TBB_USE_FETCHSTORE_AS_FULL_FENCED_STORE           1
+<span class="lineNum">      93 </span>            : #define __TBB_USE_GENERIC_HALF_FENCED_LOAD_STORE            1
+<span class="lineNum">      94 </span>            : #define __TBB_USE_GENERIC_RELAXED_LOAD_STORE                1
+<span class="lineNum">      95 </span>            : #define __TBB_USE_GENERIC_SEQUENTIAL_CONSISTENCY_LOAD_STORE 1
+<span class="lineNum">      96 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

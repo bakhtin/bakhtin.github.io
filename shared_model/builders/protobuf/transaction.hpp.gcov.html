@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - shared_model/builders/protobuf/transaction.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">shared_model/builders/protobuf</a> - transaction.hpp<span style="font-size: 80%;"> (source / <a href="transaction.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntryLo">53.8 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_PROTO_TRANSACTION_BUILDER_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_PROTO_TRANSACTION_BUILDER_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &quot;backend/protobuf/transaction.hpp&quot;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : #include &lt;boost/range/algorithm/for_each.hpp&gt;
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : #include &quot;block.pb.h&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;commands.pb.h&quot;
+<span class="lineNum">      27 </span>                :            : 
+<span class="lineNum">      28 </span>                :            : #include &quot;amount/amount.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;builders/protobuf/helpers.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;builders/protobuf/unsigned_proto.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;interfaces/common_objects/types.hpp&quot;
+<span class="lineNum">      32 </span>                :            : #include &quot;validators/default_validator.hpp&quot;
+<span class="lineNum">      33 </span>                :            : 
+<span class="lineNum">      34 </span>                :            : namespace shared_model {
+<span class="lineNum">      35 </span>                :            :   namespace proto {
+<a name="36"><span class="lineNum">      36 </span>                :            : </a>
+<span class="lineNum">      37 </span>                :            :     template &lt;int S = 0, typename SV = validation::DefaultTransactionValidator&gt;
+<span class="lineNum">      38 </span>                :<span class="lineCov">         20 :     class TemplateTransactionBuilder {</span>
+<span class="lineNum">      39 </span>                :            :      private:
+<span class="lineNum">      40 </span>                :            :       template &lt;int, typename&gt;
+<span class="lineNum">      41 </span>                :            :       friend class TemplateTransactionBuilder;
+<span class="lineNum">      42 </span>                :            : 
+<span class="lineNum">      43 </span>                :            :       enum RequiredFields {
+<span class="lineNum">      44 </span>                :            :         Command,
+<span class="lineNum">      45 </span>                :            :         CreatorAccountId,
+<span class="lineNum">      46 </span>                :            :         TxCounter,
+<span class="lineNum">      47 </span>                :            :         CreatedTime,
+<span class="lineNum">      48 </span>                :            :         TOTAL
+<span class="lineNum">      49 </span>                :            :       };
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :       template &lt;int s&gt;
+<span class="lineNum">      52 </span>                :            :       using NextBuilder = TemplateTransactionBuilder&lt;S | (1 &lt;&lt; s), SV&gt;;
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            :       using ProtoTx = iroha::protocol::Transaction;
+<span class="lineNum">      55 </span>                :            :       using ProtoCommand = iroha::protocol::Command;
+<a name="56"><span class="lineNum">      56 </span>                :            : </a>
+<span class="lineNum">      57 </span>                :            :       template &lt;int Sp&gt;
+<span class="lineNum">      58 </span>                :<span class="lineCov">          8 :       TemplateTransactionBuilder(const TemplateTransactionBuilder&lt;Sp&gt; &amp;o)</span>
+<span class="lineNum">      59 </span>                :            :           : transaction_(o.transaction_),
+<span class="lineNum">      60 </span>                :<span class="lineCov">          8 :             stateless_validator_(o.stateless_validator_) {}</span>
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            :       /**
+<span class="lineNum">      63 </span>                :            :        * Make transformation on copied content
+<span class="lineNum">      64 </span>                :            :        * @tparam Transformation - callable type for changing the copy
+<span class="lineNum">      65 </span>                :            :        * @param f - transform function for proto object
+<span class="lineNum">      66 </span>                :            :        * @return new builder with updated state
+<a name="67"><span class="lineNum">      67 </span>                :            :        */</a>
+<span class="lineNum">      68 </span>                :            :       template &lt;int Fields, typename Transformation&gt;
+<span class="lineNum">      69 </span>                :<span class="lineCov">          6 :       auto transform(Transformation t) const {</span>
+<span class="lineNum">      70 </span>                :<span class="lineCov">          6 :         NextBuilder&lt;Fields&gt; copy = *this;</span>
+<span class="lineNum">      71 </span>  [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span> :<span class="lineCov">          6 :         t(copy.transaction_);</span>
+<span class="lineNum">         </span>         <span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      72 </span>                :<span class="lineCov">          6 :         return copy;</span>
+<span class="lineNum">      73 </span>                :            :       }
+<span class="lineNum">      74 </span>                :            : 
+<span class="lineNum">      75 </span>                :            :       /**
+<span class="lineNum">      76 </span>                :            :        * Make add command transformation on copied object
+<span class="lineNum">      77 </span>                :            :        * @tparam Transformation - callable type for changing command
+<span class="lineNum">      78 </span>                :            :        * @param f - transform function for proto command
+<span class="lineNum">      79 </span>                :            :        * @return new builder with added command
+<a name="80"><span class="lineNum">      80 </span>                :            :        */</a>
+<span class="lineNum">      81 </span>                :            :       template &lt;typename Transformation&gt;
+<span class="lineNum">      82 </span>                :<span class="lineCov">          2 :       auto addCommand(Transformation t) const {</span>
+<span class="lineNum">      83 </span>                :<span class="lineCov">          2 :         NextBuilder&lt;Command&gt; copy = *this;</span>
+<span class="lineNum">      84 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :         t(copy.transaction_.mutable_payload()-&gt;add_commands());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      85 </span>                :<span class="lineCov">          2 :         return copy;</span>
+<span class="lineNum">      86 </span>                :            :       }
+<a name="87"><span class="lineNum">      87 </span>                :            : </a>
+<span class="lineNum">      88 </span>                :            :      public:
+<span class="lineNum">      89 </span>                :<span class="lineCov">          2 :       TemplateTransactionBuilder(const SV &amp;validator = SV())</span>
+<a name="90"><span class="lineNum">      90 </span>                :<span class="lineCov">          2 :           : stateless_validator_(validator) {}</span></a>
+<span class="lineNum">      91 </span>                :            : 
+<a name="92"><span class="lineNum">      92 </span>                :<span class="lineCov">          2 :       auto creatorAccountId(</span></a>
+<span class="lineNum">      93 </span>                :            :           const interface::types::AccountIdType &amp;account_id) const {
+<span class="lineNum">      94 </span>                :<span class="lineCov">          2 :         return transform&lt;CreatorAccountId&gt;([&amp;](auto &amp;tx) {</span>
+<span class="lineNum">      95 </span>                :<span class="lineCov">          2 :           tx.mutable_payload()-&gt;set_creator_account_id(account_id);</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">          2 :         });</span>
+<a name="97"><span class="lineNum">      97 </span>                :            :       }</a>
+<a name="98"><span class="lineNum">      98 </span>                :            : </a>
+<span class="lineNum">      99 </span>                :<span class="lineCov">          2 :       auto txCounter(interface::types::CounterType tx_counter) const {</span>
+<span class="lineNum">     100 </span>                :<span class="lineCov">          2 :         return transform&lt;TxCounter&gt;([&amp;](auto &amp;tx) {</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">          2 :           tx.mutable_payload()-&gt;set_tx_counter(tx_counter);</span>
+<span class="lineNum">     102 </span>                :<span class="lineCov">          2 :         });</span>
+<a name="103"><span class="lineNum">     103 </span>                :            :       }</a>
+<a name="104"><span class="lineNum">     104 </span>                :            : </a>
+<span class="lineNum">     105 </span>                :<span class="lineCov">          2 :       auto createdTime(interface::types::TimestampType created_time) const {</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">          2 :         return transform&lt;CreatedTime&gt;([&amp;](auto &amp;tx) {</span>
+<span class="lineNum">     107 </span>                :<span class="lineCov">          2 :           tx.mutable_payload()-&gt;set_created_time(created_time);</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">          2 :         });</span>
+<a name="109"><span class="lineNum">     109 </span>                :            :       }</a>
+<span class="lineNum">     110 </span>                :            : 
+<span class="lineNum">     111 </span>                :<span class="lineCov">          2 :       auto addAssetQuantity(const interface::types::AccountIdType &amp;account_id,</span>
+<a name="112"><span class="lineNum">     112 </span>                :            :                             const interface::types::AssetIdType &amp;asset_id,</a>
+<span class="lineNum">     113 </span>                :            :                             const std::string &amp;amount) const {
+<span class="lineNum">     114 </span>                :<span class="lineCov">          2 :         return addCommand([&amp;](auto proto_command) {</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">          2 :           auto command = proto_command-&gt;mutable_add_asset_quantity();</span>
+<span class="lineNum">     116 </span>                :<span class="lineCov">          2 :           command-&gt;set_account_id(account_id);</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">          2 :           command-&gt;set_asset_id(asset_id);</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">          2 :           addAmount(command-&gt;mutable_amount(), amount);</span>
+<span class="lineNum">     119 </span>                :<span class="lineCov">          2 :         });</span>
+<span class="lineNum">     120 </span>                :            :       }
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :            :       auto addPeer(const interface::types::AddressType &amp;address,
+<span class="lineNum">     123 </span>                :            :                    const interface::types::PubkeyType &amp;peer_key) const {
+<span class="lineNum">     124 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     125 </span>                :            :           auto command = proto_command-&gt;mutable_add_peer();
+<span class="lineNum">     126 </span>                :            :           command-&gt;set_address(address);
+<span class="lineNum">     127 </span>                :            :           command-&gt;set_peer_key(crypto::toBinaryString(peer_key));
+<span class="lineNum">     128 </span>                :            :         });
+<span class="lineNum">     129 </span>                :            :       }
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            :       auto addSignatory(const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     132 </span>                :            :                         const interface::types::PubkeyType &amp;public_key) const {
+<span class="lineNum">     133 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     134 </span>                :            :           auto command = proto_command-&gt;mutable_add_signatory();
+<span class="lineNum">     135 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     136 </span>                :            :           command-&gt;set_public_key(crypto::toBinaryString(public_key));
+<span class="lineNum">     137 </span>                :            :         });
+<span class="lineNum">     138 </span>                :            :       }
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            :       auto removeSignatory(
+<span class="lineNum">     141 </span>                :            :           const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     142 </span>                :            :           const interface::types::PubkeyType &amp;public_key) const {
+<span class="lineNum">     143 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     144 </span>                :            :           auto command = proto_command-&gt;mutable_remove_sign();
+<span class="lineNum">     145 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     146 </span>                :            :           command-&gt;set_public_key(crypto::toBinaryString(public_key));
+<span class="lineNum">     147 </span>                :            :         });
+<span class="lineNum">     148 </span>                :            :       }
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :            :       auto appendRole(const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     151 </span>                :            :                       const interface::types::RoleIdType &amp;role_name) const {
+<span class="lineNum">     152 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     153 </span>                :            :           auto command = proto_command-&gt;mutable_append_role();
+<span class="lineNum">     154 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     155 </span>                :            :           command-&gt;set_role_name(role_name);
+<span class="lineNum">     156 </span>                :            :         });
+<span class="lineNum">     157 </span>                :            :       }
+<span class="lineNum">     158 </span>                :            : 
+<span class="lineNum">     159 </span>                :            :       auto createAsset(const interface::types::AssetNameType &amp;asset_name,
+<span class="lineNum">     160 </span>                :            :                        const interface::types::DomainIdType &amp;domain_id,
+<span class="lineNum">     161 </span>                :            :                        interface::types::PrecisionType precision) const {
+<span class="lineNum">     162 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     163 </span>                :            :           auto command = proto_command-&gt;mutable_create_asset();
+<span class="lineNum">     164 </span>                :            :           command-&gt;set_asset_name(asset_name);
+<span class="lineNum">     165 </span>                :            :           command-&gt;set_domain_id(domain_id);
+<span class="lineNum">     166 </span>                :            :           command-&gt;set_precision(precision);
+<span class="lineNum">     167 </span>                :            :         });
+<span class="lineNum">     168 </span>                :            :       }
+<span class="lineNum">     169 </span>                :            : 
+<span class="lineNum">     170 </span>                :            :       auto createAccount(
+<span class="lineNum">     171 </span>                :            :           const interface::types::AccountNameType &amp;account_name,
+<span class="lineNum">     172 </span>                :            :           const interface::types::DomainIdType &amp;domain_id,
+<span class="lineNum">     173 </span>                :            :           const interface::types::PubkeyType &amp;main_pubkey) const {
+<span class="lineNum">     174 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     175 </span>                :            :           auto command = proto_command-&gt;mutable_create_account();
+<span class="lineNum">     176 </span>                :            :           command-&gt;set_account_name(account_name);
+<span class="lineNum">     177 </span>                :            :           command-&gt;set_domain_id(domain_id);
+<span class="lineNum">     178 </span>                :            :           command-&gt;set_main_pubkey(crypto::toBinaryString(main_pubkey));
+<span class="lineNum">     179 </span>                :            :         });
+<span class="lineNum">     180 </span>                :            :       }
+<span class="lineNum">     181 </span>                :            : 
+<span class="lineNum">     182 </span>                :            :       auto createDomain(
+<span class="lineNum">     183 </span>                :            :           const interface::types::DomainIdType &amp;domain_id,
+<span class="lineNum">     184 </span>                :            :           const interface::types::RoleIdType &amp;default_role) const {
+<span class="lineNum">     185 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     186 </span>                :            :           auto command = proto_command-&gt;mutable_create_domain();
+<span class="lineNum">     187 </span>                :            :           command-&gt;set_domain_id(domain_id);
+<span class="lineNum">     188 </span>                :            :           command-&gt;set_default_role(default_role);
+<span class="lineNum">     189 </span>                :            :         });
+<span class="lineNum">     190 </span>                :            :       }
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :            :       auto createRole(
+<span class="lineNum">     193 </span>                :            :           const interface::types::RoleIdType &amp;role_name,
+<span class="lineNum">     194 </span>                :            :           std::initializer_list&lt;interface::types::PermissionNameType&gt;
+<span class="lineNum">     195 </span>                :            :               permissions) const {
+<span class="lineNum">     196 </span>                :            :         return createRole(role_name, permissions);
+<span class="lineNum">     197 </span>                :            :       }
+<span class="lineNum">     198 </span>                :            : 
+<span class="lineNum">     199 </span>                :            :       template &lt;typename... Permission&gt;
+<span class="lineNum">     200 </span>                :            :       auto createRole(const interface::types::RoleIdType &amp;role_name,
+<span class="lineNum">     201 </span>                :            :                       const Permission &amp;... permissions) const {
+<span class="lineNum">     202 </span>                :            :         return createRole(role_name, {permissions...});
+<span class="lineNum">     203 </span>                :            :       }
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>                :            :       template &lt;typename Collection&gt;
+<span class="lineNum">     206 </span>                :            :       auto createRole(const interface::types::RoleIdType &amp;role_name,
+<span class="lineNum">     207 </span>                :            :                       const Collection &amp;permissions) const {
+<span class="lineNum">     208 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     209 </span>                :            :           auto command = proto_command-&gt;mutable_create_role();
+<span class="lineNum">     210 </span>                :            :           command-&gt;set_role_name(role_name);
+<span class="lineNum">     211 </span>                :            :           boost::for_each(permissions, [&amp;command](const auto &amp;perm) {
+<span class="lineNum">     212 </span>                :            :             iroha::protocol::RolePermission p;
+<span class="lineNum">     213 </span>                :            :             iroha::protocol::RolePermission_Parse(perm, &amp;p);
+<span class="lineNum">     214 </span>                :            :             command-&gt;add_permissions(p);
+<span class="lineNum">     215 </span>                :            :           });
+<span class="lineNum">     216 </span>                :            :         });
+<span class="lineNum">     217 </span>                :            :       }
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :            :       auto detachRole(const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     220 </span>                :            :                       const interface::types::RoleIdType &amp;role_name) const {
+<span class="lineNum">     221 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     222 </span>                :            :           auto command = proto_command-&gt;mutable_detach_role();
+<span class="lineNum">     223 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     224 </span>                :            :           command-&gt;set_role_name(role_name);
+<span class="lineNum">     225 </span>                :            :         });
+<span class="lineNum">     226 </span>                :            :       }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :            :       auto grantPermission(
+<span class="lineNum">     229 </span>                :            :           const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     230 </span>                :            :           const interface::types::PermissionNameType &amp;permission) const {
+<span class="lineNum">     231 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     232 </span>                :            :           auto command = proto_command-&gt;mutable_grant_permission();
+<span class="lineNum">     233 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     234 </span>                :            :           iroha::protocol::GrantablePermission p;
+<span class="lineNum">     235 </span>                :            :           iroha::protocol::GrantablePermission_Parse(permission, &amp;p);
+<span class="lineNum">     236 </span>                :            :           command-&gt;set_permission(p);
+<span class="lineNum">     237 </span>                :            :         });
+<span class="lineNum">     238 </span>                :            :       }
+<span class="lineNum">     239 </span>                :            : 
+<span class="lineNum">     240 </span>                :            :       auto revokePermission(
+<span class="lineNum">     241 </span>                :            :           const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     242 </span>                :            :           const interface::types::PermissionNameType &amp;permission) const {
+<span class="lineNum">     243 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     244 </span>                :            :           auto command = proto_command-&gt;mutable_revoke_permission();
+<span class="lineNum">     245 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     246 </span>                :            :           iroha::protocol::GrantablePermission p;
+<span class="lineNum">     247 </span>                :            :           iroha::protocol::GrantablePermission_Parse(permission, &amp;p);
+<span class="lineNum">     248 </span>                :            :           command-&gt;set_permission(p);
+<span class="lineNum">     249 </span>                :            :         });
+<span class="lineNum">     250 </span>                :            :       }
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :            :       auto setAccountDetail(
+<span class="lineNum">     253 </span>                :            :           const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     254 </span>                :            :           const interface::SetAccountDetail::AccountDetailKeyType &amp;key,
+<span class="lineNum">     255 </span>                :            :           const interface::SetAccountDetail::AccountDetailValueType &amp;value)
+<span class="lineNum">     256 </span>                :            :           const {
+<span class="lineNum">     257 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     258 </span>                :            :           auto command = proto_command-&gt;mutable_set_account_detail();
+<span class="lineNum">     259 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     260 </span>                :            :           command-&gt;set_key(key);
+<span class="lineNum">     261 </span>                :            :           command-&gt;set_value(value);
+<span class="lineNum">     262 </span>                :            :         });
+<span class="lineNum">     263 </span>                :            :       }
+<span class="lineNum">     264 </span>                :            : 
+<span class="lineNum">     265 </span>                :            :       auto setAccountQuorum(const interface::types::AddressType &amp;account_id,
+<span class="lineNum">     266 </span>                :            :                             interface::types::QuorumType quorum) const {
+<span class="lineNum">     267 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     268 </span>                :            :           auto command = proto_command-&gt;mutable_set_quorum();
+<span class="lineNum">     269 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     270 </span>                :            :           command-&gt;set_quorum(quorum);
+<span class="lineNum">     271 </span>                :            :         });
+<span class="lineNum">     272 </span>                :            :       }
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :            :       auto subtractAssetQuantity(
+<span class="lineNum">     275 </span>                :            :           const interface::types::AccountIdType &amp;account_id,
+<span class="lineNum">     276 </span>                :            :           const interface::types::AssetIdType &amp;asset_id,
+<span class="lineNum">     277 </span>                :            :           const std::string &amp;amount) const {
+<span class="lineNum">     278 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     279 </span>                :            :           auto command = proto_command-&gt;mutable_subtract_asset_quantity();
+<span class="lineNum">     280 </span>                :            :           command-&gt;set_account_id(account_id);
+<span class="lineNum">     281 </span>                :            :           command-&gt;set_asset_id(asset_id);
+<span class="lineNum">     282 </span>                :            :           addAmount(command-&gt;mutable_amount(), amount);
+<span class="lineNum">     283 </span>                :            :         });
+<span class="lineNum">     284 </span>                :            :       }
+<span class="lineNum">     285 </span>                :            : 
+<span class="lineNum">     286 </span>                :            :       auto transferAsset(
+<span class="lineNum">     287 </span>                :            :           const interface::types::AccountIdType &amp;src_account_id,
+<span class="lineNum">     288 </span>                :            :           const interface::types::AccountIdType &amp;dest_account_id,
+<span class="lineNum">     289 </span>                :            :           const interface::types::AssetIdType &amp;asset_id,
+<span class="lineNum">     290 </span>                :            :           const interface::TransferAsset::MessageType &amp;description,
+<span class="lineNum">     291 </span>                :            :           const std::string &amp;amount) const {
+<span class="lineNum">     292 </span>                :            :         return addCommand([&amp;](auto proto_command) {
+<span class="lineNum">     293 </span>                :            :           auto command = proto_command-&gt;mutable_transfer_asset();
+<span class="lineNum">     294 </span>                :            :           command-&gt;set_src_account_id(src_account_id);
+<span class="lineNum">     295 </span>                :            :           command-&gt;set_dest_account_id(dest_account_id);
+<span class="lineNum">     296 </span>                :            :           command-&gt;set_asset_id(asset_id);
+<span class="lineNum">     297 </span>                :            :           command-&gt;set_description(description);
+<span class="lineNum">     298 </span>                :            :           addAmount(command-&gt;mutable_amount(), amount);
+<span class="lineNum">     299 </span>                :            :         });
+<a name="300"><span class="lineNum">     300 </span>                :            :       }</a>
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :<span class="lineCov">          2 :       auto build() const {</span>
+<span class="lineNum">     303 </span>                :            :         static_assert(S == (1 &lt;&lt; TOTAL) - 1, &quot;Required fields are not set&quot;);
+<span class="lineNum">     304 </span>                :            : 
+<span class="lineNum">     305 </span>                :            :         auto answer = stateless_validator_.validate(
+<span class="lineNum">     306 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :             detail::makePolymorphic&lt;Transaction&gt;(transaction_));</span>
+<span class="lineNum">     307 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 1 time"> + </span>]:<span class="lineCov">          2 :         if (answer.hasErrors()) {</span>
+<span class="lineNum">     308 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :           throw std::invalid_argument(answer.reason());</span>
+<span class="lineNum">     309 </span>                :            :         }
+<span class="lineNum">     310 </span>                :            :         return UnsignedWrapper&lt;Transaction&gt;(
+<span class="lineNum">     311 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :             Transaction(iroha::protocol::Transaction(transaction_)));</span>
+<span class="lineNum">     312 </span>                :            :       }
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            :       static const int total = RequiredFields::TOTAL;
+<span class="lineNum">     315 </span>                :            : 
+<span class="lineNum">     316 </span>                :            :      private:
+<span class="lineNum">     317 </span>                :            :       ProtoTx transaction_;
+<span class="lineNum">     318 </span>                :            :       SV stateless_validator_;
+<span class="lineNum">     319 </span>                :            :     };
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :            :     using TransactionBuilder = TemplateTransactionBuilder&lt;&gt;;
+<span class="lineNum">     322 </span>                :            :   }  // namespace proto
+<span class="lineNum">     323 </span>                :            : }  // namespace shared_model
+<span class="lineNum">     324 </span>                :            : 
+<span class="lineNum">     325 </span>                :            : #endif  // IROHA_PROTO_TRANSACTION_BUILDER_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/support/context.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/support</a> - context.hpp<span style="font-size: 80%;"> (source / <a href="context.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :     Copyright (c) 2001-2011 Hartmut Kaiser
+<span class="lineNum">       4 </span>            :     Copyright (c)      2011 Thomas Heller
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       7 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>            : ==============================================================================*/
+<span class="lineNum">       9 </span>            : #if !defined(BOOST_SPIRIT_CONTEXT_OCTOBER_31_2008_0654PM)
+<span class="lineNum">      10 </span>            : #define BOOST_SPIRIT_CONTEXT_OCTOBER_31_2008_0654PM
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      13 </span>            : #pragma once
+<span class="lineNum">      14 </span>            : #endif
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : #include &lt;boost/preprocessor/repetition/repeat_from_to.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/spirit/include/phoenix_core.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/home/support/nonterminal/expand_arg.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/spirit/home/support/assert_msg.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/argument.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/spirit/home/support/limits.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/fusion/include/at.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/fusion/include/size.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/fusion/include/as_list.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/fusion/include/transform.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/mpl/size.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;boost/mpl/at.hpp&gt;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      30 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : #define SPIRIT_DECLARE_ATTRIBUTE(z, n, data)                                   \
+<span class="lineNum">      33 </span>            :     typedef phoenix::actor&lt;attribute&lt;n&gt; &gt;                                      \
+<span class="lineNum">      34 </span>            :         BOOST_PP_CAT(BOOST_PP_CAT(_r, n), _type);                              \
+<span class="lineNum">      35 </span>            :     phoenix::actor&lt;attribute&lt;n&gt; &gt; const                                        \
+<span class="lineNum">      36 </span>            :         BOOST_PP_CAT(_r, n) = BOOST_PP_CAT(BOOST_PP_CAT(_r, n), _type)();
+<span class="lineNum">      37 </span>            :     /***/
+<span class="lineNum">      38 </span>            : #define SPIRIT_USING_ATTRIBUTE(z, n, data)                                     \
+<span class="lineNum">      39 </span>            :     using spirit::BOOST_PP_CAT(BOOST_PP_CAT(_r, n), _type);                    \
+<span class="lineNum">      40 </span>            :     using spirit::BOOST_PP_CAT(_r, n);                                         \
+<span class="lineNum">      41 </span>            :     /***/
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : #else
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : #define SPIRIT_DECLARE_ATTRIBUTE(z, n, data)                                   \
+<span class="lineNum">      46 </span>            :     typedef phoenix::actor&lt;attribute&lt;n&gt; &gt;                                      \
+<span class="lineNum">      47 </span>            :         BOOST_PP_CAT(BOOST_PP_CAT(_r, n), _type);                              \
+<span class="lineNum">      48 </span>            :     /***/
+<span class="lineNum">      49 </span>            : #define SPIRIT_USING_ATTRIBUTE(z, n, data)                                     \
+<span class="lineNum">      50 </span>            :     using spirit::BOOST_PP_CAT(BOOST_PP_CAT(_r, n), _type);                    \
+<span class="lineNum">      51 </span>            :     /***/
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : #endif
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      56 </span>            : {
+<span class="lineNum">      57 </span>            :     template &lt;int&gt;
+<span class="lineNum">      58 </span>            :     struct attribute;
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     template &lt;int&gt;
+<span class="lineNum">      61 </span>            :     struct local_variable;
+<span class="lineNum">      62 </span>            : }}
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : BOOST_PHOENIX_DEFINE_CUSTOM_TERMINAL(
+<span class="lineNum">      65 </span>            :     template &lt;int N&gt;
+<span class="lineNum">      66 </span>            :   , boost::spirit::attribute&lt;N&gt;
+<span class="lineNum">      67 </span>            :   , mpl::false_                 // is not nullary
+<span class="lineNum">      68 </span>            :   , v2_eval(
+<span class="lineNum">      69 </span>            :         proto::make&lt;
+<span class="lineNum">      70 </span>            :             boost::spirit::attribute&lt;N&gt;()
+<span class="lineNum">      71 </span>            :         &gt;
+<span class="lineNum">      72 </span>            :       , proto::call&lt;
+<span class="lineNum">      73 </span>            :             functional::env(proto::_state)
+<span class="lineNum">      74 </span>            :         &gt;
+<span class="lineNum">      75 </span>            :     )
+<span class="lineNum">      76 </span>            : )
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : BOOST_PHOENIX_DEFINE_CUSTOM_TERMINAL(
+<span class="lineNum">      79 </span>            :     template &lt;int N&gt;
+<span class="lineNum">      80 </span>            :   , boost::spirit::local_variable&lt;N&gt;
+<span class="lineNum">      81 </span>            :   , mpl::false_                 // is not nullary
+<span class="lineNum">      82 </span>            :   , v2_eval(
+<span class="lineNum">      83 </span>            :         proto::make&lt;
+<span class="lineNum">      84 </span>            :             boost::spirit::local_variable&lt;N&gt;()
+<span class="lineNum">      85 </span>            :         &gt;
+<span class="lineNum">      86 </span>            :       , proto::call&lt;
+<span class="lineNum">      87 </span>            :             functional::env(proto::_state)
+<span class="lineNum">      88 </span>            :         &gt;
+<span class="lineNum">      89 </span>            :     )
+<span class="lineNum">      90 </span>            : )
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      93 </span>            : {
+<span class="lineNum">      94 </span>            :     template &lt;typename Attributes, typename Locals&gt;
+<span class="lineNum">      95 </span>            :     struct context
+<span class="lineNum">      96 </span>            :     {
+<span class="lineNum">      97 </span>            :         typedef Attributes attributes_type;
+<a name="98"><span class="lineNum">      98 </span>            :         typedef Locals locals_type;</a>
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span><span class="lineCov">        942 :         context(typename Attributes::car_type attribute)</span>
+<span class="lineNum">     101 </span><span class="lineCov">        942 :           : attributes(attribute, fusion::nil_()), locals() {}</span>
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :         template &lt;typename Args, typename Context&gt;
+<span class="lineNum">     104 </span>            :         context(
+<span class="lineNum">     105 </span>            :             typename Attributes::car_type attribute
+<span class="lineNum">     106 </span>            :           , Args const&amp; args
+<span class="lineNum">     107 </span>            :           , Context&amp; caller_context
+<span class="lineNum">     108 </span>            :         ) : attributes(
+<span class="lineNum">     109 </span>            :                 attribute
+<span class="lineNum">     110 </span>            :               , fusion::as_list(
+<span class="lineNum">     111 </span>            :                     fusion::transform(
+<span class="lineNum">     112 </span>            :                         args
+<span class="lineNum">     113 </span>            :                       , detail::expand_arg&lt;Context&gt;(caller_context)
+<span class="lineNum">     114 </span>            :                     )
+<span class="lineNum">     115 </span>            :                 )
+<span class="lineNum">     116 </span>            :             )
+<span class="lineNum">     117 </span>            :           , locals() {}
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :         context(Attributes const&amp; attributes_)
+<span class="lineNum">     120 </span>            :           : attributes(attributes_), locals() {}
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :         Attributes attributes;  // The attributes
+<span class="lineNum">     123 </span>            :         Locals locals;          // Local variables
+<span class="lineNum">     124 </span>            :     };
+<span class="lineNum">     125 </span>            : 
+<span class="lineNum">     126 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     127 </span>            :     struct attributes_of
+<span class="lineNum">     128 </span>            :     {
+<span class="lineNum">     129 </span>            :         typedef typename Context::attributes_type type;
+<span class="lineNum">     130 </span>            :     };
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     133 </span>            :     struct attributes_of&lt;Context const&gt;
+<span class="lineNum">     134 </span>            :     {
+<span class="lineNum">     135 </span>            :         typedef typename Context::attributes_type const type;
+<span class="lineNum">     136 </span>            :     };
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     139 </span>            :     struct attributes_of&lt;Context &amp;&gt;
+<span class="lineNum">     140 </span>            :       : attributes_of&lt;Context&gt;
+<span class="lineNum">     141 </span>            :     {};
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     144 </span>            :     struct locals_of
+<span class="lineNum">     145 </span>            :     {
+<span class="lineNum">     146 </span>            :         typedef typename Context::locals_type type;
+<span class="lineNum">     147 </span>            :     };
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     150 </span>            :     struct locals_of&lt;Context const&gt;
+<span class="lineNum">     151 </span>            :     {
+<span class="lineNum">     152 </span>            :         typedef typename Context::locals_type const type;
+<span class="lineNum">     153 </span>            :     };
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            :     template &lt;typename Context&gt;
+<span class="lineNum">     156 </span>            :     struct locals_of&lt;Context &amp;&gt;
+<span class="lineNum">     157 </span>            :     {
+<span class="lineNum">     158 </span>            :         typedef typename Context::locals_type type;
+<span class="lineNum">     159 </span>            :     };
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :     template &lt;int N&gt;
+<span class="lineNum">     162 </span>            :     struct attribute
+<span class="lineNum">     163 </span>            :     {
+<span class="lineNum">     164 </span>            :         typedef mpl::true_ no_nullary;
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            :         template &lt;typename Env&gt;
+<span class="lineNum">     167 </span>            :         struct result
+<span class="lineNum">     168 </span>            :         {
+<span class="lineNum">     169 </span>            :             typedef typename
+<span class="lineNum">     170 </span>            :                 attributes_of&lt;typename
+<span class="lineNum">     171 </span>            :                     mpl::at_c&lt;typename Env::args_type, 1&gt;::type
+<span class="lineNum">     172 </span>            :                 &gt;::type
+<span class="lineNum">     173 </span>            :             attributes_type;
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :             typedef typename
+<span class="lineNum">     176 </span>            :                 fusion::result_of::size&lt;attributes_type&gt;::type
+<span class="lineNum">     177 </span>            :             attributes_size;
+<span class="lineNum">     178 </span>            : 
+<span class="lineNum">     179 </span>            :             // report invalid argument not found (N is out of bounds)
+<span class="lineNum">     180 </span>            :             BOOST_SPIRIT_ASSERT_MSG(
+<span class="lineNum">     181 </span>            :                 (N &lt; attributes_size::value),
+<span class="lineNum">     182 </span>            :                 index_is_out_of_bounds, ());
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :             typedef typename
+<span class="lineNum">     185 </span>            :                 fusion::result_of::at_c&lt;attributes_type, N&gt;::type
+<span class="lineNum">     186 </span>            :             type;
+<span class="lineNum">     187 </span>            :         };
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            :         template &lt;typename Env&gt;
+<span class="lineNum">     190 </span>            :         typename result&lt;Env&gt;::type
+<span class="lineNum">     191 </span>            :         eval(Env const&amp; env) const
+<span class="lineNum">     192 </span>            :         {
+<span class="lineNum">     193 </span>            :             return fusion::at_c&lt;N&gt;((fusion::at_c&lt;1&gt;(env.args())).attributes);
+<span class="lineNum">     194 </span>            :         }
+<span class="lineNum">     195 </span>            :     };
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :     template &lt;int N&gt;
+<span class="lineNum">     198 </span>            :     struct local_variable
+<span class="lineNum">     199 </span>            :     {
+<span class="lineNum">     200 </span>            :         typedef mpl::true_ no_nullary;
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            :         template &lt;typename Env&gt;
+<span class="lineNum">     203 </span>            :         struct result
+<span class="lineNum">     204 </span>            :         {
+<span class="lineNum">     205 </span>            :             typedef typename
+<span class="lineNum">     206 </span>            :                 locals_of&lt;typename
+<span class="lineNum">     207 </span>            :                     mpl::at_c&lt;typename Env::args_type, 1&gt;::type
+<span class="lineNum">     208 </span>            :                 &gt;::type
+<span class="lineNum">     209 </span>            :             locals_type;
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :             typedef typename
+<span class="lineNum">     212 </span>            :                 fusion::result_of::size&lt;locals_type&gt;::type
+<span class="lineNum">     213 </span>            :             locals_size;
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :             // report invalid argument not found (N is out of bounds)
+<span class="lineNum">     216 </span>            :             BOOST_SPIRIT_ASSERT_MSG(
+<span class="lineNum">     217 </span>            :                 (N &lt; locals_size::value),
+<span class="lineNum">     218 </span>            :                 index_is_out_of_bounds, ());
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            :             typedef typename
+<span class="lineNum">     221 </span>            :                 fusion::result_of::at_c&lt;locals_type, N&gt;::type
+<span class="lineNum">     222 </span>            :             type;
+<span class="lineNum">     223 </span>            :         };
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            :         template &lt;typename Env&gt;
+<span class="lineNum">     226 </span>            :         typename result&lt;Env&gt;::type
+<span class="lineNum">     227 </span>            :         eval(Env const&amp; env) const
+<span class="lineNum">     228 </span>            :         {
+<span class="lineNum">     229 </span>            :             return get_arg&lt;N&gt;((fusion::at_c&lt;1&gt;(env.args())).locals);
+<span class="lineNum">     230 </span>            :         }
+<span class="lineNum">     231 </span>            :     };
+<span class="lineNum">     232 </span>            :     
+<span class="lineNum">     233 </span>            :     typedef phoenix::actor&lt;attribute&lt;0&gt; &gt; _val_type;
+<span class="lineNum">     234 </span>            :     typedef phoenix::actor&lt;attribute&lt;0&gt; &gt; _r0_type;
+<span class="lineNum">     235 </span>            :     typedef phoenix::actor&lt;attribute&lt;1&gt; &gt; _r1_type;
+<span class="lineNum">     236 </span>            :     typedef phoenix::actor&lt;attribute&lt;2&gt; &gt; _r2_type;
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     239 </span>            :     // _val refers to the 'return' value of a rule (same as _r0)
+<span class="lineNum">     240 </span>            :     // _r1, _r2, ... refer to the rule arguments
+<span class="lineNum">     241 </span>            :     _val_type const _val = _val_type();
+<span class="lineNum">     242 </span>            :     _r0_type const _r0 = _r0_type();
+<span class="lineNum">     243 </span>            :     _r1_type const _r1 = _r1_type();
+<span class="lineNum">     244 </span>            :     _r2_type const _r2 = _r2_type();
+<span class="lineNum">     245 </span>            : #endif
+<span class="lineNum">     246 </span>            : 
+<span class="lineNum">     247 </span>            :     //  Bring in the rest of the attributes (_r4 .. _rN+1), using PP
+<span class="lineNum">     248 </span>            :     BOOST_PP_REPEAT_FROM_TO(
+<span class="lineNum">     249 </span>            :         3, SPIRIT_ATTRIBUTES_LIMIT, SPIRIT_DECLARE_ATTRIBUTE, _)
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            :     typedef phoenix::actor&lt;local_variable&lt;0&gt; &gt; _a_type;
+<span class="lineNum">     252 </span>            :     typedef phoenix::actor&lt;local_variable&lt;1&gt; &gt; _b_type;
+<span class="lineNum">     253 </span>            :     typedef phoenix::actor&lt;local_variable&lt;2&gt; &gt; _c_type;
+<span class="lineNum">     254 </span>            :     typedef phoenix::actor&lt;local_variable&lt;3&gt; &gt; _d_type;
+<span class="lineNum">     255 </span>            :     typedef phoenix::actor&lt;local_variable&lt;4&gt; &gt; _e_type;
+<span class="lineNum">     256 </span>            :     typedef phoenix::actor&lt;local_variable&lt;5&gt; &gt; _f_type;
+<span class="lineNum">     257 </span>            :     typedef phoenix::actor&lt;local_variable&lt;6&gt; &gt; _g_type;
+<span class="lineNum">     258 </span>            :     typedef phoenix::actor&lt;local_variable&lt;7&gt; &gt; _h_type;
+<span class="lineNum">     259 </span>            :     typedef phoenix::actor&lt;local_variable&lt;8&gt; &gt; _i_type;
+<span class="lineNum">     260 </span>            :     typedef phoenix::actor&lt;local_variable&lt;9&gt; &gt; _j_type;
+<span class="lineNum">     261 </span>            : 
+<span class="lineNum">     262 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     263 </span>            :     // _a, _b, ... refer to the local variables of a rule
+<span class="lineNum">     264 </span>            :     _a_type const _a = _a_type();
+<span class="lineNum">     265 </span>            :     _b_type const _b = _b_type();
+<span class="lineNum">     266 </span>            :     _c_type const _c = _c_type();
+<span class="lineNum">     267 </span>            :     _d_type const _d = _d_type();
+<span class="lineNum">     268 </span>            :     _e_type const _e = _e_type();
+<span class="lineNum">     269 </span>            :     _f_type const _f = _f_type();
+<span class="lineNum">     270 </span>            :     _g_type const _g = _g_type();
+<span class="lineNum">     271 </span>            :     _h_type const _h = _h_type();
+<span class="lineNum">     272 </span>            :     _i_type const _i = _i_type();
+<span class="lineNum">     273 </span>            :     _j_type const _j = _j_type();
+<span class="lineNum">     274 </span>            : #endif
+<span class="lineNum">     275 </span>            : 
+<span class="lineNum">     276 </span>            :     // You can bring these in with the using directive
+<span class="lineNum">     277 </span>            :     // without worrying about bringing in too much.
+<span class="lineNum">     278 </span>            :     namespace labels
+<span class="lineNum">     279 </span>            :     {
+<span class="lineNum">     280 </span>            :         BOOST_PP_REPEAT(SPIRIT_ARGUMENTS_LIMIT, SPIRIT_USING_ARGUMENT, _)
+<span class="lineNum">     281 </span>            :         BOOST_PP_REPEAT(SPIRIT_ATTRIBUTES_LIMIT, SPIRIT_USING_ATTRIBUTE, _)
+<span class="lineNum">     282 </span>            : 
+<span class="lineNum">     283 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     284 </span>            :         using spirit::_val;
+<span class="lineNum">     285 </span>            :         using spirit::_a;
+<span class="lineNum">     286 </span>            :         using spirit::_b;
+<span class="lineNum">     287 </span>            :         using spirit::_c;
+<span class="lineNum">     288 </span>            :         using spirit::_d;
+<span class="lineNum">     289 </span>            :         using spirit::_e;
+<span class="lineNum">     290 </span>            :         using spirit::_f;
+<span class="lineNum">     291 </span>            :         using spirit::_g;
+<span class="lineNum">     292 </span>            :         using spirit::_h;
+<span class="lineNum">     293 </span>            :         using spirit::_i;
+<span class="lineNum">     294 </span>            :         using spirit::_j;
+<span class="lineNum">     295 </span>            : #endif
+<span class="lineNum">     296 </span>            :     }
+<span class="lineNum">     297 </span>            : }}
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

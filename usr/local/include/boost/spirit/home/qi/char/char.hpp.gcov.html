@@ -1,0 +1,691 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/qi/char/char.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/qi/char</a> - char.hpp<span style="font-size: 80%;"> (source / <a href="char.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntry">7</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :     Copyright (c) 2001-2011 Hartmut Kaiser
+<span class="lineNum">       4 </span>            :     Copyright (c)      2010 Bryce Lelbach
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       7 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>            : ==============================================================================*/
+<span class="lineNum">       9 </span>            : #if !defined(BOOST_SPIRIT_CHAR_APRIL_16_2006_1051AM)
+<span class="lineNum">      10 </span>            : #define BOOST_SPIRIT_CHAR_APRIL_16_2006_1051AM
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      13 </span>            : #pragma once
+<span class="lineNum">      14 </span>            : #endif
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : #include &lt;boost/spirit/home/support/common_terminals.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/spirit/home/support/string_traits.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/home/support/info.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/spirit/home/support/detail/get_encoding.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/char_set/basic_chset.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/spirit/home/qi/char/char_parser.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/spirit/home/qi/char/char_class.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/spirit/home/qi/meta_compiler.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/spirit/home/qi/auxiliary/lazy.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/spirit/home/qi/detail/enable_lit.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/fusion/include/at.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      28 </span>            : #include &lt;boost/mpl/assert.hpp&gt;
+<span class="lineNum">      29 </span>            : #include &lt;boost/mpl/identity.hpp&gt;
+<span class="lineNum">      30 </span>            : #include &lt;boost/utility/enable_if.hpp&gt;
+<span class="lineNum">      31 </span>            : #include &lt;boost/type_traits/remove_const.hpp&gt;
+<span class="lineNum">      32 </span>            : #include &lt;string&gt;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      35 </span>            : #pragma once
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      39 </span>            : {
+<span class="lineNum">      40 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      41 </span>            :     // Enablers
+<span class="lineNum">      42 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      43 </span>            :     template &lt;typename CharEncoding&gt;
+<span class="lineNum">      44 </span>            :     struct use_terminal&lt;qi::domain
+<span class="lineNum">      45 </span>            :       , terminal&lt;
+<span class="lineNum">      46 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;    // enables char_
+<span class="lineNum">      47 </span>            :         &gt;
+<span class="lineNum">      48 </span>            :     &gt; : mpl::true_ {};
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :     template &lt;typename CharEncoding, typename A0&gt;
+<span class="lineNum">      51 </span>            :     struct use_terminal&lt;qi::domain
+<span class="lineNum">      52 </span>            :       , terminal_ex&lt;
+<span class="lineNum">      53 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;    // enables char_('x'), char_(&quot;x&quot;)
+<span class="lineNum">      54 </span>            :           , fusion::vector1&lt;A0&gt;                         // and char_(&quot;a-z0-9&quot;)
+<span class="lineNum">      55 </span>            :         &gt;
+<span class="lineNum">      56 </span>            :     &gt; : mpl::true_ {};
+<span class="lineNum">      57 </span>            : 
+<span class="lineNum">      58 </span>            :     template &lt;typename CharEncoding, typename A0, typename A1&gt;
+<span class="lineNum">      59 </span>            :     struct use_terminal&lt;qi::domain
+<span class="lineNum">      60 </span>            :       , terminal_ex&lt;
+<span class="lineNum">      61 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;    // enables char_('a','z')
+<span class="lineNum">      62 </span>            :           , fusion::vector2&lt;A0, A1&gt;
+<span class="lineNum">      63 </span>            :         &gt;
+<span class="lineNum">      64 </span>            :     &gt; : mpl::true_ {};
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            :     template &lt;typename CharEncoding&gt;                    // enables *lazy* char_('x'), char_(&quot;x&quot;)
+<span class="lineNum">      67 </span>            :     struct use_lazy_terminal&lt;                           // and char_(&quot;a-z0-9&quot;)
+<span class="lineNum">      68 </span>            :         qi::domain
+<span class="lineNum">      69 </span>            :       , tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">      70 </span>            :       , 1 // arity
+<span class="lineNum">      71 </span>            :     &gt; : mpl::true_ {};
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :     template &lt;typename CharEncoding&gt;                    // enables *lazy* char_('a','z')
+<span class="lineNum">      74 </span>            :     struct use_lazy_terminal&lt;
+<span class="lineNum">      75 </span>            :         qi::domain
+<span class="lineNum">      76 </span>            :       , tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">      77 </span>            :       , 2 // arity
+<span class="lineNum">      78 </span>            :     &gt; : mpl::true_ {};
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     template &lt;&gt;
+<span class="lineNum">      81 </span>            :     struct use_terminal&lt;qi::domain, char&gt;               // enables 'x'
+<span class="lineNum">      82 </span>            :       : mpl::true_ {};
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :     template &lt;&gt;
+<span class="lineNum">      85 </span>            :     struct use_terminal&lt;qi::domain, char[2]&gt;            // enables &quot;x&quot;
+<span class="lineNum">      86 </span>            :       : mpl::true_ {};
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :     template &lt;&gt;
+<span class="lineNum">      89 </span>            :     struct use_terminal&lt;qi::domain, wchar_t&gt;            // enables wchar_t
+<span class="lineNum">      90 </span>            :       : mpl::true_ {};
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     template &lt;&gt;
+<span class="lineNum">      93 </span>            :     struct use_terminal&lt;qi::domain, wchar_t[2]&gt;         // enables L&quot;x&quot;
+<span class="lineNum">      94 </span>            :       : mpl::true_ {};
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :     // enables lit(...)
+<span class="lineNum">      97 </span>            :     template &lt;typename A0&gt;
+<span class="lineNum">      98 </span>            :     struct use_terminal&lt;qi::domain
+<span class="lineNum">      99 </span>            :           , terminal_ex&lt;tag::lit, fusion::vector1&lt;A0&gt; &gt;
+<span class="lineNum">     100 </span>            :           , typename enable_if&lt;traits::is_char&lt;A0&gt; &gt;::type&gt;
+<span class="lineNum">     101 </span>            :       : mpl::true_ {};
+<span class="lineNum">     102 </span>            : }}
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            : namespace boost { namespace spirit { namespace qi
+<span class="lineNum">     105 </span>            : {
+<span class="lineNum">     106 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     107 </span>            :     using spirit::lit; // lit('x') is equivalent to 'x'
+<span class="lineNum">     108 </span>            : #endif
+<span class="lineNum">     109 </span>            :     using spirit::lit_type;
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     112 </span>            :     // Parser for a single character
+<span class="lineNum">     113 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     114 </span>            :     template &lt;typename CharEncoding, bool no_attribute, bool no_case = false&gt;
+<span class="lineNum">     115 </span>            :     struct literal_char
+<span class="lineNum">     116 </span>            :       : char_parser&lt;
+<span class="lineNum">     117 </span>            :             literal_char&lt;CharEncoding, no_attribute, false&gt;
+<span class="lineNum">     118 </span>            :           , typename CharEncoding::char_type
+<span class="lineNum">     119 </span>            :           , typename mpl::if_c&lt;no_attribute, unused_type
+<span class="lineNum">     120 </span>            :               , typename CharEncoding::char_type&gt;::type&gt;
+<span class="lineNum">     121 </span>            :     {
+<span class="lineNum">     122 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     123 </span>            :         typedef CharEncoding char_encoding;
+<a name="124"><span class="lineNum">     124 </span>            : </a>
+<span class="lineNum">     125 </span>            :         template &lt;typename Char&gt;
+<span class="lineNum">     126 </span><span class="lineCov">         92 :         literal_char(Char ch_)</span>
+<span class="lineNum">     127 </span><span class="lineCov">         92 :           : ch(static_cast&lt;char_type&gt;(ch_)) {}</span>
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            :         template &lt;typename Context, typename Iterator&gt;
+<span class="lineNum">     130 </span>            :         struct attribute
+<span class="lineNum">     131 </span>            :         {
+<span class="lineNum">     132 </span>            :             typedef typename mpl::if_c&lt;
+<span class="lineNum">     133 </span>            :                 no_attribute, unused_type, char_type&gt;::type
+<span class="lineNum">     134 </span>            :             type;
+<span class="lineNum">     135 </span>            :         };
+<a name="136"><span class="lineNum">     136 </span>            : </a>
+<span class="lineNum">     137 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     138 </span><span class="lineCov">        567 :         bool test(CharParam ch_, Context&amp;) const</span>
+<span class="lineNum">     139 </span>            :         {
+<span class="lineNum">     140 </span><span class="lineCov">        567 :             return traits::ischar&lt;CharParam, char_encoding&gt;::call(ch_) &amp;&amp;</span>
+<span class="lineNum">     141 </span><span class="lineCov">        567 :                    ch == char_type(ch_);</span>
+<span class="lineNum">     142 </span>            :         }
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     145 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     146 </span>            :         {
+<span class="lineNum">     147 </span>            :             return info(&quot;literal-char&quot;, char_encoding::toucs4(ch));
+<span class="lineNum">     148 </span>            :         }
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :         char_type ch;
+<span class="lineNum">     151 </span>            :     };
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            :     template &lt;typename CharEncoding, bool no_attribute&gt;
+<span class="lineNum">     154 </span>            :     struct literal_char&lt;CharEncoding, no_attribute, true&gt; // case insensitive
+<span class="lineNum">     155 </span>            :       : char_parser&lt;
+<span class="lineNum">     156 </span>            :             literal_char&lt;CharEncoding, no_attribute, true&gt;
+<span class="lineNum">     157 </span>            :           , typename mpl::if_c&lt;no_attribute, unused_type
+<span class="lineNum">     158 </span>            :               , typename CharEncoding::char_type&gt;::type&gt;
+<span class="lineNum">     159 </span>            :     {
+<span class="lineNum">     160 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     161 </span>            :         typedef CharEncoding char_encoding;
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :         literal_char(char_type ch)
+<span class="lineNum">     164 </span>            :           : lo(static_cast&lt;char_type&gt;(char_encoding::tolower(ch)))
+<span class="lineNum">     165 </span>            :           , hi(static_cast&lt;char_type&gt;(char_encoding::toupper(ch))) {}
+<span class="lineNum">     166 </span>            : 
+<span class="lineNum">     167 </span>            :         template &lt;typename Context, typename Iterator&gt;
+<span class="lineNum">     168 </span>            :         struct attribute
+<span class="lineNum">     169 </span>            :         {
+<span class="lineNum">     170 </span>            :             typedef typename mpl::if_c&lt;
+<span class="lineNum">     171 </span>            :                 no_attribute, unused_type, char_type&gt;::type
+<span class="lineNum">     172 </span>            :             type;
+<span class="lineNum">     173 </span>            :         };
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     176 </span>            :         bool test(CharParam ch_, Context&amp;) const
+<span class="lineNum">     177 </span>            :         {
+<span class="lineNum">     178 </span>            :             if (!traits::ischar&lt;CharParam, char_encoding&gt;::call(ch_))
+<span class="lineNum">     179 </span>            :                 return false;
+<span class="lineNum">     180 </span>            : 
+<span class="lineNum">     181 </span>            :             char_type ch = char_type(ch_);  // optimize for token based parsing
+<span class="lineNum">     182 </span>            :             return this-&gt;lo == ch || this-&gt;hi == ch;
+<span class="lineNum">     183 </span>            :         }
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     186 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     187 </span>            :         {
+<span class="lineNum">     188 </span>            :             return info(&quot;no-case-literal-char&quot;, char_encoding::toucs4(lo));
+<span class="lineNum">     189 </span>            :         }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :         char_type lo, hi;
+<span class="lineNum">     192 </span>            :     };
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     195 </span>            :     // Parser for a character range
+<span class="lineNum">     196 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     197 </span>            :     template &lt;typename CharEncoding, bool no_case = false&gt;
+<span class="lineNum">     198 </span>            :     struct char_range
+<span class="lineNum">     199 </span>            :       : char_parser&lt;char_range&lt;CharEncoding, false&gt;, typename CharEncoding::char_type&gt;
+<span class="lineNum">     200 </span>            :     {
+<span class="lineNum">     201 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     202 </span>            :         typedef CharEncoding char_encoding;
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :         char_range(char_type from_, char_type to_)
+<span class="lineNum">     205 </span>            :           : from(from_), to(to_) {}
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     208 </span>            :         bool test(CharParam ch_, Context&amp;) const
+<span class="lineNum">     209 </span>            :         {
+<span class="lineNum">     210 </span>            :             if (!traits::ischar&lt;CharParam, char_encoding&gt;::call(ch_))
+<span class="lineNum">     211 </span>            :                 return false;
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :             char_type ch = char_type(ch_);  // optimize for token based parsing
+<span class="lineNum">     214 </span>            :             return !(ch &lt; from) &amp;&amp; !(to &lt; ch);
+<span class="lineNum">     215 </span>            :         }
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     218 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     219 </span>            :         {
+<span class="lineNum">     220 </span>            :             info result(&quot;char-range&quot;, char_encoding::toucs4(from));
+<span class="lineNum">     221 </span>            :             boost::get&lt;std::string&gt;(result.value) += '-';
+<span class="lineNum">     222 </span>            :             boost::get&lt;std::string&gt;(result.value) += to_utf8(char_encoding::toucs4(to));
+<span class="lineNum">     223 </span>            :             return result;
+<span class="lineNum">     224 </span>            :         }
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :         char_type from, to;
+<span class="lineNum">     227 </span>            :     };
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :     template &lt;typename CharEncoding&gt;
+<span class="lineNum">     230 </span>            :     struct char_range&lt;CharEncoding, true&gt; // case insensitive
+<span class="lineNum">     231 </span>            :       : char_parser&lt;char_range&lt;CharEncoding, true&gt;, typename CharEncoding::char_type&gt;
+<span class="lineNum">     232 </span>            :     {
+<span class="lineNum">     233 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     234 </span>            :         typedef CharEncoding char_encoding;
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            :         char_range(char_type from, char_type to)
+<span class="lineNum">     237 </span>            :           : from_lo(static_cast&lt;char_type&gt;(char_encoding::tolower(from)))
+<span class="lineNum">     238 </span>            :           , to_lo(static_cast&lt;char_type&gt;(char_encoding::tolower(to)))
+<span class="lineNum">     239 </span>            :           , from_hi(static_cast&lt;char_type&gt;(char_encoding::toupper(from)))
+<span class="lineNum">     240 </span>            :           , to_hi(static_cast&lt;char_type&gt;(char_encoding::toupper(to)))
+<span class="lineNum">     241 </span>            :         {}
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     244 </span>            :         bool test(CharParam ch_, Context&amp;) const
+<span class="lineNum">     245 </span>            :         {
+<span class="lineNum">     246 </span>            :             if (!traits::ischar&lt;CharParam, char_encoding&gt;::call(ch_))
+<span class="lineNum">     247 </span>            :                 return false;
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :             char_type ch = char_type(ch_);  // optimize for token based parsing
+<span class="lineNum">     250 </span>            :             return (!(ch &lt; from_lo) &amp;&amp; !(to_lo &lt; ch))
+<span class="lineNum">     251 </span>            :                 || (!(ch &lt; from_hi) &amp;&amp; !(to_hi &lt; ch))
+<span class="lineNum">     252 </span>            :             ;
+<span class="lineNum">     253 </span>            :         }
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     256 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     257 </span>            :         {
+<span class="lineNum">     258 </span>            :             info result(&quot;no-case-char-range&quot;, char_encoding::toucs4(from_lo));
+<span class="lineNum">     259 </span>            :             boost::get&lt;std::string&gt;(result.value) += '-';
+<span class="lineNum">     260 </span>            :             boost::get&lt;std::string&gt;(result.value) += to_utf8(char_encoding::toucs4(to_lo));
+<span class="lineNum">     261 </span>            :             return result;
+<span class="lineNum">     262 </span>            :         }
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :         char_type from_lo, to_lo, from_hi, to_hi;
+<span class="lineNum">     265 </span>            :     };
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     268 </span>            :     // Parser for a character set
+<span class="lineNum">     269 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     270 </span>            :     template &lt;typename CharEncoding, bool no_attribute, bool no_case = false&gt;
+<span class="lineNum">     271 </span>            :     struct char_set
+<span class="lineNum">     272 </span>            :       : char_parser&lt;char_set&lt;CharEncoding, no_attribute, false&gt;
+<span class="lineNum">     273 </span>            :           , typename mpl::if_c&lt;no_attribute, unused_type
+<span class="lineNum">     274 </span>            :               , typename CharEncoding::char_type&gt;::type&gt;
+<span class="lineNum">     275 </span>            :     {
+<span class="lineNum">     276 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     277 </span>            :         typedef CharEncoding char_encoding;
+<span class="lineNum">     278 </span>            : 
+<span class="lineNum">     279 </span>            :         template &lt;typename String&gt;
+<span class="lineNum">     280 </span>            :         char_set(String const&amp; str)
+<span class="lineNum">     281 </span>            :         {
+<span class="lineNum">     282 </span>            :             using spirit::detail::cast_char;
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :             typedef typename
+<span class="lineNum">     285 </span>            :                 remove_const&lt;
+<span class="lineNum">     286 </span>            :                     typename traits::char_type_of&lt;String&gt;::type
+<span class="lineNum">     287 </span>            :                 &gt;::type
+<span class="lineNum">     288 </span>            :             in_type;
+<span class="lineNum">     289 </span>            : 
+<span class="lineNum">     290 </span>            :             BOOST_SPIRIT_ASSERT_MSG((
+<span class="lineNum">     291 </span>            :                 (sizeof(char_type) &gt;= sizeof(in_type))
+<span class="lineNum">     292 </span>            :             ), cannot_convert_string, (String));
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            :             in_type const* definition =
+<span class="lineNum">     295 </span>            :                 (in_type const*)traits::get_c_string(str);
+<span class="lineNum">     296 </span>            :             in_type ch = *definition++;
+<span class="lineNum">     297 </span>            :             while (ch)
+<span class="lineNum">     298 </span>            :             {
+<span class="lineNum">     299 </span>            :                 in_type next = *definition++;
+<span class="lineNum">     300 </span>            :                 if (next == '-')
+<span class="lineNum">     301 </span>            :                 {
+<span class="lineNum">     302 </span>            :                     next = *definition++;
+<span class="lineNum">     303 </span>            :                     if (next == 0)
+<span class="lineNum">     304 </span>            :                     {
+<span class="lineNum">     305 </span>            :                         chset.set(cast_char&lt;char_type&gt;(ch));
+<span class="lineNum">     306 </span>            :                         chset.set('-');
+<span class="lineNum">     307 </span>            :                         break;
+<span class="lineNum">     308 </span>            :                     }
+<span class="lineNum">     309 </span>            :                     chset.set(
+<span class="lineNum">     310 </span>            :                         cast_char&lt;char_type&gt;(ch),
+<span class="lineNum">     311 </span>            :                         cast_char&lt;char_type&gt;(next)
+<span class="lineNum">     312 </span>            :                     );
+<span class="lineNum">     313 </span>            :                 }
+<span class="lineNum">     314 </span>            :                 else
+<span class="lineNum">     315 </span>            :                 {
+<span class="lineNum">     316 </span>            :                     chset.set(cast_char&lt;char_type&gt;(ch));
+<span class="lineNum">     317 </span>            :                 }
+<span class="lineNum">     318 </span>            :                 ch = next;
+<span class="lineNum">     319 </span>            :             }
+<span class="lineNum">     320 </span>            :         }
+<span class="lineNum">     321 </span>            : 
+<span class="lineNum">     322 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     323 </span>            :         bool test(CharParam ch, Context&amp;) const
+<span class="lineNum">     324 </span>            :         {
+<span class="lineNum">     325 </span>            :             return traits::ischar&lt;CharParam, char_encoding&gt;::call(ch) &amp;&amp;
+<span class="lineNum">     326 </span>            :                    chset.test(char_type(ch));
+<span class="lineNum">     327 </span>            :         }
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     330 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     331 </span>            :         {
+<span class="lineNum">     332 </span>            :             return info(&quot;char-set&quot;);
+<span class="lineNum">     333 </span>            :         }
+<span class="lineNum">     334 </span>            : 
+<span class="lineNum">     335 </span>            :         support::detail::basic_chset&lt;char_type&gt; chset;
+<span class="lineNum">     336 </span>            :     };
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :     template &lt;typename CharEncoding, bool no_attribute&gt;
+<span class="lineNum">     339 </span>            :     struct char_set&lt;CharEncoding, no_attribute, true&gt; // case insensitive
+<span class="lineNum">     340 </span>            :       : char_parser&lt;char_set&lt;CharEncoding, no_attribute, true&gt;
+<span class="lineNum">     341 </span>            :           , typename mpl::if_c&lt;no_attribute, unused_type
+<span class="lineNum">     342 </span>            :               , typename CharEncoding::char_type&gt;::type&gt;
+<span class="lineNum">     343 </span>            :     {
+<span class="lineNum">     344 </span>            :         typedef typename CharEncoding::char_type char_type;
+<span class="lineNum">     345 </span>            :         typedef CharEncoding char_encoding;
+<span class="lineNum">     346 </span>            : 
+<span class="lineNum">     347 </span>            :         template &lt;typename String&gt;
+<span class="lineNum">     348 </span>            :         char_set(String const&amp; str)
+<span class="lineNum">     349 </span>            :         {
+<span class="lineNum">     350 </span>            :             typedef typename traits::char_type_of&lt;String&gt;::type in_type;
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            :             BOOST_SPIRIT_ASSERT_MSG((
+<span class="lineNum">     353 </span>            :                 (sizeof(char_type) == sizeof(in_type))
+<span class="lineNum">     354 </span>            :             ), cannot_convert_string, (String));
+<span class="lineNum">     355 </span>            : 
+<span class="lineNum">     356 </span>            :             char_type const* definition =
+<span class="lineNum">     357 </span>            :                 (char_type const*)traits::get_c_string(str);
+<span class="lineNum">     358 </span>            :             char_type ch = *definition++;
+<span class="lineNum">     359 </span>            :             while (ch)
+<span class="lineNum">     360 </span>            :             {
+<span class="lineNum">     361 </span>            :                 char_type next = *definition++;
+<span class="lineNum">     362 </span>            :                 if (next == '-')
+<span class="lineNum">     363 </span>            :                 {
+<span class="lineNum">     364 </span>            :                     next = *definition++;
+<span class="lineNum">     365 </span>            :                     if (next == 0)
+<span class="lineNum">     366 </span>            :                     {
+<span class="lineNum">     367 </span>            :                         chset.set(static_cast&lt;char_type&gt;(CharEncoding::tolower(ch)));
+<span class="lineNum">     368 </span>            :                         chset.set(static_cast&lt;char_type&gt;(CharEncoding::toupper(ch)));
+<span class="lineNum">     369 </span>            :                         chset.set('-');
+<span class="lineNum">     370 </span>            :                         break;
+<span class="lineNum">     371 </span>            :                     }
+<span class="lineNum">     372 </span>            :                     chset.set(static_cast&lt;char_type&gt;(CharEncoding::tolower(ch))
+<span class="lineNum">     373 </span>            :                       , static_cast&lt;char_type&gt;(CharEncoding::tolower(next)));
+<span class="lineNum">     374 </span>            :                     chset.set(static_cast&lt;char_type&gt;(CharEncoding::toupper(ch))
+<span class="lineNum">     375 </span>            :                       , static_cast&lt;char_type&gt;(CharEncoding::toupper(next)));
+<span class="lineNum">     376 </span>            :                 }
+<span class="lineNum">     377 </span>            :                 else
+<span class="lineNum">     378 </span>            :                 {
+<span class="lineNum">     379 </span>            :                     chset.set(static_cast&lt;char_type&gt;(CharEncoding::tolower(ch)));
+<span class="lineNum">     380 </span>            :                     chset.set(static_cast&lt;char_type&gt;(CharEncoding::toupper(ch)));
+<span class="lineNum">     381 </span>            :                 }
+<span class="lineNum">     382 </span>            :                 ch = next;
+<span class="lineNum">     383 </span>            :             }
+<span class="lineNum">     384 </span>            :         }
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :         template &lt;typename CharParam, typename Context&gt;
+<span class="lineNum">     387 </span>            :         bool test(CharParam ch, Context&amp;) const
+<span class="lineNum">     388 </span>            :         {
+<span class="lineNum">     389 </span>            :             return traits::ischar&lt;CharParam, char_encoding&gt;::call(ch) &amp;&amp;
+<span class="lineNum">     390 </span>            :                    chset.test(char_type(ch));
+<span class="lineNum">     391 </span>            :         }
+<span class="lineNum">     392 </span>            : 
+<span class="lineNum">     393 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     394 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     395 </span>            :         {
+<span class="lineNum">     396 </span>            :             return info(&quot;no-case-char-set&quot;);
+<span class="lineNum">     397 </span>            :         }
+<span class="lineNum">     398 </span>            : 
+<span class="lineNum">     399 </span>            :         support::detail::basic_chset&lt;char_type&gt; chset;
+<span class="lineNum">     400 </span>            :     };
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     403 </span>            :     // Parser generators: make_xxx function (objects)
+<span class="lineNum">     404 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     405 </span>            :     namespace detail
+<span class="lineNum">     406 </span>            :     {
+<span class="lineNum">     407 </span>            :         template &lt;typename Modifiers, typename Encoding&gt;
+<span class="lineNum">     408 </span>            :         struct basic_literal
+<span class="lineNum">     409 </span>            :         {
+<span class="lineNum">     410 </span>            :             static bool const no_case =
+<span class="lineNum">     411 </span>            :                 has_modifier&lt;
+<span class="lineNum">     412 </span>            :                     Modifiers
+<span class="lineNum">     413 </span>            :                   , tag::char_code_base&lt;tag::no_case&gt;
+<span class="lineNum">     414 </span>            :                 &gt;::value;
+<span class="lineNum">     415 </span>            : 
+<span class="lineNum">     416 </span>            :             static bool const no_attr =
+<span class="lineNum">     417 </span>            :                 !has_modifier&lt;
+<span class="lineNum">     418 </span>            :                     Modifiers
+<span class="lineNum">     419 </span>            :                   , tag::lazy_eval
+<span class="lineNum">     420 </span>            :                 &gt;::value;
+<span class="lineNum">     421 </span>            : 
+<span class="lineNum">     422 </span>            :             typedef literal_char&lt;
+<span class="lineNum">     423 </span>            :                 typename spirit::detail::get_encoding_with_case&lt;
+<span class="lineNum">     424 </span>            :                     Modifiers, Encoding, no_case&gt;::type
+<span class="lineNum">     425 </span>            :               , no_attr
+<span class="lineNum">     426 </span>            :               , no_case&gt;
+<span class="lineNum">     427 </span>            :             result_type;
+<a name="428"><span class="lineNum">     428 </span>            : </a>
+<span class="lineNum">     429 </span>            :             template &lt;typename Char&gt;
+<span class="lineNum">     430 </span><span class="lineCov">         92 :             result_type operator()(Char ch, unused_type) const</span>
+<span class="lineNum">     431 </span>            :             {
+<span class="lineNum">     432 </span><span class="lineCov">         92 :                 return result_type(ch);</span>
+<span class="lineNum">     433 </span>            :             }
+<span class="lineNum">     434 </span>            : 
+<span class="lineNum">     435 </span>            :             template &lt;typename Char&gt;
+<span class="lineNum">     436 </span>            :             result_type operator()(Char const* str, unused_type) const
+<span class="lineNum">     437 </span>            :             {
+<span class="lineNum">     438 </span>            :                 return result_type(str[0]);
+<span class="lineNum">     439 </span>            :             }
+<span class="lineNum">     440 </span>            :         };
+<span class="lineNum">     441 </span>            :     }
+<span class="lineNum">     442 </span>            : 
+<span class="lineNum">     443 </span>            :     template &lt;typename Modifiers&gt;
+<span class="lineNum">     444 </span>            :     struct make_primitive&lt;char, Modifiers&gt;
+<span class="lineNum">     445 </span>            :       : detail::basic_literal&lt;Modifiers, char_encoding::standard&gt; {};
+<span class="lineNum">     446 </span>            : 
+<span class="lineNum">     447 </span>            :     template &lt;typename Modifiers&gt;
+<span class="lineNum">     448 </span>            :     struct make_primitive&lt;char const(&amp;)[2], Modifiers&gt;
+<span class="lineNum">     449 </span>            :       : detail::basic_literal&lt;Modifiers, char_encoding::standard&gt; {};
+<span class="lineNum">     450 </span>            : 
+<span class="lineNum">     451 </span>            :     template &lt;typename Modifiers&gt;
+<span class="lineNum">     452 </span>            :     struct make_primitive&lt;wchar_t, Modifiers&gt;
+<span class="lineNum">     453 </span>            :       : detail::basic_literal&lt;Modifiers, char_encoding::standard_wide&gt; {};
+<span class="lineNum">     454 </span>            : 
+<span class="lineNum">     455 </span>            :     template &lt;typename Modifiers&gt;
+<span class="lineNum">     456 </span>            :     struct make_primitive&lt;wchar_t const(&amp;)[2], Modifiers&gt;
+<span class="lineNum">     457 </span>            :       : detail::basic_literal&lt;Modifiers, char_encoding::standard_wide&gt; {};
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span>            :     template &lt;typename CharEncoding, typename Modifiers&gt;
+<span class="lineNum">     460 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     461 </span>            :         terminal&lt;tag::char_code&lt;tag::char_, CharEncoding&gt; &gt;, Modifiers&gt;
+<span class="lineNum">     462 </span>            :     {
+<span class="lineNum">     463 </span>            :         typedef typename
+<span class="lineNum">     464 </span>            :             spirit::detail::get_encoding&lt;Modifiers, CharEncoding&gt;::type
+<span class="lineNum">     465 </span>            :         char_encoding;
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span>            :         typedef tag::char_code&lt;tag::char_, char_encoding&gt; tag;
+<span class="lineNum">     468 </span>            :         typedef char_class&lt;tag&gt; result_type;
+<span class="lineNum">     469 </span>            :         result_type operator()(unused_type, unused_type) const
+<span class="lineNum">     470 </span>            :         {
+<span class="lineNum">     471 </span>            :             return result_type();
+<span class="lineNum">     472 </span>            :         }
+<span class="lineNum">     473 </span>            :     };
+<span class="lineNum">     474 </span>            : 
+<span class="lineNum">     475 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     476 </span>            :     // char_('x')
+<span class="lineNum">     477 </span>            :     template &lt;typename CharEncoding, typename Modifiers, typename A0&gt;
+<span class="lineNum">     478 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     479 </span>            :         terminal_ex&lt;
+<span class="lineNum">     480 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">     481 </span>            :           , fusion::vector1&lt;A0&gt; &gt;
+<span class="lineNum">     482 </span>            :       , Modifiers&gt;
+<span class="lineNum">     483 </span>            :     {
+<span class="lineNum">     484 </span>            :         static bool const no_case =
+<span class="lineNum">     485 </span>            :             has_modifier&lt;Modifiers, tag::char_code_base&lt;tag::no_case&gt; &gt;::value;
+<span class="lineNum">     486 </span>            : 
+<span class="lineNum">     487 </span>            :         typedef typename
+<span class="lineNum">     488 </span>            :             spirit::detail::get_encoding&lt;Modifiers, CharEncoding&gt;::type
+<span class="lineNum">     489 </span>            :         char_encoding;
+<span class="lineNum">     490 </span>            : 
+<span class="lineNum">     491 </span>            :         typedef typename
+<span class="lineNum">     492 </span>            :             mpl::if_&lt;
+<span class="lineNum">     493 </span>            :                 traits::is_string&lt;A0&gt;
+<span class="lineNum">     494 </span>            :               , char_set&lt;char_encoding, false, no_case&gt;
+<span class="lineNum">     495 </span>            :               , literal_char&lt;char_encoding, false, no_case&gt;
+<span class="lineNum">     496 </span>            :             &gt;::type
+<span class="lineNum">     497 </span>            :         result_type;
+<span class="lineNum">     498 </span>            : 
+<span class="lineNum">     499 </span>            :         template &lt;typename Terminal&gt;
+<span class="lineNum">     500 </span>            :         result_type operator()(Terminal const&amp; term, unused_type) const
+<span class="lineNum">     501 </span>            :         {
+<span class="lineNum">     502 </span>            :             return result_type(fusion::at_c&lt;0&gt;(term.args));
+<span class="lineNum">     503 </span>            :         }
+<span class="lineNum">     504 </span>            :     };
+<span class="lineNum">     505 </span>            : 
+<span class="lineNum">     506 </span>            :     // lit('x')
+<span class="lineNum">     507 </span>            :     template &lt;typename Modifiers, typename A0&gt;
+<span class="lineNum">     508 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     509 </span>            :         terminal_ex&lt;tag::lit, fusion::vector1&lt;A0&gt; &gt;
+<span class="lineNum">     510 </span>            :       , Modifiers
+<span class="lineNum">     511 </span>            :       , typename enable_if&lt;traits::is_char&lt;A0&gt; &gt;::type&gt;
+<span class="lineNum">     512 </span>            :     {
+<span class="lineNum">     513 </span>            :         static bool const no_case =
+<span class="lineNum">     514 </span>            :             has_modifier&lt;
+<span class="lineNum">     515 </span>            :                 Modifiers
+<span class="lineNum">     516 </span>            :               , tag::char_code_base&lt;tag::no_case&gt;
+<span class="lineNum">     517 </span>            :             &gt;::value;
+<span class="lineNum">     518 </span>            : 
+<span class="lineNum">     519 </span>            :         typedef typename traits::char_encoding_from_char&lt;
+<span class="lineNum">     520 </span>            :                 typename traits::char_type_of&lt;A0&gt;::type&gt;::type encoding;
+<span class="lineNum">     521 </span>            : 
+<span class="lineNum">     522 </span>            :         typedef literal_char&lt;
+<span class="lineNum">     523 </span>            :             typename spirit::detail::get_encoding_with_case&lt;
+<span class="lineNum">     524 </span>            :                 Modifiers, encoding, no_case&gt;::type
+<span class="lineNum">     525 </span>            :           , true, no_case&gt;
+<span class="lineNum">     526 </span>            :         result_type;
+<span class="lineNum">     527 </span>            : 
+<span class="lineNum">     528 </span>            :         template &lt;typename Terminal&gt;
+<span class="lineNum">     529 </span>            :         result_type operator()(Terminal const&amp; term, unused_type) const
+<span class="lineNum">     530 </span>            :         {
+<span class="lineNum">     531 </span>            :             return result_type(fusion::at_c&lt;0&gt;(term.args));
+<span class="lineNum">     532 </span>            :         }
+<span class="lineNum">     533 </span>            :     };
+<span class="lineNum">     534 </span>            : 
+<span class="lineNum">     535 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     536 </span>            :     template &lt;typename CharEncoding, typename Modifiers, typename Char&gt;
+<span class="lineNum">     537 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     538 </span>            :         terminal_ex&lt;
+<span class="lineNum">     539 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">     540 </span>            :           , fusion::vector1&lt;Char(&amp;)[2]&gt; // For single char strings
+<span class="lineNum">     541 </span>            :         &gt;
+<span class="lineNum">     542 </span>            :       , Modifiers&gt;
+<span class="lineNum">     543 </span>            :     {
+<span class="lineNum">     544 </span>            :         static bool const no_case =
+<span class="lineNum">     545 </span>            :             has_modifier&lt;Modifiers, tag::char_code_base&lt;tag::no_case&gt; &gt;::value;
+<span class="lineNum">     546 </span>            : 
+<span class="lineNum">     547 </span>            :         typedef typename
+<span class="lineNum">     548 </span>            :             spirit::detail::get_encoding&lt;Modifiers, CharEncoding&gt;::type
+<span class="lineNum">     549 </span>            :         char_encoding;
+<span class="lineNum">     550 </span>            : 
+<span class="lineNum">     551 </span>            :         typedef literal_char&lt;char_encoding, false, no_case&gt; result_type;
+<span class="lineNum">     552 </span>            : 
+<span class="lineNum">     553 </span>            :         template &lt;typename Terminal&gt;
+<span class="lineNum">     554 </span>            :         result_type operator()(Terminal const&amp; term, unused_type) const
+<span class="lineNum">     555 </span>            :         {
+<span class="lineNum">     556 </span>            :             return result_type(fusion::at_c&lt;0&gt;(term.args)[0]);
+<span class="lineNum">     557 </span>            :         }
+<span class="lineNum">     558 </span>            :     };
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span>            :     template &lt;typename CharEncoding, typename Modifiers, typename A0, typename A1&gt;
+<span class="lineNum">     561 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     562 </span>            :         terminal_ex&lt;
+<span class="lineNum">     563 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">     564 </span>            :           , fusion::vector2&lt;A0, A1&gt;
+<span class="lineNum">     565 </span>            :         &gt;
+<span class="lineNum">     566 </span>            :       , Modifiers&gt;
+<span class="lineNum">     567 </span>            :     {
+<span class="lineNum">     568 </span>            :         static bool const no_case =
+<span class="lineNum">     569 </span>            :             has_modifier&lt;Modifiers, tag::char_code_base&lt;tag::no_case&gt; &gt;::value;
+<span class="lineNum">     570 </span>            : 
+<span class="lineNum">     571 </span>            :         typedef typename
+<span class="lineNum">     572 </span>            :             spirit::detail::get_encoding&lt;Modifiers, CharEncoding&gt;::type
+<span class="lineNum">     573 </span>            :         char_encoding;
+<span class="lineNum">     574 </span>            : 
+<span class="lineNum">     575 </span>            :         typedef char_range&lt;char_encoding, no_case&gt; result_type;
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span>            :         template &lt;typename Terminal&gt;
+<span class="lineNum">     578 </span>            :         result_type operator()(Terminal const&amp; term, unused_type) const
+<span class="lineNum">     579 </span>            :         {
+<span class="lineNum">     580 </span>            :             return result_type(
+<span class="lineNum">     581 </span>            :                 fusion::at_c&lt;0&gt;(term.args)
+<span class="lineNum">     582 </span>            :               , fusion::at_c&lt;1&gt;(term.args)
+<span class="lineNum">     583 </span>            :             );
+<span class="lineNum">     584 </span>            :         }
+<span class="lineNum">     585 </span>            :     };
+<span class="lineNum">     586 </span>            : 
+<span class="lineNum">     587 </span>            :     template &lt;typename CharEncoding, typename Modifiers, typename Char&gt;
+<span class="lineNum">     588 </span>            :     struct make_primitive&lt;
+<span class="lineNum">     589 </span>            :         terminal_ex&lt;
+<span class="lineNum">     590 </span>            :             tag::char_code&lt;tag::char_, CharEncoding&gt;
+<span class="lineNum">     591 </span>            :           , fusion::vector2&lt;Char(&amp;)[2], Char(&amp;)[2]&gt; // For single char strings
+<span class="lineNum">     592 </span>            :         &gt;
+<span class="lineNum">     593 </span>            :       , Modifiers&gt;
+<span class="lineNum">     594 </span>            :     {
+<span class="lineNum">     595 </span>            :         static bool const no_case =
+<span class="lineNum">     596 </span>            :             has_modifier&lt;Modifiers, tag::char_code_base&lt;tag::no_case&gt; &gt;::value;
+<span class="lineNum">     597 </span>            : 
+<span class="lineNum">     598 </span>            :         typedef typename
+<span class="lineNum">     599 </span>            :             spirit::detail::get_encoding&lt;Modifiers, CharEncoding&gt;::type
+<span class="lineNum">     600 </span>            :         char_encoding;
+<span class="lineNum">     601 </span>            : 
+<span class="lineNum">     602 </span>            :         typedef char_range&lt;char_encoding, no_case&gt; result_type;
+<span class="lineNum">     603 </span>            : 
+<span class="lineNum">     604 </span>            :         template &lt;typename Terminal&gt;
+<span class="lineNum">     605 </span>            :         result_type operator()(Terminal const&amp; term, unused_type) const
+<span class="lineNum">     606 </span>            :         {
+<span class="lineNum">     607 </span>            :             return result_type(
+<span class="lineNum">     608 </span>            :                 fusion::at_c&lt;0&gt;(term.args)[0]
+<span class="lineNum">     609 </span>            :               , fusion::at_c&lt;1&gt;(term.args)[0]
+<span class="lineNum">     610 </span>            :             );
+<span class="lineNum">     611 </span>            :         }
+<span class="lineNum">     612 </span>            :     };
+<span class="lineNum">     613 </span>            : }}}
+<span class="lineNum">     614 </span>            : 
+<span class="lineNum">     615 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

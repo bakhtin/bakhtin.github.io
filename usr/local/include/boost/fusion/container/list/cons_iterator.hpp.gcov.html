@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/fusion/container/list/cons_iterator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/fusion/container/list</a> - cons_iterator.hpp<span style="font-size: 80%;"> (source / <a href="cons_iterator.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :     Copyright (c) 2005 Eric Niebler
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying 
+<span class="lineNum">       6 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>            : ==============================================================================*/
+<span class="lineNum">       8 </span>            : #if !defined(FUSION_CONS_ITERATOR_07172005_0849)
+<span class="lineNum">       9 </span>            : #define FUSION_CONS_ITERATOR_07172005_0849
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #include &lt;boost/fusion/support/config.hpp&gt;
+<span class="lineNum">      12 </span>            : #include &lt;boost/type_traits/add_const.hpp&gt;
+<span class="lineNum">      13 </span>            : #include &lt;boost/fusion/support/iterator_base.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;boost/fusion/container/list/detail/deref_impl.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/fusion/container/list/detail/next_impl.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/fusion/container/list/detail/value_of_impl.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/fusion/container/list/detail/equal_to_impl.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/fusion/container/list/list_fwd.hpp&gt;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            : namespace boost { namespace fusion
+<span class="lineNum">      21 </span>            : {
+<span class="lineNum">      22 </span>            :     struct nil_;
+<span class="lineNum">      23 </span>            :     struct cons_iterator_tag;
+<span class="lineNum">      24 </span>            :     struct forward_traversal_tag;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            :     template &lt;typename Cons&gt;
+<span class="lineNum">      27 </span>            :     struct cons_iterator_identity;
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            :     template &lt;typename Cons = nil_&gt;
+<span class="lineNum">      30 </span>            :     struct cons_iterator : iterator_base&lt;cons_iterator&lt;Cons&gt; &gt;
+<span class="lineNum">      31 </span>            :     {
+<span class="lineNum">      32 </span>            :         typedef cons_iterator_tag fusion_tag;
+<span class="lineNum">      33 </span>            :         typedef forward_traversal_tag category;
+<span class="lineNum">      34 </span>            :         typedef Cons cons_type;
+<span class="lineNum">      35 </span>            :         typedef cons_iterator_identity&lt;
+<span class="lineNum">      36 </span>            :             typename add_const&lt;Cons&gt;::type&gt; 
+<span class="lineNum">      37 </span>            :         identity;
+<a name="38"><span class="lineNum">      38 </span>            : </a>
+<span class="lineNum">      39 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      40 </span><span class="lineCov">       1681 :         explicit cons_iterator(cons_type&amp; in_cons) BOOST_NOEXCEPT</span>
+<span class="lineNum">      41 </span><span class="lineCov">       1681 :             : cons(in_cons) {}</span>
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            :         cons_type&amp; cons;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            :     private:
+<span class="lineNum">      46 </span>            :         // silence MSVC warning C4512: assignment operator could not be generated
+<span class="lineNum">      47 </span>            :         cons_iterator&amp; operator= (cons_iterator const&amp;);
+<span class="lineNum">      48 </span>            :     };
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            :     struct nil_iterator : iterator_base&lt;nil_iterator&gt;
+<span class="lineNum">      51 </span>            :     {
+<span class="lineNum">      52 </span>            :         typedef forward_traversal_tag category;
+<span class="lineNum">      53 </span>            :         typedef cons_iterator_tag fusion_tag;
+<span class="lineNum">      54 </span>            :         typedef nil_ cons_type;
+<span class="lineNum">      55 </span>            :         typedef cons_iterator_identity&lt;
+<span class="lineNum">      56 </span>            :             add_const&lt;nil_&gt;::type&gt; 
+<span class="lineNum">      57 </span>            :         identity;
+<a name="58"><span class="lineNum">      58 </span>            : </a>
+<span class="lineNum">      59 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      60 </span><span class="lineCov">       2690 :         nil_iterator() BOOST_NOEXCEPT {}</span>
+<span class="lineNum">      61 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      62 </span>            :         explicit nil_iterator(nil_ const&amp;) BOOST_NOEXCEPT {}
+<span class="lineNum">      63 </span>            :     };
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :     template &lt;&gt;
+<span class="lineNum">      66 </span>            :     struct cons_iterator&lt;nil_&gt; : nil_iterator 
+<span class="lineNum">      67 </span>            :     {
+<span class="lineNum">      68 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      69 </span>            :         cons_iterator() BOOST_NOEXCEPT {}
+<span class="lineNum">      70 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      71 </span>            :         explicit cons_iterator(nil_ const&amp;) BOOST_NOEXCEPT {}
+<span class="lineNum">      72 </span>            :     };
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :     template &lt;&gt;
+<span class="lineNum">      75 </span>            :     struct cons_iterator&lt;nil_ const&gt; : nil_iterator 
+<a name="76"><span class="lineNum">      76 </span>            :     {</a>
+<span class="lineNum">      77 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<a name="78"><span class="lineNum">      78 </span><span class="lineCov">       2422 :         cons_iterator() BOOST_NOEXCEPT {}</span></a>
+<span class="lineNum">      79 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      80 </span><span class="lineCov">        268 :         explicit cons_iterator(nil_ const&amp;) BOOST_NOEXCEPT {}</span>
+<span class="lineNum">      81 </span>            :     };
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :     template &lt;&gt;
+<span class="lineNum">      84 </span>            :     struct cons_iterator&lt;list&lt;&gt; &gt; : nil_iterator 
+<span class="lineNum">      85 </span>            :     {
+<span class="lineNum">      86 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      87 </span>            :         cons_iterator() BOOST_NOEXCEPT {}
+<span class="lineNum">      88 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      89 </span>            :         explicit cons_iterator(nil_ const&amp;) BOOST_NOEXCEPT {}
+<span class="lineNum">      90 </span>            :     };
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     template &lt;&gt;
+<span class="lineNum">      93 </span>            :     struct cons_iterator&lt;list&lt;&gt; const&gt; : nil_iterator 
+<span class="lineNum">      94 </span>            :     {
+<span class="lineNum">      95 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      96 </span>            :         cons_iterator() BOOST_NOEXCEPT {}
+<span class="lineNum">      97 </span>            :         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+<span class="lineNum">      98 </span>            :         explicit cons_iterator(nil_ const&amp;) BOOST_NOEXCEPT {}
+<span class="lineNum">      99 </span>            :     };
+<span class="lineNum">     100 </span>            : }}
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            : #ifdef BOOST_FUSION_WORKAROUND_FOR_LWG_2408
+<span class="lineNum">     103 </span>            : namespace std
+<span class="lineNum">     104 </span>            : {
+<span class="lineNum">     105 </span>            :     template &lt;typename Cons&gt;
+<span class="lineNum">     106 </span>            :     struct iterator_traits&lt; ::boost::fusion::cons_iterator&lt;Cons&gt; &gt;
+<span class="lineNum">     107 </span>            :     { };
+<span class="lineNum">     108 </span>            : }
+<span class="lineNum">     109 </span>            : #endif
+<span class="lineNum">     110 </span>            : 
+<span class="lineNum">     111 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

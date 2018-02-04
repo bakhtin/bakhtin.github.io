@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/pqxx/binarystring.hxx</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/pqxx</a> - binarystring.hxx<span style="font-size: 80%;"> (source / <a href="binarystring.hxx.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*-------------------------------------------------------------------------</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  *   FILE
+<span class="lineNum">       4 </span>            :  *      pqxx/binarystring.hxx
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  *   DESCRIPTION
+<span class="lineNum">       7 </span>            :  *      Representation for raw, binary data.
+<span class="lineNum">       8 </span>            :  *   DO NOT INCLUDE THIS FILE DIRECTLY; include pqxx/binarystring instead.
+<span class="lineNum">       9 </span>            :  *
+<span class="lineNum">      10 </span>            :  * Copyright (c) 2003-2015, Jeroen T. Vermeulen &lt;jtv@xs4all.nl&gt;
+<span class="lineNum">      11 </span>            :  *
+<span class="lineNum">      12 </span>            :  * See COPYING for copyright license.  If you did not receive a file called
+<span class="lineNum">      13 </span>            :  * COPYING with this source code, please notify the distributor of this mistake,
+<span class="lineNum">      14 </span>            :  * or contact the author.
+<span class="lineNum">      15 </span>            :  *
+<span class="lineNum">      16 </span>            :  *-------------------------------------------------------------------------
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : #ifndef PQXX_H_BINARYSTRING
+<span class="lineNum">      19 </span>            : #define PQXX_H_BINARYSTRING
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &quot;pqxx/compiler-public.hxx&quot;
+<span class="lineNum">      22 </span>            : #include &quot;pqxx/compiler-internal-pre.hxx&quot;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &lt;string&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #include &quot;pqxx/result&quot;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            : namespace pqxx
+<span class="lineNum">      30 </span>            : {
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : /// Binary data corresponding to PostgreSQL's &quot;BYTEA&quot; binary-string type.
+<span class="lineNum">      33 </span>            : /** @addtogroup escaping String escaping
+<span class="lineNum">      34 </span>            :  *
+<span class="lineNum">      35 </span>            :  * This class represents a binary string as stored in a field of type bytea.
+<span class="lineNum">      36 </span>            :  * The raw value returned by a bytea field contains escape sequences for certain
+<span class="lineNum">      37 </span>            :  * characters, which are filtered out by binarystring.
+<span class="lineNum">      38 </span>            :  *
+<span class="lineNum">      39 </span>            :  * Internally a binarystring is zero-terminated, but it may also contain zero
+<span class="lineNum">      40 </span>            :  * bytes, just like any other byte value.  So don't assume that it can be
+<span class="lineNum">      41 </span>            :  * treated as a C-style string unless you've made sure of this yourself.
+<span class="lineNum">      42 </span>            :  *
+<span class="lineNum">      43 </span>            :  * The binarystring retains its value even if the result it was obtained from is
+<span class="lineNum">      44 </span>            :  * destroyed, but it cannot be copied or assigned.
+<span class="lineNum">      45 </span>            :  *
+<span class="lineNum">      46 </span>            :  * \relatesalso transaction_base::esc_raw
+<span class="lineNum">      47 </span>            :  *
+<span class="lineNum">      48 </span>            :  * To convert the other way, i.e. from a raw series of bytes to a string
+<span class="lineNum">      49 </span>            :  * suitable for inclusion as bytea values in your SQL, use the transaction's
+<span class="lineNum">      50 </span>            :  * esc_raw() functions.
+<span class="lineNum">      51 </span>            :  *
+<span class="lineNum">      52 </span>            :  * @warning This class is implemented as a reference-counting smart pointer.
+<span class="lineNum">      53 </span>            :  * Copying, swapping, and destroying binarystring objects that refer to the same
+<span class="lineNum">      54 </span>            :  * underlying data block is &lt;em&gt;not thread-safe&lt;/em&gt;.  If you wish to pass
+<span class="lineNum">      55 </span>            :  * binarystrings around between threads, make sure that each of these operations
+<span class="lineNum">      56 </span>            :  * is protected against concurrency with similar operations on the same object,
+<span class="lineNum">      57 </span>            :  * or other objects pointing to the same data block.
+<span class="lineNum">      58 </span>            :  */
+<span class="lineNum">      59 </span>            : class PQXX_LIBEXPORT binarystring
+<span class="lineNum">      60 </span>            : {
+<span class="lineNum">      61 </span>            : public:
+<span class="lineNum">      62 </span>            :   typedef unsigned char char_type;
+<span class="lineNum">      63 </span>            :   typedef std::char_traits&lt;char_type&gt;::char_type value_type;
+<span class="lineNum">      64 </span>            :   typedef size_t size_type;
+<span class="lineNum">      65 </span>            :   typedef long difference_type;
+<span class="lineNum">      66 </span>            :   typedef const value_type &amp;const_reference;
+<span class="lineNum">      67 </span>            :   typedef const value_type *const_pointer;
+<span class="lineNum">      68 </span>            :   typedef const_pointer const_iterator;
+<span class="lineNum">      69 </span>            :   typedef std::reverse_iterator&lt;const_iterator&gt; const_reverse_iterator;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            : public:
+<span class="lineNum">      72 </span>            :   binarystring(const binarystring &amp;);
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :   /// Read and unescape bytea field
+<span class="lineNum">      75 </span>            :   /** The field will be zero-terminated, even if the original bytea field isn't.
+<span class="lineNum">      76 </span>            :    * @param F the field to read; must be a bytea field
+<span class="lineNum">      77 </span>            :    */
+<span class="lineNum">      78 </span>            :   explicit binarystring(const field &amp;);                                     //[t62]
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :   /// Copy binary data from std::string.
+<span class="lineNum">      81 </span>            :   explicit binarystring(const std::string &amp;);
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            :   /// Copy binary data of given length straight out of memory.
+<a name="84"><span class="lineNum">      84 </span>            :   binarystring(const void *, size_t);</a>
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span><span class="lineCov">        196 :   ~binarystring() { delete &amp;m_buf; }</span>
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :   /// Size of converted string in bytes
+<span class="lineNum">      89 </span>            :   size_type size() const PQXX_NOEXCEPT { return m_size; }               //[t62]
+<span class="lineNum">      90 </span>            :   /// Size of converted string in bytes
+<span class="lineNum">      91 </span>            :   size_type length() const PQXX_NOEXCEPT { return size(); }             //[t62]
+<a name="92"><span class="lineNum">      92 </span>            :   bool empty() const PQXX_NOEXCEPT { return size()==0; }                //[t62]</a>
+<span class="lineNum">      93 </span>            : 
+<a name="94"><span class="lineNum">      94 </span><span class="lineCov">         80 :   const_iterator begin() const PQXX_NOEXCEPT { return data(); }         //[t62]</span></a>
+<span class="lineNum">      95 </span>            :   const_iterator cbegin() const PQXX_NOEXCEPT { return begin(); }
+<span class="lineNum">      96 </span><span class="lineCov">         80 :   const_iterator end() const PQXX_NOEXCEPT { return data()+m_size; }    //[t62]</span>
+<span class="lineNum">      97 </span>            :   const_iterator cend() const PQXX_NOEXCEPT { return end(); }
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            :   const_reference front() const PQXX_NOEXCEPT { return *begin(); }      //[t62]
+<span class="lineNum">     100 </span>            :   const_reference back() const PQXX_NOEXCEPT                            //[t62]
+<span class="lineNum">     101 </span>            :         { return *(data()+m_size-1); }
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :   const_reverse_iterator rbegin() const                                 //[t62]
+<span class="lineNum">     104 </span>            :         { return const_reverse_iterator(end()); }
+<span class="lineNum">     105 </span>            :   const_reverse_iterator crbegin() const { return rbegin(); }
+<span class="lineNum">     106 </span>            :   const_reverse_iterator rend() const                                   //[t62]
+<span class="lineNum">     107 </span>            :         { return const_reverse_iterator(begin()); }
+<span class="lineNum">     108 </span>            :   const_reverse_iterator crend() const { return rend(); }
+<a name="109"><span class="lineNum">     109 </span>            : </a>
+<span class="lineNum">     110 </span>            :   /// Unescaped field contents
+<span class="lineNum">     111 </span><span class="lineCov">        160 :   const value_type *data() const PQXX_NOEXCEPT {return m_buf.get();}    //[t62]</span>
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            :   const_reference operator[](size_type i) const PQXX_NOEXCEPT           //[t62]
+<span class="lineNum">     114 </span>            :         { return data()[i]; }
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span>            :   PQXX_PURE bool operator==(const binarystring &amp;) const PQXX_NOEXCEPT;      //[t62]
+<span class="lineNum">     117 </span>            :   bool operator!=(const binarystring &amp;rhs) const PQXX_NOEXCEPT              //[t62]
+<span class="lineNum">     118 </span>            :         { return !operator==(rhs); }
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :   binarystring &amp;operator=(const binarystring &amp;);
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :   /// Index contained string, checking for valid index
+<span class="lineNum">     123 </span>            :   const_reference at(size_type) const;                                  //[t62]
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            :   /// Swap contents with other binarystring
+<span class="lineNum">     126 </span>            :   void swap(binarystring &amp;);                                                //[t62]
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :   /// Raw character buffer (no terminating zero is added)
+<span class="lineNum">     129 </span>            :   /** @warning No terminating zero is added!  If the binary data did not end in
+<span class="lineNum">     130 </span>            :    * a null character, you will not find one here.
+<span class="lineNum">     131 </span>            :    */
+<span class="lineNum">     132 </span>            :   const char *get() const PQXX_NOEXCEPT                                 //[t62]
+<span class="lineNum">     133 </span>            :                         { return reinterpret_cast&lt;const char *&gt;(m_buf.get()); }
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :   /// Read as regular C++ string (may include null characters)
+<span class="lineNum">     136 </span>            :   /** @warning libpqxx releases before 3.1 stored the string and returned a
+<span class="lineNum">     137 </span>            :    * reference to it.  This is no longer the case!  It now creates and returns
+<span class="lineNum">     138 </span>            :    * a new string object.  Avoid repeated use of this function; retrieve your
+<span class="lineNum">     139 </span>            :    * string once and keep it in a local variable.  Also, do not expect to be
+<span class="lineNum">     140 </span>            :    * able to compare the string's address to that of an earlier invocation.
+<span class="lineNum">     141 </span>            :    */
+<span class="lineNum">     142 </span>            :   std::string str() const;                                              //[t62]
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            : private:
+<span class="lineNum">     145 </span>            :   typedef internal::PQAlloc&lt;
+<span class="lineNum">     146 </span>            :         value_type,
+<span class="lineNum">     147 </span>            :         pqxx::internal::freemallocmem_templated&lt;unsigned char&gt; &gt;
+<span class="lineNum">     148 </span>            :     smart_pointer_type;
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :   /* Using a reference to a smart pointer.  It's wasteful, but it hides the
+<span class="lineNum">     151 </span>            :    * different implementations of PQAlloc: the compiler needs to know PQAlloc's
+<span class="lineNum">     152 </span>            :    * memory layout in order to include an instance inside binarystring.
+<span class="lineNum">     153 </span>            :    * Once shared_ptr is widespread enough, we can just have a shared_ptr and
+<span class="lineNum">     154 </span>            :    * forget about PQAlloc altogether.
+<span class="lineNum">     155 </span>            :    */
+<span class="lineNum">     156 </span>            :   smart_pointer_type &amp;m_buf;
+<span class="lineNum">     157 </span>            :   size_type m_size;
+<span class="lineNum">     158 </span>            : };
+<span class="lineNum">     159 </span>            : }
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            : #include &quot;pqxx/compiler-internal-post.hxx&quot;
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

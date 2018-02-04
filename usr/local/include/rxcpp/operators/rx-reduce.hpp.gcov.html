@@ -1,0 +1,763 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/operators/rx-reduce.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/operators</a> - rx-reduce.hpp<span style="font-size: 80%;"> (source / <a href="rx-reduce.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">47</td>
+            <td class="headerCovTableEntry">51</td>
+            <td class="headerCovTableEntryHi">92.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">47</td>
+            <td class="headerCovTableEntry">49</td>
+            <td class="headerCovTableEntryHi">95.9 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : /*! \file rx-reduce.hpp
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :     \brief For each item from this observable use Accumulator to combine items, when completed use ResultSelector to produce a value that will be emitted from the new observable that is returned.
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            :     \tparam Seed            the type of the initial value for the accumulator
+<span class="lineNum">      10 </span>            :     \tparam Accumulator     the type of the data accumulating function
+<span class="lineNum">      11 </span>            :     \tparam ResultSelector  the type of the result producing function
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            :     \param seed  the initial value for the accumulator
+<span class="lineNum">      14 </span>            :     \param a     an accumulator function to be invoked on each item emitted by the source observable, the result of which will be used in the next accumulator call
+<span class="lineNum">      15 </span>            :     \param rs    a result producing function that makes the final value from the last accumulator call result
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            :     \return  An observable that emits a single item that is the result of accumulating the output from the items emitted by the source observable.
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            :     Some basic reduce-type operators have already been implemented:
+<span class="lineNum">      20 </span>            :     - rxcpp::operators::first
+<span class="lineNum">      21 </span>            :     - rxcpp::operators::last
+<span class="lineNum">      22 </span>            :     - rxcpp::operators::count
+<span class="lineNum">      23 </span>            :     - rxcpp::operators::sum
+<span class="lineNum">      24 </span>            :     - rxcpp::operators::average
+<span class="lineNum">      25 </span>            :     - rxcpp::operators::min
+<span class="lineNum">      26 </span>            :     - rxcpp::operators::max
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            :     \sample
+<span class="lineNum">      29 </span>            :     Geometric mean of source values:
+<span class="lineNum">      30 </span>            :     \snippet reduce.cpp reduce sample
+<span class="lineNum">      31 </span>            :     \snippet output.txt reduce sample
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            :     If the source observable completes without emitting any items, the resulting observable emits the result of passing the initial seed to the result selector:
+<span class="lineNum">      34 </span>            :     \snippet reduce.cpp reduce empty sample
+<span class="lineNum">      35 </span>            :     \snippet output.txt reduce empty sample
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :     If the accumulator raises an exception, it is returned by the resulting observable in on_error:
+<span class="lineNum">      38 </span>            :     \snippet reduce.cpp reduce exception from accumulator sample
+<span class="lineNum">      39 </span>            :     \snippet output.txt reduce exception from accumulator sample
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :     The same for exceptions raised by the result selector:
+<span class="lineNum">      42 </span>            :     \snippet reduce.cpp reduce exception from result selector sample
+<span class="lineNum">      43 </span>            :     \snippet output.txt reduce exception from result selector sample
+<span class="lineNum">      44 </span>            : */
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : #if !defined(RXCPP_OPERATORS_RX_REDUCE_HPP)
+<span class="lineNum">      47 </span>            : #define RXCPP_OPERATORS_RX_REDUCE_HPP
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : namespace rxcpp {
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : namespace operators {
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : namespace detail {
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      58 </span>            : struct reduce_invalid_arguments {};
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      61 </span>            : struct reduce_invalid : public rxo::operator_base&lt;reduce_invalid_arguments&lt;AN...&gt;&gt; {
+<span class="lineNum">      62 </span>            :     using type = observable&lt;reduce_invalid_arguments&lt;AN...&gt;, reduce_invalid&lt;AN...&gt;&gt;;
+<span class="lineNum">      63 </span>            : };
+<span class="lineNum">      64 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      65 </span>            : using reduce_invalid_t = typename reduce_invalid&lt;AN...&gt;::type;
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            : template&lt;class Seed, class ResultSelector&gt;
+<span class="lineNum">      68 </span>            : struct is_result_function_for {
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            :     typedef rxu::decay_t&lt;ResultSelector&gt; result_selector_type;
+<span class="lineNum">      71 </span>            :     typedef rxu::decay_t&lt;Seed&gt; seed_type;
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :     struct tag_not_valid {};
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :     template&lt;class CS, class CRS&gt;
+<span class="lineNum">      76 </span>            :     static auto check(int) -&gt; decltype((*(CRS*)nullptr)(*(CS*)nullptr));
+<span class="lineNum">      77 </span>            :     template&lt;class CS, class CRS&gt;
+<span class="lineNum">      78 </span>            :     static tag_not_valid check(...);
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     typedef rxu::decay_t&lt;decltype(check&lt;seed_type, result_selector_type&gt;(0))&gt; type;
+<span class="lineNum">      81 </span>            :     static const bool value = !std::is_same&lt;type, tag_not_valid&gt;::value;
+<span class="lineNum">      82 </span>            : };
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : template&lt;class T, class Observable, class Accumulator, class ResultSelector, class Seed&gt;
+<span class="lineNum">      85 </span>            : struct reduce_traits
+<span class="lineNum">      86 </span>            : {
+<span class="lineNum">      87 </span>            :     typedef rxu::decay_t&lt;Observable&gt; source_type;
+<span class="lineNum">      88 </span>            :     typedef rxu::decay_t&lt;Accumulator&gt; accumulator_type;
+<span class="lineNum">      89 </span>            :     typedef rxu::decay_t&lt;ResultSelector&gt; result_selector_type;
+<span class="lineNum">      90 </span>            :     typedef rxu::decay_t&lt;Seed&gt; seed_type;
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     typedef T source_value_type;
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :     typedef typename is_result_function_for&lt;seed_type, result_selector_type&gt;::type value_type;
+<span class="lineNum">      95 </span>            : };
+<a name="96"><span class="lineNum">      96 </span>            : </a>
+<span class="lineNum">      97 </span>            : template&lt;class T, class Observable, class Accumulator, class ResultSelector, class Seed&gt;
+<span class="lineNum">      98 </span><span class="lineCov">         44 : struct reduce : public operator_base&lt;rxu::value_type_t&lt;reduce_traits&lt;T, Observable, Accumulator, ResultSelector, Seed&gt;&gt;&gt;</span>
+<span class="lineNum">      99 </span>            : {
+<span class="lineNum">     100 </span>            :     typedef reduce&lt;T, Observable, Accumulator, ResultSelector, Seed&gt; this_type;
+<span class="lineNum">     101 </span>            :     typedef reduce_traits&lt;T, Observable, Accumulator, ResultSelector, Seed&gt; traits;
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :     typedef typename traits::source_type source_type;
+<span class="lineNum">     104 </span>            :     typedef typename traits::accumulator_type accumulator_type;
+<span class="lineNum">     105 </span>            :     typedef typename traits::result_selector_type result_selector_type;
+<span class="lineNum">     106 </span>            :     typedef typename traits::seed_type seed_type;
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :     typedef typename traits::source_value_type source_value_type;
+<a name="109"><span class="lineNum">     109 </span>            :     typedef typename traits::value_type value_type;</a>
+<span class="lineNum">     110 </span>            : 
+<a name="111"><span class="lineNum">     111 </span><span class="lineCov">         30 :     struct reduce_initial_type</span></a>
+<span class="lineNum">     112 </span>            :     {
+<span class="lineNum">     113 </span><span class="lineCov">         34 :         ~reduce_initial_type()</span>
+<a name="114"><span class="lineNum">     114 </span>            :         {</a>
+<span class="lineNum">     115 </span><span class="lineCov">         34 :         }</span>
+<span class="lineNum">     116 </span><span class="lineCov">          4 :         reduce_initial_type(source_type o, accumulator_type a, result_selector_type rs, seed_type s)</span>
+<span class="lineNum">     117 </span><span class="lineCov">          4 :             : source(std::move(o))</span>
+<span class="lineNum">     118 </span><span class="lineCov">          4 :             , accumulator(std::move(a))</span>
+<span class="lineNum">     119 </span><span class="lineCov">          4 :             , result_selector(std::move(rs))</span>
+<span class="lineNum">     120 </span><span class="lineCov">          8 :             , seed(std::move(s))</span>
+<span class="lineNum">     121 </span>            :         {
+<span class="lineNum">     122 </span><span class="lineCov">          4 :         }</span>
+<span class="lineNum">     123 </span>            :         source_type source;
+<span class="lineNum">     124 </span>            :         accumulator_type accumulator;
+<span class="lineNum">     125 </span>            :         result_selector_type result_selector;
+<span class="lineNum">     126 </span>            :         seed_type seed;
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :     private:
+<span class="lineNum">     129 </span>            :         reduce_initial_type&amp; operator=(reduce_initial_type o) RXCPP_DELETE;
+<span class="lineNum">     130 </span>            :     };
+<a name="131"><span class="lineNum">     131 </span>            :     reduce_initial_type initial;</a>
+<span class="lineNum">     132 </span>            : 
+<span class="lineNum">     133 </span><span class="lineCov">         26 :     ~reduce()</span>
+<a name="134"><span class="lineNum">     134 </span>            :     {</a>
+<span class="lineNum">     135 </span><span class="lineCov">         26 :     }</span>
+<span class="lineNum">     136 </span><span class="lineCov">          4 :     reduce(source_type o, accumulator_type a, result_selector_type rs, seed_type s)</span>
+<span class="lineNum">     137 </span><span class="lineCov">          4 :         : initial(std::move(o), std::move(a), std::move(rs), std::move(s))</span>
+<span class="lineNum">     138 </span>            :     {
+<a name="139"><span class="lineNum">     139 </span><span class="lineCov">          4 :     }</span></a>
+<a name="140"><span class="lineNum">     140 </span>            :     template&lt;class Subscriber&gt;</a>
+<span class="lineNum">     141 </span><span class="lineCov">          4 :     void on_subscribe(Subscriber o) const {</span>
+<span class="lineNum">     142 </span><span class="lineCov">          8 :         struct reduce_state_type</span>
+<span class="lineNum">     143 </span>            :             : public reduce_initial_type
+<a name="144"><span class="lineNum">     144 </span>            :             , public std::enable_shared_from_this&lt;reduce_state_type&gt;</a>
+<span class="lineNum">     145 </span>            :         {
+<span class="lineNum">     146 </span><span class="lineCov">          4 :             reduce_state_type(reduce_initial_type i, Subscriber scrbr)</span>
+<span class="lineNum">     147 </span>            :                 : reduce_initial_type(i)
+<span class="lineNum">     148 </span>            :                 , source(i.source)
+<span class="lineNum">     149 </span>            :                 , current(reduce_initial_type::seed)
+<span class="lineNum">     150 </span><span class="lineCov">          4 :                 , out(std::move(scrbr))</span>
+<span class="lineNum">     151 </span>            :             {
+<span class="lineNum">     152 </span><span class="lineCov">          4 :             }</span>
+<span class="lineNum">     153 </span>            :             source_type source;
+<span class="lineNum">     154 </span>            :             seed_type current;
+<span class="lineNum">     155 </span>            :             Subscriber out;
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            :         private:
+<span class="lineNum">     158 </span>            :             reduce_state_type&amp; operator=(reduce_state_type o) RXCPP_DELETE;
+<span class="lineNum">     159 </span>            :         };
+<span class="lineNum">     160 </span><span class="lineCov">          8 :         auto state = std::make_shared&lt;reduce_state_type&gt;(initial, std::move(o));</span>
+<span class="lineNum">     161 </span><span class="lineCov">          8 :         state-&gt;source.subscribe(</span>
+<a name="162"><span class="lineNum">     162 </span><span class="lineCov">          4 :             state-&gt;out,</span></a>
+<span class="lineNum">     163 </span>            :         // on_next
+<span class="lineNum">     164 </span><span class="lineCov">        128 :             [state](T t) {</span>
+<span class="lineNum">     165 </span><span class="lineCov">         16 :                 seed_type next = state-&gt;accumulator(std::move(state-&gt;current), std::move(t));</span>
+<span class="lineNum">     166 </span><span class="lineCov">          8 :                 state-&gt;current = std::move(next);</span>
+<a name="167"><span class="lineNum">     167 </span><span class="lineCov">          8 :             },</span></a>
+<span class="lineNum">     168 </span>            :         // on_error
+<span class="lineNum">     169 </span><span class="lineCov">        120 :             [state](std::exception_ptr e) {</span>
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :                 state-&gt;out.on_error(e);</span>
+<a name="171"><span class="lineNum">     171 </span><span class="lineNoCov">          0 :             },</span></a>
+<span class="lineNum">     172 </span>            :         // on_completed
+<a name="173"><span class="lineNum">     173 </span><span class="lineCov">        124 :             [state]() {</span></a>
+<span class="lineNum">     174 </span>            :                 auto result = on_exception(
+<span class="lineNum">     175 </span><span class="lineCov">          7 :                     [&amp;](){return state-&gt;result_selector(std::move(state-&gt;current));},</span>
+<span class="lineNum">     176 </span><span class="lineCov">          8 :                     state-&gt;out);</span>
+<span class="lineNum">     177 </span><span class="lineCov">          4 :                 if (result.empty()) {</span>
+<span class="lineNum">     178 </span><span class="lineNoCov">          0 :                     return;</span>
+<span class="lineNum">     179 </span>            :                 }
+<span class="lineNum">     180 </span><span class="lineCov">          4 :                 state-&gt;out.on_next(std::move(result.get()));</span>
+<span class="lineNum">     181 </span><span class="lineCov">          4 :                 state-&gt;out.on_completed();</span>
+<span class="lineNum">     182 </span>            :             }
+<span class="lineNum">     183 </span>            :         );
+<span class="lineNum">     184 </span><span class="lineCov">          4 :     }</span>
+<span class="lineNum">     185 </span>            : private:
+<span class="lineNum">     186 </span>            :     reduce&amp; operator=(reduce o) RXCPP_DELETE;
+<span class="lineNum">     187 </span>            : };
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : template&lt;class T&gt;
+<span class="lineNum">     190 </span>            : struct initialize_seeder {
+<span class="lineNum">     191 </span>            :     typedef T seed_type;
+<span class="lineNum">     192 </span>            :     static seed_type seed() {
+<span class="lineNum">     193 </span>            :         return seed_type{};
+<span class="lineNum">     194 </span>            :     }
+<span class="lineNum">     195 </span>            : };
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            : template&lt;class T&gt;
+<span class="lineNum">     198 </span>            : struct average {
+<span class="lineNum">     199 </span>            :     struct seed_type
+<span class="lineNum">     200 </span>            :     {
+<span class="lineNum">     201 </span>            :         seed_type()
+<span class="lineNum">     202 </span>            :             : value()
+<span class="lineNum">     203 </span>            :             , count(0)
+<span class="lineNum">     204 </span>            :         {
+<span class="lineNum">     205 </span>            :         }
+<span class="lineNum">     206 </span>            :         rxu::maybe&lt;T&gt; value;
+<span class="lineNum">     207 </span>            :         int count;
+<span class="lineNum">     208 </span>            :         rxu::detail::maybe&lt;double&gt; stage;
+<span class="lineNum">     209 </span>            :     };
+<span class="lineNum">     210 </span>            :     static seed_type seed() {
+<span class="lineNum">     211 </span>            :         return seed_type{};
+<span class="lineNum">     212 </span>            :     }
+<span class="lineNum">     213 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     214 </span>            :     seed_type operator()(seed_type a, U&amp;&amp; v) {
+<span class="lineNum">     215 </span>            :         if (a.count != 0 &amp;&amp;
+<span class="lineNum">     216 </span>            :             (a.count == std::numeric_limits&lt;int&gt;::max() ||
+<span class="lineNum">     217 </span>            :             ((v &gt; 0) &amp;&amp; (*(a.value) &gt; (std::numeric_limits&lt;T&gt;::max() - v))) ||
+<span class="lineNum">     218 </span>            :             ((v &lt; 0) &amp;&amp; (*(a.value) &lt; (std::numeric_limits&lt;T&gt;::min() - v))))) {
+<span class="lineNum">     219 </span>            :             // would overflow, calc existing and reset for next batch
+<span class="lineNum">     220 </span>            :             // this will add error to the final result, but the alternative
+<span class="lineNum">     221 </span>            :             // is to fail on overflow
+<span class="lineNum">     222 </span>            :             double avg = static_cast&lt;double&gt;(*(a.value)) / a.count;
+<span class="lineNum">     223 </span>            :             if (!a.stage.empty()) {
+<span class="lineNum">     224 </span>            :                 a.stage.reset((*a.stage + avg) / 2);
+<span class="lineNum">     225 </span>            :             } else {
+<span class="lineNum">     226 </span>            :                 a.stage.reset(avg);
+<span class="lineNum">     227 </span>            :             }
+<span class="lineNum">     228 </span>            :             a.value.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     229 </span>            :             a.count = 1;
+<span class="lineNum">     230 </span>            :         } else if (a.value.empty()) {
+<span class="lineNum">     231 </span>            :             a.value.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     232 </span>            :             a.count = 1;
+<span class="lineNum">     233 </span>            :         } else {
+<span class="lineNum">     234 </span>            :             *(a.value) += v;
+<span class="lineNum">     235 </span>            :             ++a.count;
+<span class="lineNum">     236 </span>            :         }
+<span class="lineNum">     237 </span>            :         return a;
+<span class="lineNum">     238 </span>            :     }
+<span class="lineNum">     239 </span>            :     double operator()(seed_type a) {
+<span class="lineNum">     240 </span>            :         if (!a.value.empty()) {
+<span class="lineNum">     241 </span>            :             double avg = static_cast&lt;double&gt;(*(a.value)) / a.count;
+<span class="lineNum">     242 </span>            :             if (!a.stage.empty()) {
+<span class="lineNum">     243 </span>            :                 avg = (*a.stage + avg) / 2;
+<span class="lineNum">     244 </span>            :             }
+<span class="lineNum">     245 </span>            :             return avg;
+<span class="lineNum">     246 </span>            :         }
+<span class="lineNum">     247 </span>            :         throw rxcpp::empty_error(&quot;average() requires a stream with at least one value&quot;);
+<span class="lineNum">     248 </span>            :     }
+<span class="lineNum">     249 </span>            : };
+<span class="lineNum">     250 </span>            : 
+<span class="lineNum">     251 </span>            : template&lt;class T&gt;
+<span class="lineNum">     252 </span>            : struct sum {
+<span class="lineNum">     253 </span>            :     typedef rxu::maybe&lt;T&gt; seed_type;
+<span class="lineNum">     254 </span>            :     static seed_type seed() {
+<span class="lineNum">     255 </span>            :         return seed_type();
+<span class="lineNum">     256 </span>            :     }
+<span class="lineNum">     257 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     258 </span>            :     seed_type operator()(seed_type a, U&amp;&amp; v) const {
+<span class="lineNum">     259 </span>            :         if (a.empty())
+<span class="lineNum">     260 </span>            :             a.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     261 </span>            :         else
+<span class="lineNum">     262 </span>            :             *a = *a + v;
+<span class="lineNum">     263 </span>            :         return a;
+<span class="lineNum">     264 </span>            :     }
+<span class="lineNum">     265 </span>            :     T operator()(seed_type a) const {
+<span class="lineNum">     266 </span>            :         if (a.empty())
+<span class="lineNum">     267 </span>            :             throw rxcpp::empty_error(&quot;sum() requires a stream with at least one value&quot;);
+<span class="lineNum">     268 </span>            :         return *a;
+<span class="lineNum">     269 </span>            :     }
+<span class="lineNum">     270 </span>            : };
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : template&lt;class T&gt;
+<span class="lineNum">     273 </span>            : struct max {
+<span class="lineNum">     274 </span>            :     typedef rxu::maybe&lt;T&gt; seed_type;
+<span class="lineNum">     275 </span>            :     static seed_type seed() {
+<span class="lineNum">     276 </span>            :         return seed_type();
+<span class="lineNum">     277 </span>            :     }
+<span class="lineNum">     278 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     279 </span>            :     seed_type operator()(seed_type a, U&amp;&amp; v) {
+<span class="lineNum">     280 </span>            :         if (a.empty() || *a &lt; v)
+<span class="lineNum">     281 </span>            :             a.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     282 </span>            :         return a;
+<span class="lineNum">     283 </span>            :     }
+<span class="lineNum">     284 </span>            :     T operator()(seed_type a) {
+<span class="lineNum">     285 </span>            :         if (a.empty())
+<span class="lineNum">     286 </span>            :             throw rxcpp::empty_error(&quot;max() requires a stream with at least one value&quot;);
+<span class="lineNum">     287 </span>            :         return *a;
+<span class="lineNum">     288 </span>            :     }
+<span class="lineNum">     289 </span>            : };
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span>            : template&lt;class T&gt;
+<span class="lineNum">     292 </span>            : struct min {
+<span class="lineNum">     293 </span>            :     typedef rxu::maybe&lt;T&gt; seed_type;
+<span class="lineNum">     294 </span>            :     static seed_type seed() {
+<span class="lineNum">     295 </span>            :         return seed_type();
+<span class="lineNum">     296 </span>            :     }
+<span class="lineNum">     297 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     298 </span>            :     seed_type operator()(seed_type a, U&amp;&amp; v) {
+<span class="lineNum">     299 </span>            :         if (a.empty() || v &lt; *a)
+<span class="lineNum">     300 </span>            :             a.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     301 </span>            :         return a;
+<span class="lineNum">     302 </span>            :     }
+<span class="lineNum">     303 </span>            :     T operator()(seed_type a) {
+<span class="lineNum">     304 </span>            :         if (a.empty())
+<span class="lineNum">     305 </span>            :             throw rxcpp::empty_error(&quot;min() requires a stream with at least one value&quot;);
+<span class="lineNum">     306 </span>            :         return *a;
+<span class="lineNum">     307 </span>            :     }
+<span class="lineNum">     308 </span>            : };
+<span class="lineNum">     309 </span>            : 
+<span class="lineNum">     310 </span>            : template&lt;class T&gt;
+<a name="311"><span class="lineNum">     311 </span>            : struct first {</a>
+<span class="lineNum">     312 </span>            :     using seed_type = rxu::maybe&lt;T&gt;;
+<span class="lineNum">     313 </span><span class="lineCov">          1 :     static seed_type seed() {</span>
+<span class="lineNum">     314 </span><span class="lineCov">          1 :         return seed_type();</span>
+<a name="315"><span class="lineNum">     315 </span>            :     }</a>
+<span class="lineNum">     316 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     317 </span><span class="lineCov">          1 :     seed_type operator()(seed_type a, U&amp;&amp; v) {</span>
+<span class="lineNum">     318 </span><span class="lineCov">          1 :         a.reset(std::forward&lt;U&gt;(v));</span>
+<a name="319"><span class="lineNum">     319 </span><span class="lineCov">          1 :         return a;</span></a>
+<span class="lineNum">     320 </span>            :     }
+<span class="lineNum">     321 </span><span class="lineCov">          1 :     T operator()(seed_type a) {</span>
+<span class="lineNum">     322 </span><span class="lineCov">          1 :         if (a.empty()) {</span>
+<span class="lineNum">     323 </span><span class="lineNoCov">          0 :             throw rxcpp::empty_error(&quot;first() requires a stream with at least one value&quot;);</span>
+<span class="lineNum">     324 </span>            :         }
+<span class="lineNum">     325 </span><span class="lineCov">          1 :         return *a;</span>
+<span class="lineNum">     326 </span>            :     }
+<span class="lineNum">     327 </span>            : };
+<span class="lineNum">     328 </span>            : 
+<span class="lineNum">     329 </span>            : template&lt;class T&gt;
+<span class="lineNum">     330 </span>            : struct last {
+<span class="lineNum">     331 </span>            :     using seed_type = rxu::maybe&lt;T&gt;;
+<span class="lineNum">     332 </span>            :     static seed_type seed() {
+<span class="lineNum">     333 </span>            :         return seed_type();
+<span class="lineNum">     334 </span>            :     }
+<span class="lineNum">     335 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     336 </span>            :     seed_type operator()(seed_type a, U&amp;&amp; v) {
+<span class="lineNum">     337 </span>            :         a.reset(std::forward&lt;U&gt;(v));
+<span class="lineNum">     338 </span>            :         return a;
+<span class="lineNum">     339 </span>            :     }
+<span class="lineNum">     340 </span>            :     T operator()(seed_type a) {
+<span class="lineNum">     341 </span>            :         if (a.empty()) {
+<span class="lineNum">     342 </span>            :             throw rxcpp::empty_error(&quot;last() requires a stream with at least one value&quot;);
+<span class="lineNum">     343 </span>            :         }
+<span class="lineNum">     344 </span>            :         return *a;
+<span class="lineNum">     345 </span>            :     }
+<span class="lineNum">     346 </span>            : };
+<span class="lineNum">     347 </span>            : 
+<span class="lineNum">     348 </span>            : }
+<span class="lineNum">     349 </span>            : 
+<span class="lineNum">     350 </span>            : /*! @copydoc rx-reduce.hpp
+<span class="lineNum">     351 </span>            : */
+<span class="lineNum">     352 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     353 </span>            : auto reduce(AN&amp;&amp;... an)
+<span class="lineNum">     354 </span>            :     -&gt;     operator_factory&lt;reduce_tag, AN...&gt; {
+<span class="lineNum">     355 </span>            :     return operator_factory&lt;reduce_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     356 </span>            : }
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            : /*! @copydoc rx-reduce.hpp
+<span class="lineNum">     359 </span>            : */
+<span class="lineNum">     360 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     361 </span>            : auto accumulate(AN&amp;&amp;... an)
+<span class="lineNum">     362 </span>            :     -&gt;     operator_factory&lt;reduce_tag, AN...&gt; {
+<span class="lineNum">     363 </span>            :     return operator_factory&lt;reduce_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     364 </span>            : }
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            : /*! \brief For each item from this observable reduce it by sending only the first item.
+<span class="lineNum">     367 </span>            : 
+<span class="lineNum">     368 </span>            :     \return  An observable that emits only the very first item emitted by the source observable.
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            :     \sample
+<span class="lineNum">     371 </span>            :     \snippet math.cpp first sample
+<span class="lineNum">     372 </span>            :     \snippet output.txt first sample
+<span class="lineNum">     373 </span>            : 
+<span class="lineNum">     374 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     375 </span>            :     \snippet math.cpp first empty sample
+<span class="lineNum">     376 </span>            :     \snippet output.txt first empty sample
+<span class="lineNum">     377 </span>            : */
+<span class="lineNum">     378 </span>            : inline auto first()
+<span class="lineNum">     379 </span>            :     -&gt;     operator_factory&lt;first_tag&gt; {
+<span class="lineNum">     380 </span>            :     return operator_factory&lt;first_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     381 </span>            : }
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            : /*! \brief For each item from this observable reduce it by sending only the last item.
+<span class="lineNum">     384 </span>            : 
+<span class="lineNum">     385 </span>            :     \return  An observable that emits only the very last item emitted by the source observable.
+<span class="lineNum">     386 </span>            : 
+<span class="lineNum">     387 </span>            :     \sample
+<span class="lineNum">     388 </span>            :     \snippet math.cpp last sample
+<span class="lineNum">     389 </span>            :     \snippet output.txt last sample
+<span class="lineNum">     390 </span>            : 
+<span class="lineNum">     391 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     392 </span>            :     \snippet math.cpp last empty sample
+<span class="lineNum">     393 </span>            :     \snippet output.txt last empty sample
+<span class="lineNum">     394 </span>            : */
+<span class="lineNum">     395 </span>            : inline auto last()
+<span class="lineNum">     396 </span>            :     -&gt;     operator_factory&lt;last_tag&gt; {
+<span class="lineNum">     397 </span>            :     return operator_factory&lt;last_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     398 </span>            : }
+<span class="lineNum">     399 </span>            : 
+<span class="lineNum">     400 </span>            : /*! \brief For each item from this observable reduce it by incrementing a count.
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :     \return  An observable that emits a single item: the number of elements emitted by the source observable.
+<span class="lineNum">     403 </span>            : 
+<span class="lineNum">     404 </span>            :     \sample
+<span class="lineNum">     405 </span>            :     \snippet math.cpp count sample
+<span class="lineNum">     406 </span>            :     \snippet output.txt count sample
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     409 </span>            :     \snippet math.cpp count error sample
+<span class="lineNum">     410 </span>            :     \snippet output.txt count error sample
+<span class="lineNum">     411 </span>            : */
+<span class="lineNum">     412 </span>            : inline auto count()
+<span class="lineNum">     413 </span>            :     -&gt;     operator_factory&lt;reduce_tag, int, rxu::count, rxu::detail::take_at&lt;0&gt;&gt; {
+<span class="lineNum">     414 </span>            :     return operator_factory&lt;reduce_tag, int, rxu::count, rxu::detail::take_at&lt;0&gt;&gt;(std::make_tuple(0, rxu::count(), rxu::take_at&lt;0&gt;()));
+<span class="lineNum">     415 </span>            : }
+<span class="lineNum">     416 </span>            : 
+<span class="lineNum">     417 </span>            : /*! \brief For each item from this observable reduce it by adding to the previous values and then dividing by the number of items at the end.
+<span class="lineNum">     418 </span>            : 
+<span class="lineNum">     419 </span>            :     \return  An observable that emits a single item: the average of elements emitted by the source observable.
+<span class="lineNum">     420 </span>            : 
+<span class="lineNum">     421 </span>            :     \sample
+<span class="lineNum">     422 </span>            :     \snippet math.cpp average sample
+<span class="lineNum">     423 </span>            :     \snippet output.txt average sample
+<span class="lineNum">     424 </span>            : 
+<span class="lineNum">     425 </span>            :     When the source observable completes without emitting any items:
+<span class="lineNum">     426 </span>            :     \snippet math.cpp average empty sample
+<span class="lineNum">     427 </span>            :     \snippet output.txt average empty sample
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     430 </span>            :     \snippet math.cpp average error sample
+<span class="lineNum">     431 </span>            :     \snippet output.txt average error sample
+<span class="lineNum">     432 </span>            : */
+<span class="lineNum">     433 </span>            : inline auto average()
+<span class="lineNum">     434 </span>            :     -&gt;     operator_factory&lt;average_tag&gt; {
+<span class="lineNum">     435 </span>            :     return operator_factory&lt;average_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     436 </span>            : }
+<span class="lineNum">     437 </span>            : 
+<span class="lineNum">     438 </span>            : /*! \brief For each item from this observable reduce it by adding to the previous items.
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            :     \return  An observable that emits a single item: the sum of elements emitted by the source observable.
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span>            :     \sample
+<span class="lineNum">     443 </span>            :     \snippet math.cpp sum sample
+<span class="lineNum">     444 </span>            :     \snippet output.txt sum sample
+<span class="lineNum">     445 </span>            : 
+<span class="lineNum">     446 </span>            :     When the source observable completes without emitting any items:
+<span class="lineNum">     447 </span>            :     \snippet math.cpp sum empty sample
+<span class="lineNum">     448 </span>            :     \snippet output.txt sum empty sample
+<span class="lineNum">     449 </span>            : 
+<span class="lineNum">     450 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     451 </span>            :     \snippet math.cpp sum error sample
+<span class="lineNum">     452 </span>            :     \snippet output.txt sum error sample
+<span class="lineNum">     453 </span>            : */
+<span class="lineNum">     454 </span>            : inline auto sum()
+<span class="lineNum">     455 </span>            :     -&gt;     operator_factory&lt;sum_tag&gt; {
+<span class="lineNum">     456 </span>            :     return operator_factory&lt;sum_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     457 </span>            : }
+<span class="lineNum">     458 </span>            : 
+<span class="lineNum">     459 </span>            : /*! \brief For each item from this observable reduce it by taking the min value of the previous items.
+<span class="lineNum">     460 </span>            : 
+<span class="lineNum">     461 </span>            :     \return  An observable that emits a single item: the min of elements emitted by the source observable.
+<span class="lineNum">     462 </span>            : 
+<span class="lineNum">     463 </span>            :     \sample
+<span class="lineNum">     464 </span>            :     \snippet math.cpp min sample
+<span class="lineNum">     465 </span>            :     \snippet output.txt min sample
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span>            :     When the source observable completes without emitting any items:
+<span class="lineNum">     468 </span>            :     \snippet math.cpp min empty sample
+<span class="lineNum">     469 </span>            :     \snippet output.txt min empty sample
+<span class="lineNum">     470 </span>            : 
+<span class="lineNum">     471 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     472 </span>            :     \snippet math.cpp min error sample
+<span class="lineNum">     473 </span>            :     \snippet output.txt min error sample
+<span class="lineNum">     474 </span>            : */
+<span class="lineNum">     475 </span>            : inline auto min()
+<span class="lineNum">     476 </span>            :     -&gt;     operator_factory&lt;min_tag&gt; {
+<span class="lineNum">     477 </span>            :     return operator_factory&lt;min_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     478 </span>            : }
+<span class="lineNum">     479 </span>            : 
+<span class="lineNum">     480 </span>            : /*! \brief For each item from this observable reduce it by taking the max value of the previous items.
+<span class="lineNum">     481 </span>            : 
+<span class="lineNum">     482 </span>            :     \return  An observable that emits a single item: the max of elements emitted by the source observable.
+<span class="lineNum">     483 </span>            : 
+<span class="lineNum">     484 </span>            :     \sample
+<span class="lineNum">     485 </span>            :     \snippet math.cpp max sample
+<span class="lineNum">     486 </span>            :     \snippet output.txt max sample
+<span class="lineNum">     487 </span>            : 
+<span class="lineNum">     488 </span>            :     When the source observable completes without emitting any items:
+<span class="lineNum">     489 </span>            :     \snippet math.cpp max empty sample
+<span class="lineNum">     490 </span>            :     \snippet output.txt max empty sample
+<span class="lineNum">     491 </span>            : 
+<span class="lineNum">     492 </span>            :     When the source observable calls on_error:
+<span class="lineNum">     493 </span>            :     \snippet math.cpp max error sample
+<span class="lineNum">     494 </span>            :     \snippet output.txt max error sample
+<span class="lineNum">     495 </span>            : */
+<span class="lineNum">     496 </span>            : inline auto max()
+<span class="lineNum">     497 </span>            :     -&gt;     operator_factory&lt;max_tag&gt; {
+<span class="lineNum">     498 </span>            :     return operator_factory&lt;max_tag&gt;(std::tuple&lt;&gt;{});
+<span class="lineNum">     499 </span>            : }
+<span class="lineNum">     500 </span>            : 
+<span class="lineNum">     501 </span>            : }
+<span class="lineNum">     502 </span>            : 
+<span class="lineNum">     503 </span>            : template&lt;&gt;
+<span class="lineNum">     504 </span>            : struct member_overload&lt;reduce_tag&gt;
+<span class="lineNum">     505 </span>            : {
+<span class="lineNum">     506 </span>            : 
+<span class="lineNum">     507 </span>            :     template&lt;class Observable, class Seed, class Accumulator, class ResultSelector,
+<span class="lineNum">     508 </span>            :         class Reduce = rxo::detail::reduce&lt;rxu::value_type_t&lt;Observable&gt;, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<a name="509"><span class="lineNum">     509 </span>            :         class Value = rxu::value_type_t&lt;Reduce&gt;,</a>
+<span class="lineNum">     510 </span>            :         class Result = observable&lt;Value, Reduce&gt;&gt;
+<span class="lineNum">     511 </span><span class="lineCov">          3 :     static Result member(Observable&amp;&amp; o, Seed&amp;&amp; s, Accumulator&amp;&amp; a, ResultSelector&amp;&amp; r)</span>
+<span class="lineNum">     512 </span>            :     {
+<span class="lineNum">     513 </span><span class="lineCov">          3 :         return Result(Reduce(std::forward&lt;Observable&gt;(o), std::forward&lt;Accumulator&gt;(a), std::forward&lt;ResultSelector&gt;(r), std::forward&lt;Seed&gt;(s)));</span>
+<span class="lineNum">     514 </span>            :     }
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span>            :     template&lt;class Observable, class Seed, class Accumulator,
+<span class="lineNum">     517 </span>            :         class ResultSelector=rxu::detail::take_at&lt;0&gt;,
+<span class="lineNum">     518 </span>            :         class Reduce = rxo::detail::reduce&lt;rxu::value_type_t&lt;Observable&gt;, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     519 </span>            :         class Value = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     520 </span>            :         class Result = observable&lt;Value, Reduce&gt;&gt;
+<span class="lineNum">     521 </span>            :     static Result member(Observable&amp;&amp; o, Seed&amp;&amp; s, Accumulator&amp;&amp; a)
+<span class="lineNum">     522 </span>            :     {
+<span class="lineNum">     523 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), std::forward&lt;Accumulator&gt;(a), rxu::detail::take_at&lt;0&gt;(), std::forward&lt;Seed&gt;(s)));
+<span class="lineNum">     524 </span>            :     }
+<span class="lineNum">     525 </span>            : 
+<span class="lineNum">     526 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     527 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     528 </span>            :         std::terminate();
+<span class="lineNum">     529 </span>            :         return {};
+<span class="lineNum">     530 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;reduce takes (Seed, Accumulator, optional ResultSelector), Accumulator takes (Seed, Observable::value_type) -&gt; Seed, ResultSelector takes (Observable::value_type) -&gt; ResultValue&quot;);
+<span class="lineNum">     531 </span>            :     }
+<span class="lineNum">     532 </span>            : };
+<span class="lineNum">     533 </span>            : 
+<span class="lineNum">     534 </span>            : template&lt;&gt;
+<span class="lineNum">     535 </span>            : struct member_overload&lt;first_tag&gt;
+<span class="lineNum">     536 </span>            : {
+<span class="lineNum">     537 </span>            :     template&lt;class Observable,
+<span class="lineNum">     538 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     539 </span>            :         class Operation = operators::detail::first&lt;SValue&gt;,
+<span class="lineNum">     540 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     541 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     542 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     543 </span>            :         class TakeOne = decltype(((rxu::decay_t&lt;Observable&gt;*)nullptr)-&gt;take(1)),
+<span class="lineNum">     544 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;TakeOne&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<a name="545"><span class="lineNum">     545 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,</a>
+<span class="lineNum">     546 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     547 </span><span class="lineCov">          1 :     static Result member(Observable&amp;&amp; o)</span>
+<span class="lineNum">     548 </span>            :     {
+<span class="lineNum">     549 </span><span class="lineCov">          1 :         return Result(Reduce(o.take(1), Operation{}, Operation{}, Operation::seed()));</span>
+<span class="lineNum">     550 </span>            :     }
+<span class="lineNum">     551 </span>            : 
+<span class="lineNum">     552 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     553 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     554 </span>            :         std::terminate();
+<span class="lineNum">     555 </span>            :         return {};
+<span class="lineNum">     556 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;first does not support Observable::value_type&quot;);
+<span class="lineNum">     557 </span>            :     }
+<span class="lineNum">     558 </span>            : };
+<span class="lineNum">     559 </span>            : 
+<span class="lineNum">     560 </span>            : template&lt;&gt;
+<span class="lineNum">     561 </span>            : struct member_overload&lt;last_tag&gt;
+<span class="lineNum">     562 </span>            : {
+<span class="lineNum">     563 </span>            :     template&lt;class Observable,
+<span class="lineNum">     564 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     565 </span>            :         class Operation = operators::detail::last&lt;SValue&gt;,
+<span class="lineNum">     566 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     567 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     568 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     569 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     570 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     571 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     572 </span>            :     static Result member(Observable&amp;&amp; o)
+<span class="lineNum">     573 </span>            :     {
+<span class="lineNum">     574 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), Operation{}, Operation{}, Operation::seed()));
+<span class="lineNum">     575 </span>            :     }
+<span class="lineNum">     576 </span>            : 
+<span class="lineNum">     577 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     578 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     579 </span>            :         std::terminate();
+<span class="lineNum">     580 </span>            :         return {};
+<span class="lineNum">     581 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;last does not support Observable::value_type&quot;);
+<span class="lineNum">     582 </span>            :     }
+<span class="lineNum">     583 </span>            : };
+<span class="lineNum">     584 </span>            : 
+<span class="lineNum">     585 </span>            : template&lt;&gt;
+<span class="lineNum">     586 </span>            : struct member_overload&lt;sum_tag&gt;
+<span class="lineNum">     587 </span>            : {
+<span class="lineNum">     588 </span>            :     template&lt;class Observable,
+<span class="lineNum">     589 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     590 </span>            :         class Operation = operators::detail::sum&lt;SValue&gt;,
+<span class="lineNum">     591 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     592 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     593 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     594 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     595 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     596 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     597 </span>            :     static Result member(Observable&amp;&amp; o)
+<span class="lineNum">     598 </span>            :     {
+<span class="lineNum">     599 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), Operation{}, Operation{}, Operation::seed()));
+<span class="lineNum">     600 </span>            :     }
+<span class="lineNum">     601 </span>            : 
+<span class="lineNum">     602 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     603 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     604 </span>            :         std::terminate();
+<span class="lineNum">     605 </span>            :         return {};
+<span class="lineNum">     606 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;sum does not support Observable::value_type&quot;);
+<span class="lineNum">     607 </span>            :     }
+<span class="lineNum">     608 </span>            : };
+<span class="lineNum">     609 </span>            : 
+<span class="lineNum">     610 </span>            : template&lt;&gt;
+<span class="lineNum">     611 </span>            : struct member_overload&lt;average_tag&gt;
+<span class="lineNum">     612 </span>            : {
+<span class="lineNum">     613 </span>            :     template&lt;class Observable,
+<span class="lineNum">     614 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     615 </span>            :         class Operation = operators::detail::average&lt;SValue&gt;,
+<span class="lineNum">     616 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     617 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     618 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     619 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     620 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     621 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     622 </span>            :     static Result member(Observable&amp;&amp; o)
+<span class="lineNum">     623 </span>            :     {
+<span class="lineNum">     624 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), Operation{}, Operation{}, Operation::seed()));
+<span class="lineNum">     625 </span>            :     }
+<span class="lineNum">     626 </span>            : 
+<span class="lineNum">     627 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     628 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     629 </span>            :         std::terminate();
+<span class="lineNum">     630 </span>            :         return {};
+<span class="lineNum">     631 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;average does not support Observable::value_type&quot;);
+<span class="lineNum">     632 </span>            :     }
+<span class="lineNum">     633 </span>            : };
+<span class="lineNum">     634 </span>            : 
+<span class="lineNum">     635 </span>            : template&lt;&gt;
+<span class="lineNum">     636 </span>            : struct member_overload&lt;max_tag&gt;
+<span class="lineNum">     637 </span>            : {
+<span class="lineNum">     638 </span>            :     template&lt;class Observable,
+<span class="lineNum">     639 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     640 </span>            :         class Operation = operators::detail::max&lt;SValue&gt;,
+<span class="lineNum">     641 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     642 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     643 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     644 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     645 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     646 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     647 </span>            :     static Result member(Observable&amp;&amp; o)
+<span class="lineNum">     648 </span>            :     {
+<span class="lineNum">     649 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), Operation{}, Operation{}, Operation::seed()));
+<span class="lineNum">     650 </span>            :     }
+<span class="lineNum">     651 </span>            : 
+<span class="lineNum">     652 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     653 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     654 </span>            :         std::terminate();
+<span class="lineNum">     655 </span>            :         return {};
+<span class="lineNum">     656 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;max does not support Observable::value_type&quot;);
+<span class="lineNum">     657 </span>            :     }
+<span class="lineNum">     658 </span>            : };
+<span class="lineNum">     659 </span>            : 
+<span class="lineNum">     660 </span>            : template&lt;&gt;
+<span class="lineNum">     661 </span>            : struct member_overload&lt;min_tag&gt;
+<span class="lineNum">     662 </span>            : {
+<span class="lineNum">     663 </span>            :     template&lt;class Observable,
+<span class="lineNum">     664 </span>            :         class SValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     665 </span>            :         class Operation = operators::detail::min&lt;SValue&gt;,
+<span class="lineNum">     666 </span>            :         class Seed = decltype(Operation::seed()),
+<span class="lineNum">     667 </span>            :         class Accumulator = Operation,
+<span class="lineNum">     668 </span>            :         class ResultSelector = Operation,
+<span class="lineNum">     669 </span>            :         class Reduce = rxo::detail::reduce&lt;SValue, rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;Accumulator&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Seed&gt;&gt;,
+<span class="lineNum">     670 </span>            :         class RValue = rxu::value_type_t&lt;Reduce&gt;,
+<span class="lineNum">     671 </span>            :         class Result = observable&lt;RValue, Reduce&gt;&gt;
+<span class="lineNum">     672 </span>            :     static Result member(Observable&amp;&amp; o)
+<span class="lineNum">     673 </span>            :     {
+<span class="lineNum">     674 </span>            :         return Result(Reduce(std::forward&lt;Observable&gt;(o), Operation{}, Operation{}, Operation::seed()));
+<span class="lineNum">     675 </span>            :     }
+<span class="lineNum">     676 </span>            : 
+<span class="lineNum">     677 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     678 </span>            :     static operators::detail::reduce_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     679 </span>            :         std::terminate();
+<span class="lineNum">     680 </span>            :         return {};
+<span class="lineNum">     681 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;min does not support Observable::value_type&quot;);
+<span class="lineNum">     682 </span>            :     }
+<span class="lineNum">     683 </span>            : };
+<span class="lineNum">     684 </span>            : 
+<span class="lineNum">     685 </span>            : }
+<span class="lineNum">     686 </span>            : 
+<span class="lineNum">     687 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

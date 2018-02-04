@@ -1,0 +1,911 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/rx-subscriber.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp</a> - rx-subscriber.hpp<span style="font-size: 80%;"> (source / <a href="rx-subscriber.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">99</td>
+            <td class="headerCovTableEntry">126</td>
+            <td class="headerCovTableEntryMed">78.6 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">833</td>
+            <td class="headerCovTableEntry">1182</td>
+            <td class="headerCovTableEntryLo">70.5 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #if !defined(RXCPP_RX_SUBSCRIBER_HPP)
+<span class="lineNum">       6 </span>            : #define RXCPP_RX_SUBSCRIBER_HPP
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;rx-includes.hpp&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : namespace rxcpp {
+<a name="11"><span class="lineNum">      11 </span>            : </a>
+<span class="lineNum">      12 </span>            : template&lt;class T&gt;
+<span class="lineNum">      13 </span><span class="lineCov">       9046 : struct subscriber_base : public observer_base&lt;T&gt;, public subscription_base</span>
+<span class="lineNum">      14 </span>            : {
+<span class="lineNum">      15 </span>            :     typedef tag_subscriber subscriber_tag;
+<span class="lineNum">      16 </span>            : };
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : /*!
+<span class="lineNum">      19 </span>            :     \brief binds an observer that consumes values with a composite_subscription that controls lifetime.
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            :     \ingroup group-core
+<span class="lineNum">      22 </span>            : 
+<a name="23"><span class="lineNum">      23 </span>            : */</a>
+<span class="lineNum">      24 </span>            : template&lt;class T, class Observer = observer&lt;T&gt;&gt;
+<span class="lineNum">      25 </span><span class="lineCov">       9033 : class subscriber : public subscriber_base&lt;T&gt;</span>
+<span class="lineNum">      26 </span>            : {
+<span class="lineNum">      27 </span>            :     static_assert(!is_subscriber&lt;Observer&gt;::value, &quot;not allowed to nest subscribers&quot;);
+<span class="lineNum">      28 </span>            :     static_assert(is_observer&lt;Observer&gt;::value, &quot;subscriber must contain an observer&lt;T, ...&gt;&quot;);
+<span class="lineNum">      29 </span>            :     typedef subscriber&lt;T, Observer&gt; this_type;
+<span class="lineNum">      30 </span>            :     typedef rxu::decay_t&lt;Observer&gt; observer_type;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            :     composite_subscription lifetime;
+<span class="lineNum">      33 </span>            :     observer_type destination;
+<span class="lineNum">      34 </span>            :     trace_id id;
+<span class="lineNum">      35 </span>            : 
+<a name="36"><span class="lineNum">      36 </span>            :     struct nextdetacher</a>
+<span class="lineNum">      37 </span>            :     {
+<span class="lineNum">      38 </span><span class="lineCov">        572 :         ~nextdetacher()</span>
+<span class="lineNum">      39 </span>            :         {
+<span class="lineNum">      40 </span><span class="lineCov">        572 :             trace_activity().on_next_return(*that);</span>
+<span class="lineNum">      41 </span><span class="lineCov">        572 :             if (do_unsubscribe) {</span>
+<span class="lineNum">      42 </span><span class="lineNoCov">          0 :                 that-&gt;unsubscribe();</span>
+<a name="43"><span class="lineNum">      43 </span>            :             }</a>
+<span class="lineNum">      44 </span><span class="lineCov">        572 :         }</span>
+<span class="lineNum">      45 </span><span class="lineCov">        572 :         nextdetacher(const this_type* that)</span>
+<span class="lineNum">      46 </span>            :             : that(that)
+<span class="lineNum">      47 </span><span class="lineCov">        572 :             , do_unsubscribe(true)</span>
+<span class="lineNum">      48 </span>            :         {
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">        572 :         }</span></a>
+<span class="lineNum">      50 </span>            :         template&lt;class U&gt;
+<span class="lineNum">      51 </span><span class="lineCov">        572 :         void operator()(U u) {</span>
+<span class="lineNum">      52 </span><span class="lineCov">        572 :             trace_activity().on_next_enter(*that, u);</span>
+<span class="lineNum">      53 </span>            :             try {
+<span class="lineNum">      54 </span><span class="lineCov">        572 :                 that-&gt;destination.on_next(std::move(u));</span>
+<span class="lineNum">      55 </span><span class="lineCov">        572 :                 do_unsubscribe = false;</span>
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :             } catch(...) {</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :                 auto ex = std::current_exception();</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :                 trace_activity().on_error_enter(*that, ex);</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :                 that-&gt;destination.on_error(std::move(ex));</span>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :                 trace_activity().on_error_return(*that);</span>
+<span class="lineNum">      61 </span>            :             }
+<span class="lineNum">      62 </span><span class="lineCov">        572 :         }</span>
+<span class="lineNum">      63 </span>            :         const this_type* that;
+<span class="lineNum">      64 </span>            :         volatile bool do_unsubscribe;
+<span class="lineNum">      65 </span>            :     };
+<span class="lineNum">      66 </span>            : 
+<a name="67"><span class="lineNum">      67 </span>            :     struct errordetacher</a>
+<span class="lineNum">      68 </span>            :     {
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :         ~errordetacher()</span>
+<span class="lineNum">      70 </span>            :         {
+<span class="lineNum">      71 </span><span class="lineNoCov">          0 :             trace_activity().on_error_return(*that);</span>
+<a name="72"><span class="lineNum">      72 </span><span class="lineNoCov">          0 :             that-&gt;unsubscribe();</span></a>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :         errordetacher(const this_type* that)</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :             : that(that)</span>
+<a name="76"><span class="lineNum">      76 </span>            :         {</a>
+<span class="lineNum">      77 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :         inline void operator()(std::exception_ptr ex) {</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :             trace_activity().on_error_enter(*that, ex);</span>
+<span class="lineNum">      80 </span><span class="lineNoCov">          0 :             that-&gt;destination.on_error(std::move(ex));</span>
+<span class="lineNum">      81 </span><span class="lineNoCov">          0 :         }</span>
+<span class="lineNum">      82 </span>            :         const this_type* that;
+<span class="lineNum">      83 </span>            :     };
+<span class="lineNum">      84 </span>            : 
+<a name="85"><span class="lineNum">      85 </span>            :     struct completeddetacher</a>
+<span class="lineNum">      86 </span>            :     {
+<span class="lineNum">      87 </span><span class="lineCov">        267 :         ~completeddetacher()</span>
+<span class="lineNum">      88 </span>            :         {
+<span class="lineNum">      89 </span><span class="lineCov">        267 :             trace_activity().on_completed_return(*that);</span>
+<a name="90"><span class="lineNum">      90 </span><span class="lineCov">        267 :             that-&gt;unsubscribe();</span></a>
+<span class="lineNum">      91 </span><span class="lineCov">        267 :         }</span>
+<span class="lineNum">      92 </span><span class="lineCov">        267 :         completeddetacher(const this_type* that)</span>
+<span class="lineNum">      93 </span><span class="lineCov">        267 :             : that(that)</span>
+<a name="94"><span class="lineNum">      94 </span>            :         {</a>
+<span class="lineNum">      95 </span><span class="lineCov">        267 :         }</span>
+<span class="lineNum">      96 </span><span class="lineCov">        267 :         inline void operator()() {</span>
+<span class="lineNum">      97 </span><span class="lineCov">        267 :             trace_activity().on_completed_enter(*that);</span>
+<span class="lineNum">      98 </span><span class="lineCov">        267 :             that-&gt;destination.on_completed();</span>
+<span class="lineNum">      99 </span><span class="lineCov">        267 :         }</span>
+<span class="lineNum">     100 </span>            :         const this_type* that;
+<span class="lineNum">     101 </span>            :     };
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :     subscriber();
+<span class="lineNum">     104 </span>            : public:
+<a name="105"><span class="lineNum">     105 </span>            :     typedef typename composite_subscription::weak_subscription weak_subscription;</a>
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span><span class="lineCov">       1324 :     subscriber(const this_type&amp; o)</span>
+<span class="lineNum">     108 </span>            :         : lifetime(o.lifetime)
+<span class="lineNum">     109 </span>            :         , destination(o.destination)
+<span class="lineNum">     110 </span><span class="lineCov">       1324 :         , id(o.id)</span>
+<a name="111"><span class="lineNum">     111 </span>            :     {</a>
+<span class="lineNum">     112 </span><span class="lineCov">       1199 :     }</span>
+<span class="lineNum">     113 </span><span class="lineCov">       2076 :     subscriber(this_type&amp;&amp; o)</span>
+<span class="lineNum">     114 </span><span class="lineCov">       2076 :         : lifetime(std::move(o.lifetime))</span>
+<span class="lineNum">     115 </span><span class="lineCov">       2076 :         , destination(std::move(o.destination))</span>
+<span class="lineNum">     116 </span><span class="lineCov">       6228 :         , id(std::move(o.id))</span>
+<span class="lineNum">     117 </span>            :     {
+<span class="lineNum">     118 </span><span class="lineCov">       1694 :     }</span>
+<span class="lineNum">     119 </span>            : 
+<span class="lineNum">     120 </span>            :     template&lt;class U, class O&gt;
+<span class="lineNum">     121 </span>            :     friend class subscriber;
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :     template&lt;class O&gt;
+<span class="lineNum">     124 </span>            :     subscriber(
+<span class="lineNum">     125 </span>            :         const subscriber&lt;T, O&gt;&amp; o,
+<span class="lineNum">     126 </span>            :         typename std::enable_if&lt;
+<span class="lineNum">     127 </span>            :                !std::is_same&lt;O, observer&lt;T&gt;&gt;::value &amp;&amp;
+<span class="lineNum">     128 </span>            :                std::is_same&lt;Observer, observer&lt;T&gt;&gt;::value, void**&gt;::type = nullptr)
+<span class="lineNum">     129 </span>            :         : lifetime(o.lifetime)
+<span class="lineNum">     130 </span>            :         , destination(o.destination.as_dynamic())
+<span class="lineNum">     131 </span>            :         , id(o.id)
+<span class="lineNum">     132 </span>            :     {
+<span class="lineNum">     133 </span>            :     }
+<a name="134"><span class="lineNum">     134 </span>            : </a>
+<span class="lineNum">     135 </span>            :     template&lt;class U&gt;
+<span class="lineNum">     136 </span><span class="lineCov">       1123 :     subscriber(trace_id id, composite_subscription cs, U&amp;&amp; o)</span>
+<span class="lineNum">     137 </span><span class="lineCov">       1123 :         : lifetime(std::move(cs))</span>
+<span class="lineNum">     138 </span><span class="lineCov">       1123 :         , destination(std::forward&lt;U&gt;(o))</span>
+<span class="lineNum">     139 </span><span class="lineCov">       3369 :         , id(std::move(id))</span>
+<span class="lineNum">     140 </span>            :     {
+<span class="lineNum">     141 </span>            :         static_assert(!is_subscriber&lt;U&gt;::value, &quot;cannot nest subscribers&quot;);
+<span class="lineNum">     142 </span>            :         static_assert(is_observer&lt;U&gt;::value, &quot;must pass observer to subscriber&quot;);
+<span class="lineNum">     143 </span><span class="lineCov">       1123 :         trace_activity().create_subscriber(*this);</span>
+<a name="144"><span class="lineNum">     144 </span><span class="lineCov">       1123 :     }</span></a>
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span><span class="lineNoCov">          0 :     this_type&amp; operator=(this_type o) {</span>
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :         lifetime = std::move(o.lifetime);</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :         destination = std::move(o.destination);</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :         id = std::move(o.id);</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :         return *this;</span>
+<a name="151"><span class="lineNum">     151 </span>            :     }</a>
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineCov">         55 :     const observer_type&amp; get_observer() const {</span>
+<span class="lineNum">     154 </span><span class="lineCov">         55 :         return destination;</span>
+<span class="lineNum">     155 </span>            :     }
+<span class="lineNum">     156 </span>            :     observer_type&amp; get_observer() {
+<a name="157"><span class="lineNum">     157 </span>            :         return destination;</a>
+<span class="lineNum">     158 </span>            :     }
+<span class="lineNum">     159 </span><span class="lineCov">         54 :     const composite_subscription&amp; get_subscription() const {</span>
+<a name="160"><span class="lineNum">     160 </span><span class="lineCov">         54 :         return lifetime;</span></a>
+<span class="lineNum">     161 </span>            :     }
+<span class="lineNum">     162 </span><span class="lineCov">        999 :     composite_subscription&amp; get_subscription() {</span>
+<span class="lineNum">     163 </span><span class="lineCov">        999 :         return lifetime;</span>
+<span class="lineNum">     164 </span>            :     }
+<span class="lineNum">     165 </span>            :     trace_id get_id() const {
+<span class="lineNum">     166 </span>            :         return id;
+<a name="167"><span class="lineNum">     167 </span>            :     }</a>
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span><span class="lineCov">        319 :     subscriber&lt;T&gt; as_dynamic() const {</span>
+<span class="lineNum">     170 </span><span class="lineCov">        319 :         return subscriber&lt;T&gt;(id, lifetime, destination.as_dynamic());</span>
+<span class="lineNum">     171 </span>            :     }
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            :     // observer
+<a name="174"><span class="lineNum">     174 </span>            :     //</a>
+<span class="lineNum">     175 </span>            :     template&lt;class V&gt;
+<span class="lineNum">     176 </span><span class="lineCov">        573 :     void on_next(V&amp;&amp; v) const {</span>
+<span class="lineNum">     177 </span><span class="lineCov">        573 :         if (!is_subscribed()) {</span>
+<span class="lineNum">     178 </span><span class="lineCov">          1 :             return;</span>
+<span class="lineNum">     179 </span>            :         }
+<span class="lineNum">     180 </span><span class="lineCov">       1145 :         nextdetacher protect(this);</span>
+<a name="181"><span class="lineNum">     181 </span><span class="lineCov">        572 :         protect(std::forward&lt;V&gt;(v));</span></a>
+<span class="lineNum">     182 </span>            :     }
+<span class="lineNum">     183 </span><span class="lineNoCov">          0 :     void on_error(std::exception_ptr e) const {</span>
+<span class="lineNum">     184 </span><span class="lineNoCov">          0 :         if (!is_subscribed()) {</span>
+<span class="lineNum">     185 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">     186 </span>            :         }
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :         errordetacher protect(this);</span>
+<a name="188"><span class="lineNum">     188 </span><span class="lineNoCov">          0 :         protect(std::move(e));</span></a>
+<span class="lineNum">     189 </span>            :     }
+<span class="lineNum">     190 </span><span class="lineCov">        273 :     void on_completed() const {</span>
+<span class="lineNum">     191 </span><span class="lineCov">        273 :         if (!is_subscribed()) {</span>
+<span class="lineNum">     192 </span><span class="lineCov">          6 :             return;</span>
+<span class="lineNum">     193 </span>            :         }
+<span class="lineNum">     194 </span><span class="lineCov">        540 :         completeddetacher protect(this);</span>
+<span class="lineNum">     195 </span><span class="lineCov">        267 :         protect();</span>
+<span class="lineNum">     196 </span>            :     }
+<span class="lineNum">     197 </span>            : 
+<a name="198"><span class="lineNum">     198 </span>            :     // composite_subscription</a>
+<span class="lineNum">     199 </span>            :     //
+<span class="lineNum">     200 </span><span class="lineCov">       1831 :     bool is_subscribed() const {</span>
+<a name="201"><span class="lineNum">     201 </span><span class="lineCov">       1831 :         return lifetime.is_subscribed();</span></a>
+<span class="lineNum">     202 </span>            :     }
+<span class="lineNum">     203 </span><span class="lineCov">         74 :     weak_subscription add(subscription s) const {</span>
+<span class="lineNum">     204 </span><span class="lineCov">         74 :         return lifetime.add(std::move(s));</span>
+<a name="205"><span class="lineNum">     205 </span>            :     }</a>
+<span class="lineNum">     206 </span>            :     template&lt;class F&gt;
+<span class="lineNum">     207 </span><span class="lineCov">        217 :     auto add(F f) const</span>
+<span class="lineNum">     208 </span>            :     -&gt; typename std::enable_if&lt;detail::is_unsubscribe_function&lt;F&gt;::value, weak_subscription&gt;::type {
+<a name="209"><span class="lineNum">     209 </span><span class="lineCov">        217 :         return lifetime.add(make_subscription(std::move(f)));</span></a>
+<span class="lineNum">     210 </span>            :     }
+<span class="lineNum">     211 </span><span class="lineCov">         40 :     void remove(weak_subscription w) const {</span>
+<span class="lineNum">     212 </span><span class="lineCov">         40 :         return lifetime.remove(std::move(w));</span>
+<span class="lineNum">     213 </span>            :     }
+<span class="lineNum">     214 </span>            :     void clear() const {
+<a name="215"><span class="lineNum">     215 </span>            :         return lifetime.clear();</a>
+<span class="lineNum">     216 </span>            :     }
+<span class="lineNum">     217 </span><span class="lineCov">        268 :     void unsubscribe() const {</span>
+<span class="lineNum">     218 </span><span class="lineCov">        268 :         return lifetime.unsubscribe();</span>
+<span class="lineNum">     219 </span>            :     }
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            : };
+<a name="222"><span class="lineNum">     222 </span>            : </a>
+<span class="lineNum">     223 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     224 </span><span class="lineCov">        119 : auto make_subscriber(</span>
+<span class="lineNum">     225 </span>            :             subscriber&lt;T,   Observer&gt; o)
+<span class="lineNum">     226 </span>            :     -&gt;      subscriber&lt;T,   Observer&gt; {
+<span class="lineNum">     227 </span><span class="lineCov">        119 :     return  subscriber&lt;T,   Observer&gt;(std::move(o));</span>
+<span class="lineNum">     228 </span>            : }
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            : // observer
+<span class="lineNum">     231 </span>            : //
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            : template&lt;class T&gt;
+<span class="lineNum">     234 </span>            : auto make_subscriber()
+<span class="lineNum">     235 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     236 </span>            :         detail::is_on_next_of&lt;T, detail::OnNextEmpty&lt;T&gt;&gt;::value,
+<span class="lineNum">     237 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt;&gt;::type {
+<span class="lineNum">     238 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(),
+<span class="lineNum">     239 </span>            :                             observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;(detail::OnNextEmpty&lt;T&gt;()));
+<span class="lineNum">     240 </span>            : }
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : template&lt;class T, class I&gt;
+<span class="lineNum">     243 </span>            : auto make_subscriber(
+<span class="lineNum">     244 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     245 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     246 </span>            :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(), o);
+<span class="lineNum">     247 </span>            : }
+<span class="lineNum">     248 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     249 </span>            : auto make_subscriber(const Observer&amp; o)
+<span class="lineNum">     250 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     251 </span>            :     is_observer&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     252 </span>            :     !is_subscriber&lt;Observer&gt;::value,
+<span class="lineNum">     253 </span>            :             subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     254 </span>            :     return  subscriber&lt;T,   Observer&gt;(trace_id::make_next_id_subscriber(), composite_subscription(), o);
+<span class="lineNum">     255 </span>            : }
+<span class="lineNum">     256 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     257 </span>            : auto make_subscriber(const Observer&amp; o)
+<span class="lineNum">     258 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     259 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     260 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     261 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     262 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     263 </span>            :             subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     264 </span>            :     return  subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(), o);
+<a name="265"><span class="lineNum">     265 </span>            : }</a>
+<span class="lineNum">     266 </span>            : template&lt;class T, class OnNext&gt;
+<span class="lineNum">     267 </span><span class="lineCov">        218 : auto make_subscriber(const OnNext&amp; on)</span>
+<span class="lineNum">     268 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     269 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     270 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     271 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(),
+<span class="lineNum">     272 </span><span class="lineCov">        218 :                             observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));</span>
+<a name="273"><span class="lineNum">     273 </span>            : }</a>
+<span class="lineNum">     274 </span>            : template&lt;class T, class OnNext, class OnError&gt;
+<span class="lineNum">     275 </span><span class="lineCov">          1 : auto make_subscriber(const OnNext&amp; on, const OnError&amp; oe)</span>
+<span class="lineNum">     276 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     277 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     278 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     279 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     280 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(),
+<span class="lineNum">     281 </span><span class="lineCov">          1 :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));</span>
+<a name="282"><span class="lineNum">     282 </span>            : }</a>
+<span class="lineNum">     283 </span>            : template&lt;class T, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     284 </span><span class="lineCov">          7 : auto make_subscriber(const OnNext&amp; on, const OnCompleted&amp; oc)</span>
+<span class="lineNum">     285 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     286 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     287 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     288 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     289 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(),
+<span class="lineNum">     290 </span><span class="lineCov">          7 :                             observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));</span>
+<a name="291"><span class="lineNum">     291 </span>            : }</a>
+<span class="lineNum">     292 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     293 </span><span class="lineCov">         85 : auto make_subscriber(const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)</span>
+<span class="lineNum">     294 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     295 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     296 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     297 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     298 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     299 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), composite_subscription(),
+<span class="lineNum">     300 </span><span class="lineCov">         85 :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));</span>
+<span class="lineNum">     301 </span>            : }
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            : // explicit lifetime
+<span class="lineNum">     304 </span>            : //
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            : template&lt;class T&gt;
+<span class="lineNum">     307 </span>            : auto make_subscriber(const composite_subscription&amp; cs)
+<span class="lineNum">     308 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt; {
+<span class="lineNum">     309 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     310 </span>            :                             observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;(detail::OnNextEmpty&lt;T&gt;()));
+<span class="lineNum">     311 </span>            : }
+<a name="312"><span class="lineNum">     312 </span>            : </a>
+<span class="lineNum">     313 </span>            : template&lt;class T, class I&gt;
+<span class="lineNum">     314 </span><span class="lineCov">          6 : auto make_subscriber(const composite_subscription&amp; cs,</span>
+<span class="lineNum">     315 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     316 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     317 </span><span class="lineCov">          6 :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(trace_id::make_next_id_subscriber(), cs, o);</span>
+<a name="318"><span class="lineNum">     318 </span>            : }</a>
+<span class="lineNum">     319 </span>            : template&lt;class T, class I&gt;
+<span class="lineNum">     320 </span><span class="lineCov">         55 : auto make_subscriber(const composite_subscription&amp; cs,</span>
+<span class="lineNum">     321 </span>            :     const                   subscriber&lt;T, I&gt;&amp; s)
+<span class="lineNum">     322 </span>            :     -&gt;      subscriber&lt;T,   I&gt; {
+<span class="lineNum">     323 </span><span class="lineCov">         55 :     return  subscriber&lt;T,   I&gt;(trace_id::make_next_id_subscriber(), cs, s.get_observer());</span>
+<span class="lineNum">     324 </span>            : }
+<span class="lineNum">     325 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     326 </span>            : auto make_subscriber(const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     327 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     328 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     329 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     330 </span>            :             subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     331 </span>            :     return  subscriber&lt;T,   Observer&gt;(trace_id::make_next_id_subscriber(), cs, o);
+<span class="lineNum">     332 </span>            : }
+<span class="lineNum">     333 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     334 </span>            : auto make_subscriber(const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     335 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     336 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     337 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     338 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     339 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     340 </span>            :             subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     341 </span>            :     return  subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(trace_id::make_next_id_subscriber(), cs, make_observer&lt;T&gt;(o));
+<a name="342"><span class="lineNum">     342 </span>            : }</a>
+<span class="lineNum">     343 </span>            : template&lt;class T, class OnNext&gt;
+<span class="lineNum">     344 </span><span class="lineCov">          4 : auto make_subscriber(const composite_subscription&amp; cs, const OnNext&amp; on)</span>
+<span class="lineNum">     345 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     346 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     347 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     348 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     349 </span><span class="lineCov">          4 :                             observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));</span>
+<span class="lineNum">     350 </span>            : }
+<span class="lineNum">     351 </span>            : template&lt;class T, class OnNext, class OnError&gt;
+<span class="lineNum">     352 </span>            : auto make_subscriber(const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     353 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     354 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     355 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     356 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     357 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     358 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     359 </span>            : }
+<span class="lineNum">     360 </span>            : template&lt;class T, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     361 </span>            : auto make_subscriber(const composite_subscription&amp; cs, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     362 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     363 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     364 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     365 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     366 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     367 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<a name="368"><span class="lineNum">     368 </span>            : }</a>
+<span class="lineNum">     369 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     370 </span><span class="lineCov">          1 : auto make_subscriber(const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)</span>
+<span class="lineNum">     371 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     372 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     373 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     374 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     375 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     376 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     377 </span><span class="lineCov">          1 :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));</span>
+<span class="lineNum">     378 </span>            : }
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            : // explicit id
+<span class="lineNum">     381 </span>            : //
+<span class="lineNum">     382 </span>            : 
+<span class="lineNum">     383 </span>            : template&lt;class T&gt;
+<span class="lineNum">     384 </span>            : auto make_subscriber(trace_id id)
+<span class="lineNum">     385 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt; {
+<span class="lineNum">     386 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt;(std::move(id), composite_subscription(),
+<span class="lineNum">     387 </span>            :                             observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;(detail::OnNextEmpty&lt;T&gt;()));
+<span class="lineNum">     388 </span>            : }
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span>            : template&lt;class T&gt;
+<span class="lineNum">     391 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs)
+<span class="lineNum">     392 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt; {
+<span class="lineNum">     393 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     394 </span>            :                             observer&lt;T, detail::stateless_observer_tag, detail::OnNextEmpty&lt;T&gt;&gt;(detail::OnNextEmpty&lt;T&gt;()));
+<span class="lineNum">     395 </span>            : }
+<span class="lineNum">     396 </span>            : 
+<span class="lineNum">     397 </span>            : template&lt;class T, class I&gt;
+<span class="lineNum">     398 </span>            : auto make_subscriber(trace_id id,
+<span class="lineNum">     399 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     400 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     401 </span>            :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(std::move(id), composite_subscription(), o);
+<a name="402"><span class="lineNum">     402 </span>            : }</a>
+<span class="lineNum">     403 </span>            : template&lt;class T, class I&gt;
+<span class="lineNum">     404 </span><span class="lineCov">        300 : auto make_subscriber(trace_id id, const composite_subscription&amp; cs,</span>
+<span class="lineNum">     405 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     406 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     407 </span><span class="lineCov">        300 :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(std::move(id), cs, o);</span>
+<span class="lineNum">     408 </span>            : }
+<span class="lineNum">     409 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     410 </span>            : auto make_subscriber(trace_id id, const Observer&amp; o)
+<span class="lineNum">     411 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     412 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     413 </span>            :             subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     414 </span>            :     return  subscriber&lt;T,   Observer&gt;(std::move(id), composite_subscription(), o);
+<span class="lineNum">     415 </span>            : }
+<span class="lineNum">     416 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     417 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     418 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     419 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     420 </span>            :             subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     421 </span>            :     return  subscriber&lt;T,   Observer&gt;(std::move(id), cs, o);
+<span class="lineNum">     422 </span>            : }
+<span class="lineNum">     423 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     424 </span>            : auto make_subscriber(trace_id id, const Observer&amp; o)
+<span class="lineNum">     425 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     426 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     427 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     428 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     429 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     430 </span>            :             subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     431 </span>            :     return  subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(std::move(id), composite_subscription(), o);
+<span class="lineNum">     432 </span>            : }
+<span class="lineNum">     433 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     434 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     435 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     436 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     437 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     438 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     439 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     440 </span>            :             subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     441 </span>            :     return  subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(std::move(id), cs, o);
+<span class="lineNum">     442 </span>            : }
+<span class="lineNum">     443 </span>            : template&lt;class T, class OnNext&gt;
+<span class="lineNum">     444 </span>            : auto make_subscriber(trace_id id, const OnNext&amp; on)
+<span class="lineNum">     445 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     446 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     447 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     448 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(std::move(id), composite_subscription(),
+<span class="lineNum">     449 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     450 </span>            : }
+<span class="lineNum">     451 </span>            : template&lt;class T, class OnNext&gt;
+<span class="lineNum">     452 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on)
+<span class="lineNum">     453 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     454 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     455 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     456 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     457 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     458 </span>            : }
+<span class="lineNum">     459 </span>            : template&lt;class T, class OnNext, class OnError&gt;
+<span class="lineNum">     460 </span>            : auto make_subscriber(trace_id id, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     461 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     462 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     463 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     464 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     465 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(std::move(id), composite_subscription(),
+<span class="lineNum">     466 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     467 </span>            : }
+<span class="lineNum">     468 </span>            : template&lt;class T, class OnNext, class OnError&gt;
+<span class="lineNum">     469 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     470 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     471 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     472 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     473 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     474 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     475 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     476 </span>            : }
+<span class="lineNum">     477 </span>            : template&lt;class T, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     478 </span>            : auto make_subscriber(trace_id id, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     479 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     480 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     481 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     482 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     483 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(std::move(id), composite_subscription(),
+<span class="lineNum">     484 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     485 </span>            : }
+<span class="lineNum">     486 </span>            : template&lt;class T, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     487 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     488 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     489 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     490 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     491 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     492 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     493 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     494 </span>            : }
+<span class="lineNum">     495 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     496 </span>            : auto make_subscriber(trace_id id, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)
+<span class="lineNum">     497 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     498 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     499 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     500 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     501 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     502 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(std::move(id), composite_subscription(),
+<span class="lineNum">     503 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));
+<span class="lineNum">     504 </span>            : }
+<span class="lineNum">     505 </span>            : template&lt;class T, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     506 </span>            : auto make_subscriber(trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)
+<span class="lineNum">     507 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     508 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     509 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     510 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     511 </span>            :             subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     512 </span>            :     return  subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     513 </span>            :                             observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));
+<span class="lineNum">     514 </span>            : }
+<span class="lineNum">     515 </span>            : 
+<span class="lineNum">     516 </span>            : // chain defaults from subscriber
+<span class="lineNum">     517 </span>            : //
+<span class="lineNum">     518 </span>            : 
+<span class="lineNum">     519 </span>            : template&lt;class T, class OtherT, class OtherObserver, class I&gt;
+<span class="lineNum">     520 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr,
+<span class="lineNum">     521 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     522 </span>            :     -&gt;       subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     523 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, I&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(), o);
+<span class="lineNum">     524 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     525 </span>            :     return r;
+<span class="lineNum">     526 </span>            : }
+<span class="lineNum">     527 </span>            : template&lt;class T, class OtherT, class OtherObserver, class I&gt;
+<span class="lineNum">     528 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id,
+<span class="lineNum">     529 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     530 </span>            :     -&gt;       subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     531 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, I&gt;&gt;(std::move(id), scbr.get_subscription(), o);
+<span class="lineNum">     532 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     533 </span>            :     return r;
+<span class="lineNum">     534 </span>            : }
+<span class="lineNum">     535 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     536 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const Observer&amp; o)
+<span class="lineNum">     537 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     538 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     539 </span>            :              subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     540 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(std::move(id), scbr.get_subscription(), o);
+<span class="lineNum">     541 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     542 </span>            :     return r;
+<span class="lineNum">     543 </span>            : }
+<span class="lineNum">     544 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     545 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const Observer&amp; o)
+<span class="lineNum">     546 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     547 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     548 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     549 </span>            :              subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     550 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(), o);
+<span class="lineNum">     551 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     552 </span>            :     return r;
+<a name="553"><span class="lineNum">     553 </span>            : }</a>
+<span class="lineNum">     554 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     555 </span><span class="lineCov">          4 : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const Observer&amp; o)</span>
+<span class="lineNum">     556 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     557 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     558 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     559 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     560 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     561 </span>            :              subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     562 </span><span class="lineCov">          4 :     auto r = subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(), make_observer&lt;T&gt;(o));</span>
+<span class="lineNum">     563 </span><span class="lineCov">          4 :     trace_activity().connect(r, scbr);</span>
+<span class="lineNum">     564 </span><span class="lineCov">          4 :     return r;</span>
+<span class="lineNum">     565 </span>            : }
+<span class="lineNum">     566 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     567 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const Observer&amp; o)
+<span class="lineNum">     568 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     569 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     570 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     571 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     572 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     573 </span>            :              subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     574 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(std::move(id), scbr.get_subscription(), o);
+<span class="lineNum">     575 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     576 </span>            :     return r;
+<span class="lineNum">     577 </span>            : }
+<span class="lineNum">     578 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext&gt;
+<span class="lineNum">     579 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const OnNext&amp; on)
+<span class="lineNum">     580 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     581 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     582 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     583 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(),
+<span class="lineNum">     584 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     585 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     586 </span>            :     return r;
+<span class="lineNum">     587 </span>            : }
+<span class="lineNum">     588 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext&gt;
+<span class="lineNum">     589 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const OnNext&amp; on)
+<span class="lineNum">     590 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     591 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     592 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     593 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(std::move(id), scbr.get_subscription(),
+<span class="lineNum">     594 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     595 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     596 </span>            :     return r;
+<span class="lineNum">     597 </span>            : }
+<span class="lineNum">     598 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError&gt;
+<span class="lineNum">     599 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     600 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     601 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     602 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     603 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     604 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(),
+<span class="lineNum">     605 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     606 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     607 </span>            :     return r;
+<span class="lineNum">     608 </span>            : }
+<span class="lineNum">     609 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError&gt;
+<span class="lineNum">     610 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     611 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     612 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     613 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     614 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     615 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(std::move(id), scbr.get_subscription(),
+<span class="lineNum">     616 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     617 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     618 </span>            :     return r;
+<span class="lineNum">     619 </span>            : }
+<span class="lineNum">     620 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     621 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     622 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     623 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     624 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     625 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     626 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(),
+<span class="lineNum">     627 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     628 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     629 </span>            :     return r;
+<span class="lineNum">     630 </span>            : }
+<span class="lineNum">     631 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     632 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     633 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     634 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     635 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     636 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     637 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(std::move(id), scbr.get_subscription(),
+<span class="lineNum">     638 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     639 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     640 </span>            :     return r;
+<a name="641"><span class="lineNum">     641 </span>            : }</a>
+<span class="lineNum">     642 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     643 </span><span class="lineCov">         50 : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)</span>
+<span class="lineNum">     644 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     645 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     646 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     647 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     648 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     649 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), scbr.get_subscription(),
+<span class="lineNum">     650 </span><span class="lineCov">         50 :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));</span>
+<span class="lineNum">     651 </span><span class="lineCov">         50 :     trace_activity().connect(r, scbr);</span>
+<span class="lineNum">     652 </span><span class="lineCov">         50 :     return r;</span>
+<span class="lineNum">     653 </span>            : }
+<span class="lineNum">     654 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     655 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)
+<span class="lineNum">     656 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     657 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     658 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     659 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     660 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     661 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(std::move(id), scbr.get_subscription(),
+<span class="lineNum">     662 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));
+<span class="lineNum">     663 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     664 </span>            :     return r;
+<span class="lineNum">     665 </span>            : }
+<span class="lineNum">     666 </span>            : 
+<span class="lineNum">     667 </span>            : template&lt;class T, class OtherT, class OtherObserver, class I&gt;
+<span class="lineNum">     668 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; , const composite_subscription&amp; cs,
+<span class="lineNum">     669 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     670 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     671 </span>            :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(trace_id::make_next_id_subscriber(), cs, o);
+<span class="lineNum">     672 </span>            : }
+<span class="lineNum">     673 </span>            : template&lt;class T, class OtherT, class OtherObserver, class I&gt;
+<span class="lineNum">     674 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp;, trace_id id, const composite_subscription&amp; cs,
+<span class="lineNum">     675 </span>            :     const                   observer&lt;T, I&gt;&amp; o)
+<span class="lineNum">     676 </span>            :     -&gt;      subscriber&lt;T,   observer&lt;T, I&gt;&gt; {
+<span class="lineNum">     677 </span>            :     return  subscriber&lt;T,   observer&lt;T, I&gt;&gt;(std::move(id), cs, o);
+<span class="lineNum">     678 </span>            : }
+<span class="lineNum">     679 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     680 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     681 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     682 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     683 </span>            :              subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     684 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(trace_id::make_next_id_subscriber(), cs, o);
+<span class="lineNum">     685 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     686 </span>            :     return r;
+<span class="lineNum">     687 </span>            : }
+<span class="lineNum">     688 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     689 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     690 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     691 </span>            :         is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     692 </span>            :              subscriber&lt;T,   Observer&gt;&gt;::type {
+<span class="lineNum">     693 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(std::move(id), cs, o);
+<span class="lineNum">     694 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     695 </span>            :     return r;
+<span class="lineNum">     696 </span>            : }
+<span class="lineNum">     697 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     698 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     699 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     700 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     701 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     702 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     703 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     704 </span>            :              subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     705 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(trace_id::make_next_id_subscriber(), cs, o);
+<span class="lineNum">     706 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     707 </span>            :     return r;
+<span class="lineNum">     708 </span>            : }
+<span class="lineNum">     709 </span>            : template&lt;class T, class OtherT, class OtherObserver, class Observer&gt;
+<span class="lineNum">     710 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const Observer&amp; o)
+<span class="lineNum">     711 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     712 </span>            :         !detail::is_on_next_of&lt;T, Observer&gt;::value &amp;&amp;
+<span class="lineNum">     713 </span>            :         !is_subscriber&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     714 </span>            :         !is_subscription&lt;Observer&gt;::value &amp;&amp;
+<span class="lineNum">     715 </span>            :         !is_observer&lt;Observer&gt;::value,
+<span class="lineNum">     716 </span>            :              subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;&gt;::type {
+<span class="lineNum">     717 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, Observer&gt;&gt;(std::move(id), cs, o);
+<span class="lineNum">     718 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     719 </span>            :     return r;
+<span class="lineNum">     720 </span>            : }
+<span class="lineNum">     721 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext&gt;
+<span class="lineNum">     722 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const OnNext&amp; on)
+<span class="lineNum">     723 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     724 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     725 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     726 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     727 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     728 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     729 </span>            :     return r;
+<span class="lineNum">     730 </span>            : }
+<span class="lineNum">     731 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext&gt;
+<span class="lineNum">     732 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on)
+<span class="lineNum">     733 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     734 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value,
+<span class="lineNum">     735 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;&gt;::type {
+<span class="lineNum">     736 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     737 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext&gt;(on));
+<span class="lineNum">     738 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     739 </span>            :     return r;
+<span class="lineNum">     740 </span>            : }
+<span class="lineNum">     741 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError&gt;
+<span class="lineNum">     742 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     743 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     744 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     745 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     746 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     747 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     748 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     749 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     750 </span>            :     return r;
+<span class="lineNum">     751 </span>            : }
+<span class="lineNum">     752 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError&gt;
+<span class="lineNum">     753 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe)
+<span class="lineNum">     754 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     755 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     756 </span>            :         detail::is_on_error&lt;OnError&gt;::value,
+<span class="lineNum">     757 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;&gt;::type {
+<span class="lineNum">     758 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     759 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError&gt;(on, oe));
+<span class="lineNum">     760 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     761 </span>            :     return r;
+<span class="lineNum">     762 </span>            : }
+<span class="lineNum">     763 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     764 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     765 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     766 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     767 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     768 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     769 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     770 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     771 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     772 </span>            :     return r;
+<span class="lineNum">     773 </span>            : }
+<span class="lineNum">     774 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnCompleted&gt;
+<span class="lineNum">     775 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnCompleted&amp; oc)
+<span class="lineNum">     776 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     777 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     778 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     779 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     780 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     781 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, detail::OnErrorEmpty, OnCompleted&gt;(on, detail::OnErrorEmpty(), oc));
+<span class="lineNum">     782 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     783 </span>            :     return r;
+<a name="784"><span class="lineNum">     784 </span>            : }</a>
+<span class="lineNum">     785 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     786 </span><span class="lineCov">         73 : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)</span>
+<span class="lineNum">     787 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     788 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     789 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     790 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     791 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     792 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(trace_id::make_next_id_subscriber(), cs,
+<span class="lineNum">     793 </span><span class="lineCov">         73 :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));</span>
+<span class="lineNum">     794 </span><span class="lineCov">         73 :     trace_activity().connect(r, scbr);</span>
+<span class="lineNum">     795 </span><span class="lineCov">         73 :     return r;</span>
+<span class="lineNum">     796 </span>            : }
+<span class="lineNum">     797 </span>            : template&lt;class T, class OtherT, class OtherObserver, class OnNext, class OnError, class OnCompleted&gt;
+<span class="lineNum">     798 </span>            : auto make_subscriber(const subscriber&lt;OtherT, OtherObserver&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs, const OnNext&amp; on, const OnError&amp; oe, const OnCompleted&amp; oc)
+<span class="lineNum">     799 </span>            :     -&gt; typename std::enable_if&lt;
+<span class="lineNum">     800 </span>            :         detail::is_on_next_of&lt;T, OnNext&gt;::value &amp;&amp;
+<span class="lineNum">     801 </span>            :         detail::is_on_error&lt;OnError&gt;::value &amp;&amp;
+<span class="lineNum">     802 </span>            :         detail::is_on_completed&lt;OnCompleted&gt;::value,
+<span class="lineNum">     803 </span>            :              subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;&gt;::type {
+<span class="lineNum">     804 </span>            :     auto r = subscriber&lt;T,   observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;&gt;(std::move(id), cs,
+<span class="lineNum">     805 </span>            :                              observer&lt;T, detail::stateless_observer_tag, OnNext, OnError, OnCompleted&gt;(on, oe, oc));
+<span class="lineNum">     806 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     807 </span>            :     return r;
+<span class="lineNum">     808 </span>            : }
+<span class="lineNum">     809 </span>            : 
+<span class="lineNum">     810 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     811 </span>            : auto make_subscriber(const subscriber&lt;T, Observer&gt;&amp; scbr, const composite_subscription&amp; cs)
+<span class="lineNum">     812 </span>            :     -&gt;      subscriber&lt;T,   Observer&gt; {
+<span class="lineNum">     813 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(scbr.get_id(), cs, scbr.get_observer());
+<span class="lineNum">     814 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     815 </span>            :     return r;
+<span class="lineNum">     816 </span>            : }
+<span class="lineNum">     817 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     818 </span>            : auto make_subscriber(const subscriber&lt;T, Observer&gt;&amp; scbr, trace_id id, const composite_subscription&amp; cs)
+<span class="lineNum">     819 </span>            :     -&gt;      subscriber&lt;T,   Observer&gt; {
+<span class="lineNum">     820 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(std::move(id), cs, scbr.get_observer());
+<span class="lineNum">     821 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     822 </span>            :     return r;
+<span class="lineNum">     823 </span>            : }
+<span class="lineNum">     824 </span>            : 
+<span class="lineNum">     825 </span>            : template&lt;class T, class Observer&gt;
+<span class="lineNum">     826 </span>            : auto make_subscriber(const subscriber&lt;T, Observer&gt;&amp; scbr, trace_id id)
+<span class="lineNum">     827 </span>            :     -&gt;      subscriber&lt;T,   Observer&gt; {
+<span class="lineNum">     828 </span>            :     auto r = subscriber&lt;T,   Observer&gt;(std::move(id), scbr.get_subscription(), scbr.get_observer());
+<span class="lineNum">     829 </span>            :     trace_activity().connect(r, scbr);
+<span class="lineNum">     830 </span>            :     return r;
+<span class="lineNum">     831 </span>            : }
+<span class="lineNum">     832 </span>            : 
+<span class="lineNum">     833 </span>            : }
+<span class="lineNum">     834 </span>            : 
+<span class="lineNum">     835 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

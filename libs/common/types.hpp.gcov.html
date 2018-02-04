@@ -1,0 +1,478 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - libs/common/types.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">libs/common</a> - types.hpp<span style="font-size: 80%;"> (source / <a href="types.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">58</td>
+            <td class="headerCovTableEntry">61</td>
+            <td class="headerCovTableEntryHi">95.1 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">387</td>
+            <td class="headerCovTableEntry">388</td>
+            <td class="headerCovTableEntryHi">99.7 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">231</td>
+            <td class="headerCovTableEntry">382</td>
+            <td class="headerCovTableEntryLo">60.5 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_COMMON_TYPES_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_COMMON_TYPES_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &lt;array&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;cstdio&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;iomanip&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;sstream&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      26 </span>                :            : #include &lt;type_traits&gt;
+<span class="lineNum">      27 </span>                :            : #include &lt;typeinfo&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;vector&gt;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : #include &lt;nonstd/optional.hpp&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : /**
+<span class="lineNum">      33 </span>                :            :  * This file defines common types used in iroha.
+<span class="lineNum">      34 </span>                :            :  *
+<span class="lineNum">      35 </span>                :            :  * std::string is convenient to use but it is not safe, because we can not
+<span class="lineNum">      36 </span>                :            :  * guarantee at compile-time fixed length of the string.
+<span class="lineNum">      37 </span>                :            :  *
+<span class="lineNum">      38 </span>                :            :  * For std::array it is possible, so we prefer it over std::string.
+<span class="lineNum">      39 </span>                :            :  */
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : namespace iroha {
+<span class="lineNum">      42 </span>                :            :   using BadFormatException = std::invalid_argument;
+<span class="lineNum">      43 </span>                :            :   using byte_t = uint8_t;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>[<span class="branchCov" title="Branch 2 was taken 359 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 2 was taken 301 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        660 :   static const std::string code = {'0',</span>
+<span class="lineNum">      46 </span>                :            :                                    '1',
+<span class="lineNum">      47 </span>                :            :                                    '2',
+<span class="lineNum">      48 </span>                :            :                                    '3',
+<span class="lineNum">      49 </span>                :            :                                    '4',
+<span class="lineNum">      50 </span>                :            :                                    '5',
+<span class="lineNum">      51 </span>                :            :                                    '6',
+<span class="lineNum">      52 </span>                :            :                                    '7',
+<span class="lineNum">      53 </span>                :            :                                    '8',
+<span class="lineNum">      54 </span>                :            :                                    '9',
+<span class="lineNum">      55 </span>                :            :                                    'a',
+<span class="lineNum">      56 </span>                :            :                                    'b',
+<span class="lineNum">      57 </span>                :            :                                    'c',
+<span class="lineNum">      58 </span>                :            :                                    'd',
+<span class="lineNum">      59 </span>                :            :                                    'e',
+<span class="lineNum">      60 </span>                :            :                                    'f'};
+<span class="lineNum">      61 </span>                :            : 
+<span class="lineNum">      62 </span>                :            :   /**
+<span class="lineNum">      63 </span>                :            :    * Base type which represents blob of fixed size.
+<span class="lineNum">      64 </span>                :            :    *
+<span class="lineNum">      65 </span>                :            :    * std::string is convenient to use but it is not safe.
+<span class="lineNum">      66 </span>                :            :    * We can not specify the fixed length for string.
+<span class="lineNum">      67 </span>                :            :    *
+<span class="lineNum">      68 </span>                :            :    * For std::array it is possible, so we prefer it over std::string.
+<span class="lineNum">      69 </span>                :            :    */
+<span class="lineNum">      70 </span>                :            :   template &lt;size_t size_&gt;
+<span class="lineNum">      71 </span>                :            :   class blob_t : public std::array&lt;byte_t, size_&gt; {
+<span class="lineNum">      72 </span>                :            :    public:
+<span class="lineNum">      73 </span>                :            :     /**
+<a name="74"><span class="lineNum">      74 </span>                :            :      * Initialize blob value</a>
+<span class="lineNum">      75 </span>                :            :      */
+<span class="lineNum">      76 </span>                :<span class="lineCov">      10572 :     blob_t() {</span>
+<span class="lineNum">      77 </span>  [<span class="branchCov" title="Branch 1 was taken 3310 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 1976 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       5286 :       this-&gt;fill(0);</span>
+<span class="lineNum">      78 </span>                :<span class="lineCov">       5286 :     }</span>
+<span class="lineNum">      79 </span>                :            : 
+<span class="lineNum">      80 </span>                :            :     /**
+<a name="81"><span class="lineNum">      81 </span>                :            :      * In compile-time returns size of current blob.</a>
+<span class="lineNum">      82 </span>                :            :      */
+<span class="lineNum">      83 </span>                :<span class="lineCov">        167 :     constexpr static size_t size() {</span>
+<span class="lineNum">      84 </span>                :<span class="lineCov">        167 :       return size_;</span>
+<span class="lineNum">      85 </span>                :            :     }
+<span class="lineNum">      86 </span>                :            : 
+<span class="lineNum">      87 </span>                :            :     /**
+<a name="88"><span class="lineNum">      88 </span>                :            :      * Converts current blob to std::string</a>
+<span class="lineNum">      89 </span>                :            :      */
+<span class="lineNum">      90 </span>                :<span class="lineCov">       1157 :     std::string to_string() const noexcept {</span>
+<span class="lineNum">      91 </span>                :<span class="lineCov">       1157 :       return std::string{this-&gt;begin(), this-&gt;end()};</span>
+<span class="lineNum">      92 </span>                :            :     }
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>                :            :     /**
+<a name="95"><span class="lineNum">      95 </span>                :            :      * Converts current blob to hex string.</a>
+<span class="lineNum">      96 </span>                :            :      */
+<span class="lineNum">      97 </span>                :<span class="lineCov">        752 :     std::string to_hexstring() const noexcept {</span>
+<span class="lineNum">      98 </span>                :<span class="lineCov">        752 :       std::string res(size_ * 2, 0);</span>
+<span class="lineNum">      99 </span>                :<span class="lineCov">        752 :       auto ptr = this-&gt;data();</span>
+<span class="lineNum">     100 </span>[<span class="branchCov" title="Branch 0 was taken 21184 times"> + </span><span class="branchCov" title="Branch 1 was taken 422 times"> + </span>][<span class="branchCov" title="Branch 2 was taken 10352 times"> + </span><span class="branchCov" title="Branch 3 was taken 330 times"> + </span>]:<span class="lineCov">      32288 :       for (uint32_t i = 0, k = 0; i &lt; size_; i++) {</span>
+<span class="lineNum">     101 </span>                :<span class="lineCov">      31536 :         const auto front = (uint8_t)(ptr[i] &amp; 0xF0) &gt;&gt; 4;</span>
+<span class="lineNum">     102 </span>                :<span class="lineCov">      31536 :         const auto back = (uint8_t)(ptr[i] &amp; 0xF);</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">      31536 :         res[k++] = code[front];</span>
+<span class="lineNum">     104 </span>                :<span class="lineCov">      31536 :         res[k++] = code[back];</span>
+<span class="lineNum">     105 </span>                :            :       }
+<span class="lineNum">     106 </span>                :<span class="lineCov">        752 :       return res;</span>
+<a name="107"><span class="lineNum">     107 </span>                :            :     }</a>
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">        117 :     static blob_t&lt;size_&gt; from_string(const std::string &amp;data) {</span>
+<span class="lineNum">     110 </span>[<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 62 times"> + </span>][<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 55 times"> + </span>]:<span class="lineCov">        117 :       if (data.size() != size_) {</span>
+<span class="lineNum">     111 </span>[<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>][<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]:<span class="lineNoCov">          0 :         throw BadFormatException(&quot;blob_t: input string has incorrect length&quot;);</span>
+<span class="lineNum">     112 </span>                :            :       }
+<span class="lineNum">     113 </span>                :            : 
+<span class="lineNum">     114 </span>                :<span class="lineCov">        117 :       blob_t&lt;size_&gt; b;</span>
+<span class="lineNum">     115 </span>                :<span class="lineCov">        117 :       std::copy(data.begin(), data.end(), b.begin());</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineCov">        117 :       return b;</span>
+<span class="lineNum">     118 </span>                :            :     }
+<span class="lineNum">     119 </span>                :            :   };
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :            :   /**
+<span class="lineNum">     122 </span>                :            :    * Convert string to blob vector
+<span class="lineNum">     123 </span>                :            :    * @param source - string for conversion
+<a name="124"><span class="lineNum">     124 </span>                :            :    * @return vector&lt;blob&gt;</a>
+<span class="lineNum">     125 </span>                :            :    */
+<span class="lineNum">     126 </span>                :<span class="lineCov">         62 :   inline std::vector&lt;uint8_t&gt; stringToBytes(const std::string &amp;source) {</span>
+<span class="lineNum">     127 </span>        [<span class="branchCov" title="Branch 4 was taken 62 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         62 :     return std::vector&lt;uint8_t&gt;(source.begin(), source.end());</span>
+<span class="lineNum">     128 </span>                :            :   }
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :            :   /**
+<span class="lineNum">     131 </span>                :            :    * blob vector to string
+<span class="lineNum">     132 </span>                :            :    * @param source - vector for conversion
+<a name="133"><span class="lineNum">     133 </span>                :            :    * @return result string</a>
+<span class="lineNum">     134 </span>                :            :    */
+<span class="lineNum">     135 </span>                :<span class="lineCov">         66 :   inline std::string bytesToString(const std::vector&lt;uint8_t&gt; &amp;source) {</span>
+<span class="lineNum">     136 </span>        [<span class="branchCov" title="Branch 4 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         66 :     return std::string(source.begin(), source.end());</span>
+<span class="lineNum">     137 </span>                :            :   }
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :   /**
+<span class="lineNum">     140 </span>                :            :    * Bind operator. If argument has value, dereferences argument and calls
+<span class="lineNum">     141 </span>                :            :    * given function, which should return wrapped value
+<span class="lineNum">     142 </span>                :            :    * operator| is used since it has to be binary and left-associative
+<span class="lineNum">     143 </span>                :            :    * Non-void returning specialization
+<span class="lineNum">     144 </span>                :            :    *
+<span class="lineNum">     145 </span>                :            :    * nonstd::optional&lt;int&gt; f();
+<span class="lineNum">     146 </span>                :            :    * nonstd::optional&lt;double&gt; g(int);
+<span class="lineNum">     147 </span>                :            :    *
+<span class="lineNum">     148 </span>                :            :    * nonstd::optional&lt;double&gt; d = f()
+<span class="lineNum">     149 </span>                :            :    *    | g;
+<span class="lineNum">     150 </span>                :            :    *
+<span class="lineNum">     151 </span>                :            :    * @tparam T - monadic type
+<span class="lineNum">     152 </span>                :            :    * @tparam Transform - transform function type
+<span class="lineNum">     153 </span>                :            :    * @param t - monadic value
+<span class="lineNum">     154 </span>                :            :    * @param f - function, which takes dereferenced value, and returns
+<span class="lineNum">     155 </span>                :            :    * wrapped value
+<span class="lineNum">     156 </span>                :            :    * @return monadic value, which can be of another type
+<a name="157"><span class="lineNum">     157 </span>                :            :    */</a>
+<span class="lineNum">     158 </span>                :            :   template &lt;typename T, typename Transform&gt;
+<span class="lineNum">     159 </span>                :<span class="lineCov">       8308 :   auto operator|(T t, Transform f) -&gt;</span>
+<span class="lineNum">     160 </span>                :            :       typename std::enable_if&lt;not std::is_same&lt;decltype(f(*t)), void&gt;::value,
+<span class="lineNum">     161 </span>                :            :                               decltype(f(*t))&gt;::type {
+<span class="lineNum">     162 </span>[<span class="branchCov" title="Branch 1 was taken 1001 times"> + </span><span class="branchCov" title="Branch 2 was taken 13 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 458 times"> + </span><span class="branchCov" title="Branch 5 was taken 14 times"> + </span>]:<span class="lineCov">       8308 :     if (t) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 629 times"> + </span><span class="branchCov" title="Branch 8 was taken 6 times"> + </span>][<span class="branchCov" title="Branch 10 was taken 316 times"> + </span><span class="branchCov" title="Branch 11 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 39 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 29 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 71 times"> + </span><span class="branchCov" title="Branch 20 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 22 was taken 29 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 154 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 70 times"> + </span><span class="branchCov" title="Branch 35 was taken 2 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 37 was taken 161 times"> + </span><span class="branchCov" title="Branch 38 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 40 was taken 160 times"> + </span><span class="branchCov" title="Branch 41 was taken 1 time"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 184 times"> + </span><span class="branchCov" title="Branch 44 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 46 was taken 156 times"> + </span><span class="branchCov" title="Branch 47 was taken 2 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 49 was taken 241 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>][<span class="branchCov" title="Branch 52 was taken 142 times"> + </span><span class="branchCov" title="Branch 53 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 55 was taken 233 times"> + </span><span class="branchCov" title="Branch 56 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 58 was taken 321 times"> + </span><span class="branchNoCov" title="Branch 59 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 61 was taken 99 times"> + </span><span class="branchCov" title="Branch 62 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 64 was taken 284 times"> + </span><span class="branchCov" title="Branch 65 was taken 2 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 67 was taken 283 times"> + </span><span class="branchCov" title="Branch 68 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 70 was taken 182 times"> + </span><span class="branchCov" title="Branch 71 was taken 3 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 73 was taken 308 times"> + </span><span class="branchCov" title="Branch 74 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 76 was taken 472 times"> + </span><span class="branchCov" title="Branch 77 was taken 2 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 79 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 80 was not taken"> - </span>][<span class="branchCov" title="Branch 82 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 83 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 85 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 86 was not taken"> - </span>][<span class="branchCov" title="Branch 88 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 89 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 91 was taken 10 times"> + </span><span class="branchCov" title="Branch 92 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 94 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 95 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 97 was taken 10 times"> + </span><span class="branchCov" title="Branch 98 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 100 was taken 24 times"> + </span><span class="branchCov" title="Branch 101 was taken 2 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 103 was taken 24 times"> + </span><span class="branchCov" title="Branch 104 was taken 2 times"> + </span>][<span class="branchCov" title="Branch 106 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 107 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 109 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 110 was not taken"> - </span>][<span class="branchCov" title="Branch 112 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 113 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 115 was taken 76 times"> + </span><span class="branchNoCov" title="Branch 116 was not taken"> - </span>][<span class="branchCov" title="Branch 118 was taken 76 times"> + </span><span class="branchNoCov" title="Branch 119 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 121 was taken 42 times"> + </span><span class="branchCov" title="Branch 122 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 124 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 125 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 127 was taken 39 times"> + </span><span class="branchCov" title="Branch 128 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 130 was taken 42 times"> + </span><span class="branchCov" title="Branch 131 was taken 3 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 133 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 134 was not taken"> - </span>][<span class="branchCov" title="Branch 136 was taken 82 times"> + </span><span class="branchCov" title="Branch 137 was taken 1 time"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 139 was taken 42 times"> + </span><span class="branchCov" title="Branch 140 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 142 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 143 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 145 was taken 50 times"> + </span><span class="branchCov" title="Branch 146 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 148 was taken 64 times"> + </span><span class="branchCov" title="Branch 149 was taken 1 time"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 151 was taken 64 times"> + </span><span class="branchCov" title="Branch 152 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 154 was taken 65 times"> + </span><span class="branchCov" title="Branch 155 was taken 1 time"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 157 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 158 was not taken"> - </span>][<span class="branchCov" title="Branch 160 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 161 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 163 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 164 was not taken"> - </span>][<span class="branchCov" title="Branch 166 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 167 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 169 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 170 was not taken"> - </span>][<span class="branchCov" title="Branch 172 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 173 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 175 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 176 was not taken"> - </span>][<span class="branchCov" title="Branch 178 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 179 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 181 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 182 was not taken"> - </span>][<span class="branchCov" title="Branch 184 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 185 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 187 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 188 was not taken"> - </span>][<span class="branchCov" title="Branch 190 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 191 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 193 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 194 was not taken"> - </span>][<span class="branchCov" title="Branch 196 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 197 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 199 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 200 was not taken"> - </span>][<span class="branchCov" title="Branch 202 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 203 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 205 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 206 was not taken"> - </span>][<span class="branchCov" title="Branch 208 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 209 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 211 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 212 was not taken"> - </span>][<span class="branchCov" title="Branch 214 was taken 575 times"> + </span><span class="branchNoCov" title="Branch 215 was not taken"> - </span>]
+<span class="lineNum">         </span> [<span class="branchCov" title="Branch 9 was taken 6 times"> + </span>][<span class="branchCov" title="Branch 12 was taken 28 times"> + </span>][<span class="branchCov" title="Branch 15 was taken 28 times"> + </span>]
+<span class="lineNum">     163 </span>[<span class="branchCov" title="Branch 3 was taken 807 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 84 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]:<span class="lineCov">       8218 :       return f(*t);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 5 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 29 times"> + </span><span class="branchCov" title="Branch 19 was taken 18 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 36 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 1 time"> + </span><span class="branchCov" title="Branch 44 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 52 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 53 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 59 was taken 6 times"> + </span><span class="branchCov" title="Branch 60 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 68 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 69 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 75 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 76 was not taken"> - </span>][<span class="branchCov" title="Branch 86 was taken 88 times"> + </span><span class="branchNoCov" title="Branch 87 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 93 was taken 2 times"> + </span><span class="branchCov" title="Branch 94 was taken 32 times"> + </span>][<span class="branchCov" title="Branch 102 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 103 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 109 was taken 2 times"> + </span><span class="branchCov" title="Branch 110 was taken 44 times"> + </span>][<span class="branchCov" title="Branch 118 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 119 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 125 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 126 was not taken"> - </span>][<span class="branchCov" title="Branch 134 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 135 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 141 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 142 was not taken"> - </span>][<span class="branchCov" title="Branch 150 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 151 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 157 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 158 was not taken"> - </span>][<span class="branchCov" title="Branch 164 was taken 20 times"> + </span><span class="branchCov" title="Branch 165 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 171 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 172 was not taken"> - </span>][<span class="branchCov" title="Branch 194 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 195 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 201 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 202 was not taken"> - </span>][<span class="branchCov" title="Branch 210 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 211 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 223 was taken 21 times"> + </span><span class="branchNoCov" title="Branch 224 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 431 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 14 was taken 197 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>][<span class="branchCov" title="Branch 21 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchCov" title="Branch 42 was taken 86 times"> + </span>][<span class="branchCov" title="Branch 49 was taken 85 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 56 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 57 was not taken"> - </span>][<span class="branchCov" title="Branch 63 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 64 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 70 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 71 was not taken"> - </span>][<span class="branchCov" title="Branch 79 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 80 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 95 was taken 174 times"> + </span><span class="branchNoCov" title="Branch 96 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 82 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 40 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 47 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 48 was not taken"> - </span>][<span class="branchCov" title="Branch 54 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 55 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 61 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 62 was not taken"> - </span>][<span class="branchCov" title="Branch 77 was taken 130 times"> + </span><span class="branchCov" title="Branch 78 was taken 6 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 88 was taken 65 times"> + </span><span class="branchNoCov" title="Branch 89 was not taken"> - </span>][<span class="branchCov" title="Branch 99 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 100 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 23 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 28 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>][<span class="branchCov" title="Branch 35 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 36 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 45 was not taken"> - </span>][<span class="branchCov" title="Branch 51 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 52 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 61 was not taken"> - </span>][<span class="branchCov" title="Branch 67 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 68 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 79 was not taken"> - </span>][<span class="branchCov" title="Branch 85 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 86 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 95 was not taken"> - </span>][<span class="branchCov" title="Branch 101 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 102 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchNoCov" title="Branch 111 was not taken"> - </span>][<span class="branchCov" title="Branch 117 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 118 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 122 was taken 176 times"> + </span><span class="branchNoCov" title="Branch 123 was not taken"> - </span>][<span class="branchCov" title="Branch 129 was taken 176 times"> + </span><span class="branchNoCov" title="Branch 130 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 138 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 139 was not taken"> - </span>][<span class="branchCov" title="Branch 149 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 150 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchCov" title="Branch 156 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 157 was not taken"> - </span>][<span class="branchNoCov" title="Branch 166 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 174 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 175 was not taken"> - </span>][<span class="branchCov" title="Branch 181 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 182 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 190 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 191 was not taken"> - </span>][<span class="branchCov" title="Branch 197 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 198 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 206 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 207 was not taken"> - </span>][<span class="branchCov" title="Branch 217 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 218 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 224 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 225 was not taken"> - </span>][<span class="branchCov" title="Branch 233 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 234 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 240 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 241 was not taken"> - </span>][<span class="branchCov" title="Branch 249 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 250 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 258 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 259 was not taken"> - </span>][<span class="branchCov" title="Branch 265 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 266 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 274 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 275 was not taken"> - </span>][<span class="branchCov" title="Branch 283 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 284 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 290 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 291 was not taken"> - </span>][<span class="branchCov" title="Branch 299 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 300 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 306 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 307 was not taken"> - </span>][<span class="branchCov" title="Branch 313 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 314 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 326 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 327 was not taken"> - </span>][<span class="branchCov" title="Branch 333 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 334 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 340 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 341 was not taken"> - </span>][<span class="branchCov" title="Branch 347 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 348 was not taken"> - </span>]
+<span class="lineNum">     164 </span>                :            :     }
+<span class="lineNum">     165 </span>                :<span class="lineCov">       4633 :     return {};</span>
+<span class="lineNum">     166 </span>                :            :   }
+<span class="lineNum">     167 </span>                :            : 
+<span class="lineNum">     168 </span>                :            :   /**
+<span class="lineNum">     169 </span>                :            :    * Bind operator. If argument has value, dereferences argument and calls
+<span class="lineNum">     170 </span>                :            :    * given function, which should return wrapped value
+<span class="lineNum">     171 </span>                :            :    * operator| is used since it has to be binary and left-associative
+<span class="lineNum">     172 </span>                :            :    * Void specialization
+<span class="lineNum">     173 </span>                :            :    *
+<span class="lineNum">     174 </span>                :            :    * nonstd::optional&lt;int&gt; f();
+<span class="lineNum">     175 </span>                :            :    * void g(int);
+<span class="lineNum">     176 </span>                :            :    *
+<span class="lineNum">     177 </span>                :            :    * f() | g;
+<span class="lineNum">     178 </span>                :            :    *
+<span class="lineNum">     179 </span>                :            :    * @tparam T - monadic type
+<span class="lineNum">     180 </span>                :            :    * @tparam Transform - transform function type
+<span class="lineNum">     181 </span>                :            :    * @param t - monadic value
+<span class="lineNum">     182 </span>                :            :    * @param f - function, which takes dereferenced value, and returns
+<span class="lineNum">     183 </span>                :            :    * wrapped value
+<span class="lineNum">     184 </span>                :            :    * @return monadic value, which can be of another type
+<a name="185"><span class="lineNum">     185 </span>                :            :    */</a>
+<span class="lineNum">     186 </span>                :            :   template &lt;typename T, typename Transform&gt;
+<span class="lineNum">     187 </span>                :<span class="lineCov">         93 :   auto operator|(T t, Transform f) -&gt; typename std::enable_if&lt;</span>
+<span class="lineNum">     188 </span>                :            :       std::is_same&lt;decltype(f(*t)), void&gt;::value&gt;::type {
+<span class="lineNum">     189 </span>[<span class="branchCov" title="Branch 1 was taken 59 times"> + </span><span class="branchCov" title="Branch 2 was taken 18 times"> + </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchCov" title="Branch 5 was taken 1 time"> + </span>]:<span class="lineCov">         93 :     if (t) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     190 </span>                :<span class="lineCov">         74 :       f(*t);</span>
+<span class="lineNum">     191 </span>                :            :     }
+<span class="lineNum">     192 </span>                :<span class="lineCov">         93 :   }</span>
+<span class="lineNum">     193 </span>                :            : 
+<span class="lineNum">     194 </span>                :            :   /**
+<span class="lineNum">     195 </span>                :            :    * Create map get function for value retrieval by key
+<span class="lineNum">     196 </span>                :            :    * @tparam K - map key type
+<span class="lineNum">     197 </span>                :            :    * @tparam V - map value type
+<span class="lineNum">     198 </span>                :            :    * @param map - map for value retrieval
+<span class="lineNum">     199 </span>                :            :    * @return function which takes key, returns value if key exists,
+<span class="lineNum">     200 </span>                :            :    * nullopt otherwise
+<a name="201"><span class="lineNum">     201 </span>                :            :    */</a>
+<a name="202"><span class="lineNum">     202 </span>                :            :   template &lt;typename C&gt;</a>
+<span class="lineNum">     203 </span>                :<span class="lineCov">        249 :   auto makeOptionalGet(C map) {</span>
+<span class="lineNum">     204 </span>                :<span class="lineCov">        248 :     return [&amp;map](auto key) -&gt; nonstd::optional&lt;typename C::mapped_type&gt; {</span>
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 1 was taken 248 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        248 :       auto it = map.find(key);</span>
+<span class="lineNum">     206 </span>        [<span class="branchCov" title="Branch 2 was taken 247 times"> + </span><span class="branchCov" title="Branch 3 was taken 1 time"> + </span>]:<span class="lineCov">        248 :       if (it != std::end(map)) {</span>
+<span class="lineNum">     207 </span>        [<span class="branchCov" title="Branch 2 was taken 247 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        247 :         return it-&gt;second;</span>
+<span class="lineNum">     208 </span>                :            :       }
+<span class="lineNum">     209 </span>                :<span class="lineCov">        248 :       return nonstd::nullopt;</span>
+<span class="lineNum">     210 </span>                :<span class="lineCov">        249 :     };</span>
+<span class="lineNum">     211 </span>                :            :   }
+<span class="lineNum">     212 </span>                :            : 
+<span class="lineNum">     213 </span>                :            :   /**
+<span class="lineNum">     214 </span>                :            :    * Return function which invokes class method by pointer to member with
+<span class="lineNum">     215 </span>                :            :    * provided arguments
+<span class="lineNum">     216 </span>                :            :    *
+<span class="lineNum">     217 </span>                :            :    * class A {
+<span class="lineNum">     218 </span>                :            :    * int f(int, double);
+<span class="lineNum">     219 </span>                :            :    * }
+<span class="lineNum">     220 </span>                :            :    *
+<span class="lineNum">     221 </span>                :            :    * A a;
+<span class="lineNum">     222 </span>                :            :    * int i = makeMethodInvoke(a, 1, 1.0);
+<span class="lineNum">     223 </span>                :            :    *
+<span class="lineNum">     224 </span>                :            :    * @tparam T - provided class type
+<span class="lineNum">     225 </span>                :            :    * @tparam Args - provided arguments types
+<span class="lineNum">     226 </span>                :            :    * @param object - class object
+<span class="lineNum">     227 </span>                :            :    * @param args - function arguments
+<span class="lineNum">     228 </span>                :            :    * @return described function
+<a name="229"><span class="lineNum">     229 </span>                :            :    */</a>
+<a name="230"><span class="lineNum">     230 </span>                :            :   template &lt;typename T, typename... Args&gt;</a>
+<span class="lineNum">     231 </span>                :<span class="lineCov">        395 :   auto makeMethodInvoke(T &amp;object, Args &amp;&amp;... args) {</span>
+<span class="lineNum">     232 </span>[<span class="branchCov" title="Branch 0 was taken 240 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">       1035 :     return [&amp;](auto f) { return (object.*f)(std::forward&lt;Args&gt;(args)...); };</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 21 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]
+<span class="lineNum">         </span>           [<span class="branchCov" title="Branch 9 was taken 132 times"> + </span>]
+<span class="lineNum">     233 </span>                :            :   }
+<span class="lineNum">     234 </span>                :            : 
+<span class="lineNum">     235 </span>                :            :   /**
+<span class="lineNum">     236 </span>                :            :    * Assign the value to the object member
+<span class="lineNum">     237 </span>                :            :    * @tparam V - object member type
+<span class="lineNum">     238 </span>                :            :    * @tparam B - object type
+<span class="lineNum">     239 </span>                :            :    * @param object - object value for member assignment
+<span class="lineNum">     240 </span>                :            :    * @param member - pointer to member in block
+<span class="lineNum">     241 </span>                :            :    * @return object with deserialized member on success, nullopt otherwise
+<a name="242"><span class="lineNum">     242 </span>                :            :    */</a>
+<a name="243"><span class="lineNum">     243 </span>                :            :   template &lt;typename V, typename B&gt;</a>
+<span class="lineNum">     244 </span>                :<span class="lineCov">       1026 :   auto assignObjectField(B object, V B::*member) {</span>
+<span class="lineNum">     245 </span>                :<span class="lineCov">       2797 :     return [=](auto value) mutable {</span>
+<span class="lineNum">     246 </span>                :<span class="lineCov">        482 :       object.*member = value;</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">       1019 :       return nonstd::make_optional(object);</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">       1026 :     };</span>
+<span class="lineNum">     249 </span>                :            :   }
+<span class="lineNum">     250 </span>                :            : 
+<span class="lineNum">     251 </span>                :            :   /**
+<span class="lineNum">     252 </span>                :            :    * Assign the value to the object member. Block is wrapped in monad
+<span class="lineNum">     253 </span>                :            :    * @tparam P - monadic type
+<span class="lineNum">     254 </span>                :            :    * @tparam V - object member type
+<span class="lineNum">     255 </span>                :            :    * @tparam B - object type
+<span class="lineNum">     256 </span>                :            :    * @param object - object value for member assignment
+<span class="lineNum">     257 </span>                :            :    * @param member - pointer to member in object
+<span class="lineNum">     258 </span>                :            :    * @return object with deserialized member on success, nullopt otherwise
+<a name="259"><span class="lineNum">     259 </span>                :            :    */</a>
+<a name="260"><span class="lineNum">     260 </span>                :            :   template &lt;template &lt;typename C&gt; class P, typename V, typename B&gt;</a>
+<span class="lineNum">     261 </span>                :<span class="lineCov">        747 :   auto assignObjectField(P&lt;B&gt; object, V B::*member) {</span>
+<span class="lineNum">     262 </span>                :<span class="lineCov">       2239 :     return [=](auto value) mutable {</span>
+<span class="lineNum">     263 </span>                :<span class="lineCov">        745 :       (*object).*member = value;</span>
+<span class="lineNum">     264 </span>                :<span class="lineCov">        745 :       return nonstd::make_optional(object);</span>
+<span class="lineNum">     265 </span>                :<span class="lineCov">        747 :     };</span>
+<span class="lineNum">     266 </span>                :            :   }
+<span class="lineNum">     267 </span>                :            : 
+<span class="lineNum">     268 </span>                :            :   template &lt;size_t size&gt;
+<span class="lineNum">     269 </span>                :            :   using hash_t = blob_t&lt;size&gt;;
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>                :            :   // fixed-size hashes
+<span class="lineNum">     272 </span>                :            :   using hash224_t = hash_t&lt;224 / 8&gt;;
+<span class="lineNum">     273 </span>                :            :   using hash256_t = hash_t&lt;256 / 8&gt;;
+<span class="lineNum">     274 </span>                :            :   using hash384_t = hash_t&lt;384 / 8&gt;;
+<span class="lineNum">     275 </span>                :            :   using hash512_t = hash_t&lt;512 / 8&gt;;
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :            :   using sig_t = blob_t&lt;64&gt;;  // ed25519 sig is 64 bytes length
+<span class="lineNum">     278 </span>                :            :   using pubkey_t = blob_t&lt;32&gt;;
+<span class="lineNum">     279 </span>                :            :   using privkey_t = blob_t&lt;32&gt;;
+<a name="280"><span class="lineNum">     280 </span>                :            : </a>
+<span class="lineNum">     281 </span>                :            :   struct keypair_t {
+<a name="282"><span class="lineNum">     282 </span>                :<span class="lineCov">        108 :     keypair_t() = default;</span></a>
+<span class="lineNum">     283 </span>                :            : 
+<span class="lineNum">     284 </span>                :<span class="lineNoCov">          0 :     keypair_t(pubkey_t pubkey, privkey_t privkey)</span>
+<span class="lineNum">     285 </span>                :<span class="lineNoCov">          0 :         : pubkey(pubkey), privkey(privkey) {}</span>
+<span class="lineNum">     286 </span>                :            : 
+<span class="lineNum">     287 </span>                :            :     pubkey_t pubkey;
+<span class="lineNum">     288 </span>                :            :     privkey_t privkey;
+<span class="lineNum">     289 </span>                :            :   };
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :   // timestamps
+<span class="lineNum">     292 </span>                :            :   using ts64_t = uint64_t;
+<span class="lineNum">     293 </span>                :            :   using ts32_t = uint32_t;
+<span class="lineNum">     294 </span>                :            : 
+<a name="295"><span class="lineNum">     295 </span>                :            :   // check the type of the derived class</a>
+<span class="lineNum">     296 </span>                :            :   template &lt;typename Base, typename T&gt;
+<span class="lineNum">     297 </span>                :<span class="lineCov">        224 :   inline bool instanceof (const T *ptr) {</span>
+<span class="lineNum">     298 </span>[<span class="branchCov" title="Branch 0 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        224 :     return typeid(Base) == typeid(*ptr);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 20 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 24 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 32 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>][<span class="branchCov" title="Branch 36 was taken 51 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>]
+<span class="lineNum">     299 </span>                :            :   }
+<a name="300"><span class="lineNum">     300 </span>                :            : </a>
+<span class="lineNum">     301 </span>                :            :   template &lt;typename Base, typename T&gt;
+<span class="lineNum">     302 </span>                :<span class="lineCov">       6587 :   inline bool instanceof (const T &amp;ptr) {</span>
+<span class="lineNum">     303 </span>                :<span class="lineCov">       6587 :     return typeid(Base) == typeid(ptr);</span>
+<span class="lineNum">     304 </span>                :            :   }
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            : }  // namespace iroha
+<span class="lineNum">     307 </span>                :            : #endif  // IROHA_COMMON_TYPES_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

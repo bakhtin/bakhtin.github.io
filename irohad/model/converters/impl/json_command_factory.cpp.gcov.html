@@ -1,0 +1,729 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/converters/impl/json_command_factory.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">irohad/model/converters/impl</a> - json_command_factory.cpp<span style="font-size: 80%;"> (source / <a href="json_command_factory.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">293</td>
+            <td class="headerCovTableEntry">296</td>
+            <td class="headerCovTableEntryHi">99.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntry">38</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">333</td>
+            <td class="headerCovTableEntry">662</td>
+            <td class="headerCovTableEntryLo">50.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;model/converters/json_command_factory.hpp&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;model/commands/set_account_detail.hpp&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;regex&gt;
+<span class="lineNum">      22 </span>                :            : #include &quot;model/commands/add_asset_quantity.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;model/commands/add_peer.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;model/commands/add_signatory.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;model/commands/create_account.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;model/commands/create_asset.hpp&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;model/commands/create_domain.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;model/commands/remove_signatory.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;model/commands/set_quorum.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;model/commands/subtract_asset_quantity.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;model/commands/transfer_asset.hpp&quot;
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            : #include &quot;model/commands/append_role.hpp&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;model/commands/create_role.hpp&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;model/commands/detach_role.hpp&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;model/commands/grant_permission.hpp&quot;
+<span class="lineNum">      37 </span>                :            : #include &quot;model/commands/revoke_permission.hpp&quot;
+<span class="lineNum">      38 </span>                :            : 
+<span class="lineNum">      39 </span>                :            : using namespace rapidjson;
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : namespace iroha {
+<span class="lineNum">      42 </span>                :            :   namespace model {
+<span class="lineNum">      43 </span>                :            :     namespace converters {
+<span class="lineNum">      44 </span>                :            :       template &lt;&gt;
+<a name="45"><span class="lineNum">      45 </span>                :            :       struct Convert&lt;Amount&gt; {</a>
+<span class="lineNum">      46 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">      47 </span>                :<span class="lineCov">         64 :         nonstd::optional&lt;Amount&gt; operator()(T &amp;&amp;x) {</span>
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         64 :           auto des = makeFieldDeserializer(x);</span>
+<span class="lineNum">      49 </span>[<span class="branchCov" title="Branch 2 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        128 :           auto str_int_value = des.String(&quot;value&quot;);</span>
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 64 times"> + </span>]:<span class="lineCov">         64 :           if (not str_int_value.has_value()) {</span>
+<span class="lineNum">      52 </span>                :<span class="lineNoCov">          0 :             return nonstd::nullopt;</span>
+<span class="lineNum">      53 </span>                :            :           }
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :            :           // check if value is actually number
+<span class="lineNum">      56 </span>        [<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        128 :           std::regex e(&quot;\\d+&quot;);</span>
+<span class="lineNum">      57 </span>[<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         64 :           if (not std::regex_match(str_int_value.value(), e)) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 64 times"> + </span>]
+<span class="lineNum">      58 </span>                :<span class="lineNoCov">          0 :             return nonstd::nullopt;</span>
+<span class="lineNum">      59 </span>                :            :           }
+<span class="lineNum">      60 </span>                :            : 
+<span class="lineNum">      61 </span>[<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         64 :           uint256_t value(str_int_value.value());</span>
+<span class="lineNum">      62 </span>                :            :           uint8_t precision;
+<span class="lineNum">      63 </span>        [<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        128 :           rapidjson::Document dd;</span>
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 1 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         64 :           precision = des.document[&quot;precision&quot;].GetUint();</span>
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :            :           return nonstd::make_optional&lt;Amount&gt;(
+<span class="lineNum">      67 </span>[<span class="branchCov" title="Branch 2 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         64 :               {value, static_cast&lt;uint8_t&gt;(precision)});</span>
+<span class="lineNum">      68 </span>                :            :         }
+<a name="69"><span class="lineNum">      69 </span>                :            :       };</a>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>                :<span class="lineCov">        222 :       JsonCommandFactory::JsonCommandFactory() {</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">        111 :         serializers_ = {</span>
+<span class="lineNum">      73 </span>                :            :             {typeid(AddAssetQuantity),
+<span class="lineNum">      74 </span>                :            :              &amp;JsonCommandFactory::serializeAddAssetQuantity},
+<span class="lineNum">      75 </span>                :            :             {typeid(SubtractAssetQuantity),
+<span class="lineNum">      76 </span>                :            :              &amp;JsonCommandFactory::serializeSubtractAssetQuantity},
+<span class="lineNum">      77 </span>                :            :             {typeid(AddPeer), &amp;JsonCommandFactory::serializeAddPeer},
+<span class="lineNum">      78 </span>                :            :             {typeid(AddSignatory), &amp;JsonCommandFactory::serializeAddSignatory},
+<span class="lineNum">      79 </span>                :            :             {typeid(CreateAccount),
+<span class="lineNum">      80 </span>                :            :              &amp;JsonCommandFactory::serializeCreateAccount},
+<span class="lineNum">      81 </span>                :            :             {typeid(CreateAsset), &amp;JsonCommandFactory::serializeCreateAsset},
+<span class="lineNum">      82 </span>                :            :             {typeid(CreateDomain), &amp;JsonCommandFactory::serializeCreateDomain},
+<span class="lineNum">      83 </span>                :            :             {typeid(SetAccountDetail),
+<span class="lineNum">      84 </span>                :            :              &amp;JsonCommandFactory::serializeSetAccountDetail},
+<span class="lineNum">      85 </span>                :            :             {typeid(RemoveSignatory),
+<span class="lineNum">      86 </span>                :            :              &amp;JsonCommandFactory::serializeRemoveSignatory},
+<span class="lineNum">      87 </span>                :            :             {typeid(SetQuorum), &amp;JsonCommandFactory::serializeSetQuorum},
+<span class="lineNum">      88 </span>                :            :             {typeid(TransferAsset),
+<span class="lineNum">      89 </span>                :            :              &amp;JsonCommandFactory::serializeTransferAsset},
+<span class="lineNum">      90 </span>                :            :             {typeid(AppendRole), &amp;JsonCommandFactory::serializeAppendRole},
+<span class="lineNum">      91 </span>                :            :             {typeid(CreateRole), &amp;JsonCommandFactory::serializeCreateRole},
+<span class="lineNum">      92 </span>                :            :             {typeid(DetachRole), &amp;JsonCommandFactory::serializeDetachRole},
+<span class="lineNum">      93 </span>                :            :             {typeid(GrantPermission),
+<span class="lineNum">      94 </span>                :            :              &amp;JsonCommandFactory::serializeGrantPermission},
+<span class="lineNum">      95 </span>                :            :             {typeid(RevokePermission),
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 17 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>]:<span class="lineCov">        111 :              &amp;JsonCommandFactory::serializeRevokePermission}};</span>
+<span class="lineNum">      97 </span>                :            : 
+<span class="lineNum">      98 </span>                :<span class="lineCov">       1776 :         deserializers_ = {</span>
+<span class="lineNum">      99 </span>                :            :             {&quot;AddAssetQuantity&quot;,
+<span class="lineNum">     100 </span>                :            :              &amp;JsonCommandFactory::deserializeAddAssetQuantity},
+<span class="lineNum">     101 </span>                :            :             {&quot;SubtractAssetQuantity&quot;,
+<span class="lineNum">     102 </span>                :            :              &amp;JsonCommandFactory::deserializeSubtractAssetQuantity},
+<span class="lineNum">     103 </span>                :            :             {&quot;AddPeer&quot;, &amp;JsonCommandFactory::deserializeAddPeer},
+<span class="lineNum">     104 </span>                :            :             {&quot;AddSignatory&quot;, &amp;JsonCommandFactory::deserializeAddSignatory},
+<span class="lineNum">     105 </span>                :            :             {&quot;CreateAccount&quot;, &amp;JsonCommandFactory::deserializeCreateAccount},
+<span class="lineNum">     106 </span>                :            :             {&quot;CreateAsset&quot;, &amp;JsonCommandFactory::deserializeCreateAsset},
+<span class="lineNum">     107 </span>                :            :             {&quot;CreateDomain&quot;, &amp;JsonCommandFactory::deserializeCreateDomain},
+<span class="lineNum">     108 </span>                :            :             {&quot;SetAccountDetail&quot;,
+<span class="lineNum">     109 </span>                :            :              &amp;JsonCommandFactory::deserializeSetAccountDetail},
+<span class="lineNum">     110 </span>                :            :             {&quot;RemoveSignatory&quot;,
+<span class="lineNum">     111 </span>                :            :              &amp;JsonCommandFactory::deserializeRemoveSignatory},
+<span class="lineNum">     112 </span>                :            :             {&quot;SetQuorum&quot;, &amp;JsonCommandFactory::deserializeSetQuorum},
+<span class="lineNum">     113 </span>                :            :             {&quot;TransferAsset&quot;, &amp;JsonCommandFactory::deserializeTransferAsset},
+<span class="lineNum">     114 </span>                :            :             {&quot;AppendRole&quot;, &amp;JsonCommandFactory::deserializeAppendRole},
+<span class="lineNum">     115 </span>                :            :             {&quot;DetachRole&quot;, &amp;JsonCommandFactory::deserializeDetachRole},
+<span class="lineNum">     116 </span>                :            :             {&quot;CreateRole&quot;, &amp;JsonCommandFactory::deserializeCreateRole},
+<span class="lineNum">     117 </span>                :            :             {&quot;GrantPermission&quot;,
+<span class="lineNum">     118 </span>                :            :              &amp;JsonCommandFactory::deserializeGrantPermission},
+<span class="lineNum">     119 </span>                :            :             {&quot;RevokePermission&quot;,
+<span class="lineNum">     120 </span>[<span class="branchCov" title="Branch 1 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       1887 :              &amp;JsonCommandFactory::deserializeRevokePermission}};</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 37 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span>][<span class="branchCov" title="Branch 40 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 46 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 49 was taken 111 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>]
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 51 was taken 1776 times"> + </span><span class="branchCov" title="Branch 52 was taken 111 times"> + </span><span class="branchNoExec" title="Branch 53 was not executed"> # </span><span class="branchNoExec" title="Branch 54 was not executed"> # </span>]
+<span class="lineNum">     121 </span>                :<span class="lineCov">        111 :       }</span>
+<a name="122"><span class="lineNum">     122 </span>                :            : </a>
+<span class="lineNum">     123 </span>                :            :       // AddAssetQuantity
+<span class="lineNum">     124 </span>                :<span class="lineCov">         10 :       Document JsonCommandFactory::serializeAddAssetQuantity(</span>
+<span class="lineNum">     125 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     126 </span>                :            :         auto add_asset_quantity =
+<span class="lineNum">     127 </span>                :<span class="lineCov">         10 :             static_cast&lt;AddAssetQuantity *&gt;(command.get());</span>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :         Document document;</span>
+<span class="lineNum">     130 </span>                :<span class="lineCov">         10 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     131 </span>                :            : 
+<span class="lineNum">     132 </span>                :<span class="lineCov">         10 :         document.SetObject();</span>
+<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 3 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         10 :         document.AddMember(&quot;command_type&quot;, &quot;AddAssetQuantity&quot;, allocator);</span>
+<span class="lineNum">     134 </span>                :            :         document.AddMember(
+<span class="lineNum">     135 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         10 :             &quot;account_id&quot;, add_asset_quantity-&gt;account_id, allocator);</span>
+<span class="lineNum">     136 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         10 :         document.AddMember(&quot;asset_id&quot;, add_asset_quantity-&gt;asset_id, allocator);</span>
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :<span class="lineCov">         20 :         Value amount;</span>
+<span class="lineNum">     139 </span>                :<span class="lineCov">         10 :         amount.SetObject();</span>
+<span class="lineNum">     140 </span>                :            :         amount.AddMember(
+<span class="lineNum">     141 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         10 :             &quot;value&quot;, add_asset_quantity-&gt;amount.getIntValue().str(), allocator);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     142 </span>                :            :         amount.AddMember(
+<span class="lineNum">     143 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         10 :             &quot;precision&quot;, add_asset_quantity-&gt;amount.getPrecision(), allocator);</span>
+<span class="lineNum">     144 </span>                :            : 
+<span class="lineNum">     145 </span>        [<span class="branchCov" title="Branch 2 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         10 :         document.AddMember(&quot;amount&quot;, amount, allocator);</span>
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :<span class="lineCov">         20 :         return document;</span>
+<a name="148"><span class="lineNum">     148 </span>                :            :       }</a>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>                :<span class="lineCov">         17 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeAddAssetQuantity(</span>
+<span class="lineNum">     151 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     152 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     153 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         34 :         return make_optional_ptr&lt;AddAssetQuantity&gt;()</span>
+<span class="lineNum">     154 </span>[<span class="branchCov" title="Branch 2 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         68 :             | des.String(&amp;AddAssetQuantity::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     155 </span>[<span class="branchCov" title="Branch 2 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         68 :             | des.String(&amp;AddAssetQuantity::asset_id, &quot;asset_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     156 </span>[<span class="branchCov" title="Branch 2 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         51 :             | des.Object(&amp;AddAssetQuantity::amount, &quot;amount&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     157 </span>                :            :       }
+<a name="158"><span class="lineNum">     158 </span>                :            : </a>
+<span class="lineNum">     159 </span>                :            :       // AddPeer
+<span class="lineNum">     160 </span>                :<span class="lineCov">         13 :       Document JsonCommandFactory::serializeAddPeer(</span>
+<span class="lineNum">     161 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     162 </span>                :<span class="lineCov">         13 :         auto add_peer = static_cast&lt;AddPeer *&gt;(command.get());</span>
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :<span class="lineCov">         13 :         Document document;</span>
+<span class="lineNum">     165 </span>                :<span class="lineCov">         13 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :<span class="lineCov">         13 :         document.SetObject();</span>
+<span class="lineNum">     168 </span>        [<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         13 :         document.AddMember(&quot;command_type&quot;, &quot;AddPeer&quot;, allocator);</span>
+<span class="lineNum">     169 </span>[<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         13 :         document.AddMember(&quot;address&quot;, add_peer-&gt;address, allocator);</span>
+<span class="lineNum">     170 </span>                :            :         document.AddMember(
+<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 3 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         13 :             &quot;peer_key&quot;, add_peer-&gt;peer_key.to_hexstring(), allocator);</span>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :<span class="lineCov">         13 :         return document;</span>
+<a name="174"><span class="lineNum">     174 </span>                :            :       }</a>
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :<span class="lineCov">         15 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeAddPeer(</span>
+<span class="lineNum">     177 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     179 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         30 :         return make_optional_ptr&lt;AddPeer&gt;()</span>
+<span class="lineNum">     180 </span>[<span class="branchCov" title="Branch 2 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         60 :             | des.String(&amp;AddPeer::peer_key, &quot;peer_key&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     181 </span>[<span class="branchCov" title="Branch 2 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         45 :             | des.String(&amp;AddPeer::address, &quot;address&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     182 </span>                :            :       }
+<a name="183"><span class="lineNum">     183 </span>                :            : </a>
+<span class="lineNum">     184 </span>                :            :       // AddSignatory
+<span class="lineNum">     185 </span>                :<span class="lineCov">          6 :       Document JsonCommandFactory::serializeAddSignatory(</span>
+<span class="lineNum">     186 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     187 </span>                :<span class="lineCov">          6 :         auto add_signatory = static_cast&lt;AddSignatory *&gt;(command.get());</span>
+<span class="lineNum">     188 </span>                :            : 
+<span class="lineNum">     189 </span>                :<span class="lineCov">          6 :         Document document;</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">          6 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :<span class="lineCov">          6 :         document.SetObject();</span>
+<span class="lineNum">     193 </span>        [<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :         document.AddMember(&quot;command_type&quot;, &quot;AddSignatory&quot;, allocator);</span>
+<span class="lineNum">     194 </span>[<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          6 :         document.AddMember(&quot;account_id&quot;, add_signatory-&gt;account_id, allocator);</span>
+<span class="lineNum">     195 </span>                :            :         document.AddMember(
+<span class="lineNum">     196 </span>        [<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :             &quot;pubkey&quot;, add_signatory-&gt;pubkey.to_hexstring(), allocator);</span>
+<span class="lineNum">     197 </span>                :            : 
+<span class="lineNum">     198 </span>                :<span class="lineCov">          6 :         return document;</span>
+<a name="199"><span class="lineNum">     199 </span>                :            :       }</a>
+<span class="lineNum">     200 </span>                :            : 
+<span class="lineNum">     201 </span>                :<span class="lineCov">          6 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeAddSignatory(</span>
+<span class="lineNum">     202 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     203 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     204 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :         return make_optional_ptr&lt;AddSignatory&gt;()</span>
+<span class="lineNum">     205 </span>[<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         24 :             | des.String(&amp;AddSignatory::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         18 :             | des.String(&amp;AddSignatory::pubkey, &quot;pubkey&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     207 </span>                :            :       }
+<a name="208"><span class="lineNum">     208 </span>                :            : </a>
+<span class="lineNum">     209 </span>                :            :       // CreateAccount
+<span class="lineNum">     210 </span>                :<span class="lineCov">         26 :       Document JsonCommandFactory::serializeCreateAccount(</span>
+<span class="lineNum">     211 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     212 </span>                :<span class="lineCov">         26 :         auto create_account = static_cast&lt;CreateAccount *&gt;(command.get());</span>
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :<span class="lineCov">         26 :         Document document;</span>
+<span class="lineNum">     215 </span>                :<span class="lineCov">         26 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     216 </span>                :            : 
+<span class="lineNum">     217 </span>                :<span class="lineCov">         26 :         document.SetObject();</span>
+<span class="lineNum">     218 </span>        [<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         26 :         document.AddMember(&quot;command_type&quot;, &quot;CreateAccount&quot;, allocator);</span>
+<span class="lineNum">     219 </span>                :            :         document.AddMember(
+<span class="lineNum">     220 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         26 :             &quot;account_name&quot;, create_account-&gt;account_name, allocator);</span>
+<span class="lineNum">     221 </span>[<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         26 :         document.AddMember(&quot;domain_id&quot;, create_account-&gt;domain_id, allocator);</span>
+<span class="lineNum">     222 </span>                :            :         document.AddMember(
+<span class="lineNum">     223 </span>        [<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         26 :             &quot;pubkey&quot;, create_account-&gt;pubkey.to_hexstring(), allocator);</span>
+<span class="lineNum">     224 </span>                :<span class="lineCov">         26 :         return document;</span>
+<a name="225"><span class="lineNum">     225 </span>                :            :       }</a>
+<span class="lineNum">     226 </span>                :            : 
+<span class="lineNum">     227 </span>                :<span class="lineCov">         43 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeCreateAccount(</span>
+<span class="lineNum">     228 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     229 </span>        [<span class="branchCov" title="Branch 1 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         43 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     230 </span>        [<span class="branchCov" title="Branch 1 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         86 :         return make_optional_ptr&lt;CreateAccount&gt;()</span>
+<span class="lineNum">     231 </span>[<span class="branchCov" title="Branch 2 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        172 :             | des.String(&amp;CreateAccount::account_name, &quot;account_name&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     232 </span>[<span class="branchCov" title="Branch 2 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        172 :             | des.String(&amp;CreateAccount::domain_id, &quot;domain_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     233 </span>[<span class="branchCov" title="Branch 2 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        129 :             | des.String(&amp;CreateAccount::pubkey, &quot;pubkey&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     234 </span>                :            :       }
+<a name="235"><span class="lineNum">     235 </span>                :            : </a>
+<span class="lineNum">     236 </span>                :            :       // Set Account Detail
+<span class="lineNum">     237 </span>                :<span class="lineCov">          4 :       rapidjson::Document JsonCommandFactory::serializeSetAccountDetail(</span>
+<span class="lineNum">     238 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     239 </span>                :            :         auto set_account_detail =
+<span class="lineNum">     240 </span>                :<span class="lineCov">          4 :             static_cast&lt;SetAccountDetail *&gt;(command.get());</span>
+<span class="lineNum">     241 </span>                :            : 
+<span class="lineNum">     242 </span>                :<span class="lineCov">          4 :         Document document;</span>
+<span class="lineNum">     243 </span>                :<span class="lineCov">          4 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :<span class="lineCov">          4 :         document.SetObject();</span>
+<span class="lineNum">     246 </span>        [<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;command_type&quot;, &quot;SetAccountDetail&quot;, allocator);</span>
+<span class="lineNum">     247 </span>                :            :         document.AddMember(
+<span class="lineNum">     248 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :             &quot;account_id&quot;, set_account_detail-&gt;account_id, allocator);</span>
+<span class="lineNum">     249 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;key&quot;, set_account_detail-&gt;key, allocator);</span>
+<span class="lineNum">     250 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;value&quot;, set_account_detail-&gt;value, allocator);</span>
+<span class="lineNum">     251 </span>                :            : 
+<span class="lineNum">     252 </span>                :<span class="lineCov">          4 :         return document;</span>
+<a name="253"><span class="lineNum">     253 </span>                :            :       }</a>
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :<span class="lineCov">          2 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeSetAccountDetail(</span>
+<span class="lineNum">     256 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         return make_optional_ptr&lt;SetAccountDetail&gt;()</span>
+<span class="lineNum">     259 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;SetAccountDetail::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     260 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;SetAccountDetail::key, &quot;key&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     261 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          6 :             | des.String(&amp;SetAccountDetail::value, &quot;value&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     262 </span>                :            :       }
+<a name="263"><span class="lineNum">     263 </span>                :            : </a>
+<span class="lineNum">     264 </span>                :            :       // CreateAsset
+<span class="lineNum">     265 </span>                :<span class="lineCov">         11 :       Document JsonCommandFactory::serializeCreateAsset(</span>
+<span class="lineNum">     266 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     267 </span>                :<span class="lineCov">         11 :         auto create_asset = static_cast&lt;CreateAsset *&gt;(command.get());</span>
+<span class="lineNum">     268 </span>                :            : 
+<span class="lineNum">     269 </span>                :<span class="lineCov">         11 :         Document document;</span>
+<span class="lineNum">     270 </span>                :<span class="lineCov">         11 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     271 </span>                :            : 
+<span class="lineNum">     272 </span>                :<span class="lineCov">         11 :         document.SetObject();</span>
+<span class="lineNum">     273 </span>        [<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         11 :         document.AddMember(&quot;command_type&quot;, &quot;CreateAsset&quot;, allocator);</span>
+<span class="lineNum">     274 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         11 :         document.AddMember(&quot;asset_name&quot;, create_asset-&gt;asset_name, allocator);</span>
+<span class="lineNum">     275 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         11 :         document.AddMember(&quot;domain_id&quot;, create_asset-&gt;domain_id, allocator);</span>
+<span class="lineNum">     276 </span>        [<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         11 :         document.AddMember(&quot;precision&quot;, create_asset-&gt;precision, allocator);</span>
+<span class="lineNum">     277 </span>                :            : 
+<span class="lineNum">     278 </span>                :<span class="lineCov">         11 :         return document;</span>
+<a name="279"><span class="lineNum">     279 </span>                :            :       }</a>
+<span class="lineNum">     280 </span>                :            : 
+<span class="lineNum">     281 </span>                :<span class="lineCov">         23 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeCreateAsset(</span>
+<span class="lineNum">     282 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         23 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 1 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         46 :         return make_optional_ptr&lt;CreateAsset&gt;()</span>
+<span class="lineNum">     285 </span>[<span class="branchCov" title="Branch 2 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         92 :             | des.String(&amp;CreateAsset::asset_name, &quot;asset_name&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     286 </span>[<span class="branchCov" title="Branch 2 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         92 :             | des.String(&amp;CreateAsset::domain_id, &quot;domain_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 2 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         69 :             | des.Uint(&amp;CreateAsset::precision, &quot;precision&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     288 </span>                :            :       }
+<a name="289"><span class="lineNum">     289 </span>                :            : </a>
+<span class="lineNum">     290 </span>                :            :       // CreateDomain
+<span class="lineNum">     291 </span>                :<span class="lineCov">         17 :       Document JsonCommandFactory::serializeCreateDomain(</span>
+<span class="lineNum">     292 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     293 </span>                :<span class="lineCov">         17 :         auto create_domain = static_cast&lt;CreateDomain *&gt;(command.get());</span>
+<span class="lineNum">     294 </span>                :            : 
+<span class="lineNum">     295 </span>                :<span class="lineCov">         17 :         Document document;</span>
+<span class="lineNum">     296 </span>                :<span class="lineCov">         17 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     297 </span>                :            : 
+<span class="lineNum">     298 </span>                :<span class="lineCov">         17 :         document.SetObject();</span>
+<span class="lineNum">     299 </span>        [<span class="branchCov" title="Branch 3 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         17 :         document.AddMember(&quot;command_type&quot;, &quot;CreateDomain&quot;, allocator);</span>
+<span class="lineNum">     300 </span>[<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         17 :         document.AddMember(&quot;domain_id&quot;, create_domain-&gt;domain_id, allocator);</span>
+<span class="lineNum">     301 </span>                :            :         document.AddMember(
+<span class="lineNum">     302 </span>[<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         17 :             &quot;user_default_role&quot;, create_domain-&gt;user_default_role, allocator);</span>
+<span class="lineNum">     303 </span>                :            : 
+<span class="lineNum">     304 </span>                :<span class="lineCov">         17 :         return document;</span>
+<a name="305"><span class="lineNum">     305 </span>                :            :       }</a>
+<span class="lineNum">     306 </span>                :            : 
+<span class="lineNum">     307 </span>                :<span class="lineCov">         27 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeCreateDomain(</span>
+<span class="lineNum">     308 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     309 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         27 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         54 :         return make_optional_ptr&lt;CreateDomain&gt;()</span>
+<span class="lineNum">     311 </span>[<span class="branchCov" title="Branch 2 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        108 :             | des.String(&amp;CreateDomain::domain_id, &quot;domain_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     312 </span>[<span class="branchCov" title="Branch 2 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        108 :             | des.String(&amp;CreateDomain::user_default_role, &quot;user_default_role&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     313 </span>        [<span class="branchCov" title="Branch 1 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         54 :             | toCommand;</span>
+<span class="lineNum">     314 </span>                :            :       }
+<a name="315"><span class="lineNum">     315 </span>                :            : </a>
+<span class="lineNum">     316 </span>                :            :       // RemoveSignatory
+<span class="lineNum">     317 </span>                :<span class="lineCov">          5 :       Document JsonCommandFactory::serializeRemoveSignatory(</span>
+<span class="lineNum">     318 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     319 </span>                :<span class="lineCov">          5 :         auto remove_signatory = static_cast&lt;RemoveSignatory *&gt;(command.get());</span>
+<span class="lineNum">     320 </span>                :            : 
+<span class="lineNum">     321 </span>                :<span class="lineCov">          5 :         Document document;</span>
+<span class="lineNum">     322 </span>                :<span class="lineCov">          5 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     323 </span>                :            : 
+<span class="lineNum">     324 </span>                :<span class="lineCov">          5 :         document.SetObject();</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 3 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 :         document.AddMember(&quot;command_type&quot;, &quot;RemoveSignatory&quot;, allocator);</span>
+<span class="lineNum">     326 </span>                :            :         document.AddMember(
+<span class="lineNum">     327 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          5 :             &quot;account_id&quot;, remove_signatory-&gt;account_id, allocator);</span>
+<span class="lineNum">     328 </span>                :            :         document.AddMember(
+<span class="lineNum">     329 </span>        [<span class="branchCov" title="Branch 3 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 :             &quot;pubkey&quot;, remove_signatory-&gt;pubkey.to_hexstring(), allocator);</span>
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :<span class="lineCov">          5 :         return document;</span>
+<a name="332"><span class="lineNum">     332 </span>                :            :       }</a>
+<span class="lineNum">     333 </span>                :            : 
+<span class="lineNum">     334 </span>                :<span class="lineCov">          4 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeRemoveSignatory(</span>
+<span class="lineNum">     335 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     336 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     337 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :         return make_optional_ptr&lt;RemoveSignatory&gt;()</span>
+<span class="lineNum">     338 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         16 :             | des.String(&amp;RemoveSignatory::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     339 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             | des.String(&amp;RemoveSignatory::pubkey, &quot;pubkey&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     340 </span>                :            :       }
+<a name="341"><span class="lineNum">     341 </span>                :            : </a>
+<span class="lineNum">     342 </span>                :            :       // SetAccountQuorum
+<span class="lineNum">     343 </span>                :<span class="lineCov">          4 :       Document JsonCommandFactory::serializeSetQuorum(</span>
+<span class="lineNum">     344 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     345 </span>                :<span class="lineCov">          4 :         auto set_quorum = static_cast&lt;SetQuorum *&gt;(command.get());</span>
+<span class="lineNum">     346 </span>                :            : 
+<span class="lineNum">     347 </span>                :<span class="lineCov">          4 :         Document document;</span>
+<span class="lineNum">     348 </span>                :<span class="lineCov">          4 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     349 </span>                :            : 
+<span class="lineNum">     350 </span>                :<span class="lineCov">          4 :         document.SetObject();</span>
+<span class="lineNum">     351 </span>        [<span class="branchCov" title="Branch 3 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;command_type&quot;, &quot;SetQuorum&quot;, allocator);</span>
+<span class="lineNum">     352 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;account_id&quot;, set_quorum-&gt;account_id, allocator);</span>
+<span class="lineNum">     353 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         document.AddMember(&quot;new_quorum&quot;, set_quorum-&gt;new_quorum, allocator);</span>
+<span class="lineNum">     354 </span>                :            : 
+<span class="lineNum">     355 </span>                :<span class="lineCov">          4 :         return document;</span>
+<a name="356"><span class="lineNum">     356 </span>                :            :       }</a>
+<span class="lineNum">     357 </span>                :            : 
+<span class="lineNum">     358 </span>                :<span class="lineCov">          4 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeSetQuorum(</span>
+<span class="lineNum">     359 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     360 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     361 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :         return make_optional_ptr&lt;SetQuorum&gt;()</span>
+<span class="lineNum">     362 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         16 :             | des.String(&amp;SetQuorum::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     363 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             | des.Uint(&amp;SetQuorum::new_quorum, &quot;new_quorum&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     364 </span>                :            :       }
+<a name="365"><span class="lineNum">     365 </span>                :            : </a>
+<span class="lineNum">     366 </span>                :            :       // TransferAsset
+<span class="lineNum">     367 </span>                :<span class="lineCov">         15 :       Document JsonCommandFactory::serializeTransferAsset(</span>
+<span class="lineNum">     368 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     369 </span>                :<span class="lineCov">         15 :         auto transfer_asset = static_cast&lt;TransferAsset *&gt;(command.get());</span>
+<span class="lineNum">     370 </span>                :            : 
+<span class="lineNum">     371 </span>        [<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         15 :         Document document;</span>
+<span class="lineNum">     372 </span>                :<span class="lineCov">         15 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     373 </span>                :            : 
+<span class="lineNum">     374 </span>                :<span class="lineCov">         15 :         document.SetObject();</span>
+<span class="lineNum">     375 </span>        [<span class="branchCov" title="Branch 3 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         15 :         document.AddMember(&quot;command_type&quot;, &quot;TransferAsset&quot;, allocator);</span>
+<span class="lineNum">     376 </span>                :            :         document.AddMember(
+<span class="lineNum">     377 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         15 :             &quot;src_account_id&quot;, transfer_asset-&gt;src_account_id, allocator);</span>
+<span class="lineNum">     378 </span>                :            :         document.AddMember(
+<span class="lineNum">     379 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         15 :             &quot;dest_account_id&quot;, transfer_asset-&gt;dest_account_id, allocator);</span>
+<span class="lineNum">     380 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         15 :         document.AddMember(&quot;asset_id&quot;, transfer_asset-&gt;asset_id, allocator);</span>
+<span class="lineNum">     381 </span>                :            :         document.AddMember(
+<span class="lineNum">     382 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         15 :             &quot;description&quot;, transfer_asset-&gt;description, allocator);</span>
+<span class="lineNum">     383 </span>                :            : 
+<span class="lineNum">     384 </span>                :<span class="lineCov">         30 :         Value amount;</span>
+<span class="lineNum">     385 </span>                :<span class="lineCov">         15 :         amount.SetObject();</span>
+<span class="lineNum">     386 </span>                :            :         amount.AddMember(
+<span class="lineNum">     387 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         15 :             &quot;value&quot;, transfer_asset-&gt;amount.getIntValue().str(), allocator);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     388 </span>                :            :         amount.AddMember(
+<span class="lineNum">     389 </span>[<span class="branchCov" title="Branch 1 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         15 :             &quot;precision&quot;, transfer_asset-&gt;amount.getPrecision(), allocator);</span>
+<span class="lineNum">     390 </span>                :            : 
+<span class="lineNum">     391 </span>        [<span class="branchCov" title="Branch 2 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         15 :         document.AddMember(&quot;amount&quot;, amount, allocator);</span>
+<span class="lineNum">     392 </span>                :            : 
+<span class="lineNum">     393 </span>                :<span class="lineCov">         30 :         return document;</span>
+<a name="394"><span class="lineNum">     394 </span>                :            :       }</a>
+<span class="lineNum">     395 </span>                :            : 
+<span class="lineNum">     396 </span>                :<span class="lineCov">         44 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeTransferAsset(</span>
+<span class="lineNum">     397 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     398 </span>        [<span class="branchCov" title="Branch 1 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         44 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     399 </span>        [<span class="branchCov" title="Branch 1 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         88 :         return make_optional_ptr&lt;TransferAsset&gt;()</span>
+<span class="lineNum">     400 </span>[<span class="branchCov" title="Branch 2 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        176 :             | des.String(&amp;TransferAsset::src_account_id, &quot;src_account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     401 </span>[<span class="branchCov" title="Branch 2 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        176 :             | des.String(&amp;TransferAsset::dest_account_id, &quot;dest_account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     402 </span>[<span class="branchCov" title="Branch 2 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        176 :             | des.String(&amp;TransferAsset::asset_id, &quot;asset_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     403 </span>[<span class="branchCov" title="Branch 2 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        176 :             | des.String(&amp;TransferAsset::description, &quot;description&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     404 </span>[<span class="branchCov" title="Branch 2 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        132 :             | des.Object(&amp;TransferAsset::amount, &quot;amount&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 44 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<a name="405"><span class="lineNum">     405 </span>                :            :       }</a>
+<span class="lineNum">     406 </span>                :            : 
+<span class="lineNum">     407 </span>                :<span class="lineCov">          9 :       rapidjson::Document JsonCommandFactory::serializeAppendRole(</span>
+<span class="lineNum">     408 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     409 </span>                :<span class="lineCov">          9 :         auto cmd = static_cast&lt;AppendRole *&gt;(command.get());</span>
+<span class="lineNum">     410 </span>                :            : 
+<span class="lineNum">     411 </span>                :<span class="lineCov">          9 :         Document document;</span>
+<span class="lineNum">     412 </span>                :<span class="lineCov">          9 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     413 </span>                :            : 
+<span class="lineNum">     414 </span>                :<span class="lineCov">          9 :         document.SetObject();</span>
+<span class="lineNum">     415 </span>        [<span class="branchCov" title="Branch 3 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          9 :         document.AddMember(&quot;command_type&quot;, &quot;AppendRole&quot;, allocator);</span>
+<span class="lineNum">     416 </span>[<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         document.AddMember(&quot;account_id&quot;, cmd-&gt;account_id, allocator);</span>
+<span class="lineNum">     417 </span>[<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :         document.AddMember(&quot;role_name&quot;, cmd-&gt;role_name, allocator);</span>
+<span class="lineNum">     418 </span>                :<span class="lineCov">          9 :         return document;</span>
+<a name="419"><span class="lineNum">     419 </span>                :            :       }</a>
+<span class="lineNum">     420 </span>                :            : 
+<span class="lineNum">     421 </span>                :<span class="lineCov">         16 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeAppendRole(</span>
+<span class="lineNum">     422 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     423 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     424 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :         return make_optional_ptr&lt;AppendRole&gt;()</span>
+<span class="lineNum">     425 </span>[<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         64 :             | des.String(&amp;AppendRole::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     426 </span>[<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         48 :             | des.String(&amp;AppendRole::role_name, &quot;role_name&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<a name="427"><span class="lineNum">     427 </span>                :            :       }</a>
+<span class="lineNum">     428 </span>                :            : 
+<span class="lineNum">     429 </span>                :<span class="lineCov">          3 :       rapidjson::Document JsonCommandFactory::serializeDetachRole(</span>
+<span class="lineNum">     430 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     431 </span>                :<span class="lineCov">          3 :         auto cmd = static_cast&lt;DetachRole *&gt;(command.get());</span>
+<span class="lineNum">     432 </span>                :            : 
+<span class="lineNum">     433 </span>                :<span class="lineCov">          3 :         Document document;</span>
+<span class="lineNum">     434 </span>                :<span class="lineCov">          3 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     435 </span>                :            : 
+<span class="lineNum">     436 </span>                :<span class="lineCov">          3 :         document.SetObject();</span>
+<span class="lineNum">     437 </span>        [<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          3 :         document.AddMember(&quot;command_type&quot;, &quot;DetachRole&quot;, allocator);</span>
+<span class="lineNum">     438 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :         document.AddMember(&quot;account_id&quot;, cmd-&gt;account_id, allocator);</span>
+<span class="lineNum">     439 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :         document.AddMember(&quot;role_name&quot;, cmd-&gt;role_name, allocator);</span>
+<span class="lineNum">     440 </span>                :<span class="lineCov">          3 :         return document;</span>
+<a name="441"><span class="lineNum">     441 </span>                :            :       }</a>
+<span class="lineNum">     442 </span>                :            : 
+<span class="lineNum">     443 </span>                :<span class="lineCov">          3 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeDetachRole(</span>
+<span class="lineNum">     444 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     445 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     446 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         return make_optional_ptr&lt;DetachRole&gt;()</span>
+<span class="lineNum">     447 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             | des.String(&amp;DetachRole::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     448 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :             | des.String(&amp;DetachRole::role_name, &quot;role_name&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<a name="449"><span class="lineNum">     449 </span>                :            :       }</a>
+<span class="lineNum">     450 </span>                :            : 
+<span class="lineNum">     451 </span>                :<span class="lineCov">         18 :       rapidjson::Document JsonCommandFactory::serializeCreateRole(</span>
+<span class="lineNum">     452 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     453 </span>                :<span class="lineCov">         18 :         auto cmd = static_cast&lt;CreateRole *&gt;(command.get());</span>
+<span class="lineNum">     454 </span>                :            : 
+<span class="lineNum">     455 </span>        [<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         18 :         Document document;</span>
+<span class="lineNum">     456 </span>                :<span class="lineCov">         18 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     457 </span>                :            : 
+<span class="lineNum">     458 </span>                :<span class="lineCov">         18 :         document.SetObject();</span>
+<span class="lineNum">     459 </span>        [<span class="branchCov" title="Branch 3 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         18 :         document.AddMember(&quot;command_type&quot;, &quot;CreateRole&quot;, allocator);</span>
+<span class="lineNum">     460 </span>[<span class="branchCov" title="Branch 1 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         18 :         document.AddMember(&quot;role_name&quot;, cmd-&gt;role_name, allocator);</span>
+<span class="lineNum">     461 </span>                :<span class="lineCov">         36 :         Value perms;</span>
+<span class="lineNum">     462 </span>                :<span class="lineCov">         18 :         perms.SetArray();</span>
+<span class="lineNum">     463 </span>[<span class="branchCov" title="Branch 3 was taken 129 times"> + </span><span class="branchCov" title="Branch 4 was taken 18 times"> + </span>][<span class="branchCov" title="Branch 7 was taken 129 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">        147 :         for (auto perm : cmd-&gt;permissions) {</span>
+<span class="lineNum">     464 </span>                :<span class="lineCov">        258 :           Value perm_value;</span>
+<span class="lineNum">     465 </span>        [<span class="branchCov" title="Branch 1 was taken 129 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        129 :           perm_value.Set(perm, allocator);</span>
+<span class="lineNum">     466 </span>        [<span class="branchCov" title="Branch 1 was taken 129 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        129 :           perms.PushBack(perm_value, allocator);</span>
+<span class="lineNum">     467 </span>                :            :         }
+<span class="lineNum">     468 </span>        [<span class="branchCov" title="Branch 2 was taken 18 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         18 :         document.AddMember(&quot;permissions&quot;, perms, allocator);</span>
+<span class="lineNum">     469 </span>                :<span class="lineCov">         36 :         return document;</span>
+<a name="470"><span class="lineNum">     470 </span>                :            :       }</a>
+<span class="lineNum">     471 </span>                :            : 
+<span class="lineNum">     472 </span>                :<span class="lineCov">         31 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeCreateRole(</span>
+<span class="lineNum">     473 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     474 </span>[<span class="branchCov" title="Branch 3 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         93 :         if (document.HasMember(&quot;role_name&quot;) and document[&quot;role_name&quot;].IsString()</span>
+<span class="lineNum">     475 </span>        [<span class="branchCov" title="Branch 1 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         31 :             and document.HasMember(&quot;permissions&quot;)</span>
+<span class="lineNum">     476 </span>[<span class="branchCov" title="Branch 0 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         62 :             and document[&quot;permissions&quot;].IsArray()) {</span>
+<span class="lineNum">     477 </span>                :<span class="lineCov">         62 :           std::set&lt;std::string&gt; perms;</span>
+<span class="lineNum">     478 </span>[<span class="branchCov" title="Branch 1 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        274 :           for (auto &amp;v : document[&quot;permissions&quot;].GetArray()) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 12 was taken 243 times"> + </span><span class="branchCov" title="Branch 13 was taken 31 times"> + </span>][<span class="branchCov" title="Branch 15 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>]
+<span class="lineNum">     479 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 243 times"> + </span>]:<span class="lineCov">        243 :             if (not v.IsString()) {</span>
+<span class="lineNum">     480 </span>                :<span class="lineNoCov">          0 :               return nonstd::nullopt;</span>
+<span class="lineNum">     481 </span>                :            :             }
+<span class="lineNum">     482 </span>[<span class="branchCov" title="Branch 2 was taken 243 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 243 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        243 :             perms.insert(v.GetString());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 243 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     483 </span>                :            :           }
+<span class="lineNum">     484 </span>[<span class="branchCov" title="Branch 1 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         31 :           auto role_name = document[&quot;role_name&quot;].GetString();</span>
+<span class="lineNum">     485 </span>[<span class="branchCov" title="Branch 1 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 31 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         31 :           return make_optional_ptr&lt;CreateRole&gt;(role_name, perms) | toCommand;</span>
+<span class="lineNum">     486 </span>                :            :         }
+<span class="lineNum">     487 </span>                :<span class="lineCov">         31 :         return nonstd::nullopt;</span>
+<a name="488"><span class="lineNum">     488 </span>                :            :       }</a>
+<span class="lineNum">     489 </span>                :            : 
+<span class="lineNum">     490 </span>                :<span class="lineCov">          2 :       rapidjson::Document JsonCommandFactory::serializeGrantPermission(</span>
+<span class="lineNum">     491 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     492 </span>                :<span class="lineCov">          2 :         auto cmd = static_cast&lt;GrantPermission *&gt;(command.get());</span>
+<span class="lineNum">     493 </span>                :            : 
+<span class="lineNum">     494 </span>                :<span class="lineCov">          2 :         Document document;</span>
+<span class="lineNum">     495 </span>                :<span class="lineCov">          2 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     496 </span>                :<span class="lineCov">          2 :         document.SetObject();</span>
+<span class="lineNum">     497 </span>        [<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;command_type&quot;, &quot;GrantPermission&quot;, allocator);</span>
+<span class="lineNum">     498 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;account_id&quot;, cmd-&gt;account_id, allocator);</span>
+<span class="lineNum">     499 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;permission_name&quot;, cmd-&gt;permission_name, allocator);</span>
+<span class="lineNum">     500 </span>                :<span class="lineCov">          2 :         return document;</span>
+<a name="501"><span class="lineNum">     501 </span>                :            :       }</a>
+<span class="lineNum">     502 </span>                :            : 
+<span class="lineNum">     503 </span>                :<span class="lineCov">          2 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeGrantPermission(</span>
+<span class="lineNum">     504 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     505 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     506 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         return make_optional_ptr&lt;GrantPermission&gt;()</span>
+<span class="lineNum">     507 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;GrantPermission::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     508 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;GrantPermission::permission_name, &quot;permission_name&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     509 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :             | toCommand;</span>
+<a name="510"><span class="lineNum">     510 </span>                :            :       }</a>
+<span class="lineNum">     511 </span>                :            : 
+<span class="lineNum">     512 </span>                :<span class="lineCov">          2 :       rapidjson::Document JsonCommandFactory::serializeRevokePermission(</span>
+<span class="lineNum">     513 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     514 </span>                :<span class="lineCov">          2 :         auto cmd = static_cast&lt;RevokePermission *&gt;(command.get());</span>
+<span class="lineNum">     515 </span>                :            : 
+<span class="lineNum">     516 </span>                :<span class="lineCov">          2 :         Document document;</span>
+<span class="lineNum">     517 </span>                :<span class="lineCov">          2 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     518 </span>                :<span class="lineCov">          2 :         document.SetObject();</span>
+<span class="lineNum">     519 </span>        [<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;command_type&quot;, &quot;RevokePermission&quot;, allocator);</span>
+<span class="lineNum">     520 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;account_id&quot;, cmd-&gt;account_id, allocator);</span>
+<span class="lineNum">     521 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         document.AddMember(&quot;permission_name&quot;, cmd-&gt;permission_name, allocator);</span>
+<span class="lineNum">     522 </span>                :<span class="lineCov">          2 :         return document;</span>
+<a name="523"><span class="lineNum">     523 </span>                :            :       }</a>
+<span class="lineNum">     524 </span>                :            : 
+<span class="lineNum">     525 </span>                :<span class="lineCov">          2 :       optional_ptr&lt;Command&gt; JsonCommandFactory::deserializeRevokePermission(</span>
+<span class="lineNum">     526 </span>                :            :           const rapidjson::Value &amp;document) {
+<span class="lineNum">     527 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         return make_optional_ptr&lt;RevokePermission&gt;()</span>
+<span class="lineNum">     529 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;RevokePermission::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     530 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :             | des.String(&amp;RevokePermission::permission_name, &quot;permission_name&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     531 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :             | toCommand;</span>
+<span class="lineNum">     532 </span>                :            :       }
+<a name="533"><span class="lineNum">     533 </span>                :            : </a>
+<span class="lineNum">     534 </span>                :            :       // SubtractAssetQuantity
+<span class="lineNum">     535 </span>                :<span class="lineCov">          3 :       Document JsonCommandFactory::serializeSubtractAssetQuantity(</span>
+<span class="lineNum">     536 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     537 </span>                :            :         auto subtract_asset_quantity =
+<span class="lineNum">     538 </span>                :<span class="lineCov">          3 :             static_cast&lt;SubtractAssetQuantity *&gt;(command.get());</span>
+<span class="lineNum">     539 </span>                :            : 
+<span class="lineNum">     540 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :         Document document;</span>
+<span class="lineNum">     541 </span>                :<span class="lineCov">          3 :         auto &amp;allocator = document.GetAllocator();</span>
+<span class="lineNum">     542 </span>                :            : 
+<span class="lineNum">     543 </span>                :<span class="lineCov">          3 :         document.SetObject();</span>
+<span class="lineNum">     544 </span>        [<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          3 :         document.AddMember(&quot;command_type&quot;, &quot;SubtractAssetQuantity&quot;, allocator);</span>
+<span class="lineNum">     545 </span>                :            :         document.AddMember(
+<span class="lineNum">     546 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :             &quot;account_id&quot;, subtract_asset_quantity-&gt;account_id, allocator);</span>
+<span class="lineNum">     547 </span>                :            :         document.AddMember(
+<span class="lineNum">     548 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          3 :             &quot;asset_id&quot;, subtract_asset_quantity-&gt;asset_id, allocator);</span>
+<span class="lineNum">     549 </span>                :            : 
+<span class="lineNum">     550 </span>                :<span class="lineCov">          6 :         Value amount;</span>
+<span class="lineNum">     551 </span>                :<span class="lineCov">          3 :         amount.SetObject();</span>
+<span class="lineNum">     552 </span>                :            :         amount.AddMember(&quot;value&quot;,
+<span class="lineNum">     553 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          6 :                          subtract_asset_quantity-&gt;amount.getIntValue().str(),</span>
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :                          allocator);</span>
+<span class="lineNum">     555 </span>                :            :         amount.AddMember(&quot;precision&quot;,
+<span class="lineNum">     556 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :                          subtract_asset_quantity-&gt;amount.getPrecision(),</span>
+<span class="lineNum">     557 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :                          allocator);</span>
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :         document.AddMember(&quot;amount&quot;, amount, allocator);</span>
+<span class="lineNum">     560 </span>                :            : 
+<span class="lineNum">     561 </span>                :<span class="lineCov">          6 :         return document;</span>
+<span class="lineNum">     562 </span>                :            :       }
+<a name="563"><span class="lineNum">     563 </span>                :            : </a>
+<span class="lineNum">     564 </span>                :            :       optional_ptr&lt;Command&gt;
+<span class="lineNum">     565 </span>                :<span class="lineCov">          3 :       JsonCommandFactory::deserializeSubtractAssetQuantity(</span>
+<span class="lineNum">     566 </span>                :            :           const Value &amp;document) {
+<span class="lineNum">     567 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :         auto des = makeFieldDeserializer(document);</span>
+<span class="lineNum">     568 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         return make_optional_ptr&lt;SubtractAssetQuantity&gt;()</span>
+<span class="lineNum">     569 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             | des.String(&amp;SubtractAssetQuantity::account_id, &quot;account_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     570 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             | des.String(&amp;SubtractAssetQuantity::asset_id, &quot;asset_id&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     571 </span>[<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          9 :             | des.Object(&amp;SubtractAssetQuantity::amount, &quot;amount&quot;) | toCommand;</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">     572 </span>                :            :       }
+<a name="573"><span class="lineNum">     573 </span>                :            : </a>
+<span class="lineNum">     574 </span>                :            :       // Abstract
+<span class="lineNum">     575 </span>                :<span class="lineCov">        132 :       Document JsonCommandFactory::serializeAbstractCommand(</span>
+<span class="lineNum">     576 </span>                :            :           std::shared_ptr&lt;Command&gt; command) {
+<span class="lineNum">     577 </span>                :<span class="lineCov">        132 :         return makeMethodInvoke(*this,</span>
+<span class="lineNum">     578 </span>        [<span class="branchCov" title="Branch 1 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        264 :                                 command)(serializers_.at(typeid(*command)));</span>
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 6 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchCov" title="Branch 9 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>]
+<span class="lineNum">     579 </span>                :            :       }
+<a name="580"><span class="lineNum">     580 </span>                :            : </a>
+<span class="lineNum">     581 </span>                :            :       optional_ptr&lt;model::Command&gt;
+<span class="lineNum">     582 </span>                :<span class="lineCov">        227 :       JsonCommandFactory::deserializeAbstractCommand(const Value &amp;document) {</span>
+<span class="lineNum">     583 </span>[<span class="branchCov" title="Branch 2 was taken 227 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 227 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        454 :         return makeFieldDeserializer(document).String(&quot;command_type&quot;)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 227 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     584 </span>        [<span class="branchCov" title="Branch 3 was taken 227 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        908 :             | makeOptionalGet(deserializers_)</span>
+<span class="lineNum">     585 </span>        [<span class="branchCov" title="Branch 2 was taken 227 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        681 :             | makeMethodInvoke(*this, document);</span>
+<span class="lineNum">     586 </span>                :            :       }
+<a name="587"><span class="lineNum">     587 </span>                :            :     }  // namespace converters</a>
+<span class="lineNum">     588 </span>                :            :   }    // namespace model
+<span class="lineNum">     589 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         44 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

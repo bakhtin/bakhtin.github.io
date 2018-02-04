@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - test/module/shared_model/validators/transaction_validator_test.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">test/module/shared_model/validators</a> - transaction_validator_test.cpp<span style="font-size: 80%;"> (source / <a href="transaction_validator_test.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">50</td>
+            <td class="headerCovTableEntry">50</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntryHi">96.2 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">63</td>
+            <td class="headerCovTableEntry">154</td>
+            <td class="headerCovTableEntryLo">40.9 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;module/shared_model/validators/validators_fixture.hpp&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;gtest/gtest.h&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/range/irange.hpp&gt;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : #include &quot;builders/protobuf/transaction.hpp&quot;
+<a name="24"><span class="lineNum">      24 </span>                :            : #include &quot;utils/polymorphic_wrapper.hpp&quot;</a>
+<span class="lineNum">      25 </span>                :            : 
+<a name="26"><span class="lineNum">      26 </span>        [<span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 4 was taken 3 times"> + </span>]:<span class="lineCov">         12 : class TransactionValidatorTest : public ValidatorsTest {</span></a>
+<span class="lineNum">      27 </span>                :            :  protected:
+<span class="lineNum">      28 </span>                :<span class="lineCov">          3 :   iroha::protocol::Transaction generateEmptyTransaction() {</span>
+<span class="lineNum">      29 </span>                :<span class="lineCov">          3 :     shared_model::interface::types::CounterType tx_counter = 1;</span>
+<span class="lineNum">      30 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :     std::string creator_account_id = &quot;admin@test&quot;;</span>
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     iroha::protocol::Transaction proto_tx;</span>
+<span class="lineNum">      33 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     auto &amp;payload = *proto_tx.mutable_payload();</span>
+<span class="lineNum">      34 </span>                :<span class="lineCov">          3 :     payload.set_tx_counter(tx_counter);</span>
+<span class="lineNum">      35 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :     payload.set_creator_account_id(creator_account_id);</span>
+<span class="lineNum">      36 </span>                :<span class="lineCov">          3 :     payload.set_created_time(created_time);</span>
+<span class="lineNum">      37 </span>                :<span class="lineCov">          6 :     return proto_tx;</span>
+<span class="lineNum">      38 </span>                :            :   }
+<span class="lineNum">      39 </span>                :            : };
+<span class="lineNum">      40 </span>                :            : 
+<span class="lineNum">      41 </span>                :            : using namespace iroha::protocol;
+<span class="lineNum">      42 </span>                :            : using namespace shared_model;
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            : /**
+<span class="lineNum">      45 </span>                :            :  * @given transaction without any commands
+<span class="lineNum">      46 </span>                :            :  * @when commands validator is invoked
+<a name="47"><span class="lineNum">      47 </span>                :            :  * @then answer has error about empty transaction</a>
+<span class="lineNum">      48 </span>                :            :  */
+<span class="lineNum">      49 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(TransactionValidatorTest, EmptyTransactionTest) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 24 was taken 1 time"> + </span>]
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :   auto tx = generateEmptyTransaction();</span>
+<span class="lineNum">      51 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   tx.mutable_payload()-&gt;set_created_time(created_time);</span>
+<span class="lineNum">      52 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :   shared_model::validation::DefaultTransactionValidator transaction_validator;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">      53 </span>                :            :   auto answer = transaction_validator.validate(
+<span class="lineNum">      54 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :       detail::makePolymorphic&lt;proto::Transaction&gt;(tx));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 10 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">      55 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :   ASSERT_EQ(answer.getReasonsMap().size(), 1);</span>
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 9 was not taken"> - </span><span class="branchCov" title="Branch 10 was taken 1 time"> + </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 15 was not executed"> # </span><span class="branchNoExec" title="Branch 16 was not executed"> # </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>][<span class="branchCov" title="Branch 26 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 29 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 30 was not taken"> - </span>]
+<span class="lineNum">      56 </span>                :            : }
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            : /**
+<span class="lineNum">      59 </span>                :            :  * @given transaction made of commands with valid fields
+<span class="lineNum">      60 </span>                :            :  * @when commands validation is invoked
+<a name="61"><span class="lineNum">      61 </span>                :            :  * @then answer has no errors</a>
+<span class="lineNum">      62 </span>                :            :  */
+<span class="lineNum">      63 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(TransactionValidatorTest, StatelessValidTest) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 24 was taken 1 time"> + </span>]
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :   iroha::protocol::Transaction tx = generateEmptyTransaction();</span>
+<span class="lineNum">      65 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :   tx.mutable_payload()-&gt;set_creator_account_id(account_id);</span>
+<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   tx.mutable_payload()-&gt;set_created_time(created_time);</span>
+<span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   auto payload = tx.mutable_payload();</span>
+<a name="68"><span class="lineNum">      68 </span>                :            : </a>
+<a name="69"><span class="lineNum">      69 </span>                :            :   // Iterate through all command types, filling command fields with valid values</a>
+<span class="lineNum">      70 </span>                :<span class="lineCov">          2 :   iterateContainer([] { return iroha::protocol::Command::descriptor(); },</span>
+<span class="lineNum">      71 </span>                :<span class="lineCov">         16 :                    [&amp;](auto field) {</span>
+<span class="lineNum">      72 </span>                :            :                      // Add new command to transaction
+<span class="lineNum">      73 </span>                :<span class="lineCov">         16 :                      auto command = payload-&gt;add_commands();</span>
+<span class="lineNum">      74 </span>                :            :                      // Set concrete type for new command
+<span class="lineNum">      75 </span>                :<span class="lineCov">         16 :                      return command-&gt;GetReflection()-&gt;MutableMessage(command,</span>
+<a name="76"><span class="lineNum">      76 </span>                :<span class="lineCov">         16 :                                                                      field);</span></a>
+<span class="lineNum">      77 </span>                :            :                    },
+<span class="lineNum">      78 </span>                :<span class="lineCov">         40 :                    [this](auto field, auto command) {</span>
+<span class="lineNum">      79 </span>                :            :                      // Will throw key exception in case new field is added
+<span class="lineNum">      80 </span>                :<span class="lineCov">         40 :                      field_setters.at(field-&gt;name())(</span>
+<a name="81"><span class="lineNum">      81 </span>                :            :                          command-&gt;GetReflection(), command, field);</a>
+<span class="lineNum">      82 </span>                :<span class="lineCov">         40 :                    },</span>
+<span class="lineNum">      83 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :                    [] {});</span>
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :   shared_model::validation::DefaultTransactionValidator transaction_validator;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">      86 </span>                :            :   auto answer = transaction_validator.validate(
+<span class="lineNum">      87 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :       detail::makePolymorphic&lt;proto::Transaction&gt;(tx));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 10 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]:<span class="lineCov">          1 :   ASSERT_FALSE(answer.hasErrors()) &lt;&lt; answer.reason();</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 12 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 14 was not executed"> # </span><span class="branchNoExec" title="Branch 15 was not executed"> # </span>][<span class="branchNoExec" title="Branch 17 was not executed"> # </span><span class="branchNoExec" title="Branch 18 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>][<span class="branchNoExec" title="Branch 24 was not executed"> # </span><span class="branchNoExec" title="Branch 25 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
+<span class="lineNum">      90 </span>                :            : }
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            : /**
+<span class="lineNum">      93 </span>                :            :  * @given transaction made of commands with invalid fields
+<span class="lineNum">      94 </span>                :            :  * @when commands validation is invoked
+<span class="lineNum">      95 </span>                :            :  * @then answer has errors and number of errors in answer is the same as the
+<a name="96"><span class="lineNum">      96 </span>                :            :  * number of commands in tx</a>
+<span class="lineNum">      97 </span>                :            :  */
+<span class="lineNum">      98 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(TransactionValidatorTest, StatelessInvalidTest) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 22 was not taken"> - </span><span class="branchCov" title="Branch 23 was taken 1 time"> + </span>]
+<span class="lineNum">      99 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :   iroha::protocol::Transaction tx = generateEmptyTransaction();</span>
+<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   auto payload = tx.mutable_payload();</span>
+<span class="lineNum">     101 </span>                :            : 
+<span class="lineNum">     102 </span>                :<span class="lineCov">          1 :   iroha::ts64_t invalid_time = 10000000000ull;</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">          1 :   payload-&gt;set_created_time(invalid_time);</span>
+<span class="lineNum">     104 </span>                :            : 
+<a name="105"><span class="lineNum">     105 </span>                :            :   // create commands from default constructors, which will have empty, therefore</a>
+<a name="106"><span class="lineNum">     106 </span>                :            :   // invalid values</a>
+<span class="lineNum">     107 </span>                :<span class="lineCov">          2 :   iterateContainer([] { return iroha::protocol::Command::descriptor(); },</span>
+<span class="lineNum">     108 </span>                :<span class="lineCov">         16 :                    [&amp;](auto field) {</span>
+<span class="lineNum">     109 </span>                :            :                      // Add new command to transaction
+<span class="lineNum">     110 </span>                :<span class="lineCov">         16 :                      auto command = payload-&gt;add_commands();</span>
+<span class="lineNum">     111 </span>                :            :                      // Set concrete type for new command
+<span class="lineNum">     112 </span>                :<span class="lineCov">         16 :                      return command-&gt;GetReflection()-&gt;MutableMessage(command,</span>
+<a name="113"><span class="lineNum">     113 </span>                :<span class="lineCov">         16 :                                                                      field);</span></a>
+<span class="lineNum">     114 </span>                :            :                    },
+<span class="lineNum">     115 </span>                :<span class="lineCov">         40 :                    [](auto, auto) {</span>
+<a name="116"><span class="lineNum">     116 </span>                :            :                      // Note that no fields are set</a>
+<span class="lineNum">     117 </span>                :<span class="lineCov">         40 :                    },</span>
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :                    [] {});</span>
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :   shared_model::validation::DefaultTransactionValidator transaction_validator;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">     121 </span>                :            :   auto answer = transaction_validator.validate(
+<span class="lineNum">     122 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :       detail::makePolymorphic&lt;proto::Transaction&gt;(tx));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 10 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     123 </span>                :            : 
+<span class="lineNum">     124 </span>                :            :   // in total there should be number_of_commands + 1 reasons of bad answer:
+<span class="lineNum">     125 </span>                :            :   // number_of_commands for each command + 1 for transaction metadata
+<a name="126"><span class="lineNum">     126 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :   ASSERT_EQ(answer.getReasonsMap().size(),</span></a>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchNoCov" title="Branch 13 was not taken"> - </span><span class="branchCov" title="Branch 14 was taken 1 time"> + </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>][<span class="branchNoExec" title="Branch 19 was not executed"> # </span><span class="branchNoExec" title="Branch 20 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 22 was not executed"> # </span><span class="branchNoExec" title="Branch 23 was not executed"> # </span>][<span class="branchNoExec" title="Branch 25 was not executed"> # </span><span class="branchNoExec" title="Branch 26 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 30 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 31 was not taken"> - </span>][<span class="branchCov" title="Branch 33 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span>]
+<span class="lineNum">     127 </span>                :            :             iroha::protocol::Command::descriptor()-&gt;field_count() + 1);
+<span class="lineNum">     128 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          4 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

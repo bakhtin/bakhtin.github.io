@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/google/protobuf/arena_impl.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/google/protobuf</a> - arena_impl.h<span style="font-size: 80%;"> (source / <a href="arena_impl.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:30:07</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Protocol Buffers - Google's data interchange format</a>
+<span class="lineNum">       2 </span>            : // Copyright 2008 Google Inc.  All rights reserved.
+<span class="lineNum">       3 </span>            : // https://developers.google.com/protocol-buffers/
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // Redistribution and use in source and binary forms, with or without
+<span class="lineNum">       6 </span>            : // modification, are permitted provided that the following conditions are
+<span class="lineNum">       7 </span>            : // met:
+<span class="lineNum">       8 </span>            : //
+<span class="lineNum">       9 </span>            : //     * Redistributions of source code must retain the above copyright
+<span class="lineNum">      10 </span>            : // notice, this list of conditions and the following disclaimer.
+<span class="lineNum">      11 </span>            : //     * Redistributions in binary form must reproduce the above
+<span class="lineNum">      12 </span>            : // copyright notice, this list of conditions and the following disclaimer
+<span class="lineNum">      13 </span>            : // in the documentation and/or other materials provided with the
+<span class="lineNum">      14 </span>            : // distribution.
+<span class="lineNum">      15 </span>            : //     * Neither the name of Google Inc. nor the names of its
+<span class="lineNum">      16 </span>            : // contributors may be used to endorse or promote products derived from
+<span class="lineNum">      17 </span>            : // this software without specific prior written permission.
+<span class="lineNum">      18 </span>            : //
+<span class="lineNum">      19 </span>            : // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+<span class="lineNum">      20 </span>            : // &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+<span class="lineNum">      21 </span>            : // LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+<span class="lineNum">      22 </span>            : // A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+<span class="lineNum">      23 </span>            : // OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+<span class="lineNum">      24 </span>            : // SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+<span class="lineNum">      25 </span>            : // LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+<span class="lineNum">      26 </span>            : // DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+<span class="lineNum">      27 </span>            : // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+<span class="lineNum">      28 </span>            : // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+<span class="lineNum">      29 </span>            : // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : // This file defines an Arena allocator for better allocation performance.
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : #ifndef GOOGLE_PROTOBUF_ARENA_IMPL_H__
+<span class="lineNum">      34 </span>            : #define GOOGLE_PROTOBUF_ARENA_IMPL_H__
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #include &lt;limits&gt;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : #include &lt;google/protobuf/stubs/atomic_sequence_num.h&gt;
+<span class="lineNum">      39 </span>            : #include &lt;google/protobuf/stubs/atomicops.h&gt;
+<span class="lineNum">      40 </span>            : #include &lt;google/protobuf/stubs/common.h&gt;
+<span class="lineNum">      41 </span>            : #include &lt;google/protobuf/stubs/logging.h&gt;
+<span class="lineNum">      42 </span>            : #include &lt;google/protobuf/stubs/mutex.h&gt;
+<span class="lineNum">      43 </span>            : #include &lt;google/protobuf/stubs/type_traits.h&gt;
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : namespace google {
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : namespace protobuf {
+<a name="48"><span class="lineNum">      48 </span>            : namespace internal {</a>
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span><span class="lineNoCov">          0 : inline size_t AlignUpTo8(size_t n) {</span>
+<span class="lineNum">      51 </span>            :   // Align n to next multiple of 8 (from Hacker's Delight, Chapter 3.)
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :   return (n + 7) &amp; -8;</span>
+<span class="lineNum">      53 </span>            : }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : // This class provides the core Arena memory allocation library. Different
+<span class="lineNum">      56 </span>            : // implementations only need to implement the public interface below.
+<span class="lineNum">      57 </span>            : // Arena is not a template type as that would only be useful if all protos
+<span class="lineNum">      58 </span>            : // in turn would be templates, which will/cannot happen. However separating
+<span class="lineNum">      59 </span>            : // the memory allocation part from the cruft of the API users expect we can
+<span class="lineNum">      60 </span>            : // use #ifdef the select the best implementation based on hardware / OS.
+<span class="lineNum">      61 </span>            : class LIBPROTOBUF_EXPORT ArenaImpl {
+<span class="lineNum">      62 </span>            :  public:
+<span class="lineNum">      63 </span>            :   struct Options {
+<span class="lineNum">      64 </span>            :     size_t start_block_size;
+<span class="lineNum">      65 </span>            :     size_t max_block_size;
+<span class="lineNum">      66 </span>            :     char* initial_block;
+<span class="lineNum">      67 </span>            :     size_t initial_block_size;
+<span class="lineNum">      68 </span>            :     void* (*block_alloc)(size_t);
+<span class="lineNum">      69 </span>            :     void (*block_dealloc)(void*, size_t);
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :     template &lt;typename O&gt;
+<span class="lineNum">      72 </span>            :     explicit Options(const O&amp; options)
+<span class="lineNum">      73 </span>            :       : start_block_size(options.start_block_size),
+<span class="lineNum">      74 </span>            :         max_block_size(options.max_block_size),
+<span class="lineNum">      75 </span>            :         initial_block(options.initial_block),
+<span class="lineNum">      76 </span>            :         initial_block_size(options.initial_block_size),
+<span class="lineNum">      77 </span>            :         block_alloc(options.block_alloc),
+<span class="lineNum">      78 </span>            :         block_dealloc(options.block_dealloc) {}
+<span class="lineNum">      79 </span>            :   };
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :   template &lt;typename O&gt;
+<span class="lineNum">      82 </span>            :   explicit ArenaImpl(const O&amp; options) : options_(options) {
+<span class="lineNum">      83 </span>            :     Init();
+<span class="lineNum">      84 </span>            :   }
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            :   // Destructor deletes all owned heap allocated objects, and destructs objects
+<span class="lineNum">      87 </span>            :   // that have non-trivial destructors, except for proto2 message objects whose
+<span class="lineNum">      88 </span>            :   // destructors can be skipped. Also, frees all blocks except the initial block
+<span class="lineNum">      89 </span>            :   // if it was passed in.
+<span class="lineNum">      90 </span>            :   ~ArenaImpl();
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :   uint64 Reset();
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :   uint64 SpaceAllocated() const;
+<span class="lineNum">      95 </span>            :   uint64 SpaceUsed() const;
+<span class="lineNum">      96 </span>            : 
+<span class="lineNum">      97 </span>            :   void* AllocateAligned(size_t n);
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            :   void* AllocateAlignedAndAddCleanup(size_t n, void (*cleanup)(void*));
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            :   // Add object pointer and cleanup function pointer to the list.
+<span class="lineNum">     102 </span>            :   void AddCleanup(void* elem, void (*cleanup)(void*));
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :  private:
+<span class="lineNum">     105 </span>            :   // Node contains the ptr of the object to be cleaned up and the associated
+<span class="lineNum">     106 </span>            :   // cleanup function ptr.
+<span class="lineNum">     107 </span>            :   struct CleanupNode {
+<span class="lineNum">     108 </span>            :     void* elem;              // Pointer to the object to be cleaned up.
+<span class="lineNum">     109 </span>            :     void (*cleanup)(void*);  // Function pointer to the destructor or deleter.
+<span class="lineNum">     110 </span>            :   };
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            :   // Cleanup uses a chunked linked list, to reduce pointer chasing.
+<span class="lineNum">     113 </span>            :   struct CleanupChunk {
+<span class="lineNum">     114 </span>            :     static size_t SizeOf(size_t i) {
+<span class="lineNum">     115 </span>            :       return sizeof(CleanupChunk) + (sizeof(CleanupNode) * (i - 1));
+<span class="lineNum">     116 </span>            :     }
+<span class="lineNum">     117 </span>            :     size_t len;            // Number of elements currently present.
+<span class="lineNum">     118 </span>            :     size_t size;           // Total elements in the list.
+<span class="lineNum">     119 </span>            :     CleanupChunk* next;    // Next node in the list.
+<span class="lineNum">     120 </span>            :     CleanupNode nodes[1];  // True length is |size|.
+<span class="lineNum">     121 </span>            :   };
+<span class="lineNum">     122 </span>            : 
+<span class="lineNum">     123 </span>            :   // Blocks are variable length malloc-ed objects.  The following structure
+<span class="lineNum">     124 </span>            :   // describes the common header for all blocks.
+<span class="lineNum">     125 </span>            :   struct Block {
+<span class="lineNum">     126 </span>            :     void* owner;            // &amp;ThreadCache of thread that owns this block.
+<span class="lineNum">     127 </span>            :     Block* next;            // Next block in arena (may have different owner)
+<span class="lineNum">     128 </span>            :     CleanupChunk* cleanup;  // Head of cleanup list (may point to another block,
+<span class="lineNum">     129 </span>            :                             // but it must have the same owner).
+<span class="lineNum">     130 </span>            :     // ((char*) &amp;block) + pos is next available byte. It is always
+<span class="lineNum">     131 </span>            :     // aligned at a multiple of 8 bytes.
+<span class="lineNum">     132 </span>            :     size_t pos;
+<span class="lineNum">     133 </span>            :     size_t size;  // total size of the block.
+<span class="lineNum">     134 </span>            :     GOOGLE_ATTRIBUTE_ALWAYS_INLINE size_t avail() const { return size - pos; }
+<span class="lineNum">     135 </span>            :     // data follows
+<span class="lineNum">     136 </span>            :   };
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :   struct ThreadCache {
+<span class="lineNum">     139 </span>            :     // The ThreadCache is considered valid as long as this matches the
+<span class="lineNum">     140 </span>            :     // lifecycle_id of the arena being used.
+<span class="lineNum">     141 </span>            :     int64 last_lifecycle_id_seen;
+<span class="lineNum">     142 </span>            :     Block* last_block_used_;
+<span class="lineNum">     143 </span>            :   };
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            :   // kHeaderSize is sizeof(Block), aligned up to the nearest multiple of 8 to
+<span class="lineNum">     146 </span>            :   // protect the invariant that pos is always at a multiple of 8.
+<span class="lineNum">     147 </span>            :   static const size_t kHeaderSize = (sizeof(Block) + 7) &amp; -8;
+<span class="lineNum">     148 </span>            : #if LANG_CXX11
+<span class="lineNum">     149 </span>            :   static_assert(kHeaderSize % 8 == 0, &quot;kHeaderSize must be a multiple of 8.&quot;);
+<span class="lineNum">     150 </span>            : #endif
+<span class="lineNum">     151 </span>            :   static google::protobuf::internal::SequenceNumber lifecycle_id_generator_;
+<span class="lineNum">     152 </span>            : #if defined(GOOGLE_PROTOBUF_NO_THREADLOCAL)
+<span class="lineNum">     153 </span>            :   // Android ndk does not support GOOGLE_THREAD_LOCAL keyword so we use a custom thread
+<span class="lineNum">     154 </span>            :   // local storage class we implemented.
+<span class="lineNum">     155 </span>            :   // iOS also does not support the GOOGLE_THREAD_LOCAL keyword.
+<span class="lineNum">     156 </span>            :   static ThreadCache&amp; thread_cache();
+<span class="lineNum">     157 </span>            : #elif defined(PROTOBUF_USE_DLLS)
+<span class="lineNum">     158 </span>            :   // Thread local variables cannot be exposed through DLL interface but we can
+<span class="lineNum">     159 </span>            :   // wrap them in static functions.
+<span class="lineNum">     160 </span>            :   static ThreadCache&amp; thread_cache();
+<span class="lineNum">     161 </span>            : #else
+<span class="lineNum">     162 </span>            :   static GOOGLE_THREAD_LOCAL ThreadCache thread_cache_;
+<span class="lineNum">     163 </span>            :   static ThreadCache&amp; thread_cache() { return thread_cache_; }
+<span class="lineNum">     164 </span>            : #endif
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            :   void Init();
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :   // Free all blocks and return the total space used which is the sums of sizes
+<span class="lineNum">     169 </span>            :   // of the all the allocated blocks.
+<span class="lineNum">     170 </span>            :   uint64 FreeBlocks(Block* head);
+<span class="lineNum">     171 </span>            : 
+<span class="lineNum">     172 </span>            :   void AddCleanupInBlock(Block* b, void* elem, void (*cleanup)(void*));
+<span class="lineNum">     173 </span>            :   Block* ExpandCleanupList(Block* b);
+<span class="lineNum">     174 </span>            :   // Delete or Destruct all objects owned by the arena.
+<span class="lineNum">     175 </span>            :   void CleanupList(Block* head);
+<span class="lineNum">     176 </span>            :   uint64 ResetInternal();
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :   inline void CacheBlock(Block* block) {
+<span class="lineNum">     179 </span>            :     thread_cache().last_block_used_ = block;
+<span class="lineNum">     180 </span>            :     thread_cache().last_lifecycle_id_seen = lifecycle_id_;
+<span class="lineNum">     181 </span>            :     google::protobuf::internal::Release_Store(&amp;hint_, reinterpret_cast&lt;google::protobuf::internal::AtomicWord&gt;(block));
+<span class="lineNum">     182 </span>            :   }
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :   google::protobuf::internal::AtomicWord blocks_;       // Head of linked list of all allocated blocks
+<span class="lineNum">     185 </span>            :   google::protobuf::internal::AtomicWord hint_;         // Fast thread-local block access
+<span class="lineNum">     186 </span>            :   uint64 space_allocated_;  // Sum of sizes of all allocated blocks.
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span>            :   bool owns_first_block_;  // Indicates that arena owns the first block
+<span class="lineNum">     189 </span>            :   mutable Mutex blocks_lock_;
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :   void AddBlock(Block* b);
+<span class="lineNum">     192 </span>            :   // Access must be synchronized, either by blocks_lock_ or by being called from
+<span class="lineNum">     193 </span>            :   // Init()/Reset().
+<span class="lineNum">     194 </span>            :   void AddBlockInternal(Block* b);
+<span class="lineNum">     195 </span>            :   // Returns a block owned by this thread.
+<span class="lineNum">     196 </span>            :   Block* GetBlock(size_t n);
+<span class="lineNum">     197 </span>            :   Block* GetBlockSlow(void* me, Block* my_full_block, size_t n);
+<span class="lineNum">     198 </span>            :   Block* FindBlock(void* me);
+<span class="lineNum">     199 </span>            :   Block* NewBlock(void* me, Block* my_last_block, size_t min_bytes,
+<span class="lineNum">     200 </span>            :                   size_t start_block_size, size_t max_block_size);
+<span class="lineNum">     201 </span>            :   static void* AllocFromBlock(Block* b, size_t n);
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            :   int64 lifecycle_id_;  // Unique for each arena. Changes on Reset().
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            :   Options options_;
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            :   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ArenaImpl);
+<span class="lineNum">     208 </span>            : };
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : }  // namespace internal
+<span class="lineNum">     211 </span>            : }  // namespace protobuf
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : }  // namespace google
+<span class="lineNum">     214 </span>            : #endif  // GOOGLE_PROTOBUF_ARENA_IMPL_H__
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

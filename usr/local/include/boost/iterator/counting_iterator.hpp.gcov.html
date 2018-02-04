@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/iterator/counting_iterator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/iterator</a> - counting_iterator.hpp<span style="font-size: 80%;"> (source / <a href="counting_iterator.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright David Abrahams 2003.</a>
+<span class="lineNum">       2 </span>            : // Distributed under the Boost Software License, Version 1.0. (See
+<span class="lineNum">       3 </span>            : // accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       4 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : #ifndef COUNTING_ITERATOR_DWA200348_HPP
+<span class="lineNum">       6 </span>            : # define COUNTING_ITERATOR_DWA200348_HPP
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : # include &lt;boost/iterator/iterator_adaptor.hpp&gt;
+<span class="lineNum">       9 </span>            : # include &lt;boost/detail/numeric_traits.hpp&gt;
+<span class="lineNum">      10 </span>            : # include &lt;boost/mpl/bool.hpp&gt;
+<span class="lineNum">      11 </span>            : # include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      12 </span>            : # include &lt;boost/mpl/identity.hpp&gt;
+<span class="lineNum">      13 </span>            : # include &lt;boost/mpl/eval_if.hpp&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : namespace boost {
+<span class="lineNum">      16 </span>            : namespace iterators {
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : template &lt;
+<span class="lineNum">      19 </span>            :     class Incrementable
+<span class="lineNum">      20 </span>            :   , class CategoryOrTraversal
+<span class="lineNum">      21 </span>            :   , class Difference
+<span class="lineNum">      22 </span>            : &gt;
+<span class="lineNum">      23 </span>            : class counting_iterator;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : namespace detail
+<span class="lineNum">      26 </span>            : {
+<span class="lineNum">      27 </span>            :   // Try to detect numeric types at compile time in ways compatible
+<span class="lineNum">      28 </span>            :   // with the limitations of the compiler and library.
+<span class="lineNum">      29 </span>            :   template &lt;class T&gt;
+<span class="lineNum">      30 </span>            :   struct is_numeric_impl
+<span class="lineNum">      31 </span>            :   {
+<span class="lineNum">      32 </span>            :       // For a while, this wasn't true, but we rely on it below. This is a regression assert.
+<span class="lineNum">      33 </span>            :       BOOST_STATIC_ASSERT(::boost::is_integral&lt;char&gt;::value);
+<span class="lineNum">      34 </span>            : 
+<span class="lineNum">      35 </span>            : # ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :       BOOST_STATIC_CONSTANT(bool, value = std::numeric_limits&lt;T&gt;::is_specialized);
+<span class="lineNum">      38 </span>            : 
+<span class="lineNum">      39 </span>            : # else
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : #  if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x551))
+<span class="lineNum">      42 </span>            :       BOOST_STATIC_CONSTANT(
+<span class="lineNum">      43 </span>            :           bool, value = (
+<span class="lineNum">      44 </span>            :               boost::is_convertible&lt;int,T&gt;::value
+<span class="lineNum">      45 </span>            :            &amp;&amp; boost::is_convertible&lt;T,int&gt;::value
+<span class="lineNum">      46 </span>            :       ));
+<span class="lineNum">      47 </span>            : #  else
+<span class="lineNum">      48 </span>            :     BOOST_STATIC_CONSTANT(bool, value = ::boost::is_arithmetic&lt;T&gt;::value);
+<span class="lineNum">      49 </span>            : #  endif
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            : # endif
+<span class="lineNum">      52 </span>            :   };
+<span class="lineNum">      53 </span>            : 
+<span class="lineNum">      54 </span>            :   template &lt;class T&gt;
+<span class="lineNum">      55 </span>            :   struct is_numeric
+<span class="lineNum">      56 </span>            :     : mpl::bool_&lt;(::boost::iterators::detail::is_numeric_impl&lt;T&gt;::value)&gt;
+<span class="lineNum">      57 </span>            :   {};
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : #  if defined(BOOST_HAS_LONG_LONG)
+<span class="lineNum">      60 </span>            :   template &lt;&gt;
+<span class="lineNum">      61 </span>            :   struct is_numeric&lt; ::boost::long_long_type&gt;
+<span class="lineNum">      62 </span>            :     : mpl::true_ {};
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :   template &lt;&gt;
+<span class="lineNum">      65 </span>            :   struct is_numeric&lt; ::boost::ulong_long_type&gt;
+<span class="lineNum">      66 </span>            :     : mpl::true_ {};
+<span class="lineNum">      67 </span>            : #  endif
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :   // Some compilers fail to have a numeric_limits specialization
+<span class="lineNum">      70 </span>            :   template &lt;&gt;
+<span class="lineNum">      71 </span>            :   struct is_numeric&lt;wchar_t&gt;
+<span class="lineNum">      72 </span>            :     : mpl::true_ {};
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :   template &lt;class T&gt;
+<span class="lineNum">      75 </span>            :   struct numeric_difference
+<span class="lineNum">      76 </span>            :   {
+<span class="lineNum">      77 </span>            :       typedef typename boost::detail::numeric_traits&lt;T&gt;::difference_type type;
+<span class="lineNum">      78 </span>            :   };
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :   BOOST_STATIC_ASSERT(is_numeric&lt;int&gt;::value);
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :   template &lt;class Incrementable, class CategoryOrTraversal, class Difference&gt;
+<span class="lineNum">      83 </span>            :   struct counting_iterator_base
+<span class="lineNum">      84 </span>            :   {
+<span class="lineNum">      85 </span>            :       typedef typename detail::ia_dflt_help&lt;
+<span class="lineNum">      86 </span>            :           CategoryOrTraversal
+<span class="lineNum">      87 </span>            :         , mpl::eval_if&lt;
+<span class="lineNum">      88 </span>            :               is_numeric&lt;Incrementable&gt;
+<span class="lineNum">      89 </span>            :             , mpl::identity&lt;random_access_traversal_tag&gt;
+<span class="lineNum">      90 </span>            :             , iterator_traversal&lt;Incrementable&gt;
+<span class="lineNum">      91 </span>            :           &gt;
+<span class="lineNum">      92 </span>            :       &gt;::type traversal;
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :       typedef typename detail::ia_dflt_help&lt;
+<span class="lineNum">      95 </span>            :           Difference
+<span class="lineNum">      96 </span>            :         , mpl::eval_if&lt;
+<span class="lineNum">      97 </span>            :               is_numeric&lt;Incrementable&gt;
+<span class="lineNum">      98 </span>            :             , numeric_difference&lt;Incrementable&gt;
+<span class="lineNum">      99 </span>            :             , iterator_difference&lt;Incrementable&gt;
+<span class="lineNum">     100 </span>            :           &gt;
+<span class="lineNum">     101 </span>            :       &gt;::type difference;
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :       typedef iterator_adaptor&lt;
+<span class="lineNum">     104 </span>            :           counting_iterator&lt;Incrementable, CategoryOrTraversal, Difference&gt; // self
+<span class="lineNum">     105 </span>            :         , Incrementable                                           // Base
+<span class="lineNum">     106 </span>            :         , Incrementable                                           // Value
+<span class="lineNum">     107 </span>            : # ifndef BOOST_ITERATOR_REF_CONSTNESS_KILLS_WRITABILITY
+<span class="lineNum">     108 </span>            :           const  // MSVC won't strip this.  Instead we enable Thomas'
+<span class="lineNum">     109 </span>            :                  // criterion (see boost/iterator/detail/facade_iterator_category.hpp)
+<span class="lineNum">     110 </span>            : # endif
+<span class="lineNum">     111 </span>            :         , traversal
+<span class="lineNum">     112 </span>            :         , Incrementable const&amp;                                    // reference
+<span class="lineNum">     113 </span>            :         , difference
+<span class="lineNum">     114 </span>            :       &gt; type;
+<span class="lineNum">     115 </span>            :   };
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :   // Template class distance_policy_select -- choose a policy for computing the
+<span class="lineNum">     118 </span>            :   // distance between counting_iterators at compile-time based on whether or not
+<span class="lineNum">     119 </span>            :   // the iterator wraps an integer or an iterator, using &quot;poor man's partial
+<span class="lineNum">     120 </span>            :   // specialization&quot;.
+<span class="lineNum">     121 </span>            : 
+<span class="lineNum">     122 </span>            :   template &lt;bool is_integer&gt; struct distance_policy_select;
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            :   // A policy for wrapped iterators
+<span class="lineNum">     125 </span>            :   template &lt;class Difference, class Incrementable1, class Incrementable2&gt;
+<span class="lineNum">     126 </span>            :   struct iterator_distance
+<span class="lineNum">     127 </span>            :   {
+<span class="lineNum">     128 </span>            :       static Difference distance(Incrementable1 x, Incrementable2 y)
+<span class="lineNum">     129 </span>            :       {
+<span class="lineNum">     130 </span>            :           return y - x;
+<span class="lineNum">     131 </span>            :       }
+<span class="lineNum">     132 </span>            :   };
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span>            :   // A policy for wrapped numbers
+<span class="lineNum">     135 </span>            :   template &lt;class Difference, class Incrementable1, class Incrementable2&gt;
+<span class="lineNum">     136 </span>            :   struct number_distance
+<span class="lineNum">     137 </span>            :   {
+<span class="lineNum">     138 </span>            :       static Difference distance(Incrementable1 x, Incrementable2 y)
+<span class="lineNum">     139 </span>            :       {
+<span class="lineNum">     140 </span>            :           return boost::detail::numeric_distance(x, y);
+<span class="lineNum">     141 </span>            :       }
+<span class="lineNum">     142 </span>            :   };
+<span class="lineNum">     143 </span>            : }
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            : template &lt;
+<span class="lineNum">     146 </span>            :     class Incrementable
+<span class="lineNum">     147 </span>            :   , class CategoryOrTraversal = use_default
+<span class="lineNum">     148 </span>            :   , class Difference = use_default
+<span class="lineNum">     149 </span>            : &gt;
+<span class="lineNum">     150 </span>            : class counting_iterator
+<span class="lineNum">     151 </span>            :   : public detail::counting_iterator_base&lt;
+<span class="lineNum">     152 </span>            :         Incrementable, CategoryOrTraversal, Difference
+<span class="lineNum">     153 </span>            :     &gt;::type
+<span class="lineNum">     154 </span>            : {
+<span class="lineNum">     155 </span>            :     typedef typename detail::counting_iterator_base&lt;
+<span class="lineNum">     156 </span>            :         Incrementable, CategoryOrTraversal, Difference
+<span class="lineNum">     157 </span>            :     &gt;::type super_t;
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :     friend class iterator_core_access;
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :  public:
+<span class="lineNum">     162 </span>            :     typedef typename super_t::difference_type difference_type;
+<span class="lineNum">     163 </span>            : 
+<a name="164"><span class="lineNum">     164 </span>            :     counting_iterator() { }</a>
+<span class="lineNum">     165 </span>            : 
+<a name="166"><span class="lineNum">     166 </span><span class="lineCov">         44 :     counting_iterator(counting_iterator const&amp; rhs) : super_t(rhs.base()) {}</span></a>
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span><span class="lineCov">          2 :     counting_iterator(Incrementable x)</span>
+<span class="lineNum">     169 </span><span class="lineCov">          2 :       : super_t(x)</span>
+<span class="lineNum">     170 </span>            :     {
+<span class="lineNum">     171 </span><span class="lineCov">          2 :     }</span>
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : # if 0
+<span class="lineNum">     174 </span>            :     template&lt;class OtherIncrementable&gt;
+<span class="lineNum">     175 </span>            :     counting_iterator(
+<span class="lineNum">     176 </span>            :         counting_iterator&lt;OtherIncrementable, CategoryOrTraversal, Difference&gt; const&amp; t
+<span class="lineNum">     177 </span>            :       , typename enable_if_convertible&lt;OtherIncrementable, Incrementable&gt;::type* = 0
+<span class="lineNum">     178 </span>            :     )
+<span class="lineNum">     179 </span>            :       : super_t(t.base())
+<span class="lineNum">     180 </span>            :     {}
+<span class="lineNum">     181 </span>            : # endif
+<span class="lineNum">     182 </span>            : 
+<a name="183"><span class="lineNum">     183 </span>            :  private:</a>
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span><span class="lineCov">        720 :     typename super_t::reference dereference() const</span>
+<span class="lineNum">     186 </span>            :     {
+<span class="lineNum">     187 </span><span class="lineCov">        720 :         return this-&gt;base_reference();</span>
+<span class="lineNum">     188 </span>            :     }
+<span class="lineNum">     189 </span>            : 
+<span class="lineNum">     190 </span>            :     template &lt;class OtherIncrementable&gt;
+<span class="lineNum">     191 </span>            :     difference_type
+<span class="lineNum">     192 </span>            :     distance_to(counting_iterator&lt;OtherIncrementable, CategoryOrTraversal, Difference&gt; const&amp; y) const
+<span class="lineNum">     193 </span>            :     {
+<span class="lineNum">     194 </span>            :       typedef typename mpl::if_&lt;
+<span class="lineNum">     195 </span>            :           detail::is_numeric&lt;Incrementable&gt;
+<span class="lineNum">     196 </span>            :         , detail::number_distance&lt;difference_type, Incrementable, OtherIncrementable&gt;
+<span class="lineNum">     197 </span>            :         , detail::iterator_distance&lt;difference_type, Incrementable, OtherIncrementable&gt;
+<span class="lineNum">     198 </span>            :       &gt;::type d;
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :       return d::distance(this-&gt;base(), y.base());
+<span class="lineNum">     201 </span>            :     }
+<span class="lineNum">     202 </span>            : };
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : // Manufacture a counting iterator for an arbitrary incrementable type
+<span class="lineNum">     205 </span>            : template &lt;class Incrementable&gt;
+<span class="lineNum">     206 </span>            : inline counting_iterator&lt;Incrementable&gt;
+<span class="lineNum">     207 </span>            : make_counting_iterator(Incrementable x)
+<span class="lineNum">     208 </span>            : {
+<span class="lineNum">     209 </span>            :   typedef counting_iterator&lt;Incrementable&gt; result_t;
+<span class="lineNum">     210 </span>            :   return result_t(x);
+<span class="lineNum">     211 </span>            : }
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            : } // namespace iterators
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            : using iterators::counting_iterator;
+<span class="lineNum">     216 </span>            : using iterators::make_counting_iterator;
+<span class="lineNum">     217 </span>            : 
+<span class="lineNum">     218 </span>            : } // namespace boost
+<span class="lineNum">     219 </span>            : 
+<span class="lineNum">     220 </span>            : #endif // COUNTING_ITERATOR_DWA200348_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

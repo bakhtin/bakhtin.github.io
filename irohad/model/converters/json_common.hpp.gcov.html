@@ -1,0 +1,495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/converters/json_common.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">irohad/model/converters</a> - json_common.hpp<span style="font-size: 80%;"> (source / <a href="json_common.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">54</td>
+            <td class="headerCovTableEntry">55</td>
+            <td class="headerCovTableEntryHi">98.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">260</td>
+            <td class="headerCovTableEntry">260</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">212</td>
+            <td class="headerCovTableEntry">401</td>
+            <td class="headerCovTableEntryLo">52.9 %</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_JSON_COMMON_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_JSON_COMMON_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &lt;numeric&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      24 </span>                :            : 
+<span class="lineNum">      25 </span>                :            : // Enable std::string support in rapidjson
+<span class="lineNum">      26 </span>                :            : #define RAPIDJSON_HAS_STDSTRING 1
+<span class="lineNum">      27 </span>                :            : #include &lt;rapidjson/document.h&gt;
+<span class="lineNum">      28 </span>                :            : #include &lt;rapidjson/prettywriter.h&gt;
+<span class="lineNum">      29 </span>                :            : #include &lt;rapidjson/stringbuffer.h&gt;
+<span class="lineNum">      30 </span>                :            : #include &lt;nonstd/optional.hpp&gt;
+<span class="lineNum">      31 </span>                :            : 
+<span class="lineNum">      32 </span>                :            : #include &quot;common/byteutils.hpp&quot;
+<span class="lineNum">      33 </span>                :            : #include &quot;model/block.hpp&quot;
+<span class="lineNum">      34 </span>                :            : #include &quot;model/common.hpp&quot;
+<span class="lineNum">      35 </span>                :            : #include &quot;model/queries/get_transactions.hpp&quot;
+<span class="lineNum">      36 </span>                :            : #include &quot;model/signature.hpp&quot;
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            : namespace iroha {
+<span class="lineNum">      39 </span>                :            :   namespace model {
+<span class="lineNum">      40 </span>                :            :     namespace converters {
+<span class="lineNum">      41 </span>                :            :       /**
+<span class="lineNum">      42 </span>                :            :        * Convert functor which specifies output type
+<span class="lineNum">      43 </span>                :            :        * @tparam V - output type
+<span class="lineNum">      44 </span>                :            :        */
+<span class="lineNum">      45 </span>                :            :       template &lt;typename V&gt;
+<span class="lineNum">      46 </span>                :            :       struct Convert {
+<span class="lineNum">      47 </span>                :            :         /**
+<span class="lineNum">      48 </span>                :            :          * Convert input type to defined type
+<span class="lineNum">      49 </span>                :            :          * @tparam T - input type
+<span class="lineNum">      50 </span>                :            :          * @param x - input value
+<span class="lineNum">      51 </span>                :            :          * @return optional of output type from input value
+<a name="52"><span class="lineNum">      52 </span>                :            :          */</a>
+<span class="lineNum">      53 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">      54 </span>                :<span class="lineCov">       1305 :         auto operator()(T &amp;&amp;x) {</span>
+<span class="lineNum">      55 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">       1305 :           return nonstd::optional&lt;V&gt;(x);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 14 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>][<span class="branchCov" title="Branch 20 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 26 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>][<span class="branchCov" title="Branch 32 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 38 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 39 was not taken"> - </span>][<span class="branchCov" title="Branch 44 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 45 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 50 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 51 was not taken"> - </span>][<span class="branchCov" title="Branch 56 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 57 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchCov" title="Branch 1 was taken 65 times"> + </span>][<span class="branchCov" title="Branch 51 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 52 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 57 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 58 was not taken"> - </span>][<span class="branchCov" title="Branch 63 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 64 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 68 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 69 was not taken"> - </span>][<span class="branchCov" title="Branch 72 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 73 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 78 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 79 was not taken"> - </span>][<span class="branchCov" title="Branch 84 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 85 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 90 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 91 was not taken"> - </span>][<span class="branchCov" title="Branch 96 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 97 was not taken"> - </span>]
+<span class="lineNum">      56 </span>                :            :         }
+<span class="lineNum">      57 </span>                :            :       };
+<span class="lineNum">      58 </span>                :            : 
+<span class="lineNum">      59 </span>                :            :       template &lt;size_t size&gt;
+<a name="60"><span class="lineNum">      60 </span>                :            :       struct Convert&lt;blob_t&lt;size&gt;&gt; {</a>
+<span class="lineNum">      61 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">      62 </span>                :<span class="lineCov">        286 :         auto operator()(T &amp;&amp;x) {</span>
+<span class="lineNum">      63 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        286 :           return hexstringToArray&lt;size&gt;(x);</span>
+<span class="lineNum">      64 </span>                :            :         }
+<span class="lineNum">      65 </span>                :            :       };
+<span class="lineNum">      66 </span>                :            : 
+<span class="lineNum">      67 </span>                :            :       /**
+<span class="lineNum">      68 </span>                :            :        * Deserialize field from given document with given type
+<span class="lineNum">      69 </span>                :            :        * @tparam T - getter return type
+<span class="lineNum">      70 </span>                :            :        * @tparam D - document type
+<span class="lineNum">      71 </span>                :            :        * @param document - document value for deserialization
+<span class="lineNum">      72 </span>                :            :        * @param field - field name for deserialization
+<span class="lineNum">      73 </span>                :            :        * @return deserialized field on success, nullopt otherwise
+<a name="74"><span class="lineNum">      74 </span>                :            :        */</a>
+<span class="lineNum">      75 </span>                :            :       template &lt;typename T, typename D&gt;
+<span class="lineNum">      76 </span>                :<span class="lineCov">       2033 :       nonstd::optional&lt;T&gt; deserializeField(const D &amp;document,</span>
+<span class="lineNum">      77 </span>                :            :                                            const std::string &amp;field) {
+<span class="lineNum">      78 </span>  [<span class="branchCov" title="Branch 0 was taken 1007 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 1007 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">       4060 :         if (document.HasMember(field.c_str())</span>
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 4 was taken 1007 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 176 times"> + </span><span class="branchCov" title="Branch 7 was taken 1 time"> + </span> 
+<span class="lineNum">         </span> <span class="branchCov" title="Branch 8 was taken 175 times"> + </span><span class="branchCov" title="Branch 9 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 10 was taken 175 times"> + </span><span class="branchCov" title="Branch 11 was taken 2 times"> + </span> 
+<span class="lineNum">         </span>   <span class="branchCov" title="Branch 12 was taken 400 times"> + </span><span class="branchCov" title="Branch 13 was taken 2 times"> + </span><span class="branchCov" title="Branch 14 was taken 400 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 16 was taken 400 times"> + </span><span class="branchCov" title="Branch 17 was taken 2 times"> + </span><span class="branchCov" title="Branch 18 was taken 233 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span> 
+<span class="lineNum">         </span> <span class="branchCov" title="Branch 20 was taken 233 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 233 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span> 
+<span class="lineNum">         </span>   <span class="branchCov" title="Branch 24 was taken 170 times"> + </span><span class="branchCov" title="Branch 25 was taken 2 times"> + </span><span class="branchCov" title="Branch 26 was taken 170 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>]
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 28 was taken 170 times"> + </span><span class="branchCov" title="Branch 29 was taken 2 times"> + </span><span class="branchCov" title="Branch 30 was taken 41 times"> + </span><span class="branchCov" title="Branch 31 was taken 1 time"> + </span> 
+<span class="lineNum">         </span> <span class="branchCov" title="Branch 32 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 41 times"> + </span><span class="branchCov" title="Branch 35 was taken 1 time"> + </span>]
+<span class="lineNum">      79 </span>                :<span class="lineCov">       4060 :             and document[field.c_str()].template Is&lt;T&gt;()) {</span>
+<span class="lineNum">      80 </span>[<span class="branchCov" title="Branch 4 was taken 1007 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 175 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]:<span class="lineCov">       2026 :           return document[field.c_str()].template Get&lt;T&gt;();</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 20 was taken 336 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 85 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 36 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>][<span class="branchCov" title="Branch 42 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 43 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 34 was taken 130 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 64 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 26 was taken 148 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>]
+<span class="lineNum">      81 </span>                :            :         }
+<span class="lineNum">      82 </span>                :<span class="lineCov">       2033 :         return nonstd::nullopt;</span>
+<span class="lineNum">      83 </span>                :            :       }
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :       /**
+<span class="lineNum">      86 </span>                :            :        * Functor for deserialization from given document
+<span class="lineNum">      87 </span>                :            :        * @tparam D - document type
+<span class="lineNum">      88 </span>                :            :        */
+<span class="lineNum">      89 </span>                :            :       template &lt;typename D&gt;
+<span class="lineNum">      90 </span>                :            :       struct FieldDeserializer {
+<span class="lineNum">      91 </span>                :            :         /**
+<a name="92"><span class="lineNum">      92 </span>                :            :          * @param document - document for field deserialization</a>
+<span class="lineNum">      93 </span>                :            :          */
+<span class="lineNum">      94 </span>                :<span class="lineCov">        741 :         explicit FieldDeserializer(const D &amp;document) : document(document) {}</span>
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            :         /**
+<span class="lineNum">      97 </span>                :            :          * Create function, which deserializes document field,
+<span class="lineNum">      98 </span>                :            :          * transforms the value to required type, and
+<span class="lineNum">      99 </span>                :            :          * assigns it to block member
+<span class="lineNum">     100 </span>                :            :          * @tparam T - getter return type
+<span class="lineNum">     101 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     102 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     103 </span>                :            :          * @tparam Convert - transform function type
+<span class="lineNum">     104 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     105 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     106 </span>                :            :          * @param transform - transform function from T to V
+<span class="lineNum">     107 </span>                :            :          * @return function, which takes block, returns block with deserialized
+<span class="lineNum">     108 </span>                :            :          * member on success, nullopt otherwise
+<span class="lineNum">     109 </span>                :            :          */
+<span class="lineNum">     110 </span>                :            :         template &lt;typename T,
+<span class="lineNum">     111 </span>                :            :                   typename V,
+<a name="112"><span class="lineNum">     112 </span>                :            :                   typename B,</a>
+<span class="lineNum">     113 </span>                :            :                   typename Convert = Convert&lt;V&gt;&gt;
+<span class="lineNum">     114 </span>                :<span class="lineCov">       1748 :         auto deserialize(V B::*member,</span>
+<a name="115"><span class="lineNum">     115 </span>                :            :                          const std::string &amp;field,</a>
+<span class="lineNum">     116 </span>                :            :                          Convert transform = Convert()) {
+<span class="lineNum">     117 </span>                :<span class="lineCov">       5216 :           return [this, member, field, transform](auto block) {</span>
+<span class="lineNum">     118 </span>                :<span class="lineCov">       1720 :             return deserializeField&lt;T&gt;(document, field) | transform</span>
+<span class="lineNum">     119 </span>                :            :                 | assignObjectField(block, member);
+<span class="lineNum">     120 </span>[<span class="branchCov" title="Branch 3 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">       3468 :           };</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 23 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 26 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>][<span class="branchCov" title="Branch 29 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 30 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 46 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 49 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>][<span class="branchCov" title="Branch 63 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 64 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 66 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 67 was not taken"> - </span>][<span class="branchCov" title="Branch 69 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 70 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 83 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 84 was not taken"> - </span>][<span class="branchCov" title="Branch 86 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 87 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 89 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 90 was not taken"> - </span>][<span class="branchCov" title="Branch 103 was taken 273 times"> + </span><span class="branchNoCov" title="Branch 104 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 106 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 107 was not taken"> - </span>][<span class="branchCov" title="Branch 109 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 110 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 123 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 124 was not taken"> - </span>][<span class="branchCov" title="Branch 126 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 127 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 129 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 130 was not taken"> - </span>][<span class="branchCov" title="Branch 143 was taken 178 times"> + </span><span class="branchNoCov" title="Branch 144 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 146 was taken 178 times"> + </span><span class="branchNoCov" title="Branch 147 was not taken"> - </span>][<span class="branchCov" title="Branch 149 was taken 178 times"> + </span><span class="branchNoCov" title="Branch 150 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 163 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 164 was not taken"> - </span>][<span class="branchCov" title="Branch 166 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 167 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 169 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 170 was not taken"> - </span>][<span class="branchCov" title="Branch 183 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 184 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 186 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 187 was not taken"> - </span>][<span class="branchCov" title="Branch 196 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 197 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 199 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 200 was not taken"> - </span>][<span class="branchCov" title="Branch 209 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 210 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 212 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 213 was not taken"> - </span>][<span class="branchCov" title="Branch 215 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 216 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 229 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 230 was not taken"> - </span>][<span class="branchCov" title="Branch 232 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 233 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 235 was taken 20 times"> + </span><span class="branchNoCov" title="Branch 236 was not taken"> - </span>][<span class="branchCov" title="Branch 249 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 250 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 252 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 253 was not taken"> - </span>][<span class="branchCov" title="Branch 255 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 256 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 16 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>][<span class="branchCov" title="Branch 19 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 28 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>][<span class="branchCov" title="Branch 31 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 34 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>][<span class="branchCov" title="Branch 37 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 50 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 51 was not taken"> - </span>][<span class="branchCov" title="Branch 53 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 54 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 56 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 57 was not taken"> - </span>][<span class="branchCov" title="Branch 59 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 60 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 72 was taken 216 times"> + </span><span class="branchNoCov" title="Branch 73 was not taken"> - </span>][<span class="branchCov" title="Branch 75 was taken 216 times"> + </span><span class="branchNoCov" title="Branch 76 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 78 was taken 216 times"> + </span><span class="branchNoCov" title="Branch 79 was not taken"> - </span>][<span class="branchCov" title="Branch 81 was taken 216 times"> + </span><span class="branchNoCov" title="Branch 82 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 94 was taken 239 times"> + </span><span class="branchNoCov" title="Branch 95 was not taken"> - </span>][<span class="branchCov" title="Branch 97 was taken 239 times"> + </span><span class="branchNoCov" title="Branch 98 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 100 was taken 239 times"> + </span><span class="branchNoCov" title="Branch 101 was not taken"> - </span>][<span class="branchCov" title="Branch 116 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 117 was not taken"> - </span>]
+<span class="lineNum">         </span>   [<span class="branchCov" title="Branch 119 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 120 was not taken"> - </span>][<span class="branchCov" title="Branch 122 was taken 132 times"> + </span>]
+<span class="lineNum">         </span>   [<span class="branchCov" title="Branch 125 was taken 132 times"> + </span>][<span class="branchCov" title="Branch 189 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 190 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 203 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 204 was not taken"> - </span>][<span class="branchCov" title="Branch 206 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 207 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 209 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 210 was not taken"> - </span>][<span class="branchCov" title="Branch 223 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 224 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 226 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 227 was not taken"> - </span>][<span class="branchCov" title="Branch 229 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 230 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 243 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 244 was not taken"> - </span>][<span class="branchCov" title="Branch 246 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 247 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 249 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 250 was not taken"> - </span>][<span class="branchCov" title="Branch 263 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 264 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 266 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 267 was not taken"> - </span>][<span class="branchCov" title="Branch 269 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 270 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 283 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 284 was not taken"> - </span>][<span class="branchCov" title="Branch 286 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 287 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 289 was taken 46 times"> + </span><span class="branchNoCov" title="Branch 290 was not taken"> - </span>][<span class="branchCov" title="Branch 303 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 304 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 306 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 307 was not taken"> - </span>][<span class="branchCov" title="Branch 309 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 310 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 323 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 324 was not taken"> - </span>][<span class="branchCov" title="Branch 326 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 327 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 329 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 330 was not taken"> - </span>][<span class="branchCov" title="Branch 343 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 344 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 346 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 347 was not taken"> - </span>][<span class="branchCov" title="Branch 349 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 350 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 363 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 364 was not taken"> - </span>][<span class="branchCov" title="Branch 366 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 367 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 369 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 370 was not taken"> - </span>][<span class="branchCov" title="Branch 383 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 384 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 386 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 387 was not taken"> - </span>][<span class="branchCov" title="Branch 389 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 390 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 403 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 404 was not taken"> - </span>][<span class="branchCov" title="Branch 406 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 407 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 409 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 410 was not taken"> - </span>][<span class="branchCov" title="Branch 423 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 424 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 426 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 427 was not taken"> - </span>][<span class="branchCov" title="Branch 429 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 430 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 443 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 444 was not taken"> - </span>][<span class="branchCov" title="Branch 446 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 447 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 449 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 450 was not taken"> - </span>][<span class="branchCov" title="Branch 463 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 464 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 466 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 467 was not taken"> - </span>][<span class="branchCov" title="Branch 469 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 470 was not taken"> - </span>]
+<span class="lineNum">     121 </span>                :            :         }
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :         /**
+<span class="lineNum">     124 </span>                :            :          * Deserialize field of Uint type to given member field of block
+<span class="lineNum">     125 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     126 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     127 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     128 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     129 </span>                :            :          * @return @see deserialize
+<a name="130"><span class="lineNum">     130 </span>                :            :          */</a>
+<span class="lineNum">     131 </span>                :            :         template &lt;typename V, typename B&gt;
+<span class="lineNum">     132 </span>                :<span class="lineCov">         94 :         auto Uint(V B::*member, const std::string &amp;field) {</span>
+<span class="lineNum">     133 </span>[<span class="branchCov" title="Branch 1 was taken 71 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 23 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         94 :           return deserialize&lt;uint32_t&gt;(member, field);</span>
+<span class="lineNum">     134 </span>                :            :         }
+<span class="lineNum">     135 </span>                :            : 
+<span class="lineNum">     136 </span>                :            :         /**
+<span class="lineNum">     137 </span>                :            :          * Deserialize field of Uint64 type to given member field of block
+<span class="lineNum">     138 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     139 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     140 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     141 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     142 </span>                :            :          * @return @see deserialize
+<a name="143"><span class="lineNum">     143 </span>                :            :          */</a>
+<span class="lineNum">     144 </span>                :            :         template &lt;typename V, typename B&gt;
+<span class="lineNum">     145 </span>                :<span class="lineCov">        354 :         auto Uint64(V B::*member, const std::string &amp;field) {</span>
+<span class="lineNum">     146 </span>        [<span class="branchCov" title="Branch 1 was taken 354 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        354 :           return deserialize&lt;uint64_t&gt;(member, field);</span>
+<span class="lineNum">     147 </span>                :            :         }
+<span class="lineNum">     148 </span>                :            : 
+<span class="lineNum">     149 </span>                :            :         /**
+<span class="lineNum">     150 </span>                :            :          * Deserialize field of Bool type to given member field of block
+<span class="lineNum">     151 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     152 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     153 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     154 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     155 </span>                :            :          * @return @see deserialize
+<span class="lineNum">     156 </span>                :            :          */
+<span class="lineNum">     157 </span>                :            :         template &lt;typename V, typename B&gt;
+<span class="lineNum">     158 </span>                :            :         auto Bool(V B::*member, const std::string &amp;field) {
+<span class="lineNum">     159 </span>                :            :           return deserialize&lt;bool&gt;(member, field);
+<span class="lineNum">     160 </span>                :            :         }
+<span class="lineNum">     161 </span>                :            : 
+<span class="lineNum">     162 </span>                :            :         /**
+<span class="lineNum">     163 </span>                :            :          * Deserialize field of String type to given member field of block
+<span class="lineNum">     164 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     165 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     166 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     167 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     168 </span>                :            :          * @return @see deserialize
+<a name="169"><span class="lineNum">     169 </span>                :            :          */</a>
+<span class="lineNum">     170 </span>                :            :         template &lt;typename V, typename B&gt;
+<span class="lineNum">     171 </span>                :<span class="lineCov">        902 :         auto String(V B::*member, const std::string &amp;field) {</span>
+<span class="lineNum">     172 </span>[<span class="branchCov" title="Branch 1 was taken 29 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 27 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        902 :           return deserialize&lt;std::string&gt;(member, field);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 232 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 178 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 74 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 68 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 37 was taken 43 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span>][<span class="branchCov" title="Branch 40 was taken 86 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 46 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 49 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 50 was not taken"> - </span>][<span class="branchCov" title="Branch 52 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 53 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 55 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 56 was not taken"> - </span>]
+<span class="lineNum">     173 </span>                :            :         }
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            :         /**
+<span class="lineNum">     176 </span>                :            :          * Deserialize field of String type
+<span class="lineNum">     177 </span>                :            :          * @param field - field name for deserialization
+<a name="178"><span class="lineNum">     178 </span>                :            :          * @return deserialized field on success, nullopt otherwise</a>
+<span class="lineNum">     179 </span>                :            :          */
+<span class="lineNum">     180 </span>                :<span class="lineCov">        313 :         auto String(const std::string &amp;field) {</span>
+<span class="lineNum">     181 </span>                :<span class="lineCov">        313 :           return deserializeField&lt;std::string&gt;(document, field);</span>
+<span class="lineNum">     182 </span>                :            :         }
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            :         /**
+<span class="lineNum">     185 </span>                :            :          * Deserialize field of Array type to given member field of block,
+<span class="lineNum">     186 </span>                :            :          * using provided transform function
+<span class="lineNum">     187 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     188 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     189 </span>                :            :          * @tparam Convert - transform function type
+<span class="lineNum">     190 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     191 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     192 </span>                :            :          * @param transform - transform function from Array to V
+<span class="lineNum">     193 </span>                :            :          * @return @see deserialize
+<a name="194"><span class="lineNum">     194 </span>                :            :          */</a>
+<span class="lineNum">     195 </span>                :            :         template &lt;typename V, typename B, typename Convert = Convert&lt;V&gt;&gt;
+<span class="lineNum">     196 </span>                :<span class="lineCov">        312 :         auto Array(V B::*member,</span>
+<span class="lineNum">     197 </span>                :            :                    const std::string &amp;field,
+<span class="lineNum">     198 </span>                :            :                    Convert transform = Convert()) {
+<span class="lineNum">     199 </span>                :            :           return deserialize&lt;rapidjson::Value::ConstArray&gt;(
+<span class="lineNum">     200 </span>                :<span class="lineCov">        312 :               member, field, transform);</span>
+<span class="lineNum">     201 </span>                :            :         }
+<span class="lineNum">     202 </span>                :            : 
+<span class="lineNum">     203 </span>                :            :         /**
+<span class="lineNum">     204 </span>                :            :          * Deserialize field of Object type to given member field of block
+<span class="lineNum">     205 </span>                :            :          * @tparam V - block member type
+<span class="lineNum">     206 </span>                :            :          * @tparam B - block type
+<span class="lineNum">     207 </span>                :            :          * @param member - pointer to member in block
+<span class="lineNum">     208 </span>                :            :          * @param field - field name for deserialization
+<span class="lineNum">     209 </span>                :            :          * @return @see deserialize
+<a name="210"><span class="lineNum">     210 </span>                :            :          */</a>
+<span class="lineNum">     211 </span>                :            :         template &lt;typename V, typename B, typename Convert = Convert&lt;V&gt;&gt;
+<span class="lineNum">     212 </span>                :<span class="lineCov">         86 :         auto Object(V B::*member,</span>
+<span class="lineNum">     213 </span>                :            :                     const std::string &amp;field,
+<span class="lineNum">     214 </span>                :            :                     Convert transform = Convert()) {
+<span class="lineNum">     215 </span>                :            :           return deserialize&lt;rapidjson::Value::ConstObject&gt;(
+<span class="lineNum">     216 </span>                :<span class="lineCov">         86 :               member, field, transform);</span>
+<span class="lineNum">     217 </span>                :            :         }
+<span class="lineNum">     218 </span>                :            : 
+<span class="lineNum">     219 </span>                :            :         // document for deserialization
+<span class="lineNum">     220 </span>                :            :         const D &amp;document;
+<span class="lineNum">     221 </span>                :            :       };
+<span class="lineNum">     222 </span>                :            : 
+<span class="lineNum">     223 </span>                :            :       /**
+<span class="lineNum">     224 </span>                :            :        * Factory method for FieldDeserializer functor
+<span class="lineNum">     225 </span>                :            :        * @tparam D - document type
+<span class="lineNum">     226 </span>                :            :        * @param document - document for deserialization
+<span class="lineNum">     227 </span>                :            :        * @return FieldDeserializer instance for given arguments
+<a name="228"><span class="lineNum">     228 </span>                :            :        */</a>
+<span class="lineNum">     229 </span>                :            :       template &lt;typename D&gt;
+<span class="lineNum">     230 </span>                :<span class="lineCov">        741 :       auto makeFieldDeserializer(const D &amp;document) {</span>
+<span class="lineNum">     231 </span>                :<span class="lineCov">        741 :         return FieldDeserializer&lt;D&gt;(document);</span>
+<span class="lineNum">     232 </span>                :            :       }
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :       template &lt;&gt;
+<a name="235"><span class="lineNum">     235 </span>                :            :       struct Convert&lt;Signature&gt; {</a>
+<span class="lineNum">     236 </span>                :            :         template &lt;typename T&gt;
+<span class="lineNum">     237 </span>                :<span class="lineCov">         42 :         auto operator()(T &amp;&amp;x) {</span>
+<span class="lineNum">     238 </span>        [<span class="branchCov" title="Branch 1 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         42 :           auto des = makeFieldDeserializer(x);</span>
+<span class="lineNum">     239 </span>                :            :           return nonstd::make_optional&lt;Signature&gt;()
+<span class="lineNum">     240 </span>                :            :               | des.String(&amp;Signature::pubkey, &quot;pubkey&quot;)
+<span class="lineNum">     241 </span>[<span class="branchCov" title="Branch 2 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         42 :               | des.String(&amp;Signature::signature, &quot;signature&quot;);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 15 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 21 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>]
+<span class="lineNum">     242 </span>                :            :         }
+<span class="lineNum">     243 </span>                :            :       };
+<span class="lineNum">     244 </span>                :            : 
+<span class="lineNum">     245 </span>                :            :       template &lt;&gt;
+<a name="246"><span class="lineNum">     246 </span>                :            :       struct Convert&lt;Block::SignaturesType&gt; {</a>
+<a name="247"><span class="lineNum">     247 </span>                :            :         template &lt;typename T&gt;</a>
+<a name="248"><span class="lineNum">     248 </span>                :<span class="lineCov">        151 :         auto operator()(T &amp;&amp;x) {</span></a>
+<a name="249"><span class="lineNum">     249 </span>                :<span class="lineCov">         22 :           auto acc_signatures = [](auto init, auto &amp;x) {</span></a>
+<span class="lineNum">     250 </span>                :<span class="lineCov">         22 :             return init | [&amp;x](auto signatures) {</span>
+<span class="lineNum">     251 </span>                :<span class="lineCov">         22 :               return Convert&lt;Signature&gt;()(x) | [&amp;signatures](auto signature) {</span>
+<span class="lineNum">     252 </span>                :<span class="lineCov">         22 :                 signatures.push_back(signature);</span>
+<span class="lineNum">     253 </span>                :<span class="lineCov">         22 :                 return nonstd::make_optional(signatures);</span>
+<span class="lineNum">     254 </span>                :            :               };
+<span class="lineNum">     255 </span>[<span class="branchCov" title="Branch 1 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         22 :             };</span>
+<span class="lineNum">     256 </span>        [<span class="branchCov" title="Branch 2 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         22 :           };</span>
+<span class="lineNum">     257 </span>                :            :           return std::accumulate(x.begin(),
+<span class="lineNum">     258 </span>                :            :                                  x.end(),
+<span class="lineNum">     259 </span>                :            :                                  nonstd::make_optional&lt;Block::SignaturesType&gt;(),
+<span class="lineNum">     260 </span>[<span class="branchCov" title="Branch 1 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        151 :                                  acc_signatures);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 151 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     261 </span>                :            :         }
+<span class="lineNum">     262 </span>                :            :       };
+<span class="lineNum">     263 </span>                :            : 
+<span class="lineNum">     264 </span>                :            :       template &lt;&gt;
+<a name="265"><span class="lineNum">     265 </span>                :            :       struct Convert&lt;GetTransactions::TxHashCollectionType&gt; {</a>
+<a name="266"><span class="lineNum">     266 </span>                :            :         template &lt;typename T&gt;</a>
+<span class="lineNum">     267 </span>                :<span class="lineCov">          2 :         auto operator()(T &amp;&amp;x) {</span>
+<a name="268"><span class="lineNum">     268 </span>                :<span class="lineCov">          4 :           auto acc_hashes = [](auto init, auto &amp;x) {</span></a>
+<span class="lineNum">     269 </span>                :            :             return init | [&amp;x](auto tx_hashes)
+<span class="lineNum">     270 </span>                :<span class="lineCov">          4 :                        -&gt; nonstd::optional&lt;</span>
+<span class="lineNum">     271 </span>                :<span class="lineCov">          8 :                            GetTransactions::TxHashCollectionType&gt; {</span>
+<span class="lineNum">     272 </span>                :            :               // If invalid type included, returns nullopt
+<span class="lineNum">     273 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">          4 :               if (not x.IsString()) {</span>
+<span class="lineNum">     274 </span>                :<span class="lineNoCov">          0 :                 return nonstd::nullopt;</span>
+<span class="lineNum">     275 </span>                :            :               }
+<span class="lineNum">     276 </span>                :            :               auto tx_hash_opt =
+<span class="lineNum">     277 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          8 :                   Convert&lt;GetTransactions::TxHashType&gt;()(x.GetString());</span>
+<span class="lineNum">     278 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          4 :               if (not tx_hash_opt) {</span>
+<span class="lineNum">     279 </span>                :            :                 // If the the hash is wrong, just skip.
+<a name="280"><span class="lineNum">     280 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                 return nonstd::make_optional(tx_hashes);</span></a>
+<span class="lineNum">     281 </span>                :            :               }
+<span class="lineNum">     282 </span>                :<span class="lineCov">          3 :               return tx_hash_opt | [&amp;tx_hashes](auto tx_hash) {</span>
+<span class="lineNum">     283 </span>                :<span class="lineCov">          3 :                 tx_hashes.push_back(tx_hash);</span>
+<span class="lineNum">     284 </span>                :<span class="lineCov">          3 :                 return nonstd::make_optional(tx_hashes);</span>
+<span class="lineNum">     285 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :               };</span>
+<span class="lineNum">     286 </span>                :            :             };
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :           };</span>
+<span class="lineNum">     288 </span>                :            :           return std::accumulate(
+<span class="lineNum">     289 </span>                :            :               x.begin(),
+<span class="lineNum">     290 </span>                :            :               x.end(),
+<span class="lineNum">     291 </span>                :            :               nonstd::make_optional&lt;GetTransactions::TxHashCollectionType&gt;(),
+<span class="lineNum">     292 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :               acc_hashes);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     293 </span>                :            :         }
+<span class="lineNum">     294 </span>                :            :       };
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :       /**
+<span class="lineNum">     297 </span>                :            :        * Serialize signature to JSON with given allocator
+<span class="lineNum">     298 </span>                :            :        * @param signature - signature for serialization
+<span class="lineNum">     299 </span>                :            :        * @param allocator - allocator for JSON value
+<span class="lineNum">     300 </span>                :            :        * @return JSON value with signature
+<span class="lineNum">     301 </span>                :            :        */
+<span class="lineNum">     302 </span>                :            :       rapidjson::Value serializeSignature(
+<span class="lineNum">     303 </span>                :            :           const Signature &amp;signature,
+<span class="lineNum">     304 </span>                :            :           rapidjson::Document::AllocatorType &amp;allocator);
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :       /**
+<span class="lineNum">     307 </span>                :            :        * Try to parse JSON from string
+<span class="lineNum">     308 </span>                :            :        * @param string - string for parsing
+<span class="lineNum">     309 </span>                :            :        * @return JSON document on success, nullopt otherwise
+<span class="lineNum">     310 </span>                :            :        */
+<span class="lineNum">     311 </span>                :            :       nonstd::optional&lt;rapidjson::Document&gt; stringToJson(
+<span class="lineNum">     312 </span>                :            :           const std::string &amp;string);
+<span class="lineNum">     313 </span>                :            : 
+<span class="lineNum">     314 </span>                :            :       /**
+<span class="lineNum">     315 </span>                :            :        * Pretty print JSON document to string
+<span class="lineNum">     316 </span>                :            :        * @param document - document for printing
+<span class="lineNum">     317 </span>                :            :        * @return pretty printed JSON document
+<span class="lineNum">     318 </span>                :            :        */
+<span class="lineNum">     319 </span>                :            :       std::string jsonToString(const rapidjson::Document &amp;document);
+<span class="lineNum">     320 </span>                :            :     }  // namespace converters
+<span class="lineNum">     321 </span>                :            :   }    // namespace model
+<span class="lineNum">     322 </span>                :            : }  // namespace iroha
+<span class="lineNum">     323 </span>                :            : 
+<span class="lineNum">     324 </span>                :            : #endif  // IROHA_JSON_COMMON_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/converters/impl/pb_command_factory.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">irohad/model/converters/impl</a> - pb_command_factory.cpp<span style="font-size: 80%;"> (source / <a href="pb_command_factory.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">376</td>
+            <td class="headerCovTableEntry">378</td>
+            <td class="headerCovTableEntryHi">99.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">361</td>
+            <td class="headerCovTableEntry">658</td>
+            <td class="headerCovTableEntryLo">54.9 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;model/converters/pb_command_factory.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &lt;boost/assign/list_inserter.hpp&gt;
+<span class="lineNum">      20 </span>                :            : #include &quot;model/converters/pb_common.hpp&quot;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : namespace iroha {
+<span class="lineNum">      23 </span>                :            :   namespace model {
+<a name="24"><span class="lineNum">      24 </span>                :            :     namespace converters {</a>
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>[<span class="branchCov" title="Branch 2 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">       2168 :       PbCommandFactory::PbCommandFactory() {</span>
+<span class="lineNum">      27 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :         boost::assign::insert(pb_role_map_)</span>
+<span class="lineNum">      28 </span>                :            :             // Can Get My Account Detail
+<span class="lineNum">      29 </span>                :            :             (protocol::RolePermission::can_get_my_acc_detail,
+<span class="lineNum">      30 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_my_acc_detail)</span>
+<span class="lineNum">      31 </span>                :            :             // Can Get My Account Assets
+<span class="lineNum">      32 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_my_acc_ast, can_get_my_acc_ast)</span>
+<span class="lineNum">      33 </span>                :            :             // Can Get My Signatories
+<span class="lineNum">      34 </span>                :            :             (protocol::RolePermission::can_get_my_signatories,
+<span class="lineNum">      35 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_my_signatories)</span>
+<span class="lineNum">      36 </span>                :            :             // Can set quorum
+<span class="lineNum">      37 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_set_quorum, can_set_quorum)</span>
+<span class="lineNum">      38 </span>                :            :             // Can get my account transactions
+<span class="lineNum">      39 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_my_acc_txs, can_get_my_acc_txs)</span>
+<span class="lineNum">      40 </span>                :            :             // Can get my account
+<span class="lineNum">      41 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_my_account, can_get_my_account)</span>
+<span class="lineNum">      42 </span>                :            :             // Can get all account assets
+<span class="lineNum">      43 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_all_acc_ast, can_get_all_acc_ast)</span>
+<span class="lineNum">      44 </span>                :            :             // Can get all account asset transactions
+<span class="lineNum">      45 </span>                :            :             (protocol::RolePermission::can_get_all_acc_ast_txs,
+<span class="lineNum">      46 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_all_acc_ast_txs)</span>
+<span class="lineNum">      47 </span>                :            :             // Can get my transactions
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_my_txs, can_get_my_txs)</span>
+<span class="lineNum">      49 </span>                :            :             // Can get all transactions
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_all_txs, can_get_all_txs)</span>
+<span class="lineNum">      51 </span>                :            :             // Can Get all account transactions
+<span class="lineNum">      52 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_all_acc_txs, can_get_all_acc_txs)</span>
+<span class="lineNum">      53 </span>                :            :             // Can get all account
+<span class="lineNum">      54 </span>                :            :             (protocol::RolePermission::can_get_all_accounts,
+<span class="lineNum">      55 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_all_accounts)</span>
+<span class="lineNum">      56 </span>                :            :             // Can remove signatory
+<span class="lineNum">      57 </span>                :            :             (protocol::RolePermission::can_remove_signatory,
+<span class="lineNum">      58 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_remove_signatory)</span>
+<span class="lineNum">      59 </span>                :            :             // Can add signatory
+<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_add_signatory, can_add_signatory)</span>
+<span class="lineNum">      61 </span>                :            :             // Can create domain
+<span class="lineNum">      62 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_create_domain, can_create_domain)</span>
+<span class="lineNum">      63 </span>                :            :             // Can create account
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_create_account, can_create_account)</span>
+<span class="lineNum">      65 </span>                :            :             // Can add peer
+<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_add_peer, can_add_peer)</span>
+<span class="lineNum">      67 </span>                :            :             // Can add asset quantity
+<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_add_asset_qty, can_add_asset_qty)</span>
+<span class="lineNum">      69 </span>                :            :             // Can subtract asset quantity
+<span class="lineNum">      70 </span>                :            :             (protocol::RolePermission::can_subtract_asset_qty,
+<span class="lineNum">      71 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_subtract_asset_qty)</span>
+<span class="lineNum">      72 </span>                :            :             // Can append role
+<span class="lineNum">      73 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_append_role, can_append_role)</span>
+<span class="lineNum">      74 </span>                :            :             // Can append role
+<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_detach_role, can_detach_role)</span>
+<span class="lineNum">      76 </span>                :            :             // Can create asset
+<span class="lineNum">      77 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_create_asset, can_create_asset)</span>
+<span class="lineNum">      78 </span>                :            :             // Can create role
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_create_role, can_create_role)</span>
+<span class="lineNum">      80 </span>                :            :             // Can get all signatories
+<span class="lineNum">      81 </span>                :            :             (protocol::RolePermission::can_get_all_signatories,
+<span class="lineNum">      82 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_all_signatories)</span>
+<span class="lineNum">      83 </span>                :            :             // Can get my account assets transactions
+<span class="lineNum">      84 </span>                :            :             (protocol::RolePermission::can_get_my_acc_ast_txs,
+<span class="lineNum">      85 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_get_my_acc_ast_txs)</span>
+<span class="lineNum">      86 </span>                :            :             // Can transfer
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_transfer, can_transfer)</span>
+<span class="lineNum">      88 </span>                :            :             // Can receive
+<span class="lineNum">      89 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_receive, can_receive)</span>
+<span class="lineNum">      90 </span>                :            :             // Can read assets
+<span class="lineNum">      91 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_read_assets, can_read_assets)</span>
+<span class="lineNum">      92 </span>                :            :             // Can grant set quorum
+<span class="lineNum">      93 </span>                :            :             (protocol::RolePermission::can_grant_set_quorum,
+<span class="lineNum">      94 </span>[<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3252 :              can_grant + can_set_quorum)</span>
+<span class="lineNum">      95 </span>                :            :             // Can grant remove signatory
+<span class="lineNum">      96 </span>                :            :             (protocol::RolePermission::can_grant_remove_signatory,
+<span class="lineNum">      97 </span>[<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3252 :              can_grant + can_remove_signatory)</span>
+<span class="lineNum">      98 </span>                :            :             // Can grant add signatory
+<span class="lineNum">      99 </span>                :            :             (protocol::RolePermission::can_grant_add_signatory,
+<span class="lineNum">     100 </span>[<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3252 :              can_grant + can_add_signatory)</span>
+<span class="lineNum">     101 </span>                :            :             // Can grant + can_transfer
+<span class="lineNum">     102 </span>                :            :             (protocol::RolePermission::can_grant_can_transfer,
+<span class="lineNum">     103 </span>[<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3252 :              can_grant + can_transfer)</span>
+<span class="lineNum">     104 </span>                :            :             // Can get roles
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::RolePermission::can_get_roles, can_get_roles)</span>
+<span class="lineNum">     106 </span>                :            :             // Can write details to other accounts
+<span class="lineNum">     107 </span>                :            :             (protocol::RolePermission::can_grant_can_set_detail,
+<span class="lineNum">     108 </span>[<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">       3252 :              can_grant + can_set_detail);</span>
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :         boost::assign::insert(pb_grant_map_)</span>
+<span class="lineNum">     111 </span>                :            :             // Can add my signatory
+<span class="lineNum">     112 </span>                :            :             (protocol::GrantablePermission::can_add_my_signatory,
+<span class="lineNum">     113 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_add_signatory)</span>
+<span class="lineNum">     114 </span>                :            :             // Can remove my signatory
+<span class="lineNum">     115 </span>                :            :             (protocol::GrantablePermission::can_remove_my_signatory,
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_remove_signatory)</span>
+<span class="lineNum">     117 </span>                :            :             // Can set my quorum
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :             (protocol::GrantablePermission::can_set_my_quorum, can_set_quorum)</span>
+<span class="lineNum">     119 </span>                :            :             // Can write details to other accounts
+<span class="lineNum">     120 </span>                :            :             (protocol::GrantablePermission::can_set_my_account_detail,
+<span class="lineNum">     121 </span>        [<span class="branchCov" title="Branch 1 was taken 1084 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">       1084 :              can_set_detail);</span>
+<span class="lineNum">     122 </span>                :<span class="lineCov">       1084 :       }</span>
+<a name="123"><span class="lineNum">     123 </span>                :            : </a>
+<span class="lineNum">     124 </span>                :            :       // asset quantity
+<span class="lineNum">     125 </span>                :<span class="lineCov">         67 :       protocol::AddAssetQuantity PbCommandFactory::serializeAddAssetQuantity(</span>
+<span class="lineNum">     126 </span>                :            :           const model::AddAssetQuantity &amp;add_asset_quantity) {
+<span class="lineNum">     127 </span>                :<span class="lineCov">         67 :         protocol::AddAssetQuantity pb_add_asset_quantity;</span>
+<span class="lineNum">     128 </span>        [<span class="branchCov" title="Branch 1 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         67 :         pb_add_asset_quantity.set_account_id(add_asset_quantity.account_id);</span>
+<span class="lineNum">     129 </span>        [<span class="branchCov" title="Branch 1 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         67 :         pb_add_asset_quantity.set_asset_id(add_asset_quantity.asset_id);</span>
+<span class="lineNum">     130 </span>        [<span class="branchCov" title="Branch 1 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         67 :         auto amount = pb_add_asset_quantity.mutable_amount();</span>
+<span class="lineNum">     131 </span>[<span class="branchCov" title="Branch 1 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         67 :         amount-&gt;CopyFrom(serializeAmount(add_asset_quantity.amount));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 67 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     132 </span>                :<span class="lineCov">         67 :         return pb_add_asset_quantity;</span>
+<a name="133"><span class="lineNum">     133 </span>                :            :       }</a>
+<span class="lineNum">     134 </span>                :            : 
+<span class="lineNum">     135 </span>                :<span class="lineCov">         12 :       model::AddAssetQuantity PbCommandFactory::deserializeAddAssetQuantity(</span>
+<span class="lineNum">     136 </span>                :            :           const protocol::AddAssetQuantity &amp;pb_add_asset_quantity) {
+<span class="lineNum">     137 </span>                :<span class="lineCov">         12 :         model::AddAssetQuantity add_asset_quantity;</span>
+<span class="lineNum">     138 </span>        [<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         12 :         add_asset_quantity.account_id = pb_add_asset_quantity.account_id();</span>
+<span class="lineNum">     139 </span>        [<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         12 :         add_asset_quantity.asset_id = pb_add_asset_quantity.asset_id();</span>
+<span class="lineNum">     140 </span>                :<span class="lineCov">         12 :         add_asset_quantity.amount =</span>
+<span class="lineNum">     141 </span>[<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         12 :             deserializeAmount(pb_add_asset_quantity.amount());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     142 </span>                :            : 
+<span class="lineNum">     143 </span>                :<span class="lineCov">         12 :         return add_asset_quantity;</span>
+<span class="lineNum">     144 </span>                :            :       }
+<span class="lineNum">     145 </span>                :            : 
+<a name="146"><span class="lineNum">     146 </span>                :            :       // subtract asset quantity</a>
+<span class="lineNum">     147 </span>                :            :       protocol::SubtractAssetQuantity
+<span class="lineNum">     148 </span>                :<span class="lineCov">          4 :       PbCommandFactory::serializeSubtractAssetQuantity(</span>
+<span class="lineNum">     149 </span>                :            :           const model::SubtractAssetQuantity &amp;subtract_asset_quantity) {
+<span class="lineNum">     150 </span>                :<span class="lineCov">          4 :         protocol::SubtractAssetQuantity pb_subtract_asset_quantity;</span>
+<span class="lineNum">     151 </span>                :<span class="lineCov">          4 :         pb_subtract_asset_quantity.set_account_id(</span>
+<span class="lineNum">     152 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :             subtract_asset_quantity.account_id);</span>
+<span class="lineNum">     153 </span>                :<span class="lineCov">          4 :         pb_subtract_asset_quantity.set_asset_id(</span>
+<span class="lineNum">     154 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :             subtract_asset_quantity.asset_id);</span>
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         auto amount = pb_subtract_asset_quantity.mutable_amount();</span>
+<span class="lineNum">     156 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         amount-&gt;CopyFrom(serializeAmount(subtract_asset_quantity.amount));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     157 </span>                :<span class="lineCov">          4 :         return pb_subtract_asset_quantity;</span>
+<span class="lineNum">     158 </span>                :            :       }
+<a name="159"><span class="lineNum">     159 </span>                :            : </a>
+<span class="lineNum">     160 </span>                :            :       model::SubtractAssetQuantity
+<span class="lineNum">     161 </span>                :<span class="lineCov">          2 :       PbCommandFactory::deserializeSubtractAssetQuantity(</span>
+<span class="lineNum">     162 </span>                :            :           const protocol::SubtractAssetQuantity &amp;pb_subtract_asset_quantity) {
+<span class="lineNum">     163 </span>                :<span class="lineCov">          2 :         model::SubtractAssetQuantity subtract_asset_quantity;</span>
+<span class="lineNum">     164 </span>                :<span class="lineCov">          2 :         subtract_asset_quantity.account_id =</span>
+<span class="lineNum">     165 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :             pb_subtract_asset_quantity.account_id();</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">          2 :         subtract_asset_quantity.asset_id =</span>
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :             pb_subtract_asset_quantity.asset_id();</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">          2 :         subtract_asset_quantity.amount =</span>
+<span class="lineNum">     169 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :             deserializeAmount(pb_subtract_asset_quantity.amount());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :<span class="lineCov">          2 :         return subtract_asset_quantity;</span>
+<span class="lineNum">     172 </span>                :            :       }
+<a name="173"><span class="lineNum">     173 </span>                :            : </a>
+<span class="lineNum">     174 </span>                :            :       // add peer
+<span class="lineNum">     175 </span>                :<span class="lineCov">         26 :       protocol::AddPeer PbCommandFactory::serializeAddPeer(</span>
+<span class="lineNum">     176 </span>                :            :           const model::AddPeer &amp;add_peer) {
+<span class="lineNum">     177 </span>                :<span class="lineCov">         26 :         protocol::AddPeer pb_add_peer;</span>
+<span class="lineNum">     178 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         26 :         pb_add_peer.set_address(add_peer.address);</span>
+<span class="lineNum">     179 </span>                :<span class="lineCov">         26 :         pb_add_peer.set_peer_key(add_peer.peer_key.data(),</span>
+<span class="lineNum">     180 </span>        [<span class="branchCov" title="Branch 1 was taken 26 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         26 :                                  add_peer.peer_key.size());</span>
+<a name="181"><span class="lineNum">     181 </span>                :<span class="lineCov">         26 :         return pb_add_peer;</span></a>
+<span class="lineNum">     182 </span>                :            :       }
+<span class="lineNum">     183 </span>                :<span class="lineCov">          4 :       model::AddPeer PbCommandFactory::deserializeAddPeer(</span>
+<span class="lineNum">     184 </span>                :            :           const protocol::AddPeer &amp;pb_add_peer) {
+<span class="lineNum">     185 </span>                :<span class="lineCov">          4 :         model::AddPeer add_peer;</span>
+<span class="lineNum">     186 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         add_peer.address = pb_add_peer.address();</span>
+<span class="lineNum">     187 </span>                :<span class="lineCov">          8 :         std::copy(pb_add_peer.peer_key().begin(),</span>
+<span class="lineNum">     188 </span>                :<span class="lineCov">          4 :                   pb_add_peer.peer_key().end(),</span>
+<span class="lineNum">     189 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :                   add_peer.peer_key.begin());</span>
+<span class="lineNum">     190 </span>                :<span class="lineCov">          4 :         return add_peer;</span>
+<span class="lineNum">     191 </span>                :            :       }
+<a name="192"><span class="lineNum">     192 </span>                :            : </a>
+<span class="lineNum">     193 </span>                :            :       // add signatory
+<span class="lineNum">     194 </span>                :<span class="lineCov">          9 :       protocol::AddSignatory PbCommandFactory::serializeAddSignatory(</span>
+<span class="lineNum">     195 </span>                :            :           const model::AddSignatory &amp;add_signatory) {
+<span class="lineNum">     196 </span>                :<span class="lineCov">          9 :         protocol::AddSignatory pb_add_signatory;</span>
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :         pb_add_signatory.set_account_id(add_signatory.account_id);</span>
+<span class="lineNum">     198 </span>                :<span class="lineCov">          9 :         pb_add_signatory.set_public_key(add_signatory.pubkey.data(),</span>
+<span class="lineNum">     199 </span>        [<span class="branchCov" title="Branch 1 was taken 9 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          9 :                                         add_signatory.pubkey.size());</span>
+<a name="200"><span class="lineNum">     200 </span>                :<span class="lineCov">          9 :         return pb_add_signatory;</span></a>
+<span class="lineNum">     201 </span>                :            :       }
+<span class="lineNum">     202 </span>                :<span class="lineCov">          3 :       model::AddSignatory PbCommandFactory::deserializeAddSignatory(</span>
+<span class="lineNum">     203 </span>                :            :           const protocol::AddSignatory &amp;pb_add_signatory) {
+<span class="lineNum">     204 </span>                :<span class="lineCov">          3 :         model::AddSignatory add_signatory;</span>
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :         add_signatory.account_id = pb_add_signatory.account_id();</span>
+<span class="lineNum">     206 </span>                :<span class="lineCov">          6 :         std::copy(pb_add_signatory.public_key().begin(),</span>
+<span class="lineNum">     207 </span>                :<span class="lineCov">          3 :                   pb_add_signatory.public_key().end(),</span>
+<span class="lineNum">     208 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :                   add_signatory.pubkey.begin());</span>
+<span class="lineNum">     209 </span>                :<span class="lineCov">          3 :         return add_signatory;</span>
+<span class="lineNum">     210 </span>                :            :       }
+<a name="211"><span class="lineNum">     211 </span>                :            : </a>
+<span class="lineNum">     212 </span>                :            :       // create asset
+<span class="lineNum">     213 </span>                :<span class="lineCov">         38 :       protocol::CreateAsset PbCommandFactory::serializeCreateAsset(</span>
+<span class="lineNum">     214 </span>                :            :           const model::CreateAsset &amp;create_asset) {
+<span class="lineNum">     215 </span>                :<span class="lineCov">         38 :         protocol::CreateAsset pb_create_asset;</span>
+<span class="lineNum">     216 </span>        [<span class="branchCov" title="Branch 1 was taken 38 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         38 :         pb_create_asset.set_asset_name(create_asset.asset_name);</span>
+<span class="lineNum">     217 </span>        [<span class="branchCov" title="Branch 1 was taken 38 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         38 :         pb_create_asset.set_domain_id(create_asset.domain_id);</span>
+<span class="lineNum">     218 </span>                :<span class="lineCov">         38 :         pb_create_asset.set_precision(create_asset.precision);</span>
+<span class="lineNum">     219 </span>                :<span class="lineCov">         38 :         return pb_create_asset;</span>
+<a name="220"><span class="lineNum">     220 </span>                :            :       }</a>
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :<span class="lineCov">          7 :       model::CreateAsset PbCommandFactory::deserializeCreateAsset(</span>
+<span class="lineNum">     223 </span>                :            :           const protocol::CreateAsset &amp;pb_create_asset) {
+<span class="lineNum">     224 </span>                :<span class="lineCov">          7 :         model::CreateAsset create_asset;</span>
+<span class="lineNum">     225 </span>        [<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          7 :         create_asset.asset_name = pb_create_asset.asset_name();</span>
+<span class="lineNum">     226 </span>        [<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          7 :         create_asset.domain_id = pb_create_asset.domain_id();</span>
+<span class="lineNum">     227 </span>                :            :         create_asset.precision =
+<span class="lineNum">     228 </span>                :<span class="lineCov">          7 :             static_cast&lt;uint8_t&gt;(pb_create_asset.precision());</span>
+<span class="lineNum">     229 </span>                :<span class="lineCov">          7 :         return create_asset;</span>
+<span class="lineNum">     230 </span>                :            :       }
+<a name="231"><span class="lineNum">     231 </span>                :            : </a>
+<span class="lineNum">     232 </span>                :            :       // create account
+<span class="lineNum">     233 </span>                :<span class="lineCov">         54 :       protocol::CreateAccount PbCommandFactory::serializeCreateAccount(</span>
+<span class="lineNum">     234 </span>                :            :           const model::CreateAccount &amp;create_account) {
+<span class="lineNum">     235 </span>                :<span class="lineCov">         54 :         protocol::CreateAccount pb_create_account;</span>
+<span class="lineNum">     236 </span>        [<span class="branchCov" title="Branch 1 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         54 :         pb_create_account.set_account_name(create_account.account_name);</span>
+<span class="lineNum">     237 </span>        [<span class="branchCov" title="Branch 1 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         54 :         pb_create_account.set_domain_id(create_account.domain_id);</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">         54 :         pb_create_account.set_main_pubkey(create_account.pubkey.data(),</span>
+<span class="lineNum">     239 </span>        [<span class="branchCov" title="Branch 1 was taken 54 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         54 :                                           create_account.pubkey.size());</span>
+<a name="240"><span class="lineNum">     240 </span>                :<span class="lineCov">         54 :         return pb_create_account;</span></a>
+<span class="lineNum">     241 </span>                :            :       }
+<span class="lineNum">     242 </span>                :<span class="lineCov">          2 :       model::CreateAccount PbCommandFactory::deserializeCreateAccount(</span>
+<span class="lineNum">     243 </span>                :            :           const protocol::CreateAccount &amp;pb_create_account) {
+<span class="lineNum">     244 </span>                :<span class="lineCov">          2 :         model::CreateAccount create_account;</span>
+<span class="lineNum">     245 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         create_account.account_name = pb_create_account.account_name();</span>
+<span class="lineNum">     246 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         create_account.domain_id = pb_create_account.domain_id();</span>
+<span class="lineNum">     247 </span>                :<span class="lineCov">          4 :         std::copy(pb_create_account.main_pubkey().begin(),</span>
+<span class="lineNum">     248 </span>                :<span class="lineCov">          2 :                   pb_create_account.main_pubkey().end(),</span>
+<span class="lineNum">     249 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                   create_account.pubkey.begin());</span>
+<span class="lineNum">     250 </span>                :<span class="lineCov">          2 :         return create_account;</span>
+<span class="lineNum">     251 </span>                :            :       }
+<a name="252"><span class="lineNum">     252 </span>                :            : </a>
+<span class="lineNum">     253 </span>                :            :       // create domain
+<span class="lineNum">     254 </span>                :<span class="lineCov">         42 :       protocol::CreateDomain PbCommandFactory::serializeCreateDomain(</span>
+<span class="lineNum">     255 </span>                :            :           const model::CreateDomain &amp;create_domain) {
+<span class="lineNum">     256 </span>                :<span class="lineCov">         42 :         protocol::CreateDomain pb_create_domain;</span>
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 1 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         42 :         pb_create_domain.set_domain_id(create_domain.domain_id);</span>
+<span class="lineNum">     258 </span>        [<span class="branchCov" title="Branch 1 was taken 42 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         42 :         pb_create_domain.set_default_role(create_domain.user_default_role);</span>
+<span class="lineNum">     259 </span>                :<span class="lineCov">         42 :         return pb_create_domain;</span>
+<a name="260"><span class="lineNum">     260 </span>                :            :       }</a>
+<span class="lineNum">     261 </span>                :            : 
+<span class="lineNum">     262 </span>                :<span class="lineCov">          4 :       model::CreateDomain PbCommandFactory::deserializeCreateDomain(</span>
+<span class="lineNum">     263 </span>                :            :           const protocol::CreateDomain &amp;pb_create_domain) {
+<span class="lineNum">     264 </span>                :<span class="lineCov">          4 :         model::CreateDomain create_domain;</span>
+<span class="lineNum">     265 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         create_domain.domain_id = pb_create_domain.domain_id();</span>
+<span class="lineNum">     266 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         create_domain.user_default_role = pb_create_domain.default_role();</span>
+<span class="lineNum">     267 </span>                :<span class="lineCov">          4 :         return create_domain;</span>
+<span class="lineNum">     268 </span>                :            :       }
+<a name="269"><span class="lineNum">     269 </span>                :            : </a>
+<span class="lineNum">     270 </span>                :            :       // remove signatory
+<span class="lineNum">     271 </span>                :<span class="lineCov">          8 :       protocol::RemoveSignatory PbCommandFactory::serializeRemoveSignatory(</span>
+<span class="lineNum">     272 </span>                :            :           const model::RemoveSignatory &amp;remove_signatory) {
+<span class="lineNum">     273 </span>                :<span class="lineCov">          8 :         protocol::RemoveSignatory pb_remove_signatory;</span>
+<span class="lineNum">     274 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :         pb_remove_signatory.set_account_id(remove_signatory.account_id);</span>
+<span class="lineNum">     275 </span>                :<span class="lineCov">          8 :         pb_remove_signatory.set_public_key(remove_signatory.pubkey.data(),</span>
+<span class="lineNum">     276 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                                            remove_signatory.pubkey.size());</span>
+<span class="lineNum">     277 </span>                :<span class="lineCov">          8 :         return pb_remove_signatory;</span>
+<a name="278"><span class="lineNum">     278 </span>                :            :       }</a>
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>                :<span class="lineCov">          2 :       model::RemoveSignatory PbCommandFactory::deserializeRemoveSignatory(</span>
+<span class="lineNum">     281 </span>                :            :           const protocol::RemoveSignatory &amp;pb_remove_signatory) {
+<span class="lineNum">     282 </span>                :<span class="lineCov">          2 :         model::RemoveSignatory remove_signatory;</span>
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         remove_signatory.account_id = pb_remove_signatory.account_id();</span>
+<span class="lineNum">     284 </span>                :<span class="lineCov">          4 :         std::copy(pb_remove_signatory.public_key().begin(),</span>
+<span class="lineNum">     285 </span>                :<span class="lineCov">          2 :                   pb_remove_signatory.public_key().end(),</span>
+<span class="lineNum">     286 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :                   remove_signatory.pubkey.begin());</span>
+<span class="lineNum">     287 </span>                :<span class="lineCov">          2 :         return remove_signatory;</span>
+<a name="288"><span class="lineNum">     288 </span>                :            :       }</a>
+<span class="lineNum">     289 </span>                :            :       // set account quorum
+<span class="lineNum">     290 </span>                :<span class="lineCov">          4 :       protocol::SetAccountQuorum PbCommandFactory::serializeSetQuorum(</span>
+<span class="lineNum">     291 </span>                :            :           const model::SetQuorum &amp;set_account_quorum) {
+<span class="lineNum">     292 </span>                :<span class="lineCov">          4 :         protocol::SetAccountQuorum pb_set_account_quorum;</span>
+<span class="lineNum">     293 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         pb_set_account_quorum.set_account_id(set_account_quorum.account_id);</span>
+<span class="lineNum">     294 </span>                :<span class="lineCov">          4 :         pb_set_account_quorum.set_quorum(set_account_quorum.new_quorum);</span>
+<a name="295"><span class="lineNum">     295 </span>                :<span class="lineCov">          4 :         return pb_set_account_quorum;</span></a>
+<span class="lineNum">     296 </span>                :            :       }
+<span class="lineNum">     297 </span>                :<span class="lineCov">          2 :       model::SetQuorum PbCommandFactory::deserializeSetQuorum(</span>
+<span class="lineNum">     298 </span>                :            :           const protocol::SetAccountQuorum &amp;pb_set_account_quorum) {
+<span class="lineNum">     299 </span>                :<span class="lineCov">          2 :         model::SetQuorum set_quorum;</span>
+<span class="lineNum">     300 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         set_quorum.account_id = pb_set_account_quorum.account_id();</span>
+<span class="lineNum">     301 </span>                :<span class="lineCov">          2 :         set_quorum.new_quorum = pb_set_account_quorum.quorum();</span>
+<span class="lineNum">     302 </span>                :<span class="lineCov">          2 :         return set_quorum;</span>
+<span class="lineNum">     303 </span>                :            :       }
+<a name="304"><span class="lineNum">     304 </span>                :            : </a>
+<span class="lineNum">     305 </span>                :            :       // transfer asset
+<span class="lineNum">     306 </span>                :<span class="lineCov">         81 :       protocol::TransferAsset PbCommandFactory::serializeTransferAsset(</span>
+<span class="lineNum">     307 </span>                :            :           const model::TransferAsset &amp;transfer_asset) {
+<span class="lineNum">     308 </span>                :<span class="lineCov">         81 :         protocol::TransferAsset pb_transfer_asset;</span>
+<span class="lineNum">     309 </span>                :            : 
+<span class="lineNum">     310 </span>        [<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         81 :         pb_transfer_asset.set_src_account_id(transfer_asset.src_account_id);</span>
+<span class="lineNum">     311 </span>        [<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         81 :         pb_transfer_asset.set_dest_account_id(transfer_asset.dest_account_id);</span>
+<span class="lineNum">     312 </span>        [<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         81 :         pb_transfer_asset.set_asset_id(transfer_asset.asset_id);</span>
+<span class="lineNum">     313 </span>        [<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         81 :         pb_transfer_asset.set_description(transfer_asset.description);</span>
+<span class="lineNum">     314 </span>        [<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         81 :         auto amount = pb_transfer_asset.mutable_amount();</span>
+<span class="lineNum">     315 </span>[<span class="branchCov" title="Branch 1 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         81 :         amount-&gt;CopyFrom(serializeAmount(transfer_asset.amount));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 81 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     316 </span>                :<span class="lineCov">         81 :         return pb_transfer_asset;</span>
+<a name="317"><span class="lineNum">     317 </span>                :            :       }</a>
+<span class="lineNum">     318 </span>                :            : 
+<span class="lineNum">     319 </span>                :<span class="lineCov">         11 :       model::TransferAsset PbCommandFactory::deserializeTransferAsset(</span>
+<span class="lineNum">     320 </span>                :            :           const protocol::TransferAsset &amp;pb_subtract_asset_quantity) {
+<span class="lineNum">     321 </span>                :<span class="lineCov">         11 :         model::TransferAsset transfer_asset;</span>
+<span class="lineNum">     322 </span>                :<span class="lineCov">         11 :         transfer_asset.src_account_id =</span>
+<span class="lineNum">     323 </span>        [<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         11 :             pb_subtract_asset_quantity.src_account_id();</span>
+<span class="lineNum">     324 </span>                :<span class="lineCov">         11 :         transfer_asset.dest_account_id =</span>
+<span class="lineNum">     325 </span>        [<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         11 :             pb_subtract_asset_quantity.dest_account_id();</span>
+<span class="lineNum">     326 </span>        [<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         11 :         transfer_asset.asset_id = pb_subtract_asset_quantity.asset_id();</span>
+<span class="lineNum">     327 </span>        [<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         11 :         transfer_asset.description = pb_subtract_asset_quantity.description();</span>
+<span class="lineNum">     328 </span>                :<span class="lineCov">         11 :         transfer_asset.amount =</span>
+<span class="lineNum">     329 </span>[<span class="branchCov" title="Branch 2 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         11 :             deserializeAmount(pb_subtract_asset_quantity.amount());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     330 </span>                :<span class="lineCov">         11 :         return transfer_asset;</span>
+<span class="lineNum">     331 </span>                :            :       }
+<a name="332"><span class="lineNum">     332 </span>                :            : </a>
+<span class="lineNum">     333 </span>                :            :       // Append Role
+<span class="lineNum">     334 </span>                :<span class="lineCov">          2 :       model::AppendRole PbCommandFactory::deserializeAppendRole(</span>
+<span class="lineNum">     335 </span>                :            :           const protocol::AppendRole &amp;command) {
+<span class="lineNum">     336 </span>                :<span class="lineCov">          2 :         return AppendRole(command.account_id(), command.role_name());</span>
+<a name="337"><span class="lineNum">     337 </span>                :            :       }</a>
+<span class="lineNum">     338 </span>                :            : 
+<span class="lineNum">     339 </span>                :<span class="lineCov">         17 :       protocol::AppendRole PbCommandFactory::serializeAppendRole(</span>
+<span class="lineNum">     340 </span>                :            :           const model::AppendRole &amp;command) {
+<span class="lineNum">     341 </span>                :<span class="lineCov">         17 :         protocol::AppendRole cmd;</span>
+<span class="lineNum">     342 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :         cmd.set_account_id(command.account_id);</span>
+<span class="lineNum">     343 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :         cmd.set_role_name(command.role_name);</span>
+<span class="lineNum">     344 </span>                :<span class="lineCov">         17 :         return cmd;</span>
+<span class="lineNum">     345 </span>                :            :       }
+<a name="346"><span class="lineNum">     346 </span>                :            : </a>
+<span class="lineNum">     347 </span>                :            :       // Append Role
+<span class="lineNum">     348 </span>                :<span class="lineCov">          2 :       model::DetachRole PbCommandFactory::deserializeDetachRole(</span>
+<span class="lineNum">     349 </span>                :            :           const protocol::DetachRole &amp;command) {
+<span class="lineNum">     350 </span>                :<span class="lineCov">          2 :         return DetachRole(command.account_id(), command.role_name());</span>
+<a name="351"><span class="lineNum">     351 </span>                :            :       }</a>
+<span class="lineNum">     352 </span>                :            : 
+<span class="lineNum">     353 </span>                :<span class="lineCov">          2 :       protocol::DetachRole PbCommandFactory::serializeDetachRole(</span>
+<span class="lineNum">     354 </span>                :            :           const model::DetachRole &amp;command) {
+<span class="lineNum">     355 </span>                :<span class="lineCov">          2 :         protocol::DetachRole cmd;</span>
+<span class="lineNum">     356 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         cmd.set_account_id(command.account_id);</span>
+<span class="lineNum">     357 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         cmd.set_role_name(command.role_name);</span>
+<span class="lineNum">     358 </span>                :<span class="lineCov">          2 :         return cmd;</span>
+<span class="lineNum">     359 </span>                :            :       }
+<a name="360"><span class="lineNum">     360 </span>                :            : </a>
+<span class="lineNum">     361 </span>                :            :       // Create Role
+<span class="lineNum">     362 </span>                :<span class="lineCov">         34 :       model::CreateRole PbCommandFactory::deserializeCreateRole(</span>
+<span class="lineNum">     363 </span>                :            :           const protocol::CreateRole &amp;command) {
+<span class="lineNum">     364 </span>                :<span class="lineCov">         68 :         std::set&lt;std::string&gt; perms;</span>
+<span class="lineNum">     365 </span>                :            : 
+<a name="366"><span class="lineNum">     366 </span>                :<span class="lineCov">         34 :         std::for_each(command.permissions().begin(),</span></a>
+<span class="lineNum">     367 </span>                :<span class="lineCov">         34 :                       command.permissions().end(),</span>
+<span class="lineNum">     368 </span>                :<span class="lineCov">         96 :                       [&amp;perms, this](auto perm) {</span>
+<span class="lineNum">     369 </span>                :            :                         auto it = this-&gt;pb_role_map_.left.find(
+<span class="lineNum">     370 </span>        [<span class="branchCov" title="Branch 1 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         96 :                             static_cast&lt;protocol::RolePermission&gt;(perm));</span>
+<span class="lineNum">     371 </span>[<span class="branchCov" title="Branch 1 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         96 :                         if (it != this-&gt;pb_role_map_.left.end()) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     372 </span>[<span class="branchCov" title="Branch 1 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 96 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         96 :                           perms.insert(it-&gt;second);</span>
+<span class="lineNum">     373 </span>                :            :                         }
+<span class="lineNum">     374 </span>        [<span class="branchCov" title="Branch 3 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        164 :                       });</span>
+<span class="lineNum">     375 </span>        [<span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         68 :         return CreateRole(command.role_name(), perms);</span>
+<a name="376"><span class="lineNum">     376 </span>                :            :       }</a>
+<span class="lineNum">     377 </span>                :            : 
+<span class="lineNum">     378 </span>                :<span class="lineCov">         73 :       protocol::CreateRole PbCommandFactory::serializeCreateRole(</span>
+<span class="lineNum">     379 </span>                :            :           const model::CreateRole &amp;command) {
+<span class="lineNum">     380 </span>                :<span class="lineCov">         73 :         protocol::CreateRole cmd;</span>
+<span class="lineNum">     381 </span>        [<span class="branchCov" title="Branch 1 was taken 73 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         73 :         cmd.set_role_name(command.role_name);</span>
+<a name="382"><span class="lineNum">     382 </span>                :            :         std::for_each(command.permissions.begin(),</a>
+<span class="lineNum">     383 </span>                :            :                       command.permissions.end(),
+<span class="lineNum">     384 </span>                :<span class="lineCov">        363 :                       [&amp;cmd, this](auto perm) {</span>
+<span class="lineNum">     385 </span>                :<span class="lineCov">        363 :                         auto perm_name = this-&gt;pb_role_map_.right.at(perm);</span>
+<span class="lineNum">     386 </span>                :<span class="lineCov">        363 :                         cmd.add_permissions(perm_name);</span>
+<span class="lineNum">     387 </span>        [<span class="branchCov" title="Branch 3 was taken 73 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         73 :                       });</span>
+<span class="lineNum">     388 </span>                :<span class="lineCov">         73 :         return cmd;</span>
+<span class="lineNum">     389 </span>                :            :       }
+<a name="390"><span class="lineNum">     390 </span>                :            : </a>
+<span class="lineNum">     391 </span>                :            :       // Grant Permission
+<span class="lineNum">     392 </span>                :<span class="lineCov">          2 :       protocol::GrantPermission PbCommandFactory::serializeGrantPermission(</span>
+<span class="lineNum">     393 </span>                :            :           const model::GrantPermission &amp;command) {
+<span class="lineNum">     394 </span>                :<span class="lineCov">          2 :         protocol::GrantPermission cmd;</span>
+<span class="lineNum">     395 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         cmd.set_account_id(command.account_id);</span>
+<span class="lineNum">     396 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto perm = pb_grant_map_.right.at(command.permission_name);</span>
+<span class="lineNum">     397 </span>                :<span class="lineCov">          2 :         cmd.set_permission(perm);</span>
+<span class="lineNum">     398 </span>                :<span class="lineCov">          2 :         return cmd;</span>
+<a name="399"><span class="lineNum">     399 </span>                :            :       }</a>
+<span class="lineNum">     400 </span>                :            : 
+<span class="lineNum">     401 </span>                :<span class="lineCov">          2 :       model::GrantPermission PbCommandFactory::deserializeGrantPermission(</span>
+<span class="lineNum">     402 </span>                :            :           const protocol::GrantPermission &amp;command) {
+<span class="lineNum">     403 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         auto it = pb_grant_map_.left.find(command.permission());</span>
+<span class="lineNum">     404 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :         if (it == pb_grant_map_.left.end()) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 2 times"> + </span>]
+<span class="lineNum">     405 </span>                :<span class="lineNoCov">          0 :           return {};</span>
+<span class="lineNum">     406 </span>                :            :         }
+<span class="lineNum">     407 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         return GrantPermission(command.account_id(), it-&gt;second);</span>
+<a name="408"><span class="lineNum">     408 </span>                :            :       }</a>
+<span class="lineNum">     409 </span>                :            : 
+<span class="lineNum">     410 </span>                :<span class="lineCov">          2 :       protocol::RevokePermission PbCommandFactory::serializeRevokePermission(</span>
+<span class="lineNum">     411 </span>                :            :           const model::RevokePermission &amp;command) {
+<span class="lineNum">     412 </span>                :<span class="lineCov">          2 :         protocol::RevokePermission cmd;</span>
+<span class="lineNum">     413 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         cmd.set_account_id(command.account_id);</span>
+<span class="lineNum">     414 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto permission = pb_grant_map_.right.at(command.permission_name);</span>
+<span class="lineNum">     415 </span>                :<span class="lineCov">          2 :         cmd.set_permission(permission);</span>
+<span class="lineNum">     416 </span>                :<span class="lineCov">          2 :         return cmd;</span>
+<a name="417"><span class="lineNum">     417 </span>                :            :       }</a>
+<span class="lineNum">     418 </span>                :            : 
+<span class="lineNum">     419 </span>                :<span class="lineCov">          2 :       model::RevokePermission PbCommandFactory::deserializeRevokePermission(</span>
+<span class="lineNum">     420 </span>                :            :           const protocol::RevokePermission &amp;command) {
+<span class="lineNum">     421 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         auto it = pb_grant_map_.left.find(command.permission());</span>
+<span class="lineNum">     422 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :         if (it == pb_grant_map_.left.end()) {</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 2 times"> + </span>]
+<span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :           return {};</span>
+<span class="lineNum">     424 </span>                :            :         }
+<span class="lineNum">     425 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         return RevokePermission(command.account_id(), it-&gt;second);</span>
+<a name="426"><span class="lineNum">     426 </span>                :            :       }</a>
+<span class="lineNum">     427 </span>                :            : 
+<span class="lineNum">     428 </span>                :<span class="lineCov">          6 :       protocol::SetAccountDetail PbCommandFactory::serializeSetAccountDetail(</span>
+<span class="lineNum">     429 </span>                :            :           const model::SetAccountDetail &amp;command) {
+<span class="lineNum">     430 </span>                :<span class="lineCov">          6 :         protocol::SetAccountDetail cmd;</span>
+<span class="lineNum">     431 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         cmd.set_account_id(command.account_id);</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         cmd.set_key(command.key);</span>
+<span class="lineNum">     433 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :         cmd.set_value(command.value);</span>
+<span class="lineNum">     434 </span>                :<span class="lineCov">          6 :         return cmd;</span>
+<a name="435"><span class="lineNum">     435 </span>                :            :       }</a>
+<span class="lineNum">     436 </span>                :            : 
+<span class="lineNum">     437 </span>                :<span class="lineCov">          2 :       model::SetAccountDetail PbCommandFactory::deserializeSetAccountDetail(</span>
+<span class="lineNum">     438 </span>                :            :           const protocol::SetAccountDetail &amp;command) {
+<span class="lineNum">     439 </span>                :<span class="lineCov">          2 :         model::SetAccountDetail setAccountDetail;</span>
+<span class="lineNum">     440 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         setAccountDetail.account_id = command.account_id();</span>
+<span class="lineNum">     441 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         setAccountDetail.key = command.key();</span>
+<span class="lineNum">     442 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         setAccountDetail.value = command.value();</span>
+<span class="lineNum">     443 </span>                :<span class="lineCov">          2 :         return setAccountDetail;</span>
+<a name="444"><span class="lineNum">     444 </span>                :            :       }</a>
+<span class="lineNum">     445 </span>                :            : 
+<span class="lineNum">     446 </span>                :<span class="lineCov">        387 :       protocol::Command PbCommandFactory::serializeAbstractCommand(</span>
+<span class="lineNum">     447 </span>                :            :           const model::Command &amp;command) {
+<span class="lineNum">     448 </span>        [<span class="branchCov" title="Branch 1 was taken 387 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        774 :         PbCommandFactory commandFactory;</span>
+<span class="lineNum">     449 </span>        [<span class="branchCov" title="Branch 1 was taken 387 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        387 :         auto cmd = protocol::Command();</span>
+<span class="lineNum">     450 </span>                :            :         // TODO 26/09/17 grimadas: refactor this #VARIANT
+<span class="lineNum">     451 </span>                :            : 
+<span class="lineNum">     452 </span>                :            :         // -----|CreateRole|-----
+<span class="lineNum">     453 </span>        [<span class="branchCov" title="Branch 1 was taken 40 times"> + </span><span class="branchCov" title="Branch 2 was taken 347 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::CreateRole&gt;(command)) {</span>
+<span class="lineNum">     454 </span>                :            :           auto serialized = commandFactory.serializeCreateRole(
+<span class="lineNum">     455 </span>        [<span class="branchCov" title="Branch 1 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         80 :               static_cast&lt;const model::CreateRole &amp;&gt;(command));</span>
+<span class="lineNum">     456 </span>[<span class="branchCov" title="Branch 1 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         40 :           cmd.set_allocated_create_role(new protocol::CreateRole(serialized));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     457 </span>                :            :         }
+<span class="lineNum">     458 </span>                :            : 
+<span class="lineNum">     459 </span>                :            :         // -----|AppendRole|-----
+<span class="lineNum">     460 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchCov" title="Branch 2 was taken 371 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::AppendRole&gt;(command)) {</span>
+<span class="lineNum">     461 </span>                :            :           auto serialized = commandFactory.serializeAppendRole(
+<span class="lineNum">     462 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         32 :               static_cast&lt;const model::AppendRole &amp;&gt;(command));</span>
+<span class="lineNum">     463 </span>[<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         16 :           cmd.set_allocated_append_role(new protocol::AppendRole(serialized));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     464 </span>                :            :         }
+<span class="lineNum">     465 </span>                :            : 
+<span class="lineNum">     466 </span>                :            :         // -----|DetachRole|-----
+<span class="lineNum">     467 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 386 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::DetachRole&gt;(command)) {</span>
+<span class="lineNum">     468 </span>                :            :           auto serialized = commandFactory.serializeDetachRole(
+<span class="lineNum">     469 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               static_cast&lt;const model::DetachRole &amp;&gt;(command));</span>
+<span class="lineNum">     470 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :           cmd.set_allocated_detach_role(new protocol::DetachRole(serialized));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     471 </span>                :            :         }
+<span class="lineNum">     472 </span>                :            : 
+<span class="lineNum">     473 </span>                :            :         // -----|GrantPermission|-----
+<span class="lineNum">     474 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 386 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::GrantPermission&gt;(command)) {</span>
+<span class="lineNum">     475 </span>                :            :           auto serialized = commandFactory.serializeGrantPermission(
+<span class="lineNum">     476 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               static_cast&lt;const model::GrantPermission &amp;&gt;(command));</span>
+<span class="lineNum">     477 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           cmd.set_allocated_grant_permission(</span>
+<span class="lineNum">     478 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :               new protocol::GrantPermission(serialized));</span>
+<span class="lineNum">     479 </span>                :            :         }
+<span class="lineNum">     480 </span>                :            : 
+<span class="lineNum">     481 </span>                :            :         // -----|RevokePermission|-----
+<span class="lineNum">     482 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 386 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::RevokePermission&gt;(command)) {</span>
+<span class="lineNum">     483 </span>                :            :           auto serialized = commandFactory.serializeRevokePermission(
+<span class="lineNum">     484 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               static_cast&lt;const model::RevokePermission &amp;&gt;(command));</span>
+<span class="lineNum">     485 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           cmd.set_allocated_revoke_permission(</span>
+<span class="lineNum">     486 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :               new protocol::RevokePermission(serialized));</span>
+<span class="lineNum">     487 </span>                :            :         }
+<span class="lineNum">     488 </span>                :            : 
+<span class="lineNum">     489 </span>                :            :         // -----|AddAssetQuantity|-----
+<span class="lineNum">     490 </span>        [<span class="branchCov" title="Branch 1 was taken 66 times"> + </span><span class="branchCov" title="Branch 2 was taken 321 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::AddAssetQuantity&gt;(command)) {</span>
+<span class="lineNum">     491 </span>                :            :           auto serialized = commandFactory.serializeAddAssetQuantity(
+<span class="lineNum">     492 </span>        [<span class="branchCov" title="Branch 1 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        132 :               static_cast&lt;const model::AddAssetQuantity &amp;&gt;(command));</span>
+<span class="lineNum">     493 </span>        [<span class="branchCov" title="Branch 1 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         66 :           cmd.set_allocated_add_asset_quantity(</span>
+<span class="lineNum">     494 </span>[<span class="branchCov" title="Branch 1 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         66 :               new protocol::AddAssetQuantity(serialized));</span>
+<span class="lineNum">     495 </span>                :            :         }
+<span class="lineNum">     496 </span>                :            : 
+<span class="lineNum">     497 </span>                :            :         // -----|SubtractAssetQuantity|-----
+<span class="lineNum">     498 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 384 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::SubtractAssetQuantity&gt;(command)) {</span>
+<span class="lineNum">     499 </span>                :            :           auto serialized = commandFactory.serializeSubtractAssetQuantity(
+<span class="lineNum">     500 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :               static_cast&lt;const model::SubtractAssetQuantity &amp;&gt;(command));</span>
+<span class="lineNum">     501 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           cmd.set_allocated_subtract_asset_quantity(</span>
+<span class="lineNum">     502 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :               new protocol::SubtractAssetQuantity(serialized));</span>
+<span class="lineNum">     503 </span>                :            :         }
+<span class="lineNum">     504 </span>                :            : 
+<span class="lineNum">     505 </span>                :            :         // -----|AddPeer|-----
+<span class="lineNum">     506 </span>        [<span class="branchCov" title="Branch 1 was taken 25 times"> + </span><span class="branchCov" title="Branch 2 was taken 362 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::AddPeer&gt;(command)) {</span>
+<span class="lineNum">     507 </span>                :            :           auto serialized = commandFactory.serializeAddPeer(
+<span class="lineNum">     508 </span>        [<span class="branchCov" title="Branch 1 was taken 25 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         50 :               static_cast&lt;const model::AddPeer &amp;&gt;(command));</span>
+<span class="lineNum">     509 </span>[<span class="branchCov" title="Branch 1 was taken 25 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 25 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         25 :           cmd.set_allocated_add_peer(new protocol::AddPeer(serialized));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 25 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     510 </span>                :            :         }
+<span class="lineNum">     511 </span>                :            : 
+<span class="lineNum">     512 </span>                :            :         // -----|AddSignatory|-----
+<span class="lineNum">     513 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchCov" title="Branch 2 was taken 379 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::AddSignatory&gt;(command)) {</span>
+<span class="lineNum">     514 </span>                :            :           auto serialized = commandFactory.serializeAddSignatory(
+<span class="lineNum">     515 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :               static_cast&lt;const model::AddSignatory &amp;&gt;(command));</span>
+<span class="lineNum">     516 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :           cmd.set_allocated_add_signatory(</span>
+<span class="lineNum">     517 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          8 :               new protocol::AddSignatory(serialized));</span>
+<span class="lineNum">     518 </span>                :            :         }
+<span class="lineNum">     519 </span>                :            : 
+<span class="lineNum">     520 </span>                :            :         // -----|CreateAsset|-----
+<span class="lineNum">     521 </span>        [<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchCov" title="Branch 2 was taken 350 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::CreateAsset&gt;(command)) {</span>
+<span class="lineNum">     522 </span>                :            :           auto serialized = commandFactory.serializeCreateAsset(
+<span class="lineNum">     523 </span>        [<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         74 :               static_cast&lt;const model::CreateAsset &amp;&gt;(command));</span>
+<span class="lineNum">     524 </span>[<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         37 :           cmd.set_allocated_create_asset(new protocol::CreateAsset(serialized));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     525 </span>                :            :         }
+<span class="lineNum">     526 </span>                :            : 
+<span class="lineNum">     527 </span>                :            :         // -----|CreateAccount|-----
+<span class="lineNum">     528 </span>        [<span class="branchCov" title="Branch 1 was taken 53 times"> + </span><span class="branchCov" title="Branch 2 was taken 334 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::CreateAccount&gt;(command)) {</span>
+<span class="lineNum">     529 </span>                :            :           auto serialized = commandFactory.serializeCreateAccount(
+<span class="lineNum">     530 </span>        [<span class="branchCov" title="Branch 1 was taken 53 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        106 :               static_cast&lt;const model::CreateAccount &amp;&gt;(command));</span>
+<span class="lineNum">     531 </span>        [<span class="branchCov" title="Branch 1 was taken 53 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         53 :           cmd.set_allocated_create_account(</span>
+<span class="lineNum">     532 </span>[<span class="branchCov" title="Branch 1 was taken 53 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 53 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         53 :               new protocol::CreateAccount(serialized));</span>
+<span class="lineNum">     533 </span>                :            :         }
+<span class="lineNum">     534 </span>                :            : 
+<span class="lineNum">     535 </span>                :            :         // -----|SetAccountDetail|-----
+<span class="lineNum">     536 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchCov" title="Branch 2 was taken 382 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::SetAccountDetail&gt;(command)) {</span>
+<span class="lineNum">     537 </span>                :            :           auto serialized = commandFactory.serializeSetAccountDetail(
+<span class="lineNum">     538 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :               static_cast&lt;const model::SetAccountDetail &amp;&gt;(command));</span>
+<span class="lineNum">     539 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :           cmd.set_allocated_set_account_detail(</span>
+<span class="lineNum">     540 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          5 :               new protocol::SetAccountDetail(serialized));</span>
+<span class="lineNum">     541 </span>                :            :         }
+<span class="lineNum">     542 </span>                :            : 
+<span class="lineNum">     543 </span>                :            :         // -----|CreateDomain|-----
+<span class="lineNum">     544 </span>        [<span class="branchCov" title="Branch 1 was taken 41 times"> + </span><span class="branchCov" title="Branch 2 was taken 346 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::CreateDomain&gt;(command)) {</span>
+<span class="lineNum">     545 </span>                :            :           auto serialized = commandFactory.serializeCreateDomain(
+<span class="lineNum">     546 </span>        [<span class="branchCov" title="Branch 1 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         82 :               static_cast&lt;const model::CreateDomain &amp;&gt;(command));</span>
+<span class="lineNum">     547 </span>        [<span class="branchCov" title="Branch 1 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         41 :           cmd.set_allocated_create_domain(</span>
+<span class="lineNum">     548 </span>[<span class="branchCov" title="Branch 1 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 41 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         41 :               new protocol::CreateDomain(serialized));</span>
+<span class="lineNum">     549 </span>                :            :         }
+<span class="lineNum">     550 </span>                :            : 
+<span class="lineNum">     551 </span>                :            :         // -----|RemoveSignatory|-----
+<span class="lineNum">     552 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchCov" title="Branch 2 was taken 380 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::RemoveSignatory&gt;(command)) {</span>
+<span class="lineNum">     553 </span>                :            :           auto serialized = commandFactory.serializeRemoveSignatory(
+<span class="lineNum">     554 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :               static_cast&lt;const model::RemoveSignatory &amp;&gt;(command));</span>
+<span class="lineNum">     555 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          7 :           cmd.set_allocated_remove_sign(</span>
+<span class="lineNum">     556 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          7 :               new protocol::RemoveSignatory(serialized));</span>
+<span class="lineNum">     557 </span>                :            :         }
+<span class="lineNum">     558 </span>                :            : 
+<span class="lineNum">     559 </span>                :            :         // -----|SetAccountQuorum|-----
+<span class="lineNum">     560 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 384 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::SetQuorum&gt;(command)) {</span>
+<span class="lineNum">     561 </span>                :            :           auto serialized = commandFactory.serializeSetQuorum(
+<span class="lineNum">     562 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :               static_cast&lt;const model::SetQuorum &amp;&gt;(command));</span>
+<span class="lineNum">     563 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           cmd.set_allocated_set_quorum(</span>
+<span class="lineNum">     564 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :               new protocol::SetAccountQuorum(serialized));</span>
+<span class="lineNum">     565 </span>                :            :         }
+<span class="lineNum">     566 </span>                :            : 
+<span class="lineNum">     567 </span>                :            :         // -----|TransferAsset|-----
+<span class="lineNum">     568 </span>        [<span class="branchCov" title="Branch 1 was taken 80 times"> + </span><span class="branchCov" title="Branch 2 was taken 307 times"> + </span>]:<span class="lineCov">        387 :         if (instanceof &lt;model::TransferAsset&gt;(command)) {</span>
+<span class="lineNum">     569 </span>                :            :           auto serialized = commandFactory.serializeTransferAsset(
+<span class="lineNum">     570 </span>        [<span class="branchCov" title="Branch 1 was taken 80 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        160 :               static_cast&lt;const model::TransferAsset &amp;&gt;(command));</span>
+<span class="lineNum">     571 </span>        [<span class="branchCov" title="Branch 1 was taken 80 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         80 :           cmd.set_allocated_transfer_asset(</span>
+<span class="lineNum">     572 </span>[<span class="branchCov" title="Branch 1 was taken 80 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 80 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         80 :               new protocol::TransferAsset(serialized));</span>
+<span class="lineNum">     573 </span>                :            :         }
+<span class="lineNum">     574 </span>                :            : 
+<span class="lineNum">     575 </span>                :<span class="lineCov">        774 :         return cmd;</span>
+<span class="lineNum">     576 </span>                :            :       }
+<a name="577"><span class="lineNum">     577 </span>                :            : </a>
+<span class="lineNum">     578 </span>                :            :       std::shared_ptr&lt;model::Command&gt;
+<span class="lineNum">     579 </span>                :<span class="lineCov">         45 :       PbCommandFactory::deserializeAbstractCommand(</span>
+<span class="lineNum">     580 </span>                :            :           const protocol::Command &amp;command) {
+<span class="lineNum">     581 </span>        [<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         90 :         PbCommandFactory commandFactory;</span>
+<span class="lineNum">     582 </span>                :<span class="lineCov">         45 :         std::shared_ptr&lt;model::Command&gt; val;</span>
+<span class="lineNum">     583 </span>                :            : 
+<span class="lineNum">     584 </span>                :            :         // -----|CreateRole|-----
+<span class="lineNum">     585 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_create_role()) {</span>
+<span class="lineNum">     586 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.create_role();</span>
+<span class="lineNum">     587 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeCreateRole(pb_command);</span>
+<span class="lineNum">     588 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::CreateRole&gt;(cmd);</span>
+<span class="lineNum">     589 </span>                :            :         }
+<span class="lineNum">     590 </span>                :            : 
+<span class="lineNum">     591 </span>                :            :         // -----|AppendRole|-----
+<span class="lineNum">     592 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_append_role()) {</span>
+<span class="lineNum">     593 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.append_role();</span>
+<span class="lineNum">     594 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeAppendRole(pb_command);</span>
+<span class="lineNum">     595 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::AppendRole&gt;(cmd);</span>
+<span class="lineNum">     596 </span>                :            :         }
+<span class="lineNum">     597 </span>                :            : 
+<span class="lineNum">     598 </span>                :            :         // -----|DetachRole|-----
+<span class="lineNum">     599 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_detach_role()) {</span>
+<span class="lineNum">     600 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.detach_role();</span>
+<span class="lineNum">     601 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeDetachRole(pb_command);</span>
+<span class="lineNum">     602 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::DetachRole&gt;(cmd);</span>
+<span class="lineNum">     603 </span>                :            :         }
+<span class="lineNum">     604 </span>                :            : 
+<span class="lineNum">     605 </span>                :            :         // -----|GrantPermission|-----
+<span class="lineNum">     606 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_grant_permission()) {</span>
+<span class="lineNum">     607 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.grant_permission();</span>
+<span class="lineNum">     608 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeGrantPermission(pb_command);</span>
+<span class="lineNum">     609 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::GrantPermission&gt;(cmd);</span>
+<span class="lineNum">     610 </span>                :            :         }
+<span class="lineNum">     611 </span>                :            : 
+<span class="lineNum">     612 </span>                :            :         // -----|RevokePermission|-----
+<span class="lineNum">     613 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_revoke_permission()) {</span>
+<span class="lineNum">     614 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.revoke_permission();</span>
+<span class="lineNum">     615 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeRevokePermission(pb_command);</span>
+<span class="lineNum">     616 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::RevokePermission&gt;(cmd);</span>
+<span class="lineNum">     617 </span>                :            :         }
+<span class="lineNum">     618 </span>                :            : 
+<span class="lineNum">     619 </span>                :            :         // -----|AddAssetQuantity|-----
+<span class="lineNum">     620 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 11 times"> + </span><span class="branchCov" title="Branch 4 was taken 34 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_add_asset_quantity()) {</span>
+<span class="lineNum">     621 </span>[<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         22 :           auto pb_command = command.add_asset_quantity();</span>
+<span class="lineNum">     622 </span>        [<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         22 :           auto cmd = commandFactory.deserializeAddAssetQuantity(pb_command);</span>
+<span class="lineNum">     623 </span>        [<span class="branchCov" title="Branch 1 was taken 11 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         11 :           val = std::make_shared&lt;model::AddAssetQuantity&gt;(cmd);</span>
+<span class="lineNum">     624 </span>                :            :         }
+<span class="lineNum">     625 </span>                :            : 
+<span class="lineNum">     626 </span>                :            :         // -----|SubtractAssetQuantity|-----
+<span class="lineNum">     627 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_subtract_asset_quantity()) {</span>
+<span class="lineNum">     628 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.subtract_asset_quantity();</span>
+<span class="lineNum">     629 </span>                :            :           auto cmd =
+<span class="lineNum">     630 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               commandFactory.deserializeSubtractAssetQuantity(pb_command);</span>
+<span class="lineNum">     631 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::SubtractAssetQuantity&gt;(cmd);</span>
+<span class="lineNum">     632 </span>                :            :         }
+<span class="lineNum">     633 </span>                :            : 
+<span class="lineNum">     634 </span>                :            :         // -----|AddPeer|-----
+<span class="lineNum">     635 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 42 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_add_peer()) {</span>
+<span class="lineNum">     636 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          6 :           auto pb_command = command.add_peer();</span>
+<span class="lineNum">     637 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           auto cmd = commandFactory.deserializeAddPeer(pb_command);</span>
+<span class="lineNum">     638 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           val = std::make_shared&lt;model::AddPeer&gt;(cmd);</span>
+<span class="lineNum">     639 </span>                :            :         }
+<span class="lineNum">     640 </span>                :            : 
+<span class="lineNum">     641 </span>                :            :         // -----|AddSignatory|-----
+<span class="lineNum">     642 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 43 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_add_signatory()) {</span>
+<span class="lineNum">     643 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :           auto pb_command = command.add_signatory();</span>
+<span class="lineNum">     644 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :           auto cmd = commandFactory.deserializeAddSignatory(pb_command);</span>
+<span class="lineNum">     645 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           val = std::make_shared&lt;model::AddSignatory&gt;(cmd);</span>
+<span class="lineNum">     646 </span>                :            :         }
+<span class="lineNum">     647 </span>                :            : 
+<span class="lineNum">     648 </span>                :            :         // -----|CreateAsset|-----
+<span class="lineNum">     649 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 39 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_create_asset()) {</span>
+<span class="lineNum">     650 </span>[<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         12 :           auto pb_command = command.create_asset();</span>
+<span class="lineNum">     651 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :           auto cmd = commandFactory.deserializeCreateAsset(pb_command);</span>
+<span class="lineNum">     652 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           val = std::make_shared&lt;model::CreateAsset&gt;(cmd);</span>
+<span class="lineNum">     653 </span>                :            :         }
+<span class="lineNum">     654 </span>                :            : 
+<span class="lineNum">     655 </span>                :            :         // -----|CreateAccount|-----
+<span class="lineNum">     656 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_create_account()) {</span>
+<span class="lineNum">     657 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.create_account();</span>
+<span class="lineNum">     658 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeCreateAccount(pb_command);</span>
+<span class="lineNum">     659 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::CreateAccount&gt;(cmd);</span>
+<span class="lineNum">     660 </span>                :            :         }
+<span class="lineNum">     661 </span>                :            : 
+<span class="lineNum">     662 </span>                :            :         // -----|SetAccountDetail|-----
+<span class="lineNum">     663 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_set_account_detail()) {</span>
+<span class="lineNum">     664 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.set_account_detail();</span>
+<span class="lineNum">     665 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeSetAccountDetail(pb_command);</span>
+<span class="lineNum">     666 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::SetAccountDetail&gt;(cmd);</span>
+<span class="lineNum">     667 </span>                :            :         }
+<span class="lineNum">     668 </span>                :            : 
+<span class="lineNum">     669 </span>                :            :         // -----|CreateDomain|-----
+<span class="lineNum">     670 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 42 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_create_domain()) {</span>
+<span class="lineNum">     671 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          6 :           auto pb_command = command.create_domain();</span>
+<span class="lineNum">     672 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           auto cmd = commandFactory.deserializeCreateDomain(pb_command);</span>
+<span class="lineNum">     673 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           val = std::make_shared&lt;model::CreateDomain&gt;(cmd);</span>
+<span class="lineNum">     674 </span>                :            :         }
+<span class="lineNum">     675 </span>                :            : 
+<span class="lineNum">     676 </span>                :            :         // -----|RemoveSignatory|-----
+<span class="lineNum">     677 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_remove_sign()) {</span>
+<span class="lineNum">     678 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.remove_sign();</span>
+<span class="lineNum">     679 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeRemoveSignatory(pb_command);</span>
+<span class="lineNum">     680 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::RemoveSignatory&gt;(cmd);</span>
+<span class="lineNum">     681 </span>                :            :         }
+<span class="lineNum">     682 </span>                :            : 
+<span class="lineNum">     683 </span>                :            :         // -----|SetAccountQuorum|-----
+<span class="lineNum">     684 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchCov" title="Branch 4 was taken 44 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_set_quorum()) {</span>
+<span class="lineNum">     685 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           auto pb_command = command.set_quorum();</span>
+<span class="lineNum">     686 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           auto cmd = commandFactory.deserializeSetQuorum(pb_command);</span>
+<span class="lineNum">     687 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           val = std::make_shared&lt;model::SetQuorum&gt;(cmd);</span>
+<span class="lineNum">     688 </span>                :            :         }
+<span class="lineNum">     689 </span>                :            : 
+<span class="lineNum">     690 </span>                :            :         // -----|TransferAsset|-----
+<span class="lineNum">     691 </span>[<span class="branchCov" title="Branch 1 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 10 times"> + </span><span class="branchCov" title="Branch 4 was taken 35 times"> + </span>]:<span class="lineCov">         45 :         if (command.has_transfer_asset()) {</span>
+<span class="lineNum">     692 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         20 :           auto pb_command = command.transfer_asset();</span>
+<span class="lineNum">     693 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         20 :           auto cmd = commandFactory.deserializeTransferAsset(pb_command);</span>
+<span class="lineNum">     694 </span>        [<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :           val = std::make_shared&lt;model::TransferAsset&gt;(cmd);</span>
+<span class="lineNum">     695 </span>                :            :         }
+<span class="lineNum">     696 </span>                :            : 
+<span class="lineNum">     697 </span>                :<span class="lineCov">         90 :         return val;</span>
+<span class="lineNum">     698 </span>                :            :       }
+<span class="lineNum">     699 </span>                :            : 
+<a name="700"><span class="lineNum">     700 </span>                :            :     }  // namespace converters</a>
+<span class="lineNum">     701 </span>                :            :   }    // namespace model
+<span class="lineNum">     702 </span>[<span class="branchCov" title="Branch 1 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 40 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        160 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

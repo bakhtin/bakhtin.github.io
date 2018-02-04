@@ -1,0 +1,514 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/support/common_terminals.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/support</a> - common_terminals.hpp<span style="font-size: 80%;"> (source / <a href="common_terminals.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntry">5</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :   Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :   http://spirit.sourceforge.net/
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :   Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       6 </span>            :   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>            : =============================================================================*/
+<span class="lineNum">       8 </span>            : #ifndef BOOST_SPIRIT_COMMON_PLACEHOLDERS_OCTOBER_16_2008_0102PM
+<span class="lineNum">       9 </span>            : #define BOOST_SPIRIT_COMMON_PLACEHOLDERS_OCTOBER_16_2008_0102PM
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      12 </span>            : #pragma once
+<span class="lineNum">      13 </span>            : #endif
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &lt;boost/spirit/home/support/terminal.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/spirit/home/support/char_encoding/standard.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/spirit/home/support/char_encoding/standard_wide.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/home/support/char_encoding/ascii.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/spirit/home/support/char_encoding/iso8859_1.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/char_class.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/mpl/vector.hpp&gt;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : #if defined(BOOST_SPIRIT_UNICODE)
+<span class="lineNum">      24 </span>            : # include &lt;boost/spirit/home/support/char_encoding/unicode.hpp&gt;
+<span class="lineNum">      25 </span>            : #endif
+<span class="lineNum">      26 </span>            : 
+<span class="lineNum">      27 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      28 </span>            : {
+<span class="lineNum">      29 </span>            :     typedef mpl::vector&lt;
+<span class="lineNum">      30 </span>            :             spirit::char_encoding::ascii
+<span class="lineNum">      31 </span>            :           , spirit::char_encoding::iso8859_1
+<span class="lineNum">      32 </span>            :           , spirit::char_encoding::standard
+<span class="lineNum">      33 </span>            :           , spirit::char_encoding::standard_wide
+<span class="lineNum">      34 </span>            : #if defined(BOOST_SPIRIT_UNICODE)
+<span class="lineNum">      35 </span>            :           , spirit::char_encoding::unicode
+<span class="lineNum">      36 </span>            : #endif
+<span class="lineNum">      37 </span>            :         &gt;
+<span class="lineNum">      38 </span>            :     char_encodings;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            :     template &lt;typename T&gt;
+<span class="lineNum">      41 </span>            :     struct is_char_encoding : mpl::false_ {};
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            :     template &lt;&gt;
+<span class="lineNum">      44 </span>            :     struct is_char_encoding&lt;spirit::char_encoding::ascii&gt; : mpl::true_ {};
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            :     template &lt;&gt;
+<span class="lineNum">      47 </span>            :     struct is_char_encoding&lt;spirit::char_encoding::iso8859_1&gt; : mpl::true_ {};
+<span class="lineNum">      48 </span>            : 
+<span class="lineNum">      49 </span>            :     template &lt;&gt;
+<span class="lineNum">      50 </span>            :     struct is_char_encoding&lt;spirit::char_encoding::standard&gt; : mpl::true_ {};
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            :     template &lt;&gt;
+<span class="lineNum">      53 </span>            :     struct is_char_encoding&lt;spirit::char_encoding::standard_wide&gt; : mpl::true_ {};
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            : #if defined(BOOST_SPIRIT_UNICODE)
+<span class="lineNum">      56 </span>            :     template &lt;&gt;
+<span class="lineNum">      57 </span>            :     struct is_char_encoding&lt;spirit::char_encoding::unicode&gt; : mpl::true_ {};
+<span class="lineNum">      58 </span>            : #endif
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :     template &lt;typename Encoding&gt;
+<span class="lineNum">      61 </span>            :     struct encoding
+<span class="lineNum">      62 </span>            :         : proto::terminal&lt;tag::char_code&lt;tag::encoding, Encoding&gt; &gt;::type
+<span class="lineNum">      63 </span>            :     {};
+<span class="lineNum">      64 </span>            : 
+<span class="lineNum">      65 </span>            :     // Our basic terminals
+<span class="lineNum">      66 </span>            :     BOOST_SPIRIT_DEFINE_TERMINALS_NAME(
+<span class="lineNum">      67 </span>            :         ( verbatim, verbatim_type )
+<span class="lineNum">      68 </span>            :         ( no_delimit, no_delimit_type )
+<span class="lineNum">      69 </span>            :         ( lexeme, lexeme_type )
+<span class="lineNum">      70 </span>            :         ( no_skip, no_skip_type )
+<span class="lineNum">      71 </span>            :         ( omit, omit_type )
+<span class="lineNum">      72 </span>            :         ( raw, raw_type )
+<span class="lineNum">      73 </span>            :         ( as_string, as_string_type )
+<span class="lineNum">      74 </span>            :         ( as_wstring, as_wstring_type )
+<span class="lineNum">      75 </span>            :         ( inf, inf_type )
+<span class="lineNum">      76 </span>            :         ( eol, eol_type )
+<span class="lineNum">      77 </span>            :         ( eoi, eoi_type )
+<span class="lineNum">      78 </span>            :         ( buffer, buffer_type )
+<span class="lineNum">      79 </span>            :         ( true_, true_type )
+<span class="lineNum">      80 </span>            :         ( false_, false_type )
+<span class="lineNum">      81 </span>            :         ( matches, matches_type )
+<span class="lineNum">      82 </span>            :         ( hold, hold_type )
+<span class="lineNum">      83 </span>            :         ( strict, strict_type )
+<span class="lineNum">      84 </span>            :         ( relaxed, relaxed_type )
+<span class="lineNum">      85 </span>            :         ( duplicate, duplicate_type )
+<span class="lineNum">      86 </span>            :         ( expect, expect_type )
+<span class="lineNum">      87 </span>            :     )
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     // Our extended terminals
+<span class="lineNum">      90 </span><span class="lineCov">          6 :     BOOST_SPIRIT_DEFINE_TERMINALS_NAME_EX(</span>
+<span class="lineNum">      91 </span>            :         ( lit, lit_type )
+<span class="lineNum">      92 </span>            :         ( bin, bin_type )
+<span class="lineNum">      93 </span>            :         ( oct, oct_type )
+<span class="lineNum">      94 </span>            :         ( hex, hex_type )
+<span class="lineNum">      95 </span>            :         ( bool_, bool_type )
+<span class="lineNum">      96 </span>            :         ( ushort_, ushort_type )
+<span class="lineNum">      97 </span>            :         ( ulong_, ulong_type )
+<span class="lineNum">      98 </span>            :         ( uint_, uint_type )
+<span class="lineNum">      99 </span>            :         ( short_, short_type )
+<span class="lineNum">     100 </span>            :         ( long_, long_type )
+<span class="lineNum">     101 </span>            :         ( int_, int_type )
+<span class="lineNum">     102 </span>            :         ( ulong_long, ulong_long_type )
+<span class="lineNum">     103 </span>            :         ( long_long, long_long_type )
+<span class="lineNum">     104 </span>            :         ( float_, float_type )
+<span class="lineNum">     105 </span>            :         ( double_, double_type )
+<span class="lineNum">     106 </span>            :         ( long_double, long_double_type )
+<span class="lineNum">     107 </span>            :         ( repeat, repeat_type )
+<span class="lineNum">     108 </span>            :         ( eps, eps_type )
+<span class="lineNum">     109 </span>            :         ( pad, pad_type )
+<span class="lineNum">     110 </span>            :         ( byte_, byte_type )
+<span class="lineNum">     111 </span>            :         ( word, word_type )
+<span class="lineNum">     112 </span>            :         ( big_word, big_word_type )
+<span class="lineNum">     113 </span>            :         ( little_word, little_word_type )
+<span class="lineNum">     114 </span>            :         ( dword, dword_type )
+<span class="lineNum">     115 </span>            :         ( big_dword, big_dword_type )
+<span class="lineNum">     116 </span>            :         ( little_dword, little_dword_type )
+<span class="lineNum">     117 </span>            :         ( qword, qword_type )
+<span class="lineNum">     118 </span>            :         ( big_qword, big_qword_type )
+<span class="lineNum">     119 </span>            :         ( little_qword, little_qword_type )
+<span class="lineNum">     120 </span>            :         ( bin_float, bin_float_type )
+<span class="lineNum">     121 </span>            :         ( big_bin_float, big_bin_float_type )
+<span class="lineNum">     122 </span>            :         ( little_bin_float, little_bin_float_type )
+<span class="lineNum">     123 </span>            :         ( bin_double, bin_double_type )
+<span class="lineNum">     124 </span>            :         ( big_bin_double, big_bin_double_type )
+<span class="lineNum">     125 </span>            :         ( little_bin_double, little_bin_double_type )
+<span class="lineNum">     126 </span>            :         ( skip, skip_type )
+<span class="lineNum">     127 </span>            :         ( delimit, delimit_type )
+<span class="lineNum">     128 </span>            :         ( stream, stream_type )
+<span class="lineNum">     129 </span>            :         ( wstream, wstream_type )
+<span class="lineNum">     130 </span>            :         ( left_align, left_align_type )
+<span class="lineNum">     131 </span>            :         ( right_align, right_align_type )
+<span class="lineNum">     132 </span>            :         ( center, center_type )
+<span class="lineNum">     133 </span>            :         ( maxwidth, maxwidth_type )
+<span class="lineNum">     134 </span>            :         ( set_state, set_state_type )
+<span class="lineNum">     135 </span>            :         ( in_state, in_state_type )
+<span class="lineNum">     136 </span>            :         ( token, token_type )
+<span class="lineNum">     137 </span>            :         ( tokenid, tokenid_type )
+<span class="lineNum">     138 </span>            :         ( raw_token, raw_token_type )
+<span class="lineNum">     139 </span>            :         ( tokenid_mask, tokenid_mask_type )
+<span class="lineNum">     140 </span>            :         ( attr, attr_type )
+<span class="lineNum">     141 </span>            :         ( columns, columns_type )
+<span class="lineNum">     142 </span>            :         ( auto_, auto_type )
+<span class="lineNum">     143 </span>            :     )
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            :     // special tags (used mainly for stateful tag types)
+<span class="lineNum">     146 </span>            :     namespace tag
+<span class="lineNum">     147 </span>            :     {
+<span class="lineNum">     148 </span>            :         struct attr_cast { BOOST_SPIRIT_IS_TAG() };
+<span class="lineNum">     149 </span>            :         struct as { BOOST_SPIRIT_IS_TAG() };
+<span class="lineNum">     150 </span>            :     }
+<span class="lineNum">     151 </span>            : }}
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            : ///////////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     154 </span>            : // Here we place the character-set sensitive placeholders. We have one set
+<span class="lineNum">     155 </span>            : // each for ascii, iso8859_1, standard and standard_wide and unicode. These
+<span class="lineNum">     156 </span>            : // placeholders are placed in its char-set namespace. For example, there exist
+<span class="lineNum">     157 </span>            : // a placeholder spirit::ascii::alnum for ascii versions of alnum.
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            : #define BOOST_SPIRIT_TAG_CHAR_SPEC(charset)                                     \
+<span class="lineNum">     160 </span>            :     typedef tag::char_code&lt;tag::char_, charset&gt; char_;                          \
+<span class="lineNum">     161 </span>            :     typedef tag::char_code&lt;tag::string, charset&gt; string;                        \
+<span class="lineNum">     162 </span>            :     /***/
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            : #ifdef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            : #define BOOST_SPIRIT_CHAR_SPEC(charset)                                         \
+<span class="lineNum">     167 </span>            :     typedef spirit::terminal&lt;tag::charset::char_&gt; char_type;                    \
+<span class="lineNum">     168 </span>            :     typedef spirit::terminal&lt;tag::charset::string&gt; string_type;                 \
+<span class="lineNum">     169 </span>            :     /***/
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            : #else
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : #define BOOST_SPIRIT_CHAR_SPEC(charset)                                         \
+<span class="lineNum">     174 </span>            :     typedef spirit::terminal&lt;tag::charset::char_&gt; char_type;                    \
+<span class="lineNum">     175 </span>            :     char_type const char_ = char_type();                                        \
+<span class="lineNum">     176 </span>            :                                                                                 \
+<span class="lineNum">     177 </span>            :     inline void silence_unused_warnings_##char_() { (void) char_; }             \
+<span class="lineNum">     178 </span>            :                                                                                 \
+<span class="lineNum">     179 </span>            :     typedef spirit::terminal&lt;tag::charset::string&gt; string_type;                 \
+<span class="lineNum">     180 </span>            :     string_type const string = string_type();                                   \
+<span class="lineNum">     181 </span>            :                                                                                 \
+<span class="lineNum">     182 </span>            :     inline void silence_unused_warnings_##string() { (void) string; }           \
+<span class="lineNum">     183 </span>            :     /***/
+<span class="lineNum">     184 </span>            : 
+<span class="lineNum">     185 </span>            : #endif
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            : #ifdef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span>            : #define BOOST_SPIRIT_CHAR_CODE(name, charset)                                   \
+<span class="lineNum">     190 </span>            :     typedef proto::terminal&lt;tag::char_code&lt;tag::name, charset&gt; &gt;::type          \
+<span class="lineNum">     191 </span>            :         name##_type;                                                            \
+<span class="lineNum">     192 </span>            :     /***/
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            : #else
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            : #define BOOST_SPIRIT_CHAR_CODE(name, charset)                                   \
+<span class="lineNum">     197 </span>            :     typedef proto::terminal&lt;tag::char_code&lt;tag::name, charset&gt; &gt;::type          \
+<span class="lineNum">     198 </span>            :         name##_type;                                                            \
+<span class="lineNum">     199 </span>            :     name##_type const name = name##_type();                                     \
+<span class="lineNum">     200 </span>            :                                                                                 \
+<span class="lineNum">     201 </span>            :     inline void silence_unused_warnings_##name() { (void) name; }               \
+<span class="lineNum">     202 </span>            :     /***/
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            : 
+<span class="lineNum">     205 </span>            : #endif
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span>            : #define BOOST_SPIRIT_DEFINE_CHAR_CODES(charset)                                 \
+<span class="lineNum">     208 </span>            :     namespace boost { namespace spirit { namespace tag { namespace charset      \
+<span class="lineNum">     209 </span>            :     {                                                                           \
+<span class="lineNum">     210 </span>            :         BOOST_SPIRIT_TAG_CHAR_SPEC(spirit::char_encoding::charset)              \
+<span class="lineNum">     211 </span>            :     }}}}                                                                        \
+<span class="lineNum">     212 </span>            :     namespace boost { namespace spirit { namespace charset                      \
+<span class="lineNum">     213 </span>            :     {                                                                           \
+<span class="lineNum">     214 </span>            :         BOOST_SPIRIT_CHAR_SPEC(charset)                                         \
+<span class="lineNum">     215 </span>            :                                                                                 \
+<span class="lineNum">     216 </span>            :         BOOST_SPIRIT_CHAR_CODE(alnum, spirit::char_encoding::charset)           \
+<span class="lineNum">     217 </span>            :         BOOST_SPIRIT_CHAR_CODE(alpha, spirit::char_encoding::charset)           \
+<span class="lineNum">     218 </span>            :         BOOST_SPIRIT_CHAR_CODE(blank, spirit::char_encoding::charset)           \
+<span class="lineNum">     219 </span>            :         BOOST_SPIRIT_CHAR_CODE(cntrl, spirit::char_encoding::charset)           \
+<span class="lineNum">     220 </span>            :         BOOST_SPIRIT_CHAR_CODE(digit, spirit::char_encoding::charset)           \
+<span class="lineNum">     221 </span>            :         BOOST_SPIRIT_CHAR_CODE(graph, spirit::char_encoding::charset)           \
+<span class="lineNum">     222 </span>            :         BOOST_SPIRIT_CHAR_CODE(print, spirit::char_encoding::charset)           \
+<span class="lineNum">     223 </span>            :         BOOST_SPIRIT_CHAR_CODE(punct, spirit::char_encoding::charset)           \
+<span class="lineNum">     224 </span>            :         BOOST_SPIRIT_CHAR_CODE(space, spirit::char_encoding::charset)           \
+<span class="lineNum">     225 </span>            :         BOOST_SPIRIT_CHAR_CODE(xdigit, spirit::char_encoding::charset)          \
+<span class="lineNum">     226 </span>            :                                                                                 \
+<span class="lineNum">     227 </span>            :         BOOST_SPIRIT_CHAR_CODE(no_case, spirit::char_encoding::charset)         \
+<span class="lineNum">     228 </span>            :         BOOST_SPIRIT_CHAR_CODE(lower, spirit::char_encoding::charset)           \
+<span class="lineNum">     229 </span>            :         BOOST_SPIRIT_CHAR_CODE(upper, spirit::char_encoding::charset)           \
+<span class="lineNum">     230 </span>            :         BOOST_SPIRIT_CHAR_CODE(lowernum, spirit::char_encoding::charset)        \
+<span class="lineNum">     231 </span>            :         BOOST_SPIRIT_CHAR_CODE(uppernum, spirit::char_encoding::charset)        \
+<span class="lineNum">     232 </span>            :     }}}                                                                         \
+<span class="lineNum">     233 </span>            :     /***/
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span><span class="lineCov">          6 : BOOST_SPIRIT_DEFINE_CHAR_CODES(ascii)</span>
+<span class="lineNum">     236 </span><span class="lineCov">          6 : BOOST_SPIRIT_DEFINE_CHAR_CODES(iso8859_1)</span>
+<span class="lineNum">     237 </span><span class="lineCov">          6 : BOOST_SPIRIT_DEFINE_CHAR_CODES(standard)</span>
+<span class="lineNum">     238 </span><span class="lineCov">          6 : BOOST_SPIRIT_DEFINE_CHAR_CODES(standard_wide)</span>
+<span class="lineNum">     239 </span>            : 
+<span class="lineNum">     240 </span>            : namespace boost { namespace spirit { namespace traits
+<span class="lineNum">     241 </span>            : {
+<span class="lineNum">     242 </span>            :     template &lt;typename Char&gt;
+<span class="lineNum">     243 </span>            :     struct char_encoding_from_char;
+<span class="lineNum">     244 </span>            : 
+<span class="lineNum">     245 </span>            :     template &lt;&gt;
+<span class="lineNum">     246 </span>            :     struct char_encoding_from_char&lt;char&gt;
+<span class="lineNum">     247 </span>            :       : mpl::identity&lt;spirit::char_encoding::standard&gt;
+<span class="lineNum">     248 </span>            :     {};
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     template &lt;&gt;
+<span class="lineNum">     251 </span>            :     struct char_encoding_from_char&lt;wchar_t&gt;
+<span class="lineNum">     252 </span>            :       : mpl::identity&lt;spirit::char_encoding::standard_wide&gt;
+<span class="lineNum">     253 </span>            :     {};
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :     template &lt;typename T&gt;
+<span class="lineNum">     256 </span>            :     struct char_encoding_from_char&lt;T const&gt;
+<span class="lineNum">     257 </span>            :       : char_encoding_from_char&lt;T&gt;
+<span class="lineNum">     258 </span>            :     {};
+<span class="lineNum">     259 </span>            : }}}
+<span class="lineNum">     260 </span>            : 
+<span class="lineNum">     261 </span>            : #if defined(BOOST_SPIRIT_UNICODE)
+<span class="lineNum">     262 </span>            : BOOST_SPIRIT_DEFINE_CHAR_CODES(unicode)
+<span class="lineNum">     263 </span>            : 
+<span class="lineNum">     264 </span>            :     namespace boost { namespace spirit { namespace tag { namespace unicode
+<span class="lineNum">     265 </span>            :     {
+<span class="lineNum">     266 </span>            :         BOOST_SPIRIT_TAG_CHAR_SPEC(spirit::char_encoding::unicode)
+<span class="lineNum">     267 </span>            :     }}}}
+<span class="lineNum">     268 </span>            : 
+<span class="lineNum">     269 </span>            :     namespace boost { namespace spirit { namespace unicode
+<span class="lineNum">     270 </span>            :     {
+<span class="lineNum">     271 </span>            : #define BOOST_SPIRIT_UNICODE_CHAR_CODE(name)                                    \
+<span class="lineNum">     272 </span>            :     BOOST_SPIRIT_CHAR_CODE(name, spirit::char_encoding::unicode)                \
+<span class="lineNum">     273 </span>            : 
+<span class="lineNum">     274 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     275 </span>            :     //  Unicode Major Categories
+<span class="lineNum">     276 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     277 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(letter)
+<span class="lineNum">     278 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(mark)
+<span class="lineNum">     279 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(number)
+<span class="lineNum">     280 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(separator)
+<span class="lineNum">     281 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(other)
+<span class="lineNum">     282 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(punctuation)
+<span class="lineNum">     283 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(symbol)
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     286 </span>            :     //  Unicode General Categories
+<span class="lineNum">     287 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     288 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(uppercase_letter)
+<span class="lineNum">     289 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lowercase_letter)
+<span class="lineNum">     290 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(titlecase_letter)
+<span class="lineNum">     291 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(modifier_letter)
+<span class="lineNum">     292 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(other_letter)
+<span class="lineNum">     293 </span>            : 
+<span class="lineNum">     294 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(nonspacing_mark)
+<span class="lineNum">     295 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(enclosing_mark)
+<span class="lineNum">     296 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(spacing_mark)
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(decimal_number)
+<span class="lineNum">     299 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(letter_number)
+<span class="lineNum">     300 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(other_number)
+<span class="lineNum">     301 </span>            : 
+<span class="lineNum">     302 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(space_separator)
+<span class="lineNum">     303 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(line_separator)
+<span class="lineNum">     304 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(paragraph_separator)
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(control)
+<span class="lineNum">     307 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(format)
+<span class="lineNum">     308 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(private_use)
+<span class="lineNum">     309 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(surrogate)
+<span class="lineNum">     310 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(unassigned)
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(dash_punctuation)
+<span class="lineNum">     313 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(open_punctuation)
+<span class="lineNum">     314 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(close_punctuation)
+<span class="lineNum">     315 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(connector_punctuation)
+<span class="lineNum">     316 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(other_punctuation)
+<span class="lineNum">     317 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(initial_punctuation)
+<span class="lineNum">     318 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(final_punctuation)
+<span class="lineNum">     319 </span>            : 
+<span class="lineNum">     320 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(math_symbol)
+<span class="lineNum">     321 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(currency_symbol)
+<span class="lineNum">     322 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(modifier_symbol)
+<span class="lineNum">     323 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(other_symbol)
+<span class="lineNum">     324 </span>            : 
+<span class="lineNum">     325 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     326 </span>            :     //  Unicode Derived Categories
+<span class="lineNum">     327 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     328 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(alphabetic)
+<span class="lineNum">     329 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(uppercase)
+<span class="lineNum">     330 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lowercase)
+<span class="lineNum">     331 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(white_space)
+<span class="lineNum">     332 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(hex_digit)
+<span class="lineNum">     333 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(noncharacter_code_point)
+<span class="lineNum">     334 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(default_ignorable_code_point)
+<span class="lineNum">     335 </span>            : 
+<span class="lineNum">     336 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     337 </span>            :     //  Unicode Scripts
+<span class="lineNum">     338 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     339 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(arabic)
+<span class="lineNum">     340 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(imperial_aramaic)
+<span class="lineNum">     341 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(armenian)
+<span class="lineNum">     342 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(avestan)
+<span class="lineNum">     343 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(balinese)
+<span class="lineNum">     344 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(bamum)
+<span class="lineNum">     345 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(bengali)
+<span class="lineNum">     346 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(bopomofo)
+<span class="lineNum">     347 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(braille)
+<span class="lineNum">     348 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(buginese)
+<span class="lineNum">     349 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(buhid)
+<span class="lineNum">     350 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(canadian_aboriginal)
+<span class="lineNum">     351 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(carian)
+<span class="lineNum">     352 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(cham)
+<span class="lineNum">     353 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(cherokee)
+<span class="lineNum">     354 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(coptic)
+<span class="lineNum">     355 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(cypriot)
+<span class="lineNum">     356 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(cyrillic)
+<span class="lineNum">     357 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(devanagari)
+<span class="lineNum">     358 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(deseret)
+<span class="lineNum">     359 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(egyptian_hieroglyphs)
+<span class="lineNum">     360 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(ethiopic)
+<span class="lineNum">     361 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(georgian)
+<span class="lineNum">     362 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(glagolitic)
+<span class="lineNum">     363 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(gothic)
+<span class="lineNum">     364 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(greek)
+<span class="lineNum">     365 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(gujarati)
+<span class="lineNum">     366 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(gurmukhi)
+<span class="lineNum">     367 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(hangul)
+<span class="lineNum">     368 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(han)
+<span class="lineNum">     369 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(hanunoo)
+<span class="lineNum">     370 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(hebrew)
+<span class="lineNum">     371 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(hiragana)
+<span class="lineNum">     372 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(katakana_or_hiragana)
+<span class="lineNum">     373 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(old_italic)
+<span class="lineNum">     374 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(javanese)
+<span class="lineNum">     375 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(kayah_li)
+<span class="lineNum">     376 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(katakana)
+<span class="lineNum">     377 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(kharoshthi)
+<span class="lineNum">     378 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(khmer)
+<span class="lineNum">     379 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(kannada)
+<span class="lineNum">     380 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(kaithi)
+<span class="lineNum">     381 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tai_tham)
+<span class="lineNum">     382 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lao)
+<span class="lineNum">     383 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(latin)
+<span class="lineNum">     384 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lepcha)
+<span class="lineNum">     385 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(limbu)
+<span class="lineNum">     386 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(linear_b)
+<span class="lineNum">     387 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lisu)
+<span class="lineNum">     388 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lycian)
+<span class="lineNum">     389 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(lydian)
+<span class="lineNum">     390 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(malayalam)
+<span class="lineNum">     391 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(mongolian)
+<span class="lineNum">     392 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(meetei_mayek)
+<span class="lineNum">     393 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(myanmar)
+<span class="lineNum">     394 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(nko)
+<span class="lineNum">     395 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(ogham)
+<span class="lineNum">     396 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(ol_chiki)
+<span class="lineNum">     397 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(old_turkic)
+<span class="lineNum">     398 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(oriya)
+<span class="lineNum">     399 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(osmanya)
+<span class="lineNum">     400 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(phags_pa)
+<span class="lineNum">     401 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(inscriptional_pahlavi)
+<span class="lineNum">     402 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(phoenician)
+<span class="lineNum">     403 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(inscriptional_parthian)
+<span class="lineNum">     404 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(rejang)
+<span class="lineNum">     405 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(runic)
+<span class="lineNum">     406 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(samaritan)
+<span class="lineNum">     407 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(old_south_arabian)
+<span class="lineNum">     408 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(saurashtra)
+<span class="lineNum">     409 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(shavian)
+<span class="lineNum">     410 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(sinhala)
+<span class="lineNum">     411 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(sundanese)
+<span class="lineNum">     412 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(syloti_nagri)
+<span class="lineNum">     413 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(syriac)
+<span class="lineNum">     414 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tagbanwa)
+<span class="lineNum">     415 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tai_le)
+<span class="lineNum">     416 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(new_tai_lue)
+<span class="lineNum">     417 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tamil)
+<span class="lineNum">     418 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tai_viet)
+<span class="lineNum">     419 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(telugu)
+<span class="lineNum">     420 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tifinagh)
+<span class="lineNum">     421 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tagalog)
+<span class="lineNum">     422 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(thaana)
+<span class="lineNum">     423 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(thai)
+<span class="lineNum">     424 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(tibetan)
+<span class="lineNum">     425 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(ugaritic)
+<span class="lineNum">     426 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(vai)
+<span class="lineNum">     427 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(old_persian)
+<span class="lineNum">     428 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(cuneiform)
+<span class="lineNum">     429 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(yi)
+<span class="lineNum">     430 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(inherited)
+<span class="lineNum">     431 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(common)
+<span class="lineNum">     432 </span>            :         BOOST_SPIRIT_UNICODE_CHAR_CODE(unknown)
+<span class="lineNum">     433 </span>            : 
+<span class="lineNum">     434 </span>            : #undef BOOST_SPIRIT_UNICODE_CHAR_CODE
+<span class="lineNum">     435 </span>            :     }}}
+<span class="lineNum">     436 </span>            : #endif
+<span class="lineNum">     437 </span>            : 
+<span class="lineNum">     438 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

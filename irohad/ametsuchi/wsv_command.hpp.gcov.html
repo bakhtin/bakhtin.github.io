@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/ametsuchi/wsv_command.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">irohad/ametsuchi</a> - wsv_command.hpp<span style="font-size: 80%;"> (source / <a href="wsv_command.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryLo">66.7 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_WSV_COMMAND_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_WSV_COMMAND_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &lt;set&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;string&gt;
+<span class="lineNum">      23 </span>                :            : #include &quot;common/types.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;model/account.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;model/account_asset.hpp&quot;
+<span class="lineNum">      26 </span>                :            : #include &quot;model/asset.hpp&quot;
+<span class="lineNum">      27 </span>                :            : #include &quot;model/domain.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;model/peer.hpp&quot;
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            : namespace iroha {
+<span class="lineNum">      31 </span>                :            :   namespace ametsuchi {
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :            :     /**
+<a name="34"><span class="lineNum">      34 </span>                :            :      * Commands for modifying world state view</a>
+<span class="lineNum">      35 </span>                :            :      */
+<a name="36"><span class="lineNum">      36 </span>                :<span class="lineCov">        137 :     class WsvCommand {</span></a>
+<span class="lineNum">      37 </span>                :            :      public:
+<span class="lineNum">      38 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 137 times"> + </span>]:<span class="lineCov">        274 :       virtual ~WsvCommand() = default;</span>
+<span class="lineNum">      39 </span>                :            : 
+<span class="lineNum">      40 </span>                :            :       /**
+<span class="lineNum">      41 </span>                :            :        * Insert role entity
+<span class="lineNum">      42 </span>                :            :        * @param role_name
+<span class="lineNum">      43 </span>                :            :        * @return true if insert successful
+<span class="lineNum">      44 </span>                :            :        */
+<span class="lineNum">      45 </span>                :            :       virtual bool insertRole(const std::string &amp;role_name) = 0;
+<span class="lineNum">      46 </span>                :            : 
+<span class="lineNum">      47 </span>                :            :       /**
+<span class="lineNum">      48 </span>                :            :        * Bind account and role
+<span class="lineNum">      49 </span>                :            :        * @param account_id
+<span class="lineNum">      50 </span>                :            :        * @param role_name
+<span class="lineNum">      51 </span>                :            :        * @return true if insert successful
+<span class="lineNum">      52 </span>                :            :        */
+<span class="lineNum">      53 </span>                :            :       virtual bool insertAccountRole(const std::string &amp;account_id,
+<span class="lineNum">      54 </span>                :            :                                      const std::string &amp;role_name) = 0;
+<span class="lineNum">      55 </span>                :            :       /**
+<span class="lineNum">      56 </span>                :            :        * Unbind account and role
+<span class="lineNum">      57 </span>                :            :        * @param account_id
+<span class="lineNum">      58 </span>                :            :        * @param role_name
+<span class="lineNum">      59 </span>                :            :        * @return true if delete successful
+<span class="lineNum">      60 </span>                :            :        */
+<span class="lineNum">      61 </span>                :            :       virtual bool deleteAccountRole(const std::string &amp;account_id,
+<span class="lineNum">      62 </span>                :            :                                      const std::string &amp;role_name) = 0;
+<span class="lineNum">      63 </span>                :            : 
+<span class="lineNum">      64 </span>                :            :       /**
+<span class="lineNum">      65 </span>                :            :        * Bind role and permissions
+<span class="lineNum">      66 </span>                :            :        * @param role_id
+<span class="lineNum">      67 </span>                :            :        * @param permissions
+<span class="lineNum">      68 </span>                :            :        * @return true is insert successful, false otherwise
+<span class="lineNum">      69 </span>                :            :        */
+<span class="lineNum">      70 </span>                :            :       virtual bool insertRolePermissions(
+<span class="lineNum">      71 </span>                :            :           const std::string &amp;role_id,
+<span class="lineNum">      72 </span>                :            :           const std::set&lt;std::string&gt; &amp;permissions) = 0;
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :            :       /**
+<span class="lineNum">      75 </span>                :            :        * Insert grantable permission
+<span class="lineNum">      76 </span>                :            :        * @param permittee_account_id to who give the grant permission
+<span class="lineNum">      77 </span>                :            :        * @param account_id on which account
+<span class="lineNum">      78 </span>                :            :        * @param permission_id what permission
+<span class="lineNum">      79 </span>                :            :        * @return true is execution is successful
+<span class="lineNum">      80 </span>                :            :        */
+<span class="lineNum">      81 </span>                :            :       virtual bool insertAccountGrantablePermission(
+<span class="lineNum">      82 </span>                :            :           const std::string &amp;permittee_account_id,
+<span class="lineNum">      83 </span>                :            :           const std::string &amp;account_id,
+<span class="lineNum">      84 </span>                :            :           const std::string &amp;permission_id) = 0;
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :            :       /**
+<span class="lineNum">      87 </span>                :            :        * Delete grantable permission
+<span class="lineNum">      88 </span>                :            :        * @param permittee_account_id to who the grant permission was previously
+<span class="lineNum">      89 </span>                :            :        * granted
+<span class="lineNum">      90 </span>                :            :        * @param account_id on which account
+<span class="lineNum">      91 </span>                :            :        * @param permission_id what permission
+<span class="lineNum">      92 </span>                :            :        * @return true is execution is successful
+<span class="lineNum">      93 </span>                :            :        */
+<span class="lineNum">      94 </span>                :            :       virtual bool deleteAccountGrantablePermission(
+<span class="lineNum">      95 </span>                :            :           const std::string &amp;permittee_account_id,
+<span class="lineNum">      96 </span>                :            :           const std::string &amp;account_id,
+<span class="lineNum">      97 </span>                :            :           const std::string &amp;permission_id) = 0;
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :            :       /**
+<span class="lineNum">     100 </span>                :            :        *
+<span class="lineNum">     101 </span>                :            :        * @param account
+<span class="lineNum">     102 </span>                :            :        * @return
+<span class="lineNum">     103 </span>                :            :        */
+<span class="lineNum">     104 </span>                :            :       virtual bool insertAccount(const model::Account &amp;account) = 0;
+<span class="lineNum">     105 </span>                :            : 
+<span class="lineNum">     106 </span>                :            :       /**
+<span class="lineNum">     107 </span>                :            :        *
+<span class="lineNum">     108 </span>                :            :        * @param account
+<span class="lineNum">     109 </span>                :            :        * @return true if no error occurred, false otherwise
+<span class="lineNum">     110 </span>                :            :        */
+<span class="lineNum">     111 </span>                :            :       virtual bool updateAccount(const model::Account &amp;account) = 0;
+<span class="lineNum">     112 </span>                :            : 
+<span class="lineNum">     113 </span>                :            :       /**
+<span class="lineNum">     114 </span>                :            :        * @param account_id  account in which update key value
+<span class="lineNum">     115 </span>                :            :        * @param creator_account_id creator's account who wants to update
+<span class="lineNum">     116 </span>                :            :        * account_id
+<span class="lineNum">     117 </span>                :            :        * @param key - key to set
+<span class="lineNum">     118 </span>                :            :        * @param val - value of the key/value pair
+<span class="lineNum">     119 </span>                :            :        * @return true if no error occurred, false otherwise
+<span class="lineNum">     120 </span>                :            :        */
+<span class="lineNum">     121 </span>                :            :       virtual bool setAccountKV(const std::string &amp;account_id,
+<span class="lineNum">     122 </span>                :            :                                 const std::string &amp;creator_account_id,
+<span class="lineNum">     123 </span>                :            :                                 const std::string &amp;key,
+<span class="lineNum">     124 </span>                :            :                                 const std::string &amp;val) = 0;
+<span class="lineNum">     125 </span>                :            : 
+<span class="lineNum">     126 </span>                :            :       /**
+<span class="lineNum">     127 </span>                :            :        *
+<span class="lineNum">     128 </span>                :            :        * @param asset
+<span class="lineNum">     129 </span>                :            :        * @return
+<span class="lineNum">     130 </span>                :            :        */
+<span class="lineNum">     131 </span>                :            :       virtual bool insertAsset(const model::Asset &amp;asset) = 0;
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :            :       /**
+<span class="lineNum">     134 </span>                :            :        * Update or insert account asset
+<span class="lineNum">     135 </span>                :            :        * @param asset
+<span class="lineNum">     136 </span>                :            :        * @return
+<span class="lineNum">     137 </span>                :            :        */
+<span class="lineNum">     138 </span>                :            :       virtual bool upsertAccountAsset(const model::AccountAsset &amp;asset) = 0;
+<span class="lineNum">     139 </span>                :            : 
+<span class="lineNum">     140 </span>                :            :       /**
+<span class="lineNum">     141 </span>                :            :        *
+<span class="lineNum">     142 </span>                :            :        * @param signatory
+<span class="lineNum">     143 </span>                :            :        * @return
+<span class="lineNum">     144 </span>                :            :        */
+<span class="lineNum">     145 </span>                :            :       virtual bool insertSignatory(const pubkey_t &amp;signatory) = 0;
+<span class="lineNum">     146 </span>                :            : 
+<span class="lineNum">     147 </span>                :            :       /**
+<span class="lineNum">     148 </span>                :            :        * Insert account signatory relationship
+<span class="lineNum">     149 </span>                :            :        * @param account_id
+<span class="lineNum">     150 </span>                :            :        * @param signatory
+<span class="lineNum">     151 </span>                :            :        * @return
+<span class="lineNum">     152 </span>                :            :        */
+<span class="lineNum">     153 </span>                :            :       virtual bool insertAccountSignatory(const std::string &amp;account_id,
+<span class="lineNum">     154 </span>                :            :                                           const pubkey_t &amp;signatory) = 0;
+<span class="lineNum">     155 </span>                :            : 
+<span class="lineNum">     156 </span>                :            :       /**
+<span class="lineNum">     157 </span>                :            :        * Delete account signatory relationship
+<span class="lineNum">     158 </span>                :            :        * @param account_id
+<span class="lineNum">     159 </span>                :            :        * @param signatory
+<span class="lineNum">     160 </span>                :            :        * @return
+<span class="lineNum">     161 </span>                :            :        */
+<span class="lineNum">     162 </span>                :            :       virtual bool deleteAccountSignatory(const std::string &amp;account_id,
+<span class="lineNum">     163 </span>                :            :                                           const pubkey_t &amp;signatory) = 0;
+<span class="lineNum">     164 </span>                :            : 
+<span class="lineNum">     165 </span>                :            :       /**
+<span class="lineNum">     166 </span>                :            :        * Delete signatory
+<span class="lineNum">     167 </span>                :            :        * @param signatory
+<span class="lineNum">     168 </span>                :            :        * @return
+<span class="lineNum">     169 </span>                :            :        */
+<span class="lineNum">     170 </span>                :            :       virtual bool deleteSignatory(const pubkey_t &amp;signatory) = 0;
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>                :            :       /**
+<span class="lineNum">     173 </span>                :            :        *
+<span class="lineNum">     174 </span>                :            :        * @param peer
+<span class="lineNum">     175 </span>                :            :        * @return
+<span class="lineNum">     176 </span>                :            :        */
+<span class="lineNum">     177 </span>                :            :       virtual bool insertPeer(const model::Peer &amp;peer) = 0;
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :            :       /**
+<span class="lineNum">     180 </span>                :            :        *
+<span class="lineNum">     181 </span>                :            :        * @param peer
+<span class="lineNum">     182 </span>                :            :        * @return
+<span class="lineNum">     183 </span>                :            :        */
+<span class="lineNum">     184 </span>                :            :       virtual bool deletePeer(const model::Peer &amp;peer) = 0;
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            :       /**
+<span class="lineNum">     187 </span>                :            :        *
+<span class="lineNum">     188 </span>                :            :        * @param peer
+<span class="lineNum">     189 </span>                :            :        * @return
+<span class="lineNum">     190 </span>                :            :        */
+<span class="lineNum">     191 </span>                :            :       virtual bool insertDomain(const model::Domain &amp;domain) = 0;
+<span class="lineNum">     192 </span>                :            :     };
+<span class="lineNum">     193 </span>                :            : 
+<span class="lineNum">     194 </span>                :            :   }  // namespace ametsuchi
+<span class="lineNum">     195 </span>                :            : }  // namespace iroha
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>                :            : #endif  // IROHA_WSV_COMMAND_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/proto/domain.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/proto</a> - domain.hpp<span style="font-size: 80%;"> (source / <a href="domain.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : ///////////////////////////////////////////////////////////////////////////////</a>
+<span class="lineNum">       2 </span>            : /// \file domain.hpp
+<span class="lineNum">       3 </span>            : /// Contains definition of domain\&lt;\&gt; class template and helpers for
+<span class="lineNum">       4 </span>            : /// defining domains with a generator and a grammar for controlling
+<span class="lineNum">       5 </span>            : /// operator overloading.
+<span class="lineNum">       6 </span>            : //
+<span class="lineNum">       7 </span>            : //  Copyright 2008 Eric Niebler. Distributed under the Boost
+<span class="lineNum">       8 </span>            : //  Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       9 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #ifndef BOOST_PROTO_DOMAIN_HPP_EAN_02_13_2007
+<span class="lineNum">      12 </span>            : #define BOOST_PROTO_DOMAIN_HPP_EAN_02_13_2007
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/ref.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/proto/proto_fwd.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/proto/generate.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/proto/detail/as_expr.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/proto/detail/deduce_domain.hpp&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      22 </span>            : # pragma warning(push)
+<span class="lineNum">      23 </span>            : # pragma warning(disable : 4714) // function 'xxx' marked as __forceinline not inlined
+<span class="lineNum">      24 </span>            : #endif
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : namespace boost { namespace proto
+<span class="lineNum">      27 </span>            : {
+<span class="lineNum">      28 </span>            : 
+<span class="lineNum">      29 </span>            :     namespace detail
+<span class="lineNum">      30 </span>            :     {
+<span class="lineNum">      31 </span>            :         struct not_a_generator
+<span class="lineNum">      32 </span>            :         {};
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            :         struct not_a_grammar
+<span class="lineNum">      35 </span>            :         {};
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :         struct not_a_domain
+<span class="lineNum">      38 </span>            :         {};
+<span class="lineNum">      39 </span>            :     }
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            :     namespace domainns_
+<span class="lineNum">      42 </span>            :     {
+<span class="lineNum">      43 </span>            :         /// \brief For use in defining domain tags to be used
+<span class="lineNum">      44 </span>            :         /// with \c proto::extends\&lt;\&gt;. A \e Domain associates
+<span class="lineNum">      45 </span>            :         /// an expression type with a \e Generator, and optionally
+<span class="lineNum">      46 </span>            :         /// a \e Grammar.
+<span class="lineNum">      47 </span>            :         ///
+<span class="lineNum">      48 </span>            :         /// The Generator determines how new expressions in the
+<span class="lineNum">      49 </span>            :         /// domain are constructed. Typically, a generator wraps
+<span class="lineNum">      50 </span>            :         /// all new expressions in a wrapper that imparts
+<span class="lineNum">      51 </span>            :         /// domain-specific behaviors to expressions within its
+<span class="lineNum">      52 </span>            :         /// domain. (See \c proto::extends\&lt;\&gt;.)
+<span class="lineNum">      53 </span>            :         ///
+<span class="lineNum">      54 </span>            :         /// The Grammar determines whether a given expression is
+<span class="lineNum">      55 </span>            :         /// valid within the domain, and automatically disables
+<span class="lineNum">      56 </span>            :         /// any operator overloads which would cause an invalid
+<span class="lineNum">      57 </span>            :         /// expression to be created. By default, the Grammar
+<span class="lineNum">      58 </span>            :         /// parameter defaults to the wildcard, \c proto::_, which
+<span class="lineNum">      59 </span>            :         /// makes all expressions valid within the domain.
+<span class="lineNum">      60 </span>            :         ///
+<span class="lineNum">      61 </span>            :         /// The Super declares the domain currently being defined
+<span class="lineNum">      62 </span>            :         /// to be a sub-domain of Super. Expressions in sub-domains
+<span class="lineNum">      63 </span>            :         /// can be freely combined with expressions in its super-
+<span class="lineNum">      64 </span>            :         /// domain (and &lt;I&gt;its&lt;/I&gt; super-domain, etc.).
+<span class="lineNum">      65 </span>            :         ///
+<span class="lineNum">      66 </span>            :         /// Example:
+<span class="lineNum">      67 </span>            :         /// \code
+<span class="lineNum">      68 </span>            :         /// template&lt;typename Expr&gt;
+<span class="lineNum">      69 </span>            :         /// struct MyExpr;
+<span class="lineNum">      70 </span>            :         ///
+<span class="lineNum">      71 </span>            :         /// struct MyGrammar
+<span class="lineNum">      72 </span>            :         ///   : or_&lt; terminal&lt;_&gt;, plus&lt;MyGrammar, MyGrammar&gt; &gt;
+<span class="lineNum">      73 </span>            :         /// {};
+<span class="lineNum">      74 </span>            :         ///
+<span class="lineNum">      75 </span>            :         /// // Define MyDomain, in which all expressions are
+<span class="lineNum">      76 </span>            :         /// // wrapped in MyExpr&lt;&gt; and only expressions that
+<span class="lineNum">      77 </span>            :         /// // conform to MyGrammar are allowed.
+<span class="lineNum">      78 </span>            :         /// struct MyDomain
+<span class="lineNum">      79 </span>            :         ///   : domain&lt;generator&lt;MyExpr&gt;, MyGrammar&gt;
+<span class="lineNum">      80 </span>            :         /// {};
+<span class="lineNum">      81 </span>            :         ///
+<span class="lineNum">      82 </span>            :         /// // Use MyDomain to define MyExpr
+<span class="lineNum">      83 </span>            :         /// template&lt;typename Expr&gt;
+<span class="lineNum">      84 </span>            :         /// struct MyExpr
+<span class="lineNum">      85 </span>            :         ///   : extends&lt;Expr, MyExpr&lt;Expr&gt;, MyDomain&gt;
+<span class="lineNum">      86 </span>            :         /// {
+<span class="lineNum">      87 </span>            :         ///     // ...
+<span class="lineNum">      88 </span>            :         /// };
+<span class="lineNum">      89 </span>            :         /// \endcode
+<span class="lineNum">      90 </span>            :         ///
+<span class="lineNum">      91 </span>            :         template&lt;
+<span class="lineNum">      92 </span>            :             typename Generator // = default_generator
+<span class="lineNum">      93 </span>            :           , typename Grammar   // = proto::_
+<span class="lineNum">      94 </span>            :           , typename Super     // = no_super_domain
+<span class="lineNum">      95 </span>            :         &gt;
+<span class="lineNum">      96 </span>            :         struct domain
+<span class="lineNum">      97 </span>            :           : Generator
+<span class="lineNum">      98 </span>            :         {
+<span class="lineNum">      99 </span>            :             typedef Generator proto_generator;
+<span class="lineNum">     100 </span>            :             typedef Grammar   proto_grammar;
+<span class="lineNum">     101 </span>            :             typedef Super     proto_super_domain;
+<span class="lineNum">     102 </span>            :             typedef domain    proto_base_domain;
+<span class="lineNum">     103 </span>            : 
+<span class="lineNum">     104 </span>            :             /// INTERNAL ONLY
+<span class="lineNum">     105 </span>            :             typedef void proto_is_domain_;
+<span class="lineNum">     106 </span>            : 
+<span class="lineNum">     107 </span>            :             /// \brief A unary MonomorphicFunctionObject that turns objects into Proto
+<span class="lineNum">     108 </span>            :             /// expression objects in this domain.
+<span class="lineNum">     109 </span>            :             ///
+<span class="lineNum">     110 </span>            :             /// The &lt;tt&gt;as_expr\&lt;\&gt;&lt;/tt&gt; function object turns objects into Proto expressions, if
+<span class="lineNum">     111 </span>            :             /// they are not already, by making them Proto terminals held by value if
+<span class="lineNum">     112 </span>            :             /// possible. Objects that are already Proto expressions are left alone.
+<span class="lineNum">     113 </span>            :             ///
+<span class="lineNum">     114 </span>            :             /// If &lt;tt&gt;wants_basic_expr\&lt;Generator\&gt;::value&lt;/tt&gt; is true, then let \c E be \c basic_expr;
+<span class="lineNum">     115 </span>            :             /// otherwise, let \t E be \c expr. Given an lvalue \c t of type \c T:
+<span class="lineNum">     116 </span>            :             ///
+<span class="lineNum">     117 </span>            :             /// If \c T is not a Proto expression type the resulting terminal is
+<span class="lineNum">     118 </span>            :             /// calculated as follows:
+<span class="lineNum">     119 </span>            :             ///
+<span class="lineNum">     120 </span>            :             ///   If \c T is a function type, an abstract type, or a type derived from
+<span class="lineNum">     121 </span>            :             ///   \c std::ios_base, let \c A be &lt;tt&gt;T &amp;&lt;/tt&gt;.
+<span class="lineNum">     122 </span>            :             ///   Otherwise, let \c A be the type \c T stripped of cv-qualifiers.
+<span class="lineNum">     123 </span>            :             ///   Then, the result of applying &lt;tt&gt;as_expr\&lt;T\&gt;()(t)&lt;/tt&gt; is
+<span class="lineNum">     124 </span>            :             ///   &lt;tt&gt;Generator()(E\&lt;tag::terminal, term\&lt;A\&gt; \&gt;::make(t))&lt;/tt&gt;.
+<span class="lineNum">     125 </span>            :             ///
+<span class="lineNum">     126 </span>            :             /// If \c T is a Proto expression type and its generator type is different from
+<span class="lineNum">     127 </span>            :             /// \c Generator, the result is &lt;tt&gt;Generator()(t)&lt;/tt&gt;.
+<span class="lineNum">     128 </span>            :             ///
+<span class="lineNum">     129 </span>            :             /// Otherwise, the result is \c t converted to an (un-const) rvalue.
+<span class="lineNum">     130 </span>            :             ///
+<span class="lineNum">     131 </span>            :             template&lt;typename T, typename IsExpr = void, typename Callable = proto::callable&gt;
+<span class="lineNum">     132 </span>            :             struct as_expr
+<span class="lineNum">     133 </span>            :               : detail::as_expr&lt;
+<span class="lineNum">     134 </span>            :                     T
+<span class="lineNum">     135 </span>            :                   , typename detail::base_generator&lt;Generator&gt;::type
+<span class="lineNum">     136 </span>            :                   , wants_basic_expr&lt;Generator&gt;::value
+<span class="lineNum">     137 </span>            :                 &gt;
+<span class="lineNum">     138 </span>            :             {
+<span class="lineNum">     139 </span>            :                 BOOST_PROTO_CALLABLE()
+<span class="lineNum">     140 </span>            :             };
+<span class="lineNum">     141 </span>            : 
+<span class="lineNum">     142 </span>            :             /// INTERNAL ONLY
+<span class="lineNum">     143 </span>            :             ///
+<span class="lineNum">     144 </span>            :             template&lt;typename T&gt;
+<span class="lineNum">     145 </span>            :             struct as_expr&lt;T, typename T::proto_is_expr_, proto::callable&gt;
+<span class="lineNum">     146 </span>            :             {
+<span class="lineNum">     147 </span>            :                 BOOST_PROTO_CALLABLE()
+<span class="lineNum">     148 </span>            :                 typedef typename remove_const&lt;T&gt;::type result_type;
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :                 BOOST_FORCEINLINE
+<span class="lineNum">     151 </span>            :                 result_type operator()(T &amp;e) const
+<span class="lineNum">     152 </span>            :                 {
+<span class="lineNum">     153 </span>            :                     return e;
+<span class="lineNum">     154 </span>            :                 }
+<span class="lineNum">     155 </span>            :             };
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            :             /// \brief A unary MonomorphicFunctionObject that turns objects into Proto
+<span class="lineNum">     158 </span>            :             /// expression objects in this domain.
+<span class="lineNum">     159 </span>            :             ///
+<span class="lineNum">     160 </span>            :             /// The &lt;tt&gt;as_child\&lt;\&gt;&lt;/tt&gt; function object turns objects into Proto expressions, if
+<span class="lineNum">     161 </span>            :             /// they are not already, by making them Proto terminals held by reference.
+<span class="lineNum">     162 </span>            :             /// Objects that are already Proto expressions are simply returned by reference.
+<span class="lineNum">     163 </span>            :             ///
+<span class="lineNum">     164 </span>            :             /// If &lt;tt&gt;wants_basic_expr\&lt;Generator\&gt;::value&lt;/tt&gt; is true, then let \c E be \c basic_expr;
+<span class="lineNum">     165 </span>            :             /// otherwise, let \t E be \c expr. Given an lvalue \c t of type \c T:
+<span class="lineNum">     166 </span>            :             ///
+<span class="lineNum">     167 </span>            :             /// If \c T is not a Proto expression type the resulting terminal is
+<span class="lineNum">     168 </span>            :             /// &lt;tt&gt;Generator()(E\&lt;tag::terminal, term\&lt;T &amp;\&gt; \&gt;::make(t))&lt;/tt&gt;.
+<span class="lineNum">     169 </span>            :             ///
+<span class="lineNum">     170 </span>            :             /// If \c T is a Proto expression type and its generator type is different from
+<span class="lineNum">     171 </span>            :             /// \c Generator, the result is &lt;tt&gt;Generator()(t)&lt;/tt&gt;.
+<span class="lineNum">     172 </span>            :             ///
+<span class="lineNum">     173 </span>            :             /// Otherwise, the result is the lvalue \c t.
+<span class="lineNum">     174 </span>            :             ///
+<span class="lineNum">     175 </span>            :             template&lt;typename T, typename IsExpr = void, typename Callable = proto::callable&gt;
+<span class="lineNum">     176 </span>            :             struct as_child
+<span class="lineNum">     177 </span>            :               : detail::as_child&lt;
+<span class="lineNum">     178 </span>            :                     T
+<span class="lineNum">     179 </span>            :                   , typename detail::base_generator&lt;Generator&gt;::type
+<span class="lineNum">     180 </span>            :                   , wants_basic_expr&lt;Generator&gt;::value
+<span class="lineNum">     181 </span>            :                 &gt;
+<span class="lineNum">     182 </span>            :             {
+<span class="lineNum">     183 </span>            :                 BOOST_PROTO_CALLABLE()
+<span class="lineNum">     184 </span>            :             };
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span>            :             /// INTERNAL ONLY
+<span class="lineNum">     187 </span>            :             ///
+<span class="lineNum">     188 </span>            :             template&lt;typename T&gt;
+<span class="lineNum">     189 </span>            :             struct as_child&lt;T, typename T::proto_is_expr_, proto::callable&gt;
+<span class="lineNum">     190 </span>            :             {
+<span class="lineNum">     191 </span>            :                 BOOST_PROTO_CALLABLE()
+<span class="lineNum">     192 </span>            :                 typedef T &amp;result_type;
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            :                 BOOST_FORCEINLINE
+<span class="lineNum">     195 </span>            :                 result_type operator()(T &amp;e) const
+<span class="lineNum">     196 </span>            :                 {
+<span class="lineNum">     197 </span><span class="lineCov">        207 :                     return e;</span>
+<span class="lineNum">     198 </span>            :                 }
+<span class="lineNum">     199 </span>            :             };
+<span class="lineNum">     200 </span>            :         };
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            :         /// \brief The domain expressions have by default, if
+<span class="lineNum">     203 </span>            :         /// \c proto::extends\&lt;\&gt; has not been used to associate
+<span class="lineNum">     204 </span>            :         /// a domain with an expression.
+<span class="lineNum">     205 </span>            :         ///
+<span class="lineNum">     206 </span>            :         struct default_domain
+<span class="lineNum">     207 </span>            :           : domain&lt;&gt;
+<span class="lineNum">     208 </span>            :         {};
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            :         /// \brief A domain to use when you prefer the use of
+<span class="lineNum">     211 </span>            :         /// \c proto::basic_expr\&lt;\&gt; over \c proto::expr\&lt;\&gt;.
+<span class="lineNum">     212 </span>            :         ///
+<span class="lineNum">     213 </span>            :         struct basic_default_domain
+<span class="lineNum">     214 </span>            :           : domain&lt;basic_default_generator&gt;
+<span class="lineNum">     215 </span>            :         {};
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            :         /// \brief A pseudo-domain for use in functions and
+<span class="lineNum">     218 </span>            :         /// metafunctions that require a domain parameter. It
+<span class="lineNum">     219 </span>            :         /// indicates that the domain of the parent node should
+<span class="lineNum">     220 </span>            :         /// be inferred from the domains of the child nodes.
+<span class="lineNum">     221 </span>            :         ///
+<span class="lineNum">     222 </span>            :         /// \attention \c deduce_domain is not itself a valid domain.
+<span class="lineNum">     223 </span>            :         ///
+<span class="lineNum">     224 </span>            :         struct deduce_domain
+<span class="lineNum">     225 </span>            :           : domain&lt;detail::not_a_generator, detail::not_a_grammar, detail::not_a_domain&gt;
+<span class="lineNum">     226 </span>            :         {};
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            :         /// \brief Given a domain, a tag type and an argument list,
+<span class="lineNum">     229 </span>            :         /// compute the type of the expression to generate. This is
+<span class="lineNum">     230 </span>            :         /// either an instance of \c proto::expr\&lt;\&gt; or
+<span class="lineNum">     231 </span>            :         /// \c proto::basic_expr\&lt;\&gt;.
+<span class="lineNum">     232 </span>            :         ///
+<span class="lineNum">     233 </span>            :         template&lt;typename Domain, typename Tag, typename Args, bool WantsBasicExpr&gt;
+<span class="lineNum">     234 </span>            :         struct base_expr
+<span class="lineNum">     235 </span>            :         {
+<span class="lineNum">     236 </span>            :             typedef proto::expr&lt;Tag, Args, Args::arity&gt; type;
+<span class="lineNum">     237 </span>            :         };
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            :         /// INTERNAL ONLY
+<span class="lineNum">     240 </span>            :         ///
+<span class="lineNum">     241 </span>            :         template&lt;typename Domain, typename Tag, typename Args&gt;
+<span class="lineNum">     242 </span>            :         struct base_expr&lt;Domain, Tag, Args, true&gt;
+<span class="lineNum">     243 </span>            :         {
+<span class="lineNum">     244 </span>            :             typedef proto::basic_expr&lt;Tag, Args, Args::arity&gt; type;
+<span class="lineNum">     245 </span>            :         };
+<span class="lineNum">     246 </span>            : 
+<span class="lineNum">     247 </span>            :     }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     /// A metafunction that returns \c mpl::true_
+<span class="lineNum">     250 </span>            :     /// if the type \c T is the type of a Proto domain;
+<span class="lineNum">     251 </span>            :     /// \c mpl::false_ otherwise. If \c T inherits from
+<span class="lineNum">     252 </span>            :     /// \c proto::domain\&lt;\&gt;, \c is_domain\&lt;T\&gt; is
+<span class="lineNum">     253 </span>            :     /// \c mpl::true_.
+<span class="lineNum">     254 </span>            :     template&lt;typename T, typename Void  /* = void*/&gt;
+<span class="lineNum">     255 </span>            :     struct is_domain
+<span class="lineNum">     256 </span>            :       : mpl::false_
+<span class="lineNum">     257 </span>            :     {};
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     260 </span>            :     ///
+<span class="lineNum">     261 </span>            :     template&lt;typename T&gt;
+<span class="lineNum">     262 </span>            :     struct is_domain&lt;T, typename T::proto_is_domain_&gt;
+<span class="lineNum">     263 </span>            :       : mpl::true_
+<span class="lineNum">     264 </span>            :     {};
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     /// A metafunction that returns the domain of
+<span class="lineNum">     267 </span>            :     /// a given type. If \c T is a Proto expression
+<span class="lineNum">     268 </span>            :     /// type, it returns that expression's associated
+<span class="lineNum">     269 </span>            :     /// domain. If not, it returns
+<span class="lineNum">     270 </span>            :     /// \c proto::default_domain.
+<span class="lineNum">     271 </span>            :     template&lt;typename T, typename Void /* = void*/&gt;
+<span class="lineNum">     272 </span>            :     struct domain_of
+<span class="lineNum">     273 </span>            :     {
+<span class="lineNum">     274 </span>            :         typedef default_domain type;
+<span class="lineNum">     275 </span>            :     };
+<span class="lineNum">     276 </span>            : 
+<span class="lineNum">     277 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     278 </span>            :     ///
+<span class="lineNum">     279 </span>            :     template&lt;typename T&gt;
+<span class="lineNum">     280 </span>            :     struct domain_of&lt;T, typename T::proto_is_expr_&gt;
+<span class="lineNum">     281 </span>            :     {
+<span class="lineNum">     282 </span>            :         typedef typename T::proto_domain type;
+<span class="lineNum">     283 </span>            :     };
+<span class="lineNum">     284 </span>            : 
+<span class="lineNum">     285 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     286 </span>            :     ///
+<span class="lineNum">     287 </span>            :     template&lt;typename T&gt;
+<span class="lineNum">     288 </span>            :     struct domain_of&lt;T &amp;, void&gt;
+<span class="lineNum">     289 </span>            :     {
+<span class="lineNum">     290 </span>            :         typedef typename domain_of&lt;T&gt;::type type;
+<span class="lineNum">     291 </span>            :     };
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     294 </span>            :     ///
+<span class="lineNum">     295 </span>            :     template&lt;typename T&gt;
+<span class="lineNum">     296 </span>            :     struct domain_of&lt;boost::reference_wrapper&lt;T&gt;, void&gt;
+<span class="lineNum">     297 </span>            :     {
+<span class="lineNum">     298 </span>            :         typedef typename domain_of&lt;T&gt;::type type;
+<span class="lineNum">     299 </span>            :     };
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     302 </span>            :     ///
+<span class="lineNum">     303 </span>            :     template&lt;typename T&gt;
+<span class="lineNum">     304 </span>            :     struct domain_of&lt;boost::reference_wrapper&lt;T&gt; const, void&gt;
+<span class="lineNum">     305 </span>            :     {
+<span class="lineNum">     306 </span>            :         typedef typename domain_of&lt;T&gt;::type type;
+<span class="lineNum">     307 </span>            :     };
+<span class="lineNum">     308 </span>            : 
+<span class="lineNum">     309 </span>            :     /// A metafunction that returns \c mpl::true_
+<span class="lineNum">     310 </span>            :     /// if the type \c SubDomain is a sub-domain of
+<span class="lineNum">     311 </span>            :     /// \c SuperDomain; \c mpl::false_ otherwise.
+<span class="lineNum">     312 </span>            :     template&lt;typename SubDomain, typename SuperDomain&gt;
+<span class="lineNum">     313 </span>            :     struct is_sub_domain_of
+<span class="lineNum">     314 </span>            :       : is_sub_domain_of&lt;typename SubDomain::proto_super_domain, SuperDomain&gt;
+<span class="lineNum">     315 </span>            :     {};
+<span class="lineNum">     316 </span>            : 
+<span class="lineNum">     317 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     318 </span>            :     ///
+<span class="lineNum">     319 </span>            :     template&lt;typename SuperDomain&gt;
+<span class="lineNum">     320 </span>            :     struct is_sub_domain_of&lt;proto::no_super_domain, SuperDomain&gt;
+<span class="lineNum">     321 </span>            :       : mpl::false_
+<span class="lineNum">     322 </span>            :     {};
+<span class="lineNum">     323 </span>            : 
+<span class="lineNum">     324 </span>            :     /// INTERNAL ONLY
+<span class="lineNum">     325 </span>            :     ///
+<span class="lineNum">     326 </span>            :     template&lt;typename SuperDomain&gt;
+<span class="lineNum">     327 </span>            :     struct is_sub_domain_of&lt;SuperDomain, SuperDomain&gt;
+<span class="lineNum">     328 </span>            :       : mpl::true_
+<span class="lineNum">     329 </span>            :     {};
+<span class="lineNum">     330 </span>            : 
+<span class="lineNum">     331 </span>            : }}
+<span class="lineNum">     332 </span>            : 
+<span class="lineNum">     333 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">     334 </span>            : # pragma warning(pop)
+<span class="lineNum">     335 </span>            : #endif
+<span class="lineNum">     336 </span>            : 
+<span class="lineNum">     337 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

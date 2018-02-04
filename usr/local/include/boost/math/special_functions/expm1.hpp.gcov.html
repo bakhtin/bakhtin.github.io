@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/math/special_functions/expm1.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/math/special_functions</a> - expm1.hpp<span style="font-size: 80%;"> (source / <a href="expm1.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">10</td>
+            <td class="headerCovTableEntry">46</td>
+            <td class="headerCovTableEntryLo">21.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //  (C) Copyright John Maddock 2006.</a>
+<span class="lineNum">       2 </span>            : //  Use, modification and distribution are subject to the
+<span class="lineNum">       3 </span>            : //  Boost Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef BOOST_MATH_EXPM1_INCLUDED
+<span class="lineNum">       7 </span>            : #define BOOST_MATH_EXPM1_INCLUDED
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #ifdef _MSC_VER
+<span class="lineNum">      10 </span>            : #pragma once
+<span class="lineNum">      11 </span>            : #endif
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &lt;boost/config/no_tr1/cmath.hpp&gt;
+<span class="lineNum">      14 </span>            : #include &lt;math.h&gt; // platform's ::expm1
+<span class="lineNum">      15 </span>            : #include &lt;boost/limits.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/math/tools/config.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/math/tools/series.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/math/tools/precision.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/math/tools/big_constant.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/math/policies/error_handling.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/math/tools/rational.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/math/special_functions/math_fwd.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/mpl/less_equal.hpp&gt;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
+<span class="lineNum">      26 </span>            : #  include &lt;boost/static_assert.hpp&gt;
+<span class="lineNum">      27 </span>            : #else
+<span class="lineNum">      28 </span>            : #  include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      29 </span>            : #endif
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : namespace boost{ namespace math{
+<span class="lineNum">      32 </span>            : 
+<span class="lineNum">      33 </span>            : namespace detail
+<span class="lineNum">      34 </span>            : {
+<span class="lineNum">      35 </span>            :   // Functor expm1_series returns the next term in the Taylor series
+<span class="lineNum">      36 </span>            :   // x^k / k!
+<span class="lineNum">      37 </span>            :   // each time that operator() is invoked.
+<span class="lineNum">      38 </span>            :   //
+<span class="lineNum">      39 </span>            :   template &lt;class T&gt;
+<span class="lineNum">      40 </span>            :   struct expm1_series
+<span class="lineNum">      41 </span>            :   {
+<span class="lineNum">      42 </span>            :      typedef T result_type;
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            :      expm1_series(T x)
+<span class="lineNum">      45 </span>            :         : k(0), m_x(x), m_term(1) {}
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            :      T operator()()
+<span class="lineNum">      48 </span>            :      {
+<span class="lineNum">      49 </span>            :         ++k;
+<span class="lineNum">      50 </span>            :         m_term *= m_x;
+<span class="lineNum">      51 </span>            :         m_term /= k;
+<span class="lineNum">      52 </span>            :         return m_term;
+<span class="lineNum">      53 </span>            :      }
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            :      int count()const
+<span class="lineNum">      56 </span>            :      {
+<span class="lineNum">      57 </span>            :         return k;
+<span class="lineNum">      58 </span>            :      }
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            :   private:
+<span class="lineNum">      61 </span>            :      int k;
+<span class="lineNum">      62 </span>            :      const T m_x;
+<span class="lineNum">      63 </span>            :      T m_term;
+<span class="lineNum">      64 </span>            :      expm1_series(const expm1_series&amp;);
+<span class="lineNum">      65 </span>            :      expm1_series&amp; operator=(const expm1_series&amp;);
+<span class="lineNum">      66 </span>            :   };
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : template &lt;class T, class Policy, class tag&gt;
+<span class="lineNum">      69 </span>            : struct expm1_initializer
+<span class="lineNum">      70 </span>            : {
+<a name="71"><span class="lineNum">      71 </span>            :    struct init</a>
+<span class="lineNum">      72 </span>            :    {
+<span class="lineNum">      73 </span><span class="lineCov">          1 :       init()</span>
+<span class="lineNum">      74 </span>            :       {
+<span class="lineNum">      75 </span><span class="lineCov">          1 :          do_init(tag());</span>
+<span class="lineNum">      76 </span><span class="lineCov">          1 :       }</span>
+<a name="77"><span class="lineNum">      77 </span>            :       template &lt;int N&gt;</a>
+<span class="lineNum">      78 </span>            :       static void do_init(const mpl::int_&lt;N&gt;&amp;){}
+<span class="lineNum">      79 </span><span class="lineCov">          1 :       static void do_init(const mpl::int_&lt;64&gt;&amp;)</span>
+<span class="lineNum">      80 </span>            :       {
+<span class="lineNum">      81 </span><span class="lineCov">          1 :          expm1(T(0.5));</span>
+<span class="lineNum">      82 </span><span class="lineCov">          1 :       }</span>
+<span class="lineNum">      83 </span>            :       static void do_init(const mpl::int_&lt;113&gt;&amp;)
+<span class="lineNum">      84 </span>            :       {
+<a name="85"><span class="lineNum">      85 </span>            :          expm1(T(0.5));</a>
+<span class="lineNum">      86 </span>            :       }
+<span class="lineNum">      87 </span><span class="lineNoCov">          0 :       void force_instantiate()const{}</span>
+<a name="88"><span class="lineNum">      88 </span>            :    };</a>
+<span class="lineNum">      89 </span>            :    static const init initializer;
+<span class="lineNum">      90 </span><span class="lineNoCov">          0 :    static void force_instantiate()</span>
+<span class="lineNum">      91 </span>            :    {
+<span class="lineNum">      92 </span><span class="lineNoCov">          0 :       initializer.force_instantiate();</span>
+<span class="lineNum">      93 </span><span class="lineNoCov">          0 :    }</span>
+<span class="lineNum">      94 </span>            : };
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : template &lt;class T, class Policy, class tag&gt;
+<span class="lineNum">      97 </span><span class="lineCov">          1 : const typename expm1_initializer&lt;T, Policy, tag&gt;::init expm1_initializer&lt;T, Policy, tag&gt;::initializer;</span>
+<span class="lineNum">      98 </span>            : 
+<span class="lineNum">      99 </span>            : //
+<span class="lineNum">     100 </span>            : // Algorithm expm1 is part of C99, but is not yet provided by many compilers.
+<span class="lineNum">     101 </span>            : //
+<span class="lineNum">     102 </span>            : // This version uses a Taylor series expansion for 0.5 &gt; |x| &gt; epsilon.
+<span class="lineNum">     103 </span>            : //
+<span class="lineNum">     104 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     105 </span>            : T expm1_imp(T x, const mpl::int_&lt;0&gt;&amp;, const Policy&amp; pol)
+<span class="lineNum">     106 </span>            : {
+<span class="lineNum">     107 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span>            :    T a = fabs(x);
+<span class="lineNum">     110 </span>            :    if((boost::math::isnan)(a))
+<span class="lineNum">     111 </span>            :    {
+<span class="lineNum">     112 </span>            :       return policies::raise_domain_error&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, &quot;expm1 requires a finite argument, but got %1%&quot;, a, pol);
+<span class="lineNum">     113 </span>            :    }
+<span class="lineNum">     114 </span>            :    if(a &gt; T(0.5f))
+<span class="lineNum">     115 </span>            :    {
+<span class="lineNum">     116 </span>            :       if(a &gt;= tools::log_max_value&lt;T&gt;())
+<span class="lineNum">     117 </span>            :       {
+<span class="lineNum">     118 </span>            :          if(x &gt; 0)
+<span class="lineNum">     119 </span>            :             return policies::raise_overflow_error&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, 0, pol);
+<span class="lineNum">     120 </span>            :          return -1;
+<span class="lineNum">     121 </span>            :       }
+<span class="lineNum">     122 </span>            :       return exp(x) - T(1);
+<span class="lineNum">     123 </span>            :    }
+<span class="lineNum">     124 </span>            :    if(a &lt; tools::epsilon&lt;T&gt;())
+<span class="lineNum">     125 </span>            :       return x;
+<span class="lineNum">     126 </span>            :    detail::expm1_series&lt;T&gt; s(x);
+<span class="lineNum">     127 </span>            :    boost::uintmax_t max_iter = policies::get_max_series_iterations&lt;Policy&gt;();
+<span class="lineNum">     128 </span>            : #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582)) &amp;&amp; !BOOST_WORKAROUND(__EDG_VERSION__, &lt;= 245)
+<span class="lineNum">     129 </span>            :    T result = tools::sum_series(s, policies::get_epsilon&lt;T, Policy&gt;(), max_iter);
+<span class="lineNum">     130 </span>            : #else
+<span class="lineNum">     131 </span>            :    T zero = 0;
+<span class="lineNum">     132 </span>            :    T result = tools::sum_series(s, policies::get_epsilon&lt;T, Policy&gt;(), max_iter, zero);
+<span class="lineNum">     133 </span>            : #endif
+<span class="lineNum">     134 </span>            :    policies::check_series_iterations&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, max_iter, pol);
+<span class="lineNum">     135 </span>            :    return result;
+<span class="lineNum">     136 </span>            : }
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            : template &lt;class T, class P&gt;
+<span class="lineNum">     139 </span>            : T expm1_imp(T x, const mpl::int_&lt;53&gt;&amp;, const P&amp; pol)
+<span class="lineNum">     140 </span>            : {
+<span class="lineNum">     141 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :    T a = fabs(x);
+<span class="lineNum">     144 </span>            :    if(a &gt; T(0.5L))
+<span class="lineNum">     145 </span>            :    {
+<span class="lineNum">     146 </span>            :       if(a &gt;= tools::log_max_value&lt;T&gt;())
+<span class="lineNum">     147 </span>            :       {
+<span class="lineNum">     148 </span>            :          if(x &gt; 0)
+<span class="lineNum">     149 </span>            :             return policies::raise_overflow_error&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, 0, pol);
+<span class="lineNum">     150 </span>            :          return -1;
+<span class="lineNum">     151 </span>            :       }
+<span class="lineNum">     152 </span>            :       return exp(x) - T(1);
+<span class="lineNum">     153 </span>            :    }
+<span class="lineNum">     154 </span>            :    if(a &lt; tools::epsilon&lt;T&gt;())
+<span class="lineNum">     155 </span>            :       return x;
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            :    static const float Y = 0.10281276702880859e1f;
+<span class="lineNum">     158 </span>            :    static const T n[] = { static_cast&lt;T&gt;(-0.28127670288085937e-1), static_cast&lt;T&gt;(0.51278186299064534e0), static_cast&lt;T&gt;(-0.6310029069350198e-1), static_cast&lt;T&gt;(0.11638457975729296e-1), static_cast&lt;T&gt;(-0.52143390687521003e-3), static_cast&lt;T&gt;(0.21491399776965688e-4) };
+<span class="lineNum">     159 </span>            :    static const T d[] = { 1, static_cast&lt;T&gt;(-0.45442309511354755e0), static_cast&lt;T&gt;(0.90850389570911714e-1), static_cast&lt;T&gt;(-0.10088963629815502e-1), static_cast&lt;T&gt;(0.63003407478692265e-3), static_cast&lt;T&gt;(-0.17976570003654402e-4) };
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :    T result = x * Y + x * tools::evaluate_polynomial(n, x) / tools::evaluate_polynomial(d, x);
+<span class="lineNum">     162 </span>            :    return result;
+<span class="lineNum">     163 </span>            : }
+<a name="164"><span class="lineNum">     164 </span>            : </a>
+<span class="lineNum">     165 </span>            : template &lt;class T, class P&gt;
+<span class="lineNum">     166 </span><span class="lineNoCov">          0 : T expm1_imp(T x, const mpl::int_&lt;64&gt;&amp;, const P&amp; pol)</span>
+<span class="lineNum">     167 </span>            : {
+<span class="lineNum">     168 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     169 </span>            : 
+<span class="lineNum">     170 </span><span class="lineNoCov">          0 :    T a = fabs(x);</span>
+<span class="lineNum">     171 </span><span class="lineNoCov">          0 :    if(a &gt; T(0.5L))</span>
+<span class="lineNum">     172 </span>            :    {
+<span class="lineNum">     173 </span><span class="lineNoCov">          0 :       if(a &gt;= tools::log_max_value&lt;T&gt;())</span>
+<span class="lineNum">     174 </span>            :       {
+<span class="lineNum">     175 </span><span class="lineNoCov">          0 :          if(x &gt; 0)</span>
+<span class="lineNum">     176 </span><span class="lineNoCov">          0 :             return policies::raise_overflow_error&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, 0, pol);</span>
+<span class="lineNum">     177 </span><span class="lineNoCov">          0 :          return -1;</span>
+<span class="lineNum">     178 </span>            :       }
+<span class="lineNum">     179 </span><span class="lineNoCov">          0 :       return exp(x) - T(1);</span>
+<span class="lineNum">     180 </span>            :    }
+<span class="lineNum">     181 </span><span class="lineNoCov">          0 :    if(a &lt; tools::epsilon&lt;T&gt;())</span>
+<span class="lineNum">     182 </span><span class="lineNoCov">          0 :       return x;</span>
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :    static const float Y = 0.10281276702880859375e1f;
+<span class="lineNum">     185 </span>            :    static const T n[] = { 
+<span class="lineNum">     186 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.281276702880859375e-1), </span>
+<span class="lineNum">     187 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, 0.512980290285154286358e0), </span>
+<span class="lineNum">     188 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, -0.667758794592881019644e-1),</span>
+<span class="lineNum">     189 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, 0.131432469658444745835e-1),</span>
+<span class="lineNum">     190 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, -0.72303795326880286965e-3),</span>
+<span class="lineNum">     191 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, 0.447441185192951335042e-4),</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :        BOOST_MATH_BIG_CONSTANT(T, 64, -0.714539134024984593011e-6)</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :    };</span>
+<span class="lineNum">     194 </span>            :    static const T d[] = { 
+<span class="lineNum">     195 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, 1.0),</span>
+<span class="lineNum">     196 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.461477618025562520389e0),</span>
+<span class="lineNum">     197 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.961237488025708540713e-1),</span>
+<span class="lineNum">     198 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.116483957658204450739e-1),</span>
+<span class="lineNum">     199 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.873308008461557544458e-3),</span>
+<span class="lineNum">     200 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, -0.387922804997682392562e-4),</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :       BOOST_MATH_BIG_CONSTANT(T, 64, 0.807473180049193557294e-6)</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :    };</span>
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span><span class="lineNoCov">          0 :    T result = x * Y + x * tools::evaluate_polynomial(n, x) / tools::evaluate_polynomial(d, x);</span>
+<span class="lineNum">     205 </span><span class="lineNoCov">          0 :    return result;</span>
+<span class="lineNum">     206 </span>            : }
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            : template &lt;class T, class P&gt;
+<span class="lineNum">     209 </span>            : T expm1_imp(T x, const mpl::int_&lt;113&gt;&amp;, const P&amp; pol)
+<span class="lineNum">     210 </span>            : {
+<span class="lineNum">     211 </span>            :    BOOST_MATH_STD_USING
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :    T a = fabs(x);
+<span class="lineNum">     214 </span>            :    if(a &gt; T(0.5L))
+<span class="lineNum">     215 </span>            :    {
+<span class="lineNum">     216 </span>            :       if(a &gt;= tools::log_max_value&lt;T&gt;())
+<span class="lineNum">     217 </span>            :       {
+<span class="lineNum">     218 </span>            :          if(x &gt; 0)
+<span class="lineNum">     219 </span>            :             return policies::raise_overflow_error&lt;T&gt;(&quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;, 0, pol);
+<span class="lineNum">     220 </span>            :          return -1;
+<span class="lineNum">     221 </span>            :       }
+<span class="lineNum">     222 </span>            :       return exp(x) - T(1);
+<span class="lineNum">     223 </span>            :    }
+<span class="lineNum">     224 </span>            :    if(a &lt; tools::epsilon&lt;T&gt;())
+<span class="lineNum">     225 </span>            :       return x;
+<span class="lineNum">     226 </span>            : 
+<span class="lineNum">     227 </span>            :    static const float Y = 0.10281276702880859375e1f;
+<span class="lineNum">     228 </span>            :    static const T n[] = { 
+<span class="lineNum">     229 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.28127670288085937499999999999999999854e-1),
+<span class="lineNum">     230 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.51278156911210477556524452177540792214e0),
+<span class="lineNum">     231 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.63263178520747096729500254678819588223e-1),
+<span class="lineNum">     232 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.14703285606874250425508446801230572252e-1),
+<span class="lineNum">     233 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.8675686051689527802425310407898459386e-3),
+<span class="lineNum">     234 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.88126359618291165384647080266133492399e-4),
+<span class="lineNum">     235 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.25963087867706310844432390015463138953e-5),
+<span class="lineNum">     236 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.14226691087800461778631773363204081194e-6),
+<span class="lineNum">     237 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.15995603306536496772374181066765665596e-8),
+<span class="lineNum">     238 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.45261820069007790520447958280473183582e-10)
+<span class="lineNum">     239 </span>            :    };
+<span class="lineNum">     240 </span>            :    static const T d[] = { 
+<span class="lineNum">     241 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     242 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.45441264709074310514348137469214538853e0),
+<span class="lineNum">     243 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.96827131936192217313133611655555298106e-1),
+<span class="lineNum">     244 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.12745248725908178612540554584374876219e-1),
+<span class="lineNum">     245 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.11473613871583259821612766907781095472e-2),
+<span class="lineNum">     246 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.73704168477258911962046591907690764416e-4),
+<span class="lineNum">     247 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.34087499397791555759285503797256103259e-5),
+<span class="lineNum">     248 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.11114024704296196166272091230695179724e-6),
+<span class="lineNum">     249 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.23987051614110848595909588343223896577e-8),
+<span class="lineNum">     250 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, -0.29477341859111589208776402638429026517e-10),
+<span class="lineNum">     251 </span>            :       BOOST_MATH_BIG_CONSTANT(T, 113, 0.13222065991022301420255904060628100924e-12)
+<span class="lineNum">     252 </span>            :    };
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span>            :    T result = x * Y + x * tools::evaluate_polynomial(n, x) / tools::evaluate_polynomial(d, x);
+<span class="lineNum">     255 </span>            :    return result;
+<span class="lineNum">     256 </span>            : }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            : } // namespace detail
+<a name="259"><span class="lineNum">     259 </span>            : </a>
+<span class="lineNum">     260 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 : inline typename tools::promote_args&lt;T&gt;::type expm1(T x, const Policy&amp; /* pol */)</span>
+<span class="lineNum">     262 </span>            : {
+<span class="lineNum">     263 </span>            :    typedef typename tools::promote_args&lt;T&gt;::type result_type;
+<span class="lineNum">     264 </span>            :    typedef typename policies::evaluation&lt;result_type, Policy&gt;::type value_type;
+<span class="lineNum">     265 </span>            :    typedef typename policies::precision&lt;result_type, Policy&gt;::type precision_type;
+<span class="lineNum">     266 </span>            :    typedef typename policies::normalise&lt;
+<span class="lineNum">     267 </span>            :       Policy, 
+<span class="lineNum">     268 </span>            :       policies::promote_float&lt;false&gt;, 
+<span class="lineNum">     269 </span>            :       policies::promote_double&lt;false&gt;, 
+<span class="lineNum">     270 </span>            :       policies::discrete_quantile&lt;&gt;,
+<span class="lineNum">     271 </span>            :       policies::assert_undefined&lt;&gt; &gt;::type forwarding_policy;
+<span class="lineNum">     272 </span>            : 
+<span class="lineNum">     273 </span>            :    typedef typename mpl::if_c&lt;
+<span class="lineNum">     274 </span>            :       ::std::numeric_limits&lt;result_type&gt;::is_specialized == 0,
+<span class="lineNum">     275 </span>            :       mpl::int_&lt;0&gt;,  // no numeric_limits, use generic solution
+<span class="lineNum">     276 </span>            :       typename mpl::if_&lt;
+<span class="lineNum">     277 </span>            :          typename mpl::less_equal&lt;precision_type, mpl::int_&lt;53&gt; &gt;::type,
+<span class="lineNum">     278 </span>            :          mpl::int_&lt;53&gt;,  // double
+<span class="lineNum">     279 </span>            :          typename mpl::if_&lt;
+<span class="lineNum">     280 </span>            :             typename mpl::less_equal&lt;precision_type, mpl::int_&lt;64&gt; &gt;::type,
+<span class="lineNum">     281 </span>            :             mpl::int_&lt;64&gt;, // 80-bit long double
+<span class="lineNum">     282 </span>            :             typename mpl::if_&lt;
+<span class="lineNum">     283 </span>            :                typename mpl::less_equal&lt;precision_type, mpl::int_&lt;113&gt; &gt;::type,
+<span class="lineNum">     284 </span>            :                mpl::int_&lt;113&gt;, // 128-bit long double
+<span class="lineNum">     285 </span>            :                mpl::int_&lt;0&gt; // too many bits, use generic version.
+<span class="lineNum">     286 </span>            :             &gt;::type
+<span class="lineNum">     287 </span>            :          &gt;::type
+<span class="lineNum">     288 </span>            :       &gt;::type
+<span class="lineNum">     289 </span>            :    &gt;::type tag_type;
+<span class="lineNum">     290 </span>            : 
+<span class="lineNum">     291 </span><span class="lineNoCov">          0 :    detail::expm1_initializer&lt;value_type, forwarding_policy, tag_type&gt;::force_instantiate();</span>
+<span class="lineNum">     292 </span>            :    
+<span class="lineNum">     293 </span><span class="lineNoCov">          0 :    return policies::checked_narrowing_cast&lt;result_type, forwarding_policy&gt;(detail::expm1_imp(</span>
+<span class="lineNum">     294 </span>            :       static_cast&lt;value_type&gt;(x),
+<span class="lineNum">     295 </span><span class="lineNoCov">          0 :       tag_type(), forwarding_policy()), &quot;boost::math::expm1&lt;%1%&gt;(%1%)&quot;);</span>
+<span class="lineNum">     296 </span>            : }
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            : #ifdef expm1
+<span class="lineNum">     299 </span>            : #  ifndef BOOST_HAS_expm1
+<span class="lineNum">     300 </span>            : #     define BOOST_HAS_expm1
+<span class="lineNum">     301 </span>            : #  endif
+<span class="lineNum">     302 </span>            : #  undef expm1
+<span class="lineNum">     303 </span>            : #endif
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : #if defined(BOOST_HAS_EXPM1) &amp;&amp; !(defined(__osf__) &amp;&amp; defined(__DECCXX_VER))
+<span class="lineNum">     306 </span>            : #  ifdef BOOST_MATH_USE_C99
+<a name="307"><span class="lineNum">     307 </span>            : inline float expm1(float x, const policies::policy&lt;&gt;&amp;){ return ::expm1f(x); }</a>
+<span class="lineNum">     308 </span>            : #     ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+<span class="lineNum">     309 </span><span class="lineCov">          2 : inline long double expm1(long double x, const policies::policy&lt;&gt;&amp;){ return ::expm1l(x); }</span>
+<span class="lineNum">     310 </span>            : #     endif
+<span class="lineNum">     311 </span>            : #  else
+<span class="lineNum">     312 </span>            : inline float expm1(float x, const policies::policy&lt;&gt;&amp;){ return static_cast&lt;float&gt;(::expm1(x)); }
+<span class="lineNum">     313 </span>            : #  endif
+<span class="lineNum">     314 </span>            : inline double expm1(double x, const policies::policy&lt;&gt;&amp;){ return ::expm1(x); }
+<span class="lineNum">     315 </span>            : #endif
+<a name="316"><span class="lineNum">     316 </span>            : </a>
+<span class="lineNum">     317 </span>            : template &lt;class T&gt;
+<span class="lineNum">     318 </span><span class="lineCov">          1 : inline typename tools::promote_args&lt;T&gt;::type expm1(T x)</span>
+<span class="lineNum">     319 </span>            : {
+<span class="lineNum">     320 </span><span class="lineCov">          1 :    return expm1(x, policies::policy&lt;&gt;());</span>
+<span class="lineNum">     321 </span>            : }
+<span class="lineNum">     322 </span>            : 
+<span class="lineNum">     323 </span>            : #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+<span class="lineNum">     324 </span>            : inline float expm1(float z)
+<span class="lineNum">     325 </span>            : {
+<span class="lineNum">     326 </span>            :    return expm1&lt;float&gt;(z);
+<span class="lineNum">     327 </span>            : }
+<span class="lineNum">     328 </span>            : inline double expm1(double z)
+<span class="lineNum">     329 </span>            : {
+<span class="lineNum">     330 </span>            :    return expm1&lt;double&gt;(z);
+<span class="lineNum">     331 </span>            : }
+<span class="lineNum">     332 </span>            : #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+<span class="lineNum">     333 </span>            : inline long double expm1(long double z)
+<span class="lineNum">     334 </span>            : {
+<span class="lineNum">     335 </span>            :    return expm1&lt;long double&gt;(z);
+<span class="lineNum">     336 </span>            : }
+<span class="lineNum">     337 </span>            : #endif
+<span class="lineNum">     338 </span>            : #endif
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            : } // namespace math
+<span class="lineNum">     341 </span>            : } // namespace boost
+<span class="lineNum">     342 </span>            : 
+<span class="lineNum">     343 </span>            : #endif // BOOST_MATH_HYPOT_INCLUDED
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : 
+<span class="lineNum">     347 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

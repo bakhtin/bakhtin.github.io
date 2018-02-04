@@ -1,0 +1,709 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - test/module/shared_model/validators/field_validator_test.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">test/module/shared_model/validators</a> - field_validator_test.cpp<span style="font-size: 80%;"> (source / <a href="field_validator_test.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">128</td>
+            <td class="headerCovTableEntry">140</td>
+            <td class="headerCovTableEntryHi">91.4 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">98</td>
+            <td class="headerCovTableEntry">101</td>
+            <td class="headerCovTableEntryHi">97.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">319</td>
+            <td class="headerCovTableEntry">694</td>
+            <td class="headerCovTableEntryLo">46.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &lt;limits&gt;
+<span class="lineNum">      19 </span>                :            : #include &lt;memory&gt;
+<span class="lineNum">      20 </span>                :            : #include &lt;unordered_set&gt;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : #include &lt;gmock/gmock-matchers.h&gt;
+<span class="lineNum">      23 </span>                :            : #include &lt;google/protobuf/descriptor.h&gt;
+<span class="lineNum">      24 </span>                :            : #include &lt;google/protobuf/dynamic_message.h&gt;
+<span class="lineNum">      25 </span>                :            : #include &lt;boost/format.hpp&gt;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : #include &quot;builders/protobuf/queries.hpp&quot;
+<span class="lineNum">      28 </span>                :            : #include &quot;builders/protobuf/transaction.hpp&quot;
+<span class="lineNum">      29 </span>                :            : #include &quot;module/shared_model/validators/validators_fixture.hpp&quot;
+<span class="lineNum">      30 </span>                :            : #include &quot;utils/lazy_initializer.hpp&quot;
+<span class="lineNum">      31 </span>                :            : #include &quot;validators/field_validator.hpp&quot;
+<span class="lineNum">      32 </span>                :            : 
+<a name="33"><span class="lineNum">      33 </span>                :            : using namespace shared_model;</a>
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>        [<span class="branchNoCov" title="Branch 19 was not taken"> - </span><span class="branchCov" title="Branch 20 was taken 4 times"> + </span>]:<span class="lineCov">          8 : class FieldValidatorTest : public ValidatorsTest {</span>
+<span class="lineNum">      36 </span>                :            :   validation::FieldValidator field_validator;
+<span class="lineNum">      37 </span>                :            : 
+<span class="lineNum">      38 </span>                :            :  protected:
+<span class="lineNum">      39 </span>                :            :   // Function which performs validation
+<span class="lineNum">      40 </span>                :            :   using ValidationFunction = std::function&lt;validation::ReasonsGroupType()&gt;;
+<span class="lineNum">      41 </span>                :            :   // Function which initializes field, allows to have one type when dealing
+<span class="lineNum">      42 </span>                :            :   // with various types of fields
+<span class="lineNum">      43 </span>                :            :   using InitFieldFunction = std::function&lt;void()&gt;;
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :            :   // Gaps for checking transactions from future
+<span class="lineNum">      46 </span>                :            :   static auto constexpr nearest_future =
+<span class="lineNum">      47 </span>                :            :       std::chrono::minutes(3) / std::chrono::milliseconds(1);
+<span class="lineNum">      48 </span>                :            :   static auto constexpr far_future =
+<span class="lineNum">      49 </span>                :            :       std::chrono::minutes(30) / std::chrono::milliseconds(1);
+<span class="lineNum">      50 </span>                :            : 
+<span class="lineNum">      51 </span>                :            :   /**
+<span class="lineNum">      52 </span>                :            :    * FieldTestCase is a struct that represents one value of some field,
+<a name="53"><span class="lineNum">      53 </span>                :            :    * and expected validation result.</a>
+<span class="lineNum">      54 </span>                :            :    */
+<span class="lineNum">      55 </span>[<span class="branchCov" title="Branch 5 was taken 1137 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1137 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">       3787 :   struct FieldTestCase {</span>
+<span class="lineNum">      56 </span>                :            :     std::string name;
+<span class="lineNum">      57 </span>                :            :     InitFieldFunction init_func;
+<span class="lineNum">      58 </span>                :            :     bool value_is_valid;
+<span class="lineNum">      59 </span>                :            :     std::string expected_message;
+<span class="lineNum">      60 </span>                :            :   };
+<a name="61"><span class="lineNum">      61 </span>                :            : </a>
+<span class="lineNum">      62 </span>                :            :   // Returns string containing field name and test case name for debug output
+<span class="lineNum">      63 </span>                :<span class="lineNoCov">          0 :   std::string testFailMessage(const std::string &amp;field_name,</span>
+<span class="lineNum">      64 </span>                :            :                               const std::string &amp;testcase_name) const {
+<span class="lineNum">      65 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :     return (boost::format(&quot;Field: %s\nTest Case: %s\n&quot;) % field_name</span>
+<span class="lineNum">      66 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :             % testcase_name)</span>
+<span class="lineNum">      67 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :         .str();</span>
+<span class="lineNum">      68 </span>                :            :   }
+<a name="69"><span class="lineNum">      69 </span>                :            : </a>
+<span class="lineNum">      70 </span>                :            :  public:
+<span class="lineNum">      71 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">        116 :   FieldValidatorTest() {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 25 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 28 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>][<span class="branchCov" title="Branch 32 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 36 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>][<span class="branchCov" title="Branch 39 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 40 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 43 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>][<span class="branchCov" title="Branch 47 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 48 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 50 was taken 8 times"> + </span><span class="branchCov" title="Branch 51 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 58 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 59 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 62 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 63 was not taken"> - </span>][<span class="branchCov" title="Branch 66 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 67 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 69 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 70 was not taken"> - </span>][<span class="branchCov" title="Branch 73 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 74 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 77 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 78 was not taken"> - </span>][<span class="branchCov" title="Branch 80 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 81 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 84 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 85 was not taken"> - </span>][<span class="branchCov" title="Branch 87 was taken 12 times"> + </span><span class="branchCov" title="Branch 88 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 100 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 101 was not taken"> - </span>][<span class="branchCov" title="Branch 103 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 104 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 107 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 108 was not taken"> - </span>][<span class="branchCov" title="Branch 111 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 112 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 114 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 115 was not taken"> - </span>][<span class="branchCov" title="Branch 118 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 119 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 122 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 123 was not taken"> - </span>][<span class="branchCov" title="Branch 125 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 126 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 129 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 130 was not taken"> - </span>][<span class="branchCov" title="Branch 132 was taken 12 times"> + </span><span class="branchCov" title="Branch 133 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 147 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 148 was not taken"> - </span>][<span class="branchCov" title="Branch 150 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 151 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 156 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 157 was not taken"> - </span>][<span class="branchCov" title="Branch 159 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 160 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 165 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 166 was not taken"> - </span>][<span class="branchCov" title="Branch 168 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 169 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 174 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 175 was not taken"> - </span>][<span class="branchCov" title="Branch 177 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 178 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 182 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 183 was not taken"> - </span>][<span class="branchCov" title="Branch 186 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 187 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 189 was taken 4 times"> + </span><span class="branchCov" title="Branch 190 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 193 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 194 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 197 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 198 was not taken"> - </span>][<span class="branchCov" title="Branch 201 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 202 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 204 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 205 was not taken"> - </span>][<span class="branchCov" title="Branch 208 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 209 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 211 was taken 8 times"> + </span><span class="branchCov" title="Branch 212 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 220 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 221 was not taken"> - </span><span class="branchCov" title="Branch 223 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 224 was not taken"> - </span>]
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 227 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 228 was not taken"> - </span><span class="branchCov" title="Branch 231 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 232 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 234 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 235 was not taken"> - </span>][<span class="branchCov" title="Branch 238 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 239 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 241 was taken 12 times"> + </span><span class="branchCov" title="Branch 242 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 249 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 250 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 253 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 254 was not taken"> - </span>][<span class="branchCov" title="Branch 257 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 258 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 261 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 262 was not taken"> - </span>][<span class="branchCov" title="Branch 264 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 265 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 268 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 269 was not taken"> - </span>][<span class="branchCov" title="Branch 272 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 273 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 276 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 277 was not taken"> - </span>][<span class="branchCov" title="Branch 279 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 280 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 283 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 284 was not taken"> - </span>][<span class="branchCov" title="Branch 286 was taken 12 times"> + </span><span class="branchCov" title="Branch 287 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 303 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 304 was not taken"> - </span>][<span class="branchCov" title="Branch 306 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 307 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 309 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 310 was not taken"> - </span>][<span class="branchCov" title="Branch 313 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 314 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 316 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 317 was not taken"> - </span>][<span class="branchCov" title="Branch 319 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 320 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 323 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 324 was not taken"> - </span>][<span class="branchCov" title="Branch 326 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 327 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 329 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 330 was not taken"> - </span>][<span class="branchCov" title="Branch 333 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 334 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 336 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 337 was not taken"> - </span>][<span class="branchCov" title="Branch 339 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 340 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 343 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 344 was not taken"> - </span>][<span class="branchCov" title="Branch 346 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 347 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 349 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 350 was not taken"> - </span>][<span class="branchCov" title="Branch 353 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 354 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 356 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 357 was not taken"> - </span>][<span class="branchCov" title="Branch 359 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 360 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 363 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 364 was not taken"> - </span>][<span class="branchCov" title="Branch 366 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 367 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 369 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 370 was not taken"> - </span>][<span class="branchCov" title="Branch 373 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 374 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 376 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 377 was not taken"> - </span>][<span class="branchCov" title="Branch 379 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 380 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 383 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 384 was not taken"> - </span>][<span class="branchCov" title="Branch 386 was taken 32 times"> + </span><span class="branchCov" title="Branch 387 was taken 4 times"> + </span>]
+<span class="lineNum">         </span>  [<span class="branchNoExec" title="Branch 418 was not executed"> # </span><span class="branchNoExec" title="Branch 419 was not executed"> # </span><span class="branchNoExec" title="Branch 426 was not executed"> # </span><span class="branchNoExec" title="Branch 427 was not executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Branch 438 was not executed"> # </span><span class="branchNoExec" title="Branch 439 was not executed"> # </span><span class="branchNoExec" title="Branch 460 was not executed"> # </span><span class="branchNoExec" title="Branch 461 was not executed"> # </span><span class="branchNoExec" title="Branch 464 was not executed"> # </span> 
+<span class="lineNum">         </span><span class="branchNoExec" title="Branch 465 was not executed"> # </span><span class="branchNoExec" title="Branch 472 was not executed"> # </span><span class="branchNoExec" title="Branch 473 was not executed"> # </span><span class="branchNoExec" title="Branch 480 was not executed"> # </span><span class="branchNoExec" title="Branch 481 was not executed"> # </span> 
+<span class="lineNum">         </span>         <span class="branchNoExec" title="Branch 496 was not executed"> # </span><span class="branchNoExec" title="Branch 497 was not executed"> # </span>]
+<span class="lineNum">      72 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         20 :     for (const auto &amp;field :</span>
+<span class="lineNum">      73 </span>                :<span class="lineCov">          4 :          {&quot;peer_key&quot;, &quot;public_key&quot;, &quot;main_pubkey&quot;, &quot;pubkey&quot;}) {</span>
+<span class="lineNum">      74 </span>[<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         32 :       field_validators.insert(makeTransformValidator(</span>
+<span class="lineNum">      75 </span>                :            :           field,
+<a name="76"><span class="lineNum">      76 </span>                :            :           &amp;FieldValidator::validatePubkey,</a>
+<span class="lineNum">      77 </span>                :            :           &amp;FieldValidatorTest::public_key,
+<span class="lineNum">      78 </span>                :<span class="lineCov">         30 :           [](auto &amp;&amp;x) { return interface::types::PubkeyType(x); },</span>
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :           public_key_test_cases));</span>
+<span class="lineNum">      80 </span>                :            :     }
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchCov" title="Branch 3 was taken 4 times"> + </span>]:<span class="lineCov">         16 :     for (const auto &amp;field : {&quot;role_name&quot;, &quot;default_role&quot;, &quot;role_id&quot;}) {</span>
+<span class="lineNum">      82 </span>[<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         24 :       field_validators.insert(makeValidator(field,</span>
+<span class="lineNum">      83 </span>                :            :                                             &amp;FieldValidator::validateRoleId,
+<span class="lineNum">      84 </span>                :            :                                             &amp;FieldValidatorTest::role_name,
+<span class="lineNum">      85 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :                                             role_name_test_cases));</span>
+<span class="lineNum">      86 </span>                :            :     }
+<span class="lineNum">      87 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         20 :     for (const auto &amp;field : {&quot;account_id&quot;,</span>
+<span class="lineNum">      88 </span>                :            :                               &quot;src_account_id&quot;,
+<span class="lineNum">      89 </span>                :            :                               &quot;dest_account_id&quot;,
+<span class="lineNum">      90 </span>                :<span class="lineCov">          4 :                               &quot;creator_account_id&quot;}) {</span>
+<span class="lineNum">      91 </span>[<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         32 :       field_validators.insert(makeValidator(field,</span>
+<span class="lineNum">      92 </span>                :            :                                             &amp;FieldValidator::validateAccountId,
+<span class="lineNum">      93 </span>                :            :                                             &amp;FieldValidatorTest::account_id,
+<span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 1 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         16 :                                             account_id_test_cases));</span>
+<span class="lineNum">      95 </span>                :            :     }
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchCov" title="Branch 3 was taken 4 times"> + </span>]:<span class="lineCov">         12 :     for (const auto &amp;field : {&quot;key&quot;, &quot;detail&quot;}) {</span>
+<span class="lineNum">      97 </span>                :            :       field_validators.insert(
+<span class="lineNum">      98 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         16 :           makeValidator(field,</span>
+<span class="lineNum">      99 </span>                :            :                         &amp;FieldValidator::validateAccountDetailKey,
+<span class="lineNum">     100 </span>                :            :                         &amp;FieldValidatorTest::detail_key,
+<span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                         detail_test_cases));</span>
+<span class="lineNum">     102 </span>                :            :     }
+<span class="lineNum">     103 </span>        [<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchCov" title="Branch 3 was taken 4 times"> + </span>]:<span class="lineCov">         12 :     for (const auto &amp;field : {&quot;tx_counter&quot;, &quot;query_counter&quot;}) {</span>
+<span class="lineNum">     104 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         16 :       field_validators.insert(makeValidator(field,</span>
+<span class="lineNum">     105 </span>                :            :                                             &amp;FieldValidator::validateCounter,
+<span class="lineNum">     106 </span>                :            :                                             &amp;FieldValidatorTest::counter,
+<span class="lineNum">     107 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                                             tx_counter_test_cases));</span>
+<span class="lineNum">     108 </span>                :            :     }
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            :     // TODO: add validation to all fields
+<span class="lineNum">     111 </span>        [<span class="branchCov" title="Branch 0 was taken 32 times"> + </span><span class="branchCov" title="Branch 1 was taken 4 times"> + </span>]:<span class="lineCov">         36 :     for (const auto &amp;field : {&quot;value&quot;,</span>
+<span class="lineNum">     112 </span>                :            :                               &quot;description&quot;,
+<span class="lineNum">     113 </span>                :            :                               &quot;signature&quot;,
+<span class="lineNum">     114 </span>                :            :                               &quot;commands&quot;,
+<span class="lineNum">     115 </span>                :            :                               &quot;quorum&quot;,
+<span class="lineNum">     116 </span>                :            :                               &quot;tx_hashes&quot;,
+<span class="lineNum">     117 </span>                :            :                               &quot;precision&quot;,
+<span class="lineNum">     118 </span>                :<span class="lineCov">          4 :                               &quot;permission&quot;}) {</span>
+<span class="lineNum">     119 </span>[<span class="branchCov" title="Branch 2 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         32 :       field_validators.insert(makeNullValidator(field));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     120 </span>                :            :     }
+<span class="lineNum">     121 </span>                :<span class="lineCov">          4 :   }</span>
+<span class="lineNum">     122 </span>                :            : 
+<span class="lineNum">     123 </span>                :            :   // To test one field, validation function is required,
+<span class="lineNum">     124 </span>                :            :   // which is always the same, and several test cases, which represent
+<span class="lineNum">     125 </span>                :            :   // various inputs
+<span class="lineNum">     126 </span>                :            :   using FieldTest = std::pair&lt;ValidationFunction, std::vector&lt;FieldTestCase&gt;&gt;;
+<a name="127"><span class="lineNum">     127 </span>                :            : </a>
+<span class="lineNum">     128 </span>                :            :   // Run all test cases for given field
+<span class="lineNum">     129 </span>                :<span class="lineCov">         63 :   void runTestCases(const google::protobuf::FieldDescriptor *field) {</span>
+<span class="lineNum">     130 </span>        [<span class="branchCov" title="Branch 2 was taken 63 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        126 :     auto field_name = field-&gt;name();</span>
+<span class="lineNum">     131 </span>                :            :     // skip field, if already tested
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 2 was taken 63 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         63 :     if (checked_fields.find(field_name) != checked_fields.end()) {</span>
+<span class="lineNum">         </span>  [<span class="branchCov" title="Branch 5 was taken 26 times"> + </span><span class="branchCov" title="Branch 6 was taken 37 times"> + </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     133 </span>                :<span class="lineCov">         26 :       return;</span>
+<span class="lineNum">     134 </span>                :            :     }
+<span class="lineNum">     135 </span>        [<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         37 :     checked_fields.insert(field_name);</span>
+<span class="lineNum">     136 </span>                :            : 
+<span class="lineNum">     137 </span>                :            :     // Will throw key exception in case new field is added
+<span class="lineNum">     138 </span>        [<span class="branchCov" title="Branch 2 was taken 37 times"> + </span><span class="branchCov" title="Branch 3 was taken 26 times"> + </span>]:<span class="lineCov">        100 :     FieldTest field_test;</span>
+<span class="lineNum">     139 </span>                :            :     try {
+<span class="lineNum">     140 </span>[<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         37 :       field_test = field_validators.at(field_name);</span>
+<span class="lineNum">     141 </span>                :<span class="lineNoCov">          0 :     } catch (const std::out_of_range &amp;e) {</span>
+<span class="lineNum">     142 </span>  [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span> :<span class="lineNoCov">          0 :       FAIL() &lt;&lt; &quot;Missing field setter: &quot; &lt;&lt; field_name;</span>
+<span class="lineNum">         </span><span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span> 
+<span class="lineNum">         </span>            <span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">     143 </span>                :            :     }
+<span class="lineNum">     144 </span>[<span class="branchCov" title="Branch 1 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         74 :     auto validate = field_test.first;</span>
+<span class="lineNum">     145 </span>[<span class="branchCov" title="Branch 3 was taken 117 times"> + </span><span class="branchCov" title="Branch 4 was taken 37 times"> + </span>][<span class="branchCov" title="Branch 8 was taken 37 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">        154 :     for (auto &amp;testcase : field_test.second) {</span>
+<span class="lineNum">     146 </span>                :            :       // Initialize field
+<span class="lineNum">     147 </span>        [<span class="branchCov" title="Branch 1 was taken 117 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        117 :       testcase.init_func();</span>
+<span class="lineNum">     148 </span>                :            :       // Perform validation
+<span class="lineNum">     149 </span>        [<span class="branchCov" title="Branch 1 was taken 117 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        234 :       auto reason = validate();</span>
+<span class="lineNum">     150 </span>                :            :       // if value supposed to be invalid, check that there is a reason
+<span class="lineNum">     151 </span>                :            :       // and that error message is as expected.
+<span class="lineNum">     152 </span>                :            :       // If value supposed to be valid, check for empty reason.
+<span class="lineNum">     153 </span>        [<span class="branchCov" title="Branch 0 was taken 87 times"> + </span><span class="branchCov" title="Branch 1 was taken 30 times"> + </span>]:<span class="lineCov">        117 :       if (!testcase.value_is_valid) {</span>
+<span class="lineNum">     154 </span>[<span class="branchCov" title="Branch 2 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 87 times"> + </span>]:<span class="lineCov">        174 :         ASSERT_TRUE(!reason.second.empty())</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">     155 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         87 :             &lt;&lt; testFailMessage(field_name, testcase.name);</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 15 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>]
+<span class="lineNum">     156 </span>[<span class="branchCov" title="Branch 1 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        174 :         ASSERT_THAT(reason.second.at(0),</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchNoCov" title="Branch 15 was not taken"> - </span><span class="branchCov" title="Branch 16 was taken 87 times"> + </span>][<span class="branchNoExec" title="Branch 18 was not executed"> # </span><span class="branchNoExec" title="Branch 19 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 21 was not executed"> # </span><span class="branchNoExec" title="Branch 22 was not executed"> # </span>]
+<span class="lineNum">     157 </span>                :            :                     testing::MatchesRegex(testcase.expected_message))
+<span class="lineNum">     158 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineCov">         87 :             &lt;&lt; testFailMessage(field_name, testcase.name);</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 15 was taken 87 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>]
+<span class="lineNum">     159 </span>                :            :       } else {
+<span class="lineNum">     160 </span>[<span class="branchCov" title="Branch 2 was taken 30 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchCov" title="Branch 6 was taken 30 times"> + </span>]:<span class="lineCov">        117 :         EXPECT_TRUE(reason.second.empty())</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>][<span class="branchNoExec" title="Branch 12 was not executed"> # </span><span class="branchNoExec" title="Branch 13 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 18 was taken 117 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]
+<span class="lineNum">     161 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :             &lt;&lt; testFailMessage(field_name, testcase.name)</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     162 </span>[<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>][<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :             &lt;&lt; &quot;Message: &quot; &lt;&lt; reason.second.at(0) &lt;&lt; &quot;\n&quot;;</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>]
+<span class="lineNum">     163 </span>                :            :       }
+<span class="lineNum">     164 </span>                :            :     }
+<span class="lineNum">     165 </span>                :            :   }
+<span class="lineNum">     166 </span>                :            : 
+<span class="lineNum">     167 </span>                :            :  protected:
+<span class="lineNum">     168 </span>                :            :   // Because we use Protobuf reflection to generate fields by generating all
+<span class="lineNum">     169 </span>                :            :   // possible commands, some fields are checked several times
+<span class="lineNum">     170 </span>                :            :   // because they are present in several commands. To prevent that, this set
+<span class="lineNum">     171 </span>                :            :   // contains all already tested fields, and checked each time we try to test
+<span class="lineNum">     172 </span>                :            :   // a field
+<span class="lineNum">     173 </span>                :            :   std::unordered_set&lt;std::string&gt; checked_fields;
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :            :   /************************** TEST CASES ***************************/
+<span class="lineNum">     176 </span>                :            : 
+<a name="177"><span class="lineNum">     177 </span>                :            :   /// Create test case with field assignment initialization function</a>
+<span class="lineNum">     178 </span>                :            :   template &lt;typename F, typename V&gt;
+<span class="lineNum">     179 </span>                :<span class="lineCov">        180 :   FieldTestCase makeTestCase(const std::string &amp;case_name,</span>
+<span class="lineNum">     180 </span>                :            :                              F field,
+<span class="lineNum">     181 </span>                :            :                              const V &amp;value,
+<span class="lineNum">     182 </span>                :            :                              bool valid,
+<a name="183"><span class="lineNum">     183 </span>                :            :                              const std::string &amp;message) {</a>
+<span class="lineNum">     184 </span>                :            :     return {
+<span class="lineNum">     185 </span>[<span class="branchCov" title="Branch 15 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 16 was not taken"> - </span>][<span class="branchCov" title="Branch 18 was taken 132 times"> + </span><span class="branchNoCov" title="Branch 19 was not taken"> - </span>]:<span class="lineCov">       4659 :         case_name, [&amp;, field, value] { this-&gt;*field = value; }, valid, message};</span>
+<span class="lineNum">     186 </span>                :            :   }
+<span class="lineNum">     187 </span>                :            : 
+<a name="188"><span class="lineNum">     188 </span>                :            :   /// Create valid case with &quot;valid&quot; name, and empty message</a>
+<span class="lineNum">     189 </span>                :            :   template &lt;typename F, typename V&gt;
+<span class="lineNum">     190 </span>                :<span class="lineCov">         36 :   FieldTestCase makeValidCase(F field, const V &amp;value) {</span>
+<span class="lineNum">     191 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         36 :     return makeTestCase(&quot;valid&quot;, field, value, true, &quot;&quot;);</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 21 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 22 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 40 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 41 was not taken"> - </span>][<span class="branchCov" title="Branch 44 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 45 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 47 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 48 was not taken"> - </span>][<span class="branchCov" title="Branch 59 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 60 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 63 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 64 was not taken"> - </span>][<span class="branchCov" title="Branch 66 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 67 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 78 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 79 was not taken"> - </span>][<span class="branchCov" title="Branch 82 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 83 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 85 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 86 was not taken"> - </span>][<span class="branchCov" title="Branch 97 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 98 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 101 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 102 was not taken"> - </span>][<span class="branchCov" title="Branch 104 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 105 was not taken"> - </span>]
+<span class="lineNum">     192 </span>                :            :   }
+<span class="lineNum">     193 </span>                :            : 
+<a name="194"><span class="lineNum">     194 </span>                :            :   /// Create invalid case with default message</a>
+<span class="lineNum">     195 </span>                :            :   template &lt;typename F&gt;
+<span class="lineNum">     196 </span>                :<span class="lineCov">        112 :   FieldTestCase makeInvalidCase(const std::string &amp;case_name,</span>
+<span class="lineNum">     197 </span>                :            :                                 const std::string &amp;field_name,
+<span class="lineNum">     198 </span>                :            :                                 F field,
+<span class="lineNum">     199 </span>                :            :                                 const std::string &amp;value) {
+<span class="lineNum">     200 </span>                :            :     return makeTestCase(case_name,
+<span class="lineNum">     201 </span>                :            :                         field,
+<span class="lineNum">     202 </span>                :            :                         value,
+<span class="lineNum">     203 </span>                :            :                         false,
+<span class="lineNum">     204 </span>                :            :                         (boost::format(&quot;Wrongly formed %s, passed value: '%s'&quot;)
+<span class="lineNum">     205 </span>[<span class="branchCov" title="Branch 2 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        224 :                          % field_name % value)</span>
+<span class="lineNum">     206 </span>[<span class="branchCov" title="Branch 1 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 112 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">        224 :                             .str());</span>
+<span class="lineNum">     207 </span>                :            :   }
+<span class="lineNum">     208 </span>                :            : 
+<a name="209"><span class="lineNum">     209 </span>                :            :   /// Generate test cases for id types with name, separator, and domain</a>
+<span class="lineNum">     210 </span>                :            :   template &lt;typename F&gt;
+<span class="lineNum">     211 </span>                :<span class="lineCov">          8 :   std::vector&lt;FieldTestCase&gt; idTestCases(const std::string &amp;field_name,</span>
+<a name="212"><span class="lineNum">     212 </span>                :            :                                          F field,</a>
+<span class="lineNum">     213 </span>                :            :                                          char separator) {
+<span class="lineNum">     214 </span>                :<span class="lineCov">         48 :     auto f = [&amp;](const auto &amp;s) {</span>
+<span class="lineNum">     215 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">         96 :       return (boost::format(s) % separator).str();</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 14 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>][<span class="branchCov" title="Branch 20 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>]
+<a name="216"><span class="lineNum">     216 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         96 :     };</span></a>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 24 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">     217 </span>                :            : 
+<span class="lineNum">     218 </span>                :<span class="lineCov">         48 :     auto c = [&amp;](const auto &amp;n, const auto &amp;v) {</span>
+<span class="lineNum">     219 </span>                :<span class="lineCov">        136 :       return this-&gt;makeInvalidCase(n, field_name, field, v);</span>
+<span class="lineNum">     220 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         48 :     };</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 24 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 43 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 44 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 46 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>][<span class="branchCov" title="Branch 54 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 55 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 57 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 58 was not taken"> - </span>]
+<span class="lineNum">     221 </span>                :            : 
+<span class="lineNum">     222 </span>                :            :     return {makeValidCase(field, f(&quot;name%cdomain&quot;)),
+<span class="lineNum">     223 </span>                :            :             c(&quot;start_with_digit&quot;, f(&quot;1abs%cdomain&quot;)),
+<span class="lineNum">     224 </span>                :            :             c(&quot;domain_start_with_digit&quot;, f(&quot;abs%c3domain&quot;)),
+<span class="lineNum">     225 </span>                :            :             c(&quot;empty_string&quot;, &quot;&quot;),
+<span class="lineNum">     226 </span>                :            :             c(&quot;illegal_char&quot;, f(&quot;ab--s%cdo--main&quot;)),
+<span class="lineNum">     227 </span>                :            :             c(f(&quot;missing_%c&quot;), &quot;absdomain&quot;),
+<span class="lineNum">     228 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         64 :             c(&quot;missing_name&quot;, f(&quot;%cdomain&quot;))};</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 7 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>][<span class="branchCov" title="Branch 10 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 13 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>][<span class="branchCov" title="Branch 16 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 17 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 19 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 20 was not taken"> - </span>][<span class="branchCov" title="Branch 22 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 23 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 34 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 35 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 37 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 38 was not taken"> - </span>][<span class="branchCov" title="Branch 41 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 42 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 44 was taken 56 times"> + </span><span class="branchCov" title="Branch 45 was taken 8 times"> + </span>][<span class="branchNoExec" title="Branch 54 was not executed"> # </span><span class="branchNoExec" title="Branch 55 was not executed"> # </span>]
+<span class="lineNum">     229 </span>                :            :   }
+<span class="lineNum">     230 </span>                :            : 
+<span class="lineNum">     231 </span>                :            :   std::vector&lt;FieldTestCase&gt; account_id_test_cases =
+<span class="lineNum">     232 </span>                :            :       idTestCases(&quot;account_id&quot;, &amp;FieldValidatorTest::account_id, '@');
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :            :   std::vector&lt;FieldTestCase&gt; asset_id_test_cases =
+<span class="lineNum">     235 </span>                :            :       idTestCases(&quot;asset_id&quot;, &amp;FieldValidatorTest::asset_id, '#');
+<span class="lineNum">     236 </span>                :            : 
+<a name="237"><span class="lineNum">     237 </span>                :            :   std::vector&lt;FieldTestCase&gt; amount_test_cases{</a>
+<span class="lineNum">     238 </span>                :            :       {&quot;valid_amount&quot;,
+<span class="lineNum">     239 </span>                :<span class="lineCov">          2 :        [&amp;] { amount.mutable_value()-&gt;set_fourth(100); },</span>
+<span class="lineNum">     240 </span>                :            :        true,
+<a name="241"><span class="lineNum">     241 </span>                :            :        &quot;&quot;},</a>
+<span class="lineNum">     242 </span>                :            :       {&quot;zero_amount&quot;,
+<span class="lineNum">     243 </span>                :<span class="lineCov">          2 :        [&amp;] { amount.mutable_value()-&gt;set_fourth(0); },</span>
+<span class="lineNum">     244 </span>                :            :        false,
+<a name="245"><span class="lineNum">     245 </span>                :            :        &quot;Amount must be greater than 0, passed value: 0&quot;}};</a>
+<span class="lineNum">     246 </span>                :            : 
+<span class="lineNum">     247 </span>                :<span class="lineCov">          8 :   FieldTestCase invalidAddressTestCase(const std::string &amp;case_name,</span>
+<span class="lineNum">     248 </span>                :            :                                        const std::string &amp;address) {
+<span class="lineNum">     249 </span>                :            :     return makeInvalidCase(case_name,
+<span class="lineNum">     250 </span>                :            :                            &quot;peer address&quot;,
+<span class="lineNum">     251 </span>                :            :                            &amp;FieldValidatorTest::address_localhost,
+<span class="lineNum">     252 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :                            address);</span>
+<span class="lineNum">     253 </span>                :            :   }
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            :   // Address validation test is handled in libs/validator,
+<span class="lineNum">     256 </span>                :            :   // so test cases are not exhaustive
+<span class="lineNum">     257 </span>                :            :   std::vector&lt;FieldTestCase&gt; address_test_cases{
+<span class="lineNum">     258 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::address_localhost, &quot;182.13.35.1:3040&quot;),
+<span class="lineNum">     259 </span>                :            :       invalidAddressTestCase(&quot;invalid_ip_address&quot;, &quot;182.13.35.1:3040--&quot;),
+<a name="260"><span class="lineNum">     260 </span>                :            :       invalidAddressTestCase(&quot;empty_string&quot;, &quot;&quot;)};</a>
+<span class="lineNum">     261 </span>                :            : 
+<span class="lineNum">     262 </span>                :<span class="lineCov">          8 :   FieldTestCase invalidPublicKeyTestCase(const std::string &amp;case_name,</span>
+<span class="lineNum">     263 </span>                :            :                                          const std::string &amp;public_key) {
+<span class="lineNum">     264 </span>                :            :     return makeTestCase(
+<span class="lineNum">     265 </span>                :            :         case_name,
+<span class="lineNum">     266 </span>                :            :         &amp;FieldValidatorTest::public_key,
+<span class="lineNum">     267 </span>                :            :         public_key,
+<span class="lineNum">     268 </span>                :            :         false,
+<span class="lineNum">     269 </span>                :            :         (boost::format(&quot;Public key has wrong size, passed size: %d&quot;)
+<span class="lineNum">     270 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         16 :          % public_key.size())</span>
+<span class="lineNum">     271 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         16 :             .str());</span>
+<span class="lineNum">     272 </span>                :            :   }
+<span class="lineNum">     273 </span>                :            : 
+<span class="lineNum">     274 </span>                :            :   std::vector&lt;FieldTestCase&gt; public_key_test_cases{
+<span class="lineNum">     275 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::public_key, std::string(32, '0')),
+<span class="lineNum">     276 </span>                :            :       invalidPublicKeyTestCase(&quot;invalid_key_length&quot;, std::string(64, '0')),
+<span class="lineNum">     277 </span>                :            :       invalidPublicKeyTestCase(&quot;empty_string&quot;, &quot;&quot;)};
+<span class="lineNum">     278 </span>                :            : 
+<a name="279"><span class="lineNum">     279 </span>                :            :   /// Generate test cases for name types</a>
+<span class="lineNum">     280 </span>                :            :   template &lt;typename F&gt;
+<span class="lineNum">     281 </span>                :<span class="lineCov">         16 :   std::vector&lt;FieldTestCase&gt; nameTestCases(const std::string &amp;field_name,</span>
+<span class="lineNum">     282 </span>                :            :                                            F field) {
+<span class="lineNum">     283 </span>                :            :     return {
+<span class="lineNum">     284 </span>                :            :         makeTestCase(&quot;valid_name&quot;, field, &quot;admin&quot;, true, &quot;&quot;),
+<span class="lineNum">     285 </span>                :            :         makeInvalidCase(&quot;empty_string&quot;, field_name, field, &quot;&quot;),
+<span class="lineNum">     286 </span>                :            :         makeInvalidCase(&quot;illegal_characters&quot;, field_name, field, &quot;-math-&quot;),
+<span class="lineNum">     287 </span>[<span class="branchCov" title="Branch 2 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         80 :         makeInvalidCase(&quot;name_too_long&quot;, field_name, field, &quot;somelongname&quot;)};</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 13 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 17 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>][<span class="branchCov" title="Branch 20 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 24 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 25 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 31 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 32 was not taken"> - </span>][<span class="branchCov" title="Branch 35 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 36 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 39 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 40 was not taken"> - </span>][<span class="branchCov" title="Branch 42 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 43 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 46 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 47 was not taken"> - </span>][<span class="branchCov" title="Branch 49 was taken 64 times"> + </span><span class="branchCov" title="Branch 50 was taken 16 times"> + </span>]
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 69 was not executed"> # </span><span class="branchNoExec" title="Branch 70 was not executed"> # </span>]
+<span class="lineNum">     288 </span>                :            :   }
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :            :   std::vector&lt;FieldTestCase&gt; role_name_test_cases =
+<span class="lineNum">     291 </span>                :            :       nameTestCases(&quot;role_id&quot;, &amp;FieldValidatorTest::role_name);
+<span class="lineNum">     292 </span>                :            : 
+<span class="lineNum">     293 </span>                :            :   std::vector&lt;FieldTestCase&gt; account_name_test_cases =
+<span class="lineNum">     294 </span>                :            :       nameTestCases(&quot;account_name&quot;, &amp;FieldValidatorTest::account_name);
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :   std::vector&lt;FieldTestCase&gt; domain_id_test_cases =
+<span class="lineNum">     297 </span>                :            :       nameTestCases(&quot;domain_id&quot;, &amp;FieldValidatorTest::domain_id);
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            :   std::vector&lt;FieldTestCase&gt; asset_name_test_cases =
+<span class="lineNum">     300 </span>                :            :       nameTestCases(&quot;asset_name&quot;, &amp;FieldValidatorTest::asset_name);
+<span class="lineNum">     301 </span>                :            : 
+<span class="lineNum">     302 </span>                :            :   std::vector&lt;FieldTestCase&gt; permissions_test_cases{
+<span class="lineNum">     303 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::role_permission,
+<span class="lineNum">     304 </span>                :            :                     iroha::protocol::RolePermission::can_append_role)};
+<span class="lineNum">     305 </span>                :            : 
+<span class="lineNum">     306 </span>                :            :   std::vector&lt;FieldTestCase&gt; tx_counter_test_cases{
+<span class="lineNum">     307 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::counter, 5),
+<span class="lineNum">     308 </span>                :            :       makeTestCase(&quot;zero_counter&quot;,
+<span class="lineNum">     309 </span>                :            :                    &amp;FieldValidatorTest::counter,
+<span class="lineNum">     310 </span>                :            :                    0,
+<span class="lineNum">     311 </span>                :            :                    false,
+<span class="lineNum">     312 </span>                :            :                    &quot;Counter should be &gt; 0, passed value: 0&quot;)};
+<span class="lineNum">     313 </span>                :            :   std::vector&lt;FieldTestCase&gt; created_time_test_cases{
+<span class="lineNum">     314 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::created_time, iroha::time::now()),
+<span class="lineNum">     315 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::created_time,
+<span class="lineNum">     316 </span>                :<span class="lineCov">          4 :                     iroha::time::now() + nearest_future),</span>
+<span class="lineNum">     317 </span>                :            :       makeTestCase(
+<span class="lineNum">     318 </span>                :            :           &quot;invalid due to far future&quot;,
+<span class="lineNum">     319 </span>                :            :           &amp;FieldValidatorTest::created_time,
+<span class="lineNum">     320 </span>                :<span class="lineCov">          4 :           iroha::time::now() + far_future,</span>
+<span class="lineNum">     321 </span>                :            :           false,
+<span class="lineNum">     322 </span>                :            :           &quot;bad timestamp: sent from future, timestamp: [0-9]+, now: [0-9]+&quot;)};
+<span class="lineNum">     323 </span>                :            : 
+<span class="lineNum">     324 </span>                :            :   std::vector&lt;FieldTestCase&gt; detail_test_cases{
+<span class="lineNum">     325 </span>                :            :       makeValidCase(&amp;FieldValidatorTest::detail_key, &quot;happy&quot;),
+<span class="lineNum">     326 </span>                :            :       makeInvalidCase(
+<span class="lineNum">     327 </span>                :            :           &quot;empty_string&quot;, &quot;key&quot;, &amp;FieldValidatorTest::detail_key, &quot;&quot;),
+<span class="lineNum">     328 </span>                :            :       makeInvalidCase(
+<span class="lineNum">     329 </span>                :            :           &quot;illegal_char&quot;, &quot;key&quot;, &amp;FieldValidatorTest::detail_key, &quot;hi-there&quot;)};
+<span class="lineNum">     330 </span>                :            : 
+<span class="lineNum">     331 </span>                :            :   /**************************************************************************/
+<a name="332"><span class="lineNum">     332 </span>                :            : </a>
+<span class="lineNum">     333 </span>                :            :   /// Create no-operation validator
+<span class="lineNum">     334 </span>                :<span class="lineCov">         32 :   std::pair&lt;std::string, FieldTest&gt; makeNullValidator(</span>
+<span class="lineNum">     335 </span>                :            :       const std::string &amp;field_name) {
+<span class="lineNum">     336 </span>        [<span class="branchCov" title="Branch 2 was taken 32 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         32 :     return {field_name, {}};</span>
+<span class="lineNum">     337 </span>                :            :   }
+<span class="lineNum">     338 </span>                :            : 
+<a name="339"><span class="lineNum">     339 </span>                :            :   /// Create validator with given field transformation</a>
+<span class="lineNum">     340 </span>                :            :   template &lt;typename F, typename V, typename T&gt;
+<span class="lineNum">     341 </span>                :<span class="lineCov">         92 :   std::pair&lt;std::string, FieldTest&gt; makeTransformValidator(</span>
+<span class="lineNum">     342 </span>                :            :       const std::string &amp;field_name,
+<span class="lineNum">     343 </span>                :            :       F field,
+<span class="lineNum">     344 </span>                :            :       V value,
+<span class="lineNum">     345 </span>                :            :       T transform,
+<a name="346"><span class="lineNum">     346 </span>                :            :       const std::vector&lt;FieldTestCase&gt; &amp;cases) {</a>
+<span class="lineNum">     347 </span>                :            :     return {field_name,
+<span class="lineNum">     348 </span>                :<span class="lineCov">        117 :             {[&amp;, field, value] {</span>
+<span class="lineNum">     349 </span>                :<span class="lineCov">        117 :                validation::ReasonsGroupType reason;</span>
+<span class="lineNum">     350 </span>  [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span><span class="branchCov" title="Branch 7 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span> :<span class="lineCov">        117 :                (field_validator.*field)(reason, transform(this-&gt;*value));</span>
+<span class="lineNum">         </span> <span class="branchCov" title="Branch 11 was taken 89 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchCov" title="Branch 14 was taken 89 times"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 20 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>][<span class="branchCov" title="Branch 23 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 29 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 30 was not taken"> - </span>][<span class="branchCov" title="Branch 32 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 38 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 39 was not taken"> - </span>][<span class="branchCov" title="Branch 41 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 42 was not taken"> - </span>]
+<span class="lineNum">     351 </span>                :<span class="lineCov">        117 :                return reason;</span>
+<span class="lineNum">     352 </span>                :            :              },
+<span class="lineNum">     353 </span>[<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         92 :              cases}};</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 9 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>][<span class="branchCov" title="Branch 12 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 17 was taken 56 times"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>][<span class="branchCov" title="Branch 20 was taken 56 times"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 25 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 26 was not taken"> - </span>][<span class="branchCov" title="Branch 28 was taken 16 times"> + </span><span class="branchNoCov" title="Branch 29 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 33 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 34 was not taken"> - </span>][<span class="branchCov" title="Branch 36 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 37 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 41 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 42 was not taken"> - </span>][<span class="branchCov" title="Branch 44 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 45 was not taken"> - </span>]
+<span class="lineNum">     354 </span>                :            :   }
+<span class="lineNum">     355 </span>                :            : 
+<a name="356"><span class="lineNum">     356 </span>                :            :   /// Create validator with identity transformation</a>
+<span class="lineNum">     357 </span>                :            :   template &lt;typename F, typename V&gt;
+<span class="lineNum">     358 </span>                :<span class="lineCov">         68 :   std::pair&lt;std::string, FieldTest&gt; makeValidator(</span>
+<span class="lineNum">     359 </span>                :            :       const std::string &amp;field_name,
+<span class="lineNum">     360 </span>                :            :       F field,
+<span class="lineNum">     361 </span>                :            :       V value,
+<a name="362"><span class="lineNum">     362 </span>                :            :       const std::vector&lt;FieldTestCase&gt; &amp;cases) {</a>
+<span class="lineNum">     363 </span>                :            :     return makeTransformValidator(
+<span class="lineNum">     364 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">        266 :         field_name, field, value, [](auto &amp;&amp;x) { return x; }, cases);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 56 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     365 </span>                :            :   }
+<span class="lineNum">     366 </span>                :            : 
+<span class="lineNum">     367 </span>                :            :   using FieldValidator = validation::FieldValidator;
+<span class="lineNum">     368 </span>                :            : 
+<span class="lineNum">     369 </span>                :            :   // register validation function and test cases
+<span class="lineNum">     370 </span>                :            :   std::unordered_map&lt;std::string, FieldTest&gt; field_validators{
+<span class="lineNum">     371 </span>                :            :       // Command fields
+<span class="lineNum">     372 </span>                :            :       makeValidator(&quot;asset_id&quot;,
+<span class="lineNum">     373 </span>                :            :                     &amp;FieldValidator::validateAssetId,
+<span class="lineNum">     374 </span>                :            :                     &amp;FieldValidatorTest::asset_id,
+<span class="lineNum">     375 </span>                :            :                     asset_id_test_cases),
+<span class="lineNum">     376 </span>                :            :       makeTransformValidator(&quot;amount&quot;,
+<a name="377"><span class="lineNum">     377 </span>                :            :                              &amp;FieldValidator::validateAmount,</a>
+<span class="lineNum">     378 </span>                :            :                              &amp;FieldValidatorTest::amount,
+<span class="lineNum">     379 </span>                :<span class="lineCov">          4 :                              [](auto &amp;&amp;x) { return proto::Amount(x); },</span>
+<span class="lineNum">     380 </span>                :            :                              amount_test_cases),
+<span class="lineNum">     381 </span>                :            :       makeValidator(&quot;address&quot;,
+<span class="lineNum">     382 </span>                :            :                     &amp;FieldValidator::validatePeerAddress,
+<span class="lineNum">     383 </span>                :            :                     &amp;FieldValidatorTest::address_localhost,
+<span class="lineNum">     384 </span>                :            :                     address_test_cases),
+<span class="lineNum">     385 </span>                :            :       makeValidator(&quot;account_name&quot;,
+<span class="lineNum">     386 </span>                :            :                     &amp;FieldValidator::validateAccountName,
+<span class="lineNum">     387 </span>                :            :                     &amp;FieldValidatorTest::account_name,
+<span class="lineNum">     388 </span>                :            :                     account_name_test_cases),
+<span class="lineNum">     389 </span>                :            :       makeValidator(&quot;domain_id&quot;,
+<span class="lineNum">     390 </span>                :            :                     &amp;FieldValidator::validateDomainId,
+<span class="lineNum">     391 </span>                :            :                     &amp;FieldValidatorTest::domain_id,
+<span class="lineNum">     392 </span>                :            :                     domain_id_test_cases),
+<span class="lineNum">     393 </span>                :            :       makeValidator(&quot;asset_name&quot;,
+<span class="lineNum">     394 </span>                :            :                     &amp;FieldValidator::validateAssetName,
+<span class="lineNum">     395 </span>                :            :                     &amp;FieldValidatorTest::asset_name,
+<span class="lineNum">     396 </span>                :            :                     asset_name_test_cases),
+<span class="lineNum">     397 </span>                :            :       makeTransformValidator(&quot;permissions&quot;,
+<a name="398"><span class="lineNum">     398 </span>                :            :                              &amp;FieldValidator::validatePermissions,</a>
+<span class="lineNum">     399 </span>                :            :                              &amp;FieldValidatorTest::role_permission,
+<span class="lineNum">     400 </span>                :<span class="lineCov">          1 :                              [](auto &amp;&amp;x) {</span>
+<span class="lineNum">     401 </span>                :            :                                return interface::CreateRole::PermissionsType{
+<span class="lineNum">     402 </span>                :<span class="lineCov">          1 :                                    iroha::protocol::RolePermission_Name(x)};</span>
+<span class="lineNum">     403 </span>[<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 1 time"> + </span><span class="branchCov" title="Branch 7 was taken 1 time"> + </span>]:<span class="lineCov">          2 :                              },</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">     404 </span>                :            :                              permissions_test_cases),
+<span class="lineNum">     405 </span>                :            : 
+<span class="lineNum">     406 </span>                :            :       makeValidator(&quot;created_time&quot;,
+<span class="lineNum">     407 </span>                :            :                     &amp;FieldValidator::validateCreatedTime,
+<span class="lineNum">     408 </span>                :            :                     &amp;FieldValidatorTest::created_time,
+<span class="lineNum">     409 </span>                :            :                     created_time_test_cases)};
+<span class="lineNum">     410 </span>                :            : };
+<span class="lineNum">     411 </span>                :            : 
+<span class="lineNum">     412 </span>                :            : /**
+<span class="lineNum">     413 </span>                :            :  * @given field values from test cases
+<span class="lineNum">     414 </span>                :            :  * @when field validator is invoked on command's fields
+<span class="lineNum">     415 </span>                :            :  * @then field validator correctly rejects invalid values, and provides
+<a name="416"><span class="lineNum">     416 </span>                :            :  * meaningful message</a>
+<span class="lineNum">     417 </span>                :            :  */
+<span class="lineNum">     418 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(FieldValidatorTest, CommandFieldsValidation) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 24 was taken 1 time"> + </span>]
+<span class="lineNum">     419 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :   iroha::protocol::Transaction proto_tx;</span>
+<span class="lineNum">     420 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   auto payload = proto_tx.mutable_payload();</span>
+<span class="lineNum">     421 </span>                :            : 
+<a name="422"><span class="lineNum">     422 </span>                :            :   // iterate over all commands in transaction</a>
+<a name="423"><span class="lineNum">     423 </span>                :<span class="lineNoCov">          0 :   iterateContainer(</span></a>
+<span class="lineNum">     424 </span>                :<span class="lineCov">          2 :       [] { return iroha::protocol::Command::descriptor(); },</span>
+<span class="lineNum">     425 </span>                :<span class="lineCov">         16 :       [&amp;](auto field) {</span>
+<span class="lineNum">     426 </span>                :            :         // Add new command to transaction
+<span class="lineNum">     427 </span>                :<span class="lineCov">         16 :         auto command = payload-&gt;add_commands();</span>
+<span class="lineNum">     428 </span>                :            :         //  // Set concrete type for new command
+<a name="429"><span class="lineNum">     429 </span>                :<span class="lineCov">         16 :         return command-&gt;GetReflection()-&gt;MutableMessage(command, field);</span></a>
+<a name="430"><span class="lineNum">     430 </span>                :            :       },</a>
+<span class="lineNum">     431 </span>                :<span class="lineCov">         80 :       [this](auto field, auto command) { this-&gt;runTestCases(field); },</span>
+<span class="lineNum">     432 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         17 :       [] {});</span>
+<span class="lineNum">     433 </span>                :<span class="lineCov">          1 : }</span>
+<span class="lineNum">     434 </span>                :            : 
+<span class="lineNum">     435 </span>                :            : /**
+<span class="lineNum">     436 </span>                :            :  * @given field values from test cases
+<span class="lineNum">     437 </span>                :            :  * @when field validator is invoked on transaction's fields
+<span class="lineNum">     438 </span>                :            :  * @then field validator correctly rejects invalid values, and provides
+<a name="439"><span class="lineNum">     439 </span>                :            :  * meaningful message</a>
+<span class="lineNum">     440 </span>                :            :  */
+<span class="lineNum">     441 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(FieldValidatorTest, TransactionFieldsValidation) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 24 was taken 1 time"> + </span>]
+<a name="442"><span class="lineNum">     442 </span>                :            :   // iterate over all fields in transaction</a>
+<a name="443"><span class="lineNum">     443 </span>                :<span class="lineNoCov">          0 :   iterateContainer(</span></a>
+<span class="lineNum">     444 </span>                :<span class="lineCov">          2 :       [] { return iroha::protocol::Transaction::descriptor(); },</span>
+<span class="lineNum">     445 </span>                :<span class="lineCov">          2 :       [&amp;](auto field) {</span>
+<span class="lineNum">     446 </span>                :            :         // generate message from field of transaction
+<span class="lineNum">     447 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         google::protobuf::DynamicMessageFactory message_factory;</span>
+<span class="lineNum">     448 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto field_desc = field-&gt;message_type();</span>
+<span class="lineNum">     449 </span>                :            :         // will be null if field is not of message type
+<span class="lineNum">     450 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>]:<span class="lineCov">          2 :         EXPECT_NE(nullptr, field_desc);</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>]
+<a name="451"><span class="lineNum">     451 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         return message_factory.GetPrototype(field_desc)-&gt;New();</span></a>
+<a name="452"><span class="lineNum">     452 </span>                :            :       },</a>
+<span class="lineNum">     453 </span>                :<span class="lineCov">         12 :       [this](auto field, auto transaction_field) { this-&gt;runTestCases(field); },</span>
+<span class="lineNum">     454 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       [] {});</span>
+<span class="lineNum">     455 </span>                :<span class="lineCov">          1 : }</span>
+<span class="lineNum">     456 </span>                :            : 
+<span class="lineNum">     457 </span>                :            : /**
+<span class="lineNum">     458 </span>                :            :  * @given field values from test cases
+<span class="lineNum">     459 </span>                :            :  * @when field validator is invoked on query's fields
+<span class="lineNum">     460 </span>                :            :  * @then field validator correctly rejects invalid values, and provides
+<a name="461"><span class="lineNum">     461 </span>                :            :  * meaningful message</a>
+<span class="lineNum">     462 </span>                :            :  */
+<span class="lineNum">     463 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(FieldValidatorTest, QueryFieldsValidation) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 23 was not taken"> - </span><span class="branchCov" title="Branch 24 was taken 1 time"> + </span>]
+<span class="lineNum">     464 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :   iroha::protocol::Query qry;</span>
+<span class="lineNum">     465 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :   auto payload = qry.mutable_payload();</span>
+<a name="466"><span class="lineNum">     466 </span>                :            :   // iterate over all field in query</a>
+<span class="lineNum">     467 </span>                :<span class="lineNoCov">          0 :   iterateContainer(</span>
+<span class="lineNum">     468 </span>                :<span class="lineCov">          1 :       [] {</span>
+<span class="lineNum">     469 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         return iroha::protocol::Query::Payload::descriptor()-&gt;FindOneofByName(</span>
+<a name="470"><span class="lineNum">     470 </span>                :            :             &quot;query&quot;);</a>
+<span class="lineNum">     471 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :       },</span>
+<span class="lineNum">     472 </span>                :<span class="lineCov">         10 :       [&amp;](auto field) {</span>
+<span class="lineNum">     473 </span>                :            :         // Set concrete type for new query
+<a name="474"><span class="lineNum">     474 </span>                :<span class="lineCov">         10 :         return payload-&gt;GetReflection()-&gt;MutableMessage(payload, field);</span></a>
+<a name="475"><span class="lineNum">     475 </span>                :<span class="lineCov">         10 :       },</span></a>
+<span class="lineNum">     476 </span>                :<span class="lineCov">         24 :       [this](auto field, auto query) { this-&gt;runTestCases(field); },</span>
+<span class="lineNum">     477 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         11 :       [&amp;] {});</span>
+<span class="lineNum">     478 </span>                :<span class="lineCov">          1 : }</span>
+<span class="lineNum">     479 </span>                :            : 
+<span class="lineNum">     480 </span>                :            : /**
+<span class="lineNum">     481 </span>                :            :  * @given field values from test cases
+<span class="lineNum">     482 </span>                :            :  * @when field validator is invoked on query container's fields
+<span class="lineNum">     483 </span>                :            :  * @then field validator correctly rejects invalid values, and provides
+<a name="484"><span class="lineNum">     484 </span>                :            :  * meaningful message</a>
+<span class="lineNum">     485 </span>                :            :  */
+<span class="lineNum">     486 </span>[<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>][<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">          8 : TEST_F(FieldValidatorTest, QueryContainerFieldsValidation) {</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>][<span class="branchNoCov" title="Branch 22 was not taken"> - </span><span class="branchCov" title="Branch 23 was taken 1 time"> + </span>]
+<a name="487"><span class="lineNum">     487 </span>                :            :   // iterate over all fields in transaction</a>
+<a name="488"><span class="lineNum">     488 </span>                :<span class="lineNoCov">          0 :   iterateContainer(</span></a>
+<span class="lineNum">     489 </span>                :<span class="lineCov">          2 :       [] { return iroha::protocol::Query::descriptor(); },</span>
+<span class="lineNum">     490 </span>                :<span class="lineCov">          2 :       [&amp;](auto field) {</span>
+<span class="lineNum">     491 </span>                :            :         // generate message from field of transaction
+<span class="lineNum">     492 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         google::protobuf::DynamicMessageFactory message_factory;</span>
+<span class="lineNum">     493 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto field_desc = field-&gt;message_type();</span>
+<span class="lineNum">     494 </span>                :            :         // will be null if field is not of message type
+<span class="lineNum">     495 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchCov" title="Branch 5 was taken 2 times"> + </span>]:<span class="lineCov">          2 :         EXPECT_NE(nullptr, field_desc);</span>
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>][<span class="branchNoExec" title="Branch 10 was not executed"> # </span><span class="branchNoExec" title="Branch 11 was not executed"> # </span>]
+<span class="lineNum">         </span>[<span class="branchNoExec" title="Branch 13 was not executed"> # </span><span class="branchNoExec" title="Branch 14 was not executed"> # </span>][<span class="branchNoExec" title="Branch 16 was not executed"> # </span><span class="branchNoExec" title="Branch 17 was not executed"> # </span>]
+<a name="496"><span class="lineNum">     496 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :         return message_factory.GetPrototype(field_desc)-&gt;New();</span></a>
+<span class="lineNum">     497 </span>                :            :       },
+<span class="lineNum">     498 </span>                :<span class="lineCov">         15 :       [this](auto field, auto) {</span>
+<span class="lineNum">     499 </span>                :            :         // Skip oneof types
+<span class="lineNum">     500 </span>        [<span class="branchCov" title="Branch 0 was taken 10 times"> + </span><span class="branchCov" title="Branch 1 was taken 5 times"> + </span>]:<span class="lineCov">         15 :         if (field-&gt;containing_oneof()</span>
+<span class="lineNum">     501 </span>[<span class="branchCov" title="Branch 3 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">         15 :             == iroha::protocol::Query::Payload::descriptor()-&gt;FindOneofByName(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 9 was taken 15 times"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>]
+<span class="lineNum">     502 </span>                :            :                    &quot;query&quot;)) {
+<span class="lineNum">     503 </span>                :<span class="lineCov">         10 :           return;</span>
+<span class="lineNum">     504 </span>                :            :         }
+<a name="505"><span class="lineNum">     505 </span>                :<span class="lineCov">         15 :         this-&gt;runTestCases(field);</span></a>
+<a name="506"><span class="lineNum">     506 </span>                :            :       },</a>
+<span class="lineNum">     507 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :       [] {});</span>
+<span class="lineNum">     508 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          5 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

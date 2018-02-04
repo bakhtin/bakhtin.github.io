@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/concurrent_queue.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb</a> - concurrent_queue.h<span style="font-size: 80%;"> (source / <a href="concurrent_queue.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">31</td>
+            <td class="headerCovTableEntryHi">96.8 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryHi">91.3 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #ifndef __TBB_concurrent_queue_H
+<span class="lineNum">      22 </span>            : #define __TBB_concurrent_queue_H
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &quot;internal/_concurrent_queue_impl.h&quot;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : namespace tbb {
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace strict_ppl {
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : //! A high-performance thread-safe non-blocking concurrent queue.
+<span class="lineNum">      31 </span>            : /** Multiple threads may each push and pop concurrently.
+<span class="lineNum">      32 </span>            :     Assignment construction is not allowed.
+<span class="lineNum">      33 </span>            :     @ingroup containers */
+<span class="lineNum">      34 </span>            : template&lt;typename T, typename A = cache_aligned_allocator&lt;T&gt; &gt;
+<span class="lineNum">      35 </span>            : class concurrent_queue: public internal::concurrent_queue_base_v3&lt;T&gt; {
+<span class="lineNum">      36 </span>            :     template&lt;typename Container, typename Value&gt; friend class internal::concurrent_queue_iterator;
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :     //! Allocator type
+<span class="lineNum">      39 </span>            :     typedef typename A::template rebind&lt;char&gt;::other page_allocator_type;
+<span class="lineNum">      40 </span>            :     page_allocator_type my_allocator;
+<a name="41"><span class="lineNum">      41 </span>            : </a>
+<span class="lineNum">      42 </span>            :     //! Allocates a block of size n (bytes)
+<span class="lineNum">      43 </span><span class="lineCov">         45 :     virtual void *allocate_block( size_t n ) __TBB_override {</span>
+<span class="lineNum">      44 </span><span class="lineCov">         45 :         void *b = reinterpret_cast&lt;void*&gt;(my_allocator.allocate( n ));</span>
+<span class="lineNum">      45 </span><span class="lineCov">         45 :         if( !b )</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :             internal::throw_exception(internal::eid_bad_alloc);</span>
+<span class="lineNum">      47 </span><span class="lineCov">         45 :         return b;</span>
+<span class="lineNum">      48 </span>            :     }
+<a name="49"><span class="lineNum">      49 </span>            : </a>
+<span class="lineNum">      50 </span>            :     //! Deallocates block created by allocate_block.
+<span class="lineNum">      51 </span><span class="lineCov">         45 :     virtual void deallocate_block( void *b, size_t n ) __TBB_override {</span>
+<span class="lineNum">      52 </span><span class="lineCov">         45 :         my_allocator.deallocate( reinterpret_cast&lt;char*&gt;(b), n );</span>
+<a name="53"><span class="lineNum">      53 </span><span class="lineCov">         45 :     }</span></a>
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span><span class="lineCov">         55 :     static void copy_construct_item(T* location, const void* src){</span>
+<span class="lineNum">      56 </span><span class="lineCov">         55 :         new (location) T(*static_cast&lt;const T*&gt;(src));</span>
+<span class="lineNum">      57 </span><span class="lineCov">         55 :     }</span>
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">      60 </span>            :     static void move_construct_item(T* location, const void* src) {
+<span class="lineNum">      61 </span>            :         new (location) T( std::move(*static_cast&lt;T*&gt;(const_cast&lt;void*&gt;(src))) );
+<span class="lineNum">      62 </span>            :     }
+<span class="lineNum">      63 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">      64 </span>            : public:
+<span class="lineNum">      65 </span>            :     //! Element type in the queue.
+<span class="lineNum">      66 </span>            :     typedef T value_type;
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            :     //! Reference type
+<span class="lineNum">      69 </span>            :     typedef T&amp; reference;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :     //! Const reference type
+<span class="lineNum">      72 </span>            :     typedef const T&amp; const_reference;
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            :     //! Integral type for representing size of the queue.
+<span class="lineNum">      75 </span>            :     typedef size_t size_type;
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            :     //! Difference type for iterator
+<span class="lineNum">      78 </span>            :     typedef ptrdiff_t difference_type;
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     //! Allocator type
+<span class="lineNum">      81 </span>            :     typedef A allocator_type;
+<a name="82"><span class="lineNum">      82 </span>            : </a>
+<span class="lineNum">      83 </span>            :     //! Construct empty queue
+<span class="lineNum">      84 </span><span class="lineCov">          9 :     explicit concurrent_queue(const allocator_type&amp; a = allocator_type()) :</span>
+<span class="lineNum">      85 </span><span class="lineCov">          9 :         my_allocator( a )</span>
+<span class="lineNum">      86 </span>            :     {
+<span class="lineNum">      87 </span><span class="lineCov">          9 :     }</span>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     //! [begin,end) constructor
+<span class="lineNum">      90 </span>            :     template&lt;typename InputIterator&gt;
+<span class="lineNum">      91 </span>            :     concurrent_queue( InputIterator begin, InputIterator end, const allocator_type&amp; a = allocator_type()) :
+<span class="lineNum">      92 </span>            :         my_allocator( a )
+<span class="lineNum">      93 </span>            :     {
+<span class="lineNum">      94 </span>            :         for( ; begin != end; ++begin )
+<span class="lineNum">      95 </span>            :             this-&gt;push(*begin);
+<span class="lineNum">      96 </span>            :     }
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            :     //! Copy constructor
+<span class="lineNum">      99 </span>            :     concurrent_queue( const concurrent_queue&amp; src, const allocator_type&amp; a = allocator_type()) :
+<span class="lineNum">     100 </span>            :         internal::concurrent_queue_base_v3&lt;T&gt;(), my_allocator( a )
+<span class="lineNum">     101 </span>            :     {
+<span class="lineNum">     102 </span>            :         this-&gt;assign( src, copy_construct_item );
+<span class="lineNum">     103 </span>            :     }
+<span class="lineNum">     104 </span>            : 
+<span class="lineNum">     105 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     106 </span>            :     //! Move constructors
+<span class="lineNum">     107 </span>            :     concurrent_queue( concurrent_queue&amp;&amp; src ) :
+<span class="lineNum">     108 </span>            :         internal::concurrent_queue_base_v3&lt;T&gt;(), my_allocator( std::move(src.my_allocator) )
+<span class="lineNum">     109 </span>            :     {
+<span class="lineNum">     110 </span>            :         this-&gt;internal_swap( src );
+<span class="lineNum">     111 </span>            :     }
+<span class="lineNum">     112 </span>            : 
+<span class="lineNum">     113 </span>            :     concurrent_queue( concurrent_queue&amp;&amp; src, const allocator_type&amp; a ) :
+<span class="lineNum">     114 </span>            :         internal::concurrent_queue_base_v3&lt;T&gt;(), my_allocator( a )
+<span class="lineNum">     115 </span>            :     {
+<span class="lineNum">     116 </span>            :         // checking that memory allocated by one instance of allocator can be deallocated
+<span class="lineNum">     117 </span>            :         // with another
+<span class="lineNum">     118 </span>            :         if( my_allocator == src.my_allocator) {
+<span class="lineNum">     119 </span>            :             this-&gt;internal_swap( src );
+<span class="lineNum">     120 </span>            :         } else {
+<span class="lineNum">     121 </span>            :             // allocators are different =&gt; performing per-element move
+<span class="lineNum">     122 </span>            :             this-&gt;assign( src, move_construct_item );
+<span class="lineNum">     123 </span>            :             src.clear();
+<span class="lineNum">     124 </span>            :         }
+<span class="lineNum">     125 </span>            :     }
+<span class="lineNum">     126 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     127 </span>            : 
+<span class="lineNum">     128 </span>            :     //! Destroy queue
+<span class="lineNum">     129 </span>            :     ~concurrent_queue();
+<a name="130"><span class="lineNum">     130 </span>            : </a>
+<span class="lineNum">     131 </span>            :     //! Enqueue an item at tail of queue.
+<span class="lineNum">     132 </span><span class="lineCov">         55 :     void push( const T&amp; source ) {</span>
+<span class="lineNum">     133 </span><span class="lineCov">         55 :         this-&gt;internal_push( &amp;source, copy_construct_item );</span>
+<span class="lineNum">     134 </span><span class="lineCov">         55 :     }</span>
+<span class="lineNum">     135 </span>            : 
+<span class="lineNum">     136 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     137 </span>            :     void push( T&amp;&amp; source ) {
+<span class="lineNum">     138 </span>            :         this-&gt;internal_push( &amp;source, move_construct_item );
+<span class="lineNum">     139 </span>            :     }
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            : #if __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
+<span class="lineNum">     142 </span>            :     template&lt;typename... Arguments&gt;
+<span class="lineNum">     143 </span>            :     void emplace( Arguments&amp;&amp;... args ) {
+<span class="lineNum">     144 </span>            :         push( T(std::forward&lt;Arguments&gt;( args )...) );
+<span class="lineNum">     145 </span>            :     }
+<span class="lineNum">     146 </span>            : #endif //__TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
+<span class="lineNum">     147 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     148 </span>            : 
+<span class="lineNum">     149 </span>            :     //! Attempt to dequeue an item from head of queue.
+<a name="150"><span class="lineNum">     150 </span>            :     /** Does not wait for item to become available.</a>
+<span class="lineNum">     151 </span>            :         Returns true if successful; false otherwise. */
+<span class="lineNum">     152 </span><span class="lineCov">         64 :     bool try_pop( T&amp; result ) {</span>
+<span class="lineNum">     153 </span><span class="lineCov">         64 :         return this-&gt;internal_try_pop( &amp;result );</span>
+<span class="lineNum">     154 </span>            :     }
+<a name="155"><span class="lineNum">     155 </span>            : </a>
+<span class="lineNum">     156 </span>            :     //! Return the number of items in the queue; thread unsafe
+<span class="lineNum">     157 </span><span class="lineCov">         90 :     size_type unsafe_size() const {return this-&gt;internal_size();}</span>
+<a name="158"><span class="lineNum">     158 </span>            : </a>
+<span class="lineNum">     159 </span>            :     //! Equivalent to size()==0.
+<span class="lineNum">     160 </span><span class="lineCov">         84 :     bool empty() const {return this-&gt;internal_empty();}</span>
+<span class="lineNum">     161 </span>            : 
+<span class="lineNum">     162 </span>            :     //! Clear the queue. not thread-safe.
+<span class="lineNum">     163 </span>            :     void clear() ;
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :     //! Return allocator object
+<span class="lineNum">     166 </span>            :     allocator_type get_allocator() const { return this-&gt;my_allocator; }
+<span class="lineNum">     167 </span>            : 
+<span class="lineNum">     168 </span>            :     typedef internal::concurrent_queue_iterator&lt;concurrent_queue,T&gt; iterator;
+<span class="lineNum">     169 </span>            :     typedef internal::concurrent_queue_iterator&lt;concurrent_queue,const T&gt; const_iterator;
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :     //------------------------------------------------------------------------
+<a name="172"><span class="lineNum">     172 </span>            :     // The iterators are intended only for debugging.  They are slow and not thread safe.</a>
+<a name="173"><span class="lineNum">     173 </span>            :     //------------------------------------------------------------------------</a>
+<span class="lineNum">     174 </span><span class="lineCov">          2 :     iterator unsafe_begin() {return iterator(*this);}</span>
+<span class="lineNum">     175 </span><span class="lineCov">         22 :     iterator unsafe_end() {return iterator();}</span>
+<span class="lineNum">     176 </span>            :     const_iterator unsafe_begin() const {return const_iterator(*this);}
+<span class="lineNum">     177 </span>            :     const_iterator unsafe_end() const {return const_iterator();}
+<span class="lineNum">     178 </span>            : } ;
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<span class="lineNum">     180 </span>            : template&lt;typename T, class A&gt;
+<span class="lineNum">     181 </span><span class="lineCov">          9 : concurrent_queue&lt;T,A&gt;::~concurrent_queue() {</span>
+<span class="lineNum">     182 </span><span class="lineCov">          9 :     clear();</span>
+<span class="lineNum">     183 </span><span class="lineCov">          9 :     this-&gt;internal_finish_clear();</span>
+<span class="lineNum">     184 </span><span class="lineCov">          9 : }</span>
+<a name="185"><span class="lineNum">     185 </span>            : </a>
+<span class="lineNum">     186 </span>            : template&lt;typename T, class A&gt;
+<span class="lineNum">     187 </span><span class="lineCov">          9 : void concurrent_queue&lt;T,A&gt;::clear() {</span>
+<span class="lineNum">     188 </span><span class="lineCov">         16 :     T value;</span>
+<span class="lineNum">     189 </span><span class="lineCov">         19 :     while( !empty() ) try_pop(value);</span>
+<span class="lineNum">     190 </span><span class="lineCov">          9 : }</span>
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            : } // namespace strict_ppl
+<span class="lineNum">     193 </span>            : 
+<span class="lineNum">     194 </span>            : //! A high-performance thread-safe blocking concurrent bounded queue.
+<span class="lineNum">     195 </span>            : /** This is the pre-PPL TBB concurrent queue which supports boundedness and blocking semantics.
+<span class="lineNum">     196 </span>            :     Note that method names agree with the PPL-style concurrent queue.
+<span class="lineNum">     197 </span>            :     Multiple threads may each push and pop concurrently.
+<span class="lineNum">     198 </span>            :     Assignment construction is not allowed.
+<span class="lineNum">     199 </span>            :     @ingroup containers */
+<span class="lineNum">     200 </span>            : template&lt;typename T, class A = cache_aligned_allocator&lt;T&gt; &gt;
+<span class="lineNum">     201 </span>            : class concurrent_bounded_queue: public internal::concurrent_queue_base_v8 {
+<span class="lineNum">     202 </span>            :     template&lt;typename Container, typename Value&gt; friend class internal::concurrent_queue_iterator;
+<span class="lineNum">     203 </span>            : 
+<span class="lineNum">     204 </span>            :     //! Allocator type
+<span class="lineNum">     205 </span>            :     typedef typename A::template rebind&lt;char&gt;::other page_allocator_type;
+<span class="lineNum">     206 </span>            :     page_allocator_type my_allocator;
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :     typedef typename concurrent_queue_base_v3::padded_page&lt;T&gt; padded_page;
+<span class="lineNum">     209 </span>            :     typedef typename concurrent_queue_base_v3::copy_specifics copy_specifics;
+<span class="lineNum">     210 </span>            : 
+<span class="lineNum">     211 </span>            :     //! Class used to ensure exception-safety of method &quot;pop&quot;
+<span class="lineNum">     212 </span>            :     class destroyer: internal::no_copy {
+<span class="lineNum">     213 </span>            :         T&amp; my_value;
+<span class="lineNum">     214 </span>            :     public:
+<span class="lineNum">     215 </span>            :         destroyer( T&amp; value ) : my_value(value) {}
+<span class="lineNum">     216 </span>            :         ~destroyer() {my_value.~T();}
+<span class="lineNum">     217 </span>            :     };
+<span class="lineNum">     218 </span>            : 
+<span class="lineNum">     219 </span>            :     T&amp; get_ref( page&amp; p, size_t index ) {
+<span class="lineNum">     220 </span>            :         __TBB_ASSERT( index&lt;items_per_page, NULL );
+<span class="lineNum">     221 </span>            :         return (&amp;static_cast&lt;padded_page*&gt;(static_cast&lt;void*&gt;(&amp;p))-&gt;last)[index];
+<span class="lineNum">     222 </span>            :     }
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span>            :     virtual void copy_item( page&amp; dst, size_t index, const void* src ) __TBB_override {
+<span class="lineNum">     225 </span>            :         new( &amp;get_ref(dst,index) ) T(*static_cast&lt;const T*&gt;(src));
+<span class="lineNum">     226 </span>            :     }
+<span class="lineNum">     227 </span>            : 
+<span class="lineNum">     228 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     229 </span>            :     virtual void move_item( page&amp; dst, size_t index, const void* src ) __TBB_override {
+<span class="lineNum">     230 </span>            :         new( &amp;get_ref(dst,index) ) T( std::move(*static_cast&lt;T*&gt;(const_cast&lt;void*&gt;(src))) );
+<span class="lineNum">     231 </span>            :     }
+<span class="lineNum">     232 </span>            : #else
+<span class="lineNum">     233 </span>            :     virtual void move_item( page&amp;, size_t, const void* ) __TBB_override {
+<span class="lineNum">     234 </span>            :         __TBB_ASSERT( false, &quot;Unreachable code&quot; );
+<span class="lineNum">     235 </span>            :     }
+<span class="lineNum">     236 </span>            : #endif
+<span class="lineNum">     237 </span>            : 
+<span class="lineNum">     238 </span>            :     virtual void copy_page_item( page&amp; dst, size_t dindex, const page&amp; src, size_t sindex ) __TBB_override {
+<span class="lineNum">     239 </span>            :         new( &amp;get_ref(dst,dindex) ) T( get_ref( const_cast&lt;page&amp;&gt;(src), sindex ) );
+<span class="lineNum">     240 </span>            :     }
+<span class="lineNum">     241 </span>            : 
+<span class="lineNum">     242 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     243 </span>            :     virtual void move_page_item( page&amp; dst, size_t dindex, const page&amp; src, size_t sindex ) __TBB_override {
+<span class="lineNum">     244 </span>            :         new( &amp;get_ref(dst,dindex) ) T( std::move(get_ref( const_cast&lt;page&amp;&gt;(src), sindex )) );
+<span class="lineNum">     245 </span>            :     }
+<span class="lineNum">     246 </span>            : #else
+<span class="lineNum">     247 </span>            :     virtual void move_page_item( page&amp;, size_t, const page&amp;, size_t ) __TBB_override {
+<span class="lineNum">     248 </span>            :         __TBB_ASSERT( false, &quot;Unreachable code&quot; );
+<span class="lineNum">     249 </span>            :     }
+<span class="lineNum">     250 </span>            : #endif
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            :     virtual void assign_and_destroy_item( void* dst, page&amp; src, size_t index ) __TBB_override {
+<span class="lineNum">     253 </span>            :         T&amp; from = get_ref(src,index);
+<span class="lineNum">     254 </span>            :         destroyer d(from);
+<span class="lineNum">     255 </span>            :         *static_cast&lt;T*&gt;(dst) = tbb::internal::move( from );
+<span class="lineNum">     256 </span>            :     }
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span>            :     virtual page *allocate_page() __TBB_override {
+<span class="lineNum">     259 </span>            :         size_t n = sizeof(padded_page) + (items_per_page-1)*sizeof(T);
+<span class="lineNum">     260 </span>            :         page *p = reinterpret_cast&lt;page*&gt;(my_allocator.allocate( n ));
+<span class="lineNum">     261 </span>            :         if( !p )
+<span class="lineNum">     262 </span>            :             internal::throw_exception(internal::eid_bad_alloc);
+<span class="lineNum">     263 </span>            :         return p;
+<span class="lineNum">     264 </span>            :     }
+<span class="lineNum">     265 </span>            : 
+<span class="lineNum">     266 </span>            :     virtual void deallocate_page( page *p ) __TBB_override {
+<span class="lineNum">     267 </span>            :         size_t n = sizeof(padded_page) + (items_per_page-1)*sizeof(T);
+<span class="lineNum">     268 </span>            :         my_allocator.deallocate( reinterpret_cast&lt;char*&gt;(p), n );
+<span class="lineNum">     269 </span>            :     }
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            : public:
+<span class="lineNum">     272 </span>            :     //! Element type in the queue.
+<span class="lineNum">     273 </span>            :     typedef T value_type;
+<span class="lineNum">     274 </span>            : 
+<span class="lineNum">     275 </span>            :     //! Allocator type
+<span class="lineNum">     276 </span>            :     typedef A allocator_type;
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :     //! Reference type
+<span class="lineNum">     279 </span>            :     typedef T&amp; reference;
+<span class="lineNum">     280 </span>            : 
+<span class="lineNum">     281 </span>            :     //! Const reference type
+<span class="lineNum">     282 </span>            :     typedef const T&amp; const_reference;
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :     //! Integral type for representing size of the queue.
+<span class="lineNum">     285 </span>            :     /** Note that the size_type is a signed integral type.
+<span class="lineNum">     286 </span>            :         This is because the size can be negative if there are pending pops without corresponding pushes. */
+<span class="lineNum">     287 </span>            :     typedef std::ptrdiff_t size_type;
+<span class="lineNum">     288 </span>            : 
+<span class="lineNum">     289 </span>            :     //! Difference type for iterator
+<span class="lineNum">     290 </span>            :     typedef std::ptrdiff_t difference_type;
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span>            :     //! Construct empty queue
+<span class="lineNum">     293 </span>            :     explicit concurrent_bounded_queue(const allocator_type&amp; a = allocator_type()) :
+<span class="lineNum">     294 </span>            :         concurrent_queue_base_v8( sizeof(T) ), my_allocator( a )
+<span class="lineNum">     295 </span>            :     {
+<span class="lineNum">     296 </span>            :     }
+<span class="lineNum">     297 </span>            : 
+<span class="lineNum">     298 </span>            :     //! Copy constructor
+<span class="lineNum">     299 </span>            :     concurrent_bounded_queue( const concurrent_bounded_queue&amp; src, const allocator_type&amp; a = allocator_type())
+<span class="lineNum">     300 </span>            :         : concurrent_queue_base_v8( sizeof(T) ), my_allocator( a )
+<span class="lineNum">     301 </span>            :     {
+<span class="lineNum">     302 </span>            :         assign( src );
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span>            : 
+<span class="lineNum">     305 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     306 </span>            :     //! Move constructors
+<span class="lineNum">     307 </span>            :     concurrent_bounded_queue( concurrent_bounded_queue&amp;&amp; src )
+<span class="lineNum">     308 </span>            :         : concurrent_queue_base_v8( sizeof(T) ), my_allocator( std::move(src.my_allocator) )
+<span class="lineNum">     309 </span>            :     {
+<span class="lineNum">     310 </span>            :         internal_swap( src );
+<span class="lineNum">     311 </span>            :     }
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            :     concurrent_bounded_queue( concurrent_bounded_queue&amp;&amp; src, const allocator_type&amp; a )
+<span class="lineNum">     314 </span>            :         : concurrent_queue_base_v8( sizeof(T) ), my_allocator( a )
+<span class="lineNum">     315 </span>            :     {
+<span class="lineNum">     316 </span>            :         // checking that memory allocated by one instance of allocator can be deallocated
+<span class="lineNum">     317 </span>            :         // with another
+<span class="lineNum">     318 </span>            :         if( my_allocator == src.my_allocator) {
+<span class="lineNum">     319 </span>            :             this-&gt;internal_swap( src );
+<span class="lineNum">     320 </span>            :         } else {
+<span class="lineNum">     321 </span>            :             // allocators are different =&gt; performing per-element move
+<span class="lineNum">     322 </span>            :             this-&gt;move_content( src );
+<span class="lineNum">     323 </span>            :             src.clear();
+<span class="lineNum">     324 </span>            :         }
+<span class="lineNum">     325 </span>            :     }
+<span class="lineNum">     326 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     327 </span>            : 
+<span class="lineNum">     328 </span>            :     //! [begin,end) constructor
+<span class="lineNum">     329 </span>            :     template&lt;typename InputIterator&gt;
+<span class="lineNum">     330 </span>            :     concurrent_bounded_queue( InputIterator begin, InputIterator end,
+<span class="lineNum">     331 </span>            :                               const allocator_type&amp; a = allocator_type())
+<span class="lineNum">     332 </span>            :         : concurrent_queue_base_v8( sizeof(T) ), my_allocator( a )
+<span class="lineNum">     333 </span>            :     {
+<span class="lineNum">     334 </span>            :         for( ; begin != end; ++begin )
+<span class="lineNum">     335 </span>            :             internal_push_if_not_full(&amp;*begin);
+<span class="lineNum">     336 </span>            :     }
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :     //! Destroy queue
+<span class="lineNum">     339 </span>            :     ~concurrent_bounded_queue();
+<span class="lineNum">     340 </span>            : 
+<span class="lineNum">     341 </span>            :     //! Enqueue an item at tail of queue.
+<span class="lineNum">     342 </span>            :     void push( const T&amp; source ) {
+<span class="lineNum">     343 </span>            :         internal_push( &amp;source );
+<span class="lineNum">     344 </span>            :     }
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     347 </span>            :     //! Move an item at tail of queue.
+<span class="lineNum">     348 </span>            :     void push( T&amp;&amp; source ) {
+<span class="lineNum">     349 </span>            :         internal_push_move( &amp;source );
+<span class="lineNum">     350 </span>            :     }
+<span class="lineNum">     351 </span>            : 
+<span class="lineNum">     352 </span>            : #if __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
+<span class="lineNum">     353 </span>            :     template&lt;typename... Arguments&gt;
+<span class="lineNum">     354 </span>            :     void emplace( Arguments&amp;&amp;... args ) {
+<span class="lineNum">     355 </span>            :         push( T(std::forward&lt;Arguments&gt;( args )...) );
+<span class="lineNum">     356 </span>            :     }
+<span class="lineNum">     357 </span>            : #endif /* __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT */
+<span class="lineNum">     358 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     359 </span>            : 
+<span class="lineNum">     360 </span>            :     //! Dequeue item from head of queue.
+<span class="lineNum">     361 </span>            :     /** Block until an item becomes available, and then dequeue it. */
+<span class="lineNum">     362 </span>            :     void pop( T&amp; destination ) {
+<span class="lineNum">     363 </span>            :         internal_pop( &amp;destination );
+<span class="lineNum">     364 </span>            :     }
+<span class="lineNum">     365 </span>            : 
+<span class="lineNum">     366 </span>            : #if TBB_USE_EXCEPTIONS
+<span class="lineNum">     367 </span>            :     //! Abort all pending queue operations
+<span class="lineNum">     368 </span>            :     void abort() {
+<span class="lineNum">     369 </span>            :         internal_abort();
+<span class="lineNum">     370 </span>            :     }
+<span class="lineNum">     371 </span>            : #endif
+<span class="lineNum">     372 </span>            : 
+<span class="lineNum">     373 </span>            :     //! Enqueue an item at tail of queue if queue is not already full.
+<span class="lineNum">     374 </span>            :     /** Does not wait for queue to become not full.
+<span class="lineNum">     375 </span>            :         Returns true if item is pushed; false if queue was already full. */
+<span class="lineNum">     376 </span>            :     bool try_push( const T&amp; source ) {
+<span class="lineNum">     377 </span>            :         return internal_push_if_not_full( &amp;source );
+<span class="lineNum">     378 </span>            :     }
+<span class="lineNum">     379 </span>            : 
+<span class="lineNum">     380 </span>            : #if __TBB_CPP11_RVALUE_REF_PRESENT
+<span class="lineNum">     381 </span>            :     //! Move an item at tail of queue if queue is not already full.
+<span class="lineNum">     382 </span>            :     /** Does not wait for queue to become not full.
+<span class="lineNum">     383 </span>            :         Returns true if item is pushed; false if queue was already full. */
+<span class="lineNum">     384 </span>            :     bool try_push( T&amp;&amp; source ) {
+<span class="lineNum">     385 </span>            :         return internal_push_move_if_not_full( &amp;source );
+<span class="lineNum">     386 </span>            :     }
+<span class="lineNum">     387 </span>            : #if __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT
+<span class="lineNum">     388 </span>            :     template&lt;typename... Arguments&gt;
+<span class="lineNum">     389 </span>            :     bool try_emplace( Arguments&amp;&amp;... args ) {
+<span class="lineNum">     390 </span>            :         return try_push( T(std::forward&lt;Arguments&gt;( args )...) );
+<span class="lineNum">     391 </span>            :     }
+<span class="lineNum">     392 </span>            : #endif /* __TBB_CPP11_VARIADIC_TEMPLATES_PRESENT */
+<span class="lineNum">     393 </span>            : #endif /* __TBB_CPP11_RVALUE_REF_PRESENT */
+<span class="lineNum">     394 </span>            : 
+<span class="lineNum">     395 </span>            :     //! Attempt to dequeue an item from head of queue.
+<span class="lineNum">     396 </span>            :     /** Does not wait for item to become available.
+<span class="lineNum">     397 </span>            :         Returns true if successful; false otherwise. */
+<span class="lineNum">     398 </span>            :     bool try_pop( T&amp; destination ) {
+<span class="lineNum">     399 </span>            :         return internal_pop_if_present( &amp;destination );
+<span class="lineNum">     400 </span>            :     }
+<span class="lineNum">     401 </span>            : 
+<span class="lineNum">     402 </span>            :     //! Return number of pushes minus number of pops.
+<span class="lineNum">     403 </span>            :     /** Note that the result can be negative if there are pops waiting for the
+<span class="lineNum">     404 </span>            :         corresponding pushes.  The result can also exceed capacity() if there
+<span class="lineNum">     405 </span>            :         are push operations in flight. */
+<span class="lineNum">     406 </span>            :     size_type size() const {return internal_size();}
+<span class="lineNum">     407 </span>            : 
+<span class="lineNum">     408 </span>            :     //! Equivalent to size()&lt;=0.
+<span class="lineNum">     409 </span>            :     bool empty() const {return internal_empty();}
+<span class="lineNum">     410 </span>            : 
+<span class="lineNum">     411 </span>            :     //! Maximum number of allowed elements
+<span class="lineNum">     412 </span>            :     size_type capacity() const {
+<span class="lineNum">     413 </span>            :         return my_capacity;
+<span class="lineNum">     414 </span>            :     }
+<span class="lineNum">     415 </span>            : 
+<span class="lineNum">     416 </span>            :     //! Set the capacity
+<span class="lineNum">     417 </span>            :     /** Setting the capacity to 0 causes subsequent try_push operations to always fail,
+<span class="lineNum">     418 </span>            :         and subsequent push operations to block forever. */
+<span class="lineNum">     419 </span>            :     void set_capacity( size_type new_capacity ) {
+<span class="lineNum">     420 </span>            :         internal_set_capacity( new_capacity, sizeof(T) );
+<span class="lineNum">     421 </span>            :     }
+<span class="lineNum">     422 </span>            : 
+<span class="lineNum">     423 </span>            :     //! return allocator object
+<span class="lineNum">     424 </span>            :     allocator_type get_allocator() const { return this-&gt;my_allocator; }
+<span class="lineNum">     425 </span>            : 
+<span class="lineNum">     426 </span>            :     //! clear the queue. not thread-safe.
+<span class="lineNum">     427 </span>            :     void clear() ;
+<span class="lineNum">     428 </span>            : 
+<span class="lineNum">     429 </span>            :     typedef internal::concurrent_queue_iterator&lt;concurrent_bounded_queue,T&gt; iterator;
+<span class="lineNum">     430 </span>            :     typedef internal::concurrent_queue_iterator&lt;concurrent_bounded_queue,const T&gt; const_iterator;
+<span class="lineNum">     431 </span>            : 
+<span class="lineNum">     432 </span>            :     //------------------------------------------------------------------------
+<span class="lineNum">     433 </span>            :     // The iterators are intended only for debugging.  They are slow and not thread safe.
+<span class="lineNum">     434 </span>            :     //------------------------------------------------------------------------
+<span class="lineNum">     435 </span>            :     iterator unsafe_begin() {return iterator(*this);}
+<span class="lineNum">     436 </span>            :     iterator unsafe_end() {return iterator();}
+<span class="lineNum">     437 </span>            :     const_iterator unsafe_begin() const {return const_iterator(*this);}
+<span class="lineNum">     438 </span>            :     const_iterator unsafe_end() const {return const_iterator();}
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            : };
+<span class="lineNum">     441 </span>            : 
+<span class="lineNum">     442 </span>            : template&lt;typename T, class A&gt;
+<span class="lineNum">     443 </span>            : concurrent_bounded_queue&lt;T,A&gt;::~concurrent_bounded_queue() {
+<span class="lineNum">     444 </span>            :     clear();
+<span class="lineNum">     445 </span>            :     internal_finish_clear();
+<span class="lineNum">     446 </span>            : }
+<span class="lineNum">     447 </span>            : 
+<span class="lineNum">     448 </span>            : template&lt;typename T, class A&gt;
+<span class="lineNum">     449 </span>            : void concurrent_bounded_queue&lt;T,A&gt;::clear() {
+<span class="lineNum">     450 </span>            :     T value;
+<span class="lineNum">     451 </span>            :     while( try_pop(value) ) /*noop*/;
+<span class="lineNum">     452 </span>            : }
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : using strict_ppl::concurrent_queue;
+<span class="lineNum">     455 </span>            : 
+<span class="lineNum">     456 </span>            : } // namespace tbb
+<span class="lineNum">     457 </span>            : 
+<span class="lineNum">     458 </span>            : #endif /* __TBB_concurrent_queue_H */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

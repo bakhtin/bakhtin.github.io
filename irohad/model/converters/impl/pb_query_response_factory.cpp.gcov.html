@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/converters/impl/pb_query_response_factory.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">irohad/model/converters/impl</a> - pb_query_response_factory.cpp<span style="font-size: 80%;"> (source / <a href="pb_query_response_factory.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">158</td>
+            <td class="headerCovTableEntry">190</td>
+            <td class="headerCovTableEntryMed">83.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">22</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntryMed">88.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">134</td>
+            <td class="headerCovTableEntry">268</td>
+            <td class="headerCovTableEntryLo">50.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;model/converters/pb_query_response_factory.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &quot;model/converters/pb_common.hpp&quot;
+<span class="lineNum">      20 </span>                :            : #include &quot;model/converters/pb_transaction_factory.hpp&quot;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : namespace iroha {
+<span class="lineNum">      23 </span>                :            :   namespace model {
+<span class="lineNum">      24 </span>                :            :     namespace converters {
+<a name="25"><span class="lineNum">      25 </span>                :            : </a>
+<span class="lineNum">      26 </span>                :            :       nonstd::optional&lt;protocol::QueryResponse&gt;
+<span class="lineNum">      27 </span>                :<span class="lineCov">         21 :       PbQueryResponseFactory::serialize(</span>
+<span class="lineNum">      28 </span>                :            :           const std::shared_ptr&lt;QueryResponse&gt; query_response) const {
+<span class="lineNum">      29 </span>                :<span class="lineCov">         21 :         nonstd::optional&lt;protocol::QueryResponse&gt; response = nonstd::nullopt;</span>
+<span class="lineNum">      30 </span>                :            :         // TODO 26/09/17 grimadas: refactor #VARIANT
+<span class="lineNum">      31 </span>        [<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchCov" title="Branch 3 was taken 14 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::ErrorResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      32 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          7 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      33 </span>                :<span class="lineCov">         14 :           auto er = static_cast&lt;model::ErrorResponse &amp;&gt;(*query_response);</span>
+<span class="lineNum">      34 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :           auto pb_er = serializeErrorResponse(er);</span>
+<span class="lineNum">      35 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          7 :           response-&gt;mutable_error_response()-&gt;CopyFrom(pb_er);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      36 </span>                :            :         }
+<span class="lineNum">      37 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 19 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::AccountAssetResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      38 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      39 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           response-&gt;mutable_account_assets_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      40 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :               serializeAccountAssetResponse(</span>
+<span class="lineNum">      41 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :                   static_cast&lt;model::AccountAssetResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      42 </span>                :            :         }
+<span class="lineNum">      43 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 20 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::AccountDetailResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      44 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      45 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :           response-&gt;mutable_account_detail_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      46 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               serializeAccountDetailResponse(</span>
+<span class="lineNum">      47 </span>                :            :                   static_cast&lt;model::AccountDetailResponse &amp;&gt;(
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :                       *query_response)));</span>
+<span class="lineNum">      49 </span>                :            :         }
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 18 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::AccountResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      51 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      52 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :           response-&gt;mutable_account_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :               serializeAccountResponse(</span>
+<span class="lineNum">      54 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :                   static_cast&lt;model::AccountResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      55 </span>                :            :         }
+<span class="lineNum">      56 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchCov" title="Branch 3 was taken 19 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::SignatoriesResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      57 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      58 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           response-&gt;mutable_signatories_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      59 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :               serializeSignatoriesResponse(</span>
+<span class="lineNum">      60 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :                   static_cast&lt;model::SignatoriesResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      61 </span>                :            :         }
+<span class="lineNum">      62 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchCov" title="Branch 3 was taken 18 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::TransactionsResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      63 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      64 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :           response-&gt;mutable_transactions_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      65 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :               serializeTransactionsResponse(</span>
+<span class="lineNum">      66 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :                   static_cast&lt;model::TransactionsResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      67 </span>                :            :         }
+<span class="lineNum">      68 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 20 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::AssetResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      69 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      70 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           response-&gt;mutable_asset_response()-&gt;CopyFrom(serializeAssetResponse(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      71 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :               static_cast&lt;model::AssetResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      72 </span>                :            :         }
+<span class="lineNum">      73 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 20 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::RolesResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      74 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      75 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :           response-&gt;mutable_roles_response()-&gt;CopyFrom(serializeRolesResponse(</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :               static_cast&lt;model::RolesResponse &amp;&gt;(*query_response)));</span>
+<span class="lineNum">      77 </span>                :            :         }
+<span class="lineNum">      78 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchCov" title="Branch 3 was taken 20 times"> + </span>]:<span class="lineCov">         21 :         if (instanceof &lt;model::RolePermissionsResponse&gt;(*query_response)) {</span>
+<span class="lineNum">      79 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           response = nonstd::make_optional&lt;protocol::QueryResponse&gt;();</span>
+<span class="lineNum">      80 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :           response-&gt;mutable_role_permissions_response()-&gt;CopyFrom(</span>
+<span class="lineNum">      81 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :               serializeRolePermissionsResponse(</span>
+<span class="lineNum">      82 </span>                :            :                   static_cast&lt;model::RolePermissionsResponse &amp;&gt;(
+<span class="lineNum">      83 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :                       *query_response)));</span>
+<span class="lineNum">      84 </span>                :            :         }
+<span class="lineNum">      85 </span>                :            : 
+<span class="lineNum">      86 </span>                :<span class="lineCov">         21 :         return response;</span>
+<a name="87"><span class="lineNum">      87 </span>                :            :       }</a>
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :<span class="lineCov">          5 :       protocol::Account PbQueryResponseFactory::serializeAccount(</span>
+<span class="lineNum">      90 </span>                :            :           const model::Account &amp;account) const {
+<span class="lineNum">      91 </span>                :<span class="lineCov">          5 :         protocol::Account pb_account;</span>
+<span class="lineNum">      92 </span>                :<span class="lineCov">          5 :         pb_account.set_quorum(account.quorum);</span>
+<span class="lineNum">      93 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         pb_account.set_account_id(account.account_id);</span>
+<span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         pb_account.set_domain_id(account.domain_id);</span>
+<span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         pb_account.set_json_data(account.json_data);</span>
+<span class="lineNum">      96 </span>                :<span class="lineCov">          5 :         return pb_account;</span>
+<a name="97"><span class="lineNum">      97 </span>                :            :       }</a>
+<span class="lineNum">      98 </span>                :            : 
+<span class="lineNum">      99 </span>                :<span class="lineCov">          2 :       model::Account PbQueryResponseFactory::deserializeAccount(</span>
+<span class="lineNum">     100 </span>                :            :           const protocol::Account &amp;pb_account) const {
+<span class="lineNum">     101 </span>                :<span class="lineCov">          2 :         model::Account res;</span>
+<span class="lineNum">     102 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         res.account_id = pb_account.account_id();</span>
+<span class="lineNum">     103 </span>                :<span class="lineCov">          2 :         res.quorum = pb_account.quorum();</span>
+<span class="lineNum">     104 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         res.domain_id = pb_account.domain_id();</span>
+<span class="lineNum">     105 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         res.json_data = pb_account.json_data();</span>
+<span class="lineNum">     106 </span>                :<span class="lineCov">          2 :         return res;</span>
+<span class="lineNum">     107 </span>                :            :       }
+<a name="108"><span class="lineNum">     108 </span>                :            : </a>
+<span class="lineNum">     109 </span>                :            :       protocol::AccountResponse
+<span class="lineNum">     110 </span>                :<span class="lineCov">          4 :       PbQueryResponseFactory::serializeAccountResponse(</span>
+<span class="lineNum">     111 </span>                :            :           const model::AccountResponse &amp;accountResponse) const {
+<span class="lineNum">     112 </span>                :<span class="lineCov">          4 :         protocol::AccountResponse pb_response;</span>
+<span class="lineNum">     113 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         pb_response.mutable_account()-&gt;CopyFrom(</span>
+<span class="lineNum">     114 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          8 :             serializeAccount(accountResponse.account));</span>
+<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 4 times"> + </span>][<span class="branchCov" title="Branch 7 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">          7 :         for (auto role : accountResponse.roles) {</span>
+<span class="lineNum">     116 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           pb_response.add_account_roles(role);</span>
+<span class="lineNum">     117 </span>                :            :         }
+<span class="lineNum">     118 </span>                :<span class="lineCov">          4 :         return pb_response;</span>
+<a name="119"><span class="lineNum">     119 </span>                :            :       }</a>
+<span class="lineNum">     120 </span>                :            : 
+<span class="lineNum">     121 </span>                :<span class="lineCov">          1 :       model::AccountResponse PbQueryResponseFactory::deserializeAccountResponse(</span>
+<span class="lineNum">     122 </span>                :            :           const protocol::AccountResponse pb_response) const {
+<span class="lineNum">     123 </span>                :<span class="lineCov">          1 :         model::AccountResponse accountResponse;</span>
+<span class="lineNum">     124 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :         accountResponse.account = deserializeAccount(pb_response.account());</span>
+<span class="lineNum">     125 </span>                :<span class="lineCov">          1 :         return accountResponse;</span>
+<a name="126"><span class="lineNum">     126 </span>                :            :       }</a>
+<span class="lineNum">     127 </span>                :            : 
+<span class="lineNum">     128 </span>                :<span class="lineCov">          1 :       protocol::AccountAsset PbQueryResponseFactory::serializeAccountAsset(</span>
+<span class="lineNum">     129 </span>                :            :           const model::AccountAsset &amp;account_asset) const {
+<span class="lineNum">     130 </span>                :<span class="lineCov">          1 :         protocol::AccountAsset pb_account_asset;</span>
+<span class="lineNum">     131 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         pb_account_asset.set_account_id(account_asset.account_id);</span>
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         pb_account_asset.set_asset_id(account_asset.asset_id);</span>
+<span class="lineNum">     133 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         auto pb_balance = pb_account_asset.mutable_balance();</span>
+<span class="lineNum">     134 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :         pb_balance-&gt;CopyFrom(serializeAmount(account_asset.balance));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     135 </span>                :<span class="lineCov">          1 :         return pb_account_asset;</span>
+<a name="136"><span class="lineNum">     136 </span>                :            :       }</a>
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>                :<span class="lineCov">          1 :       model::AccountAsset PbQueryResponseFactory::deserializeAccountAsset(</span>
+<span class="lineNum">     139 </span>                :            :           const protocol::AccountAsset &amp;account_asset) const {
+<span class="lineNum">     140 </span>                :<span class="lineCov">          1 :         model::AccountAsset res;</span>
+<span class="lineNum">     141 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         res.account_id = account_asset.account_id();</span>
+<span class="lineNum">     142 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :         res.balance = deserializeAmount(account_asset.balance());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     143 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         res.asset_id = account_asset.asset_id();</span>
+<span class="lineNum">     144 </span>                :<span class="lineCov">          1 :         return res;</span>
+<span class="lineNum">     145 </span>                :            :       }
+<a name="146"><span class="lineNum">     146 </span>                :            : </a>
+<span class="lineNum">     147 </span>                :            :       protocol::AccountAssetResponse
+<span class="lineNum">     148 </span>                :<span class="lineCov">          2 :       PbQueryResponseFactory::serializeAccountAssetResponse(</span>
+<span class="lineNum">     149 </span>                :            :           const model::AccountAssetResponse &amp;accountAssetResponse) const {
+<span class="lineNum">     150 </span>                :<span class="lineCov">          2 :         protocol::AccountAssetResponse pb_response;</span>
+<span class="lineNum">     151 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto pb_account_asset = pb_response.mutable_account_asset();</span>
+<span class="lineNum">     152 </span>                :<span class="lineCov">          2 :         pb_account_asset-&gt;set_asset_id(</span>
+<span class="lineNum">     153 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :             accountAssetResponse.acct_asset.asset_id);</span>
+<span class="lineNum">     154 </span>                :<span class="lineCov">          2 :         pb_account_asset-&gt;set_account_id(</span>
+<span class="lineNum">     155 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :             accountAssetResponse.acct_asset.account_id);</span>
+<span class="lineNum">     156 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :         auto pb_amount = pb_account_asset-&gt;mutable_balance();</span>
+<span class="lineNum">     157 </span>                :            :         pb_amount-&gt;CopyFrom(
+<span class="lineNum">     158 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :             serializeAmount(accountAssetResponse.acct_asset.balance));</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     159 </span>                :<span class="lineCov">          2 :         return pb_response;</span>
+<span class="lineNum">     160 </span>                :            :       }
+<a name="161"><span class="lineNum">     161 </span>                :            : </a>
+<span class="lineNum">     162 </span>                :            :       model::AccountAssetResponse
+<span class="lineNum">     163 </span>                :<span class="lineCov">          1 :       PbQueryResponseFactory::deserializeAccountAssetResponse(</span>
+<span class="lineNum">     164 </span>                :            :           const protocol::AccountAssetResponse &amp;account_asset_response) const {
+<span class="lineNum">     165 </span>                :<span class="lineCov">          1 :         model::AccountAssetResponse res;</span>
+<span class="lineNum">     166 </span>                :<span class="lineCov">          1 :         res.acct_asset.balance =</span>
+<span class="lineNum">     167 </span>[<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>][<span class="branchCov" title="Branch 6 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]:<span class="lineCov">          1 :             deserializeAmount(account_asset_response.account_asset().balance());</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 9 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 10 was not taken"> - </span>]
+<span class="lineNum">     168 </span>                :<span class="lineCov">          1 :         res.acct_asset.account_id =</span>
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          1 :             account_asset_response.account_asset().account_id();</span>
+<span class="lineNum">     170 </span>                :<span class="lineCov">          1 :         res.acct_asset.asset_id =</span>
+<span class="lineNum">     171 </span>        [<span class="branchCov" title="Branch 3 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          1 :             account_asset_response.account_asset().asset_id();</span>
+<span class="lineNum">     172 </span>                :<span class="lineCov">          1 :         return res;</span>
+<span class="lineNum">     173 </span>                :            :       }
+<a name="174"><span class="lineNum">     174 </span>                :            : </a>
+<span class="lineNum">     175 </span>                :            :       protocol::AccountDetailResponse
+<span class="lineNum">     176 </span>                :<span class="lineCov">          1 :       PbQueryResponseFactory::serializeAccountDetailResponse(</span>
+<span class="lineNum">     177 </span>                :            :           const model::AccountDetailResponse &amp;accountDetailResponse) const {
+<span class="lineNum">     178 </span>                :<span class="lineCov">          1 :         protocol::AccountDetailResponse pb_response;</span>
+<span class="lineNum">     179 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         pb_response.set_detail(accountDetailResponse.detail);</span>
+<span class="lineNum">     180 </span>                :<span class="lineCov">          1 :         return pb_response;</span>
+<span class="lineNum">     181 </span>                :            :       }
+<a name="182"><span class="lineNum">     182 </span>                :            : </a>
+<span class="lineNum">     183 </span>                :            :       model::AccountDetailResponse
+<span class="lineNum">     184 </span>                :<span class="lineCov">          1 :       PbQueryResponseFactory::deserializeAccountDetailResponse(</span>
+<span class="lineNum">     185 </span>                :            :           const protocol::AccountDetailResponse &amp;account_detail_response)
+<span class="lineNum">     186 </span>                :            :           const {
+<span class="lineNum">     187 </span>                :<span class="lineCov">          1 :         model::AccountDetailResponse res;</span>
+<span class="lineNum">     188 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :         res.detail = account_detail_response.detail();</span>
+<span class="lineNum">     189 </span>                :<span class="lineCov">          1 :         return res;</span>
+<span class="lineNum">     190 </span>                :            :       }
+<a name="191"><span class="lineNum">     191 </span>                :            : </a>
+<span class="lineNum">     192 </span>                :            :       protocol::SignatoriesResponse
+<span class="lineNum">     193 </span>                :<span class="lineCov">          2 :       PbQueryResponseFactory::serializeSignatoriesResponse(</span>
+<span class="lineNum">     194 </span>                :            :           const model::SignatoriesResponse &amp;signatoriesResponse) const {
+<span class="lineNum">     195 </span>                :<span class="lineCov">          2 :         protocol::SignatoriesResponse pb_response;</span>
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 2 times"> + </span>]:<span class="lineCov">          4 :         for (auto key : signatoriesResponse.keys) {</span>
+<span class="lineNum">     198 </span>        [<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          2 :           pb_response.add_keys(key.data(), key.size());</span>
+<span class="lineNum">     199 </span>                :            :         }
+<span class="lineNum">     200 </span>                :<span class="lineCov">          2 :         return pb_response;</span>
+<span class="lineNum">     201 </span>                :            :       }
+<a name="202"><span class="lineNum">     202 </span>                :            : </a>
+<span class="lineNum">     203 </span>                :            :       model::SignatoriesResponse
+<span class="lineNum">     204 </span>                :<span class="lineCov">          1 :       PbQueryResponseFactory::deserializeSignatoriesResponse(</span>
+<span class="lineNum">     205 </span>                :            :           const protocol::SignatoriesResponse &amp;signatoriesResponse) const {
+<span class="lineNum">     206 </span>                :<span class="lineCov">          1 :         model::SignatoriesResponse res{};</span>
+<span class="lineNum">     207 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         for (const auto &amp;key : signatoriesResponse.keys()) {</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchCov" title="Branch 9 was taken 1 time"> + </span>]
+<span class="lineNum">     208 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           pubkey_t pubkey;</span>
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :           std::copy(key.begin(), key.end(), pubkey.begin());</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :           res.keys.push_back(pubkey);</span>
+<span class="lineNum">     211 </span>                :            :         }
+<span class="lineNum">     212 </span>                :<span class="lineCov">          1 :         return res;</span>
+<a name="213"><span class="lineNum">     213 </span>                :            :       }</a>
+<span class="lineNum">     214 </span>                :            : 
+<span class="lineNum">     215 </span>                :<span class="lineCov">          1 :       protocol::AssetResponse PbQueryResponseFactory::serializeAssetResponse(</span>
+<span class="lineNum">     216 </span>                :            :           const model::AssetResponse &amp;response) const {
+<span class="lineNum">     217 </span>                :<span class="lineCov">          1 :         protocol::AssetResponse res;</span>
+<span class="lineNum">     218 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         auto asset = res.mutable_asset();</span>
+<span class="lineNum">     219 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         asset-&gt;set_asset_id(response.asset.asset_id);</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :         asset-&gt;set_domain_id(response.asset.domain_id);</span>
+<span class="lineNum">     221 </span>                :<span class="lineCov">          1 :         asset-&gt;set_precision(response.asset.precision);</span>
+<span class="lineNum">     222 </span>                :<span class="lineCov">          1 :         return res;</span>
+<a name="223"><span class="lineNum">     223 </span>                :            :       }</a>
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>                :<span class="lineNoCov">          0 :       model::AssetResponse PbQueryResponseFactory::deserializeAssetResponse(</span>
+<span class="lineNum">     226 </span>                :            :           const protocol::AssetResponse &amp;response) const {
+<span class="lineNum">     227 </span>                :<span class="lineNoCov">          0 :         model::AssetResponse res;</span>
+<span class="lineNum">     228 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :         auto asset = response.asset();</span>
+<span class="lineNum">     229 </span>  [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :         res.asset =</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 7 was not executed"> # </span><span class="branchNoExec" title="Branch 8 was not executed"> # </span>]
+<span class="lineNum">     230 </span>        [<span class="branchNoExec" title="Branch 4 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span>]:<span class="lineNoCov">          0 :             Asset(asset.asset_id(), asset.domain_id(), asset.precision());</span>
+<span class="lineNum">     231 </span>                :<span class="lineNoCov">          0 :         return res;</span>
+<a name="232"><span class="lineNum">     232 </span>                :            :       }</a>
+<span class="lineNum">     233 </span>                :            : 
+<span class="lineNum">     234 </span>                :<span class="lineCov">          1 :       protocol::RolesResponse PbQueryResponseFactory::serializeRolesResponse(</span>
+<span class="lineNum">     235 </span>                :            :           const model::RolesResponse &amp;response) const {
+<span class="lineNum">     236 </span>                :<span class="lineCov">          1 :         protocol::RolesResponse res;</span>
+<span class="lineNum">     237 </span>[<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 7 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">          4 :         for (auto role : response.roles) {</span>
+<span class="lineNum">     238 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          3 :           res.add_roles(role);</span>
+<span class="lineNum">     239 </span>                :            :         }
+<span class="lineNum">     240 </span>                :<span class="lineCov">          1 :         return res;</span>
+<a name="241"><span class="lineNum">     241 </span>                :            :       }</a>
+<span class="lineNum">     242 </span>                :            : 
+<span class="lineNum">     243 </span>                :<span class="lineNoCov">          0 :       model::RolesResponse PbQueryResponseFactory::deserializeRolesResponse(</span>
+<span class="lineNum">     244 </span>                :            :           const protocol::RolesResponse &amp;response) const {
+<span class="lineNum">     245 </span>                :<span class="lineNoCov">          0 :         model::RolesResponse res{};</span>
+<span class="lineNum">     246 </span>                :<span class="lineNoCov">          0 :         std::copy(response.roles().begin(),</span>
+<span class="lineNum">     247 </span>                :<span class="lineNoCov">          0 :                   response.roles().end(),</span>
+<span class="lineNum">     248 </span>  [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :                   res.roles.begin());</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]
+<span class="lineNum">     249 </span>                :<span class="lineNoCov">          0 :         return res;</span>
+<span class="lineNum">     250 </span>                :            :       }
+<a name="251"><span class="lineNum">     251 </span>                :            : </a>
+<span class="lineNum">     252 </span>                :            :       protocol::RolePermissionsResponse
+<span class="lineNum">     253 </span>                :<span class="lineCov">          1 :       PbQueryResponseFactory::serializeRolePermissionsResponse(</span>
+<span class="lineNum">     254 </span>                :            :           const model::RolePermissionsResponse &amp;response) const {
+<span class="lineNum">     255 </span>                :<span class="lineCov">          1 :         protocol::RolePermissionsResponse res;</span>
+<span class="lineNum">     256 </span>[<span class="branchCov" title="Branch 3 was taken 2 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">          3 :         for (auto perm : response.role_permissions) {</span>
+<span class="lineNum">     257 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          2 :           res.add_permissions(perm);</span>
+<span class="lineNum">     258 </span>                :            :         }
+<span class="lineNum">     259 </span>                :<span class="lineCov">          1 :         return res;</span>
+<span class="lineNum">     260 </span>                :            :       }
+<a name="261"><span class="lineNum">     261 </span>                :            : </a>
+<span class="lineNum">     262 </span>                :            :       model::RolePermissionsResponse
+<span class="lineNum">     263 </span>                :<span class="lineNoCov">          0 :       PbQueryResponseFactory::deserializeRolePermissionsResponse(</span>
+<span class="lineNum">     264 </span>                :            :           const protocol::RolePermissionsResponse &amp;response) const {
+<span class="lineNum">     265 </span>                :<span class="lineNoCov">          0 :         model::RolePermissionsResponse res;</span>
+<span class="lineNum">     266 </span>                :<span class="lineNoCov">          0 :         std::copy(response.permissions().begin(),</span>
+<span class="lineNum">     267 </span>                :<span class="lineNoCov">          0 :                   response.permissions().end(),</span>
+<span class="lineNum">     268 </span>  [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span><span class="branchNoExec" title="Branch 5 was not executed"> # </span><span class="branchNoExec" title="Branch 6 was not executed"> # </span>]:<span class="lineNoCov">          0 :                   res.role_permissions.begin());</span>
+<span class="lineNum">         </span>        [<span class="branchNoExec" title="Branch 8 was not executed"> # </span><span class="branchNoExec" title="Branch 9 was not executed"> # </span>]
+<span class="lineNum">     269 </span>                :<span class="lineNoCov">          0 :         return res;</span>
+<span class="lineNum">     270 </span>                :            :       }
+<a name="271"><span class="lineNum">     271 </span>                :            : </a>
+<span class="lineNum">     272 </span>                :            :       protocol::TransactionsResponse
+<span class="lineNum">     273 </span>                :<span class="lineCov">          3 :       PbQueryResponseFactory::serializeTransactionsResponse(</span>
+<span class="lineNum">     274 </span>                :            :           const model::TransactionsResponse &amp;transactionsResponse) const {
+<span class="lineNum">     275 </span>                :<span class="lineCov">          3 :         PbTransactionFactory pb_transaction_factory;</span>
+<span class="lineNum">     276 </span>                :            : 
+<span class="lineNum">     277 </span>                :            :         // converting observable to the vector using reduce
+<a name="278"><span class="lineNum">     278 </span>                :            :         return transactionsResponse.transactions</a>
+<span class="lineNum">     279 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          6 :             .reduce(protocol::TransactionsResponse(),</span>
+<span class="lineNum">     280 </span>                :<span class="lineCov">          7 :                     [&amp;pb_transaction_factory](auto &amp;&amp;response, auto tx) {</span>
+<span class="lineNum">     281 </span>[<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          7 :                       response.add_transactions()-&gt;CopyFrom(</span>
+<span class="lineNum">     282 </span>                :            :                           pb_transaction_factory.serialize(tx));
+<a name="283"><span class="lineNum">     283 </span>                :<span class="lineCov">          7 :                       return response;</span></a>
+<span class="lineNum">     284 </span>                :            :                     },
+<span class="lineNum">     285 </span>                :<span class="lineCov">          6 :                     [](auto &amp;&amp;response) { return response; })</span>
+<span class="lineNum">     286 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :             .as_blocking()  // we need to wait when on_complete happens</span>
+<span class="lineNum">     287 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :             .first();</span>
+<a name="288"><span class="lineNum">     288 </span>                :            :       }</a>
+<span class="lineNum">     289 </span>                :            : 
+<span class="lineNum">     290 </span>                :<span class="lineCov">          7 :       protocol::ErrorResponse PbQueryResponseFactory::serializeErrorResponse(</span>
+<span class="lineNum">     291 </span>                :            :           const model::ErrorResponse &amp;errorResponse) const {
+<span class="lineNum">     292 </span>                :<span class="lineCov">          7 :         protocol::ErrorResponse pb_response;</span>
+<span class="lineNum">     293 </span>  [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span> :<span class="lineCov">          7 :         switch (errorResponse.reason) {</span>
+<span class="lineNum">         </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span> 
+<span class="lineNum">         </span>            <span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">     294 </span>                :            :           case ErrorResponse::NO_ASSET:
+<span class="lineNum">     295 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_ASSET);</span>
+<span class="lineNum">     296 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     297 </span>                :            :           case ErrorResponse::STATELESS_INVALID:
+<span class="lineNum">     298 </span>                :<span class="lineCov">          3 :             pb_response.set_reason(protocol::ErrorResponse::STATELESS_INVALID);</span>
+<span class="lineNum">     299 </span>                :<span class="lineCov">          3 :             break;</span>
+<span class="lineNum">     300 </span>                :            :           case ErrorResponse::STATEFUL_INVALID:
+<span class="lineNum">     301 </span>                :<span class="lineCov">          4 :             pb_response.set_reason(protocol::ErrorResponse::STATEFUL_INVALID);</span>
+<span class="lineNum">     302 </span>                :<span class="lineCov">          4 :             break;</span>
+<span class="lineNum">     303 </span>                :            :           case ErrorResponse::NO_ACCOUNT:
+<span class="lineNum">     304 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_ACCOUNT);</span>
+<span class="lineNum">     305 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     306 </span>                :            :           case ErrorResponse::NO_ACCOUNT_ASSETS:
+<span class="lineNum">     307 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_ACCOUNT_ASSETS);</span>
+<span class="lineNum">     308 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     309 </span>                :            :           case ErrorResponse::NO_ACCOUNT_DETAIL:
+<span class="lineNum">     310 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_ACCOUNT_DETAIL);</span>
+<span class="lineNum">     311 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     312 </span>                :            :           case ErrorResponse::NO_SIGNATORIES:
+<span class="lineNum">     313 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_SIGNATORIES);</span>
+<span class="lineNum">     314 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     315 </span>                :            :           case ErrorResponse::NOT_SUPPORTED:
+<span class="lineNum">     316 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NOT_SUPPORTED);</span>
+<span class="lineNum">     317 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     318 </span>                :            :           case ErrorResponse::NO_ROLES:
+<span class="lineNum">     319 </span>                :<span class="lineNoCov">          0 :             pb_response.set_reason(protocol::ErrorResponse::NO_ROLES);</span>
+<span class="lineNum">     320 </span>                :<span class="lineNoCov">          0 :             break;</span>
+<span class="lineNum">     321 </span>                :            :         }
+<span class="lineNum">     322 </span>                :<span class="lineCov">          7 :         return pb_response;</span>
+<span class="lineNum">     323 </span>                :            :       }
+<a name="324"><span class="lineNum">     324 </span>                :            :     }  // namespace converters</a>
+<span class="lineNum">     325 </span>                :            :   }    // namespace model
+<span class="lineNum">     326 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         28 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

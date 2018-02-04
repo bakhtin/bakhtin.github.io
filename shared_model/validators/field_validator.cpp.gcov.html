@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - shared_model/validators/field_validator.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">shared_model/validators</a> - field_validator.cpp<span style="font-size: 80%;"> (source / <a href="field_validator.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">98</td>
+            <td class="headerCovTableEntry">98</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntry">20</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">102</td>
+            <td class="headerCovTableEntry">170</td>
+            <td class="headerCovTableEntryLo">60.0 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2018 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;validators/field_validator.hpp&quot;
+<span class="lineNum">      19 </span>                :            : #include &lt;boost/format.hpp&gt;
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &quot;validator/address_validator.hpp&quot;
+<span class="lineNum">      22 </span>                :            : 
+<span class="lineNum">      23 </span>                :            : namespace shared_model {
+<a name="24"><span class="lineNum">      24 </span>                :            :   namespace validation {</a>
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :<span class="lineCov">         22 :     FieldValidator::FieldValidator(time_t future_gap)</span>
+<span class="lineNum">      27 </span>                :            :         : account_id_pattern_(R&quot;([a-z]{1,9}\@[a-z]{1,9})&quot;),
+<span class="lineNum">      28 </span>                :            :           asset_id_pattern_(R&quot;([a-z]{1,9}\#[a-z]{1,9})&quot;),
+<span class="lineNum">      29 </span>                :            :           name_pattern_(R&quot;([a-z]{1,9})&quot;),
+<span class="lineNum">      30 </span>                :            :           detail_key_pattern_(R&quot;([A-Za-z0-9_]{1,})&quot;),
+<a name="31"><span class="lineNum">      31 </span>[<span class="branchCov" title="Branch 2 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         22 :           future_gap_(future_gap) {}</span></a>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 22 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">      32 </span>                :            : 
+<span class="lineNum">      33 </span>                :<span class="lineCov">         81 :     void FieldValidator::validateAccountId(</span>
+<span class="lineNum">      34 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">      35 </span>                :            :         const interface::types::AccountIdType &amp;account_id) const {
+<span class="lineNum">      36 </span>        [<span class="branchCov" title="Branch 1 was taken 55 times"> + </span><span class="branchCov" title="Branch 2 was taken 26 times"> + </span>]:<span class="lineCov">         81 :       if (not std::regex_match(account_id, account_id_pattern_)) {</span>
+<span class="lineNum">      37 </span>                :            :         auto message =
+<span class="lineNum">      38 </span>                :            :             (boost::format(&quot;Wrongly formed account_id, passed value: '%s'&quot;)
+<span class="lineNum">      39 </span>[<span class="branchCov" title="Branch 1 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         55 :              % account_id)</span>
+<span class="lineNum">      40 </span>        [<span class="branchCov" title="Branch 1 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        110 :                 .str();</span>
+<span class="lineNum">      41 </span>        [<span class="branchCov" title="Branch 2 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         55 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">      42 </span>                :            :       }
+<a name="43"><span class="lineNum">      43 </span>                :<span class="lineCov">         81 :     }</span></a>
+<span class="lineNum">      44 </span>                :            : 
+<span class="lineNum">      45 </span>                :<span class="lineCov">         29 :     void FieldValidator::validateAssetId(</span>
+<span class="lineNum">      46 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">      47 </span>                :            :         const interface::types::AssetIdType &amp;asset_id) const {
+<span class="lineNum">      48 </span>        [<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchCov" title="Branch 2 was taken 10 times"> + </span>]:<span class="lineCov">         29 :       if (not std::regex_match(asset_id, asset_id_pattern_)) {</span>
+<span class="lineNum">      49 </span>                :            :         auto message =
+<span class="lineNum">      50 </span>                :            :             (boost::format(&quot;Wrongly formed asset_id, passed value: '%s'&quot;)
+<span class="lineNum">      51 </span>[<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         19 :              % asset_id)</span>
+<span class="lineNum">      52 </span>        [<span class="branchCov" title="Branch 1 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         38 :                 .str();</span>
+<span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 2 was taken 19 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         19 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">      54 </span>                :            :       }
+<a name="55"><span class="lineNum">      55 </span>                :<span class="lineCov">         29 :     }</span></a>
+<span class="lineNum">      56 </span>                :            : 
+<span class="lineNum">      57 </span>                :<span class="lineCov">         10 :     void FieldValidator::validateAmount(ReasonsGroupType &amp;reason,</span>
+<span class="lineNum">      58 </span>                :            :                                         const interface::Amount &amp;amount) const {
+<span class="lineNum">      59 </span>[<span class="branchCov" title="Branch 1 was taken 10 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchCov" title="Branch 5 was taken 6 times"> + </span>]:<span class="lineCov">         10 :       if (amount.intValue() &lt;= 0) {</span>
+<span class="lineNum">      60 </span>                :            :         auto message =
+<span class="lineNum">      61 </span>                :            :             (boost::format(&quot;Amount must be greater than 0, passed value: %d&quot;)
+<span class="lineNum">      62 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :              % amount.intValue())</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">      63 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                 .str();</span>
+<span class="lineNum">      64 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :         reason.second.push_back(message);</span>
+<span class="lineNum">      65 </span>                :            :       }
+<a name="66"><span class="lineNum">      66 </span>                :<span class="lineCov">         10 :     }</span></a>
+<span class="lineNum">      67 </span>                :            : 
+<span class="lineNum">      68 </span>                :<span class="lineCov">         23 :     void FieldValidator::validatePubkey(</span>
+<span class="lineNum">      69 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">      70 </span>                :            :         const interface::types::PubkeyType &amp;pubkey) const {
+<span class="lineNum">      71 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchCov" title="Branch 3 was taken 9 times"> + </span>]:<span class="lineCov">         23 :       if (pubkey.blob().size() != key_size) {</span>
+<span class="lineNum">      72 </span>                :            :         auto message =
+<span class="lineNum">      73 </span>                :            :             (boost::format(&quot;Public key has wrong size, passed size: %d&quot;)
+<span class="lineNum">      74 </span>[<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         14 :              % pubkey.blob().size())</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 8 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]
+<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 1 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         28 :                 .str();</span>
+<span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 2 was taken 14 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         14 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">      77 </span>                :            :       }
+<a name="78"><span class="lineNum">      78 </span>                :<span class="lineCov">         23 :     }</span></a>
+<span class="lineNum">      79 </span>                :            : 
+<span class="lineNum">      80 </span>                :<span class="lineCov">          5 :     void FieldValidator::validatePeerAddress(</span>
+<span class="lineNum">      81 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">      82 </span>                :            :         const interface::AddPeer::AddressType &amp;address) const {
+<span class="lineNum">      83 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">         10 :       if (not(iroha::validator::isValidIpV4(address)</span>
+<span class="lineNum">      84 </span>[<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 1 time"> + </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          5 :               or iroha::validator::isValidHostname(address))) {</span>
+<span class="lineNum">      85 </span>                :            :         auto message =
+<span class="lineNum">      86 </span>                :            :             (boost::format(&quot;Wrongly formed peer address, passed value: '%s'&quot;)
+<span class="lineNum">      87 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          3 :              % address)</span>
+<span class="lineNum">      88 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                 .str();</span>
+<span class="lineNum">      89 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">      90 </span>                :            :       }
+<a name="91"><span class="lineNum">      91 </span>                :<span class="lineCov">          5 :     }</span></a>
+<span class="lineNum">      92 </span>                :            : 
+<span class="lineNum">      93 </span>                :<span class="lineCov">         20 :     void FieldValidator::validateRoleId(</span>
+<span class="lineNum">      94 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">      95 </span>                :            :         const interface::types::RoleIdType &amp;role_id) const {
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchCov" title="Branch 2 was taken 7 times"> + </span>]:<span class="lineCov">         20 :       if (not std::regex_match(role_id, name_pattern_)) {</span>
+<span class="lineNum">      97 </span>                :            :         auto message =
+<span class="lineNum">      98 </span>                :            :             (boost::format(&quot;Wrongly formed role_id, passed value: '%s'&quot;)
+<span class="lineNum">      99 </span>[<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         13 :              % role_id)</span>
+<span class="lineNum">     100 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         26 :                 .str();</span>
+<span class="lineNum">     101 </span>        [<span class="branchCov" title="Branch 2 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         13 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     102 </span>                :            :       }
+<a name="103"><span class="lineNum">     103 </span>                :<span class="lineCov">         20 :     }</span></a>
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :<span class="lineCov">          6 :     void FieldValidator::validateAccountName(</span>
+<span class="lineNum">     106 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     107 </span>                :            :         const interface::types::AccountNameType &amp;account_name) const {
+<span class="lineNum">     108 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          6 :       if (not std::regex_match(account_name, name_pattern_)) {</span>
+<span class="lineNum">     109 </span>                :            :         auto message =
+<span class="lineNum">     110 </span>                :            :             (boost::format(&quot;Wrongly formed account_name, passed value: '%s'&quot;)
+<span class="lineNum">     111 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :              % account_name)</span>
+<span class="lineNum">     112 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                 .str();</span>
+<span class="lineNum">     113 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     114 </span>                :            :       }
+<a name="115"><span class="lineNum">     115 </span>                :<span class="lineCov">          6 :     }</span></a>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>                :<span class="lineCov">          8 :     void FieldValidator::validateDomainId(</span>
+<span class="lineNum">     118 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     119 </span>                :            :         const interface::types::DomainIdType &amp;domain_id) const {
+<span class="lineNum">     120 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchCov" title="Branch 2 was taken 3 times"> + </span>]:<span class="lineCov">          8 :       if (not std::regex_match(domain_id, name_pattern_)) {</span>
+<span class="lineNum">     121 </span>                :            :         auto message =
+<span class="lineNum">     122 </span>                :            :             (boost::format(&quot;Wrongly formed domain_id, passed value: '%s'&quot;)
+<span class="lineNum">     123 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          5 :              % domain_id)</span>
+<span class="lineNum">     124 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         10 :                 .str();</span>
+<span class="lineNum">     125 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          5 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     126 </span>                :            :       }
+<a name="127"><span class="lineNum">     127 </span>                :<span class="lineCov">          8 :     }</span></a>
+<span class="lineNum">     128 </span>                :            : 
+<span class="lineNum">     129 </span>                :<span class="lineCov">          6 :     void FieldValidator::validateAssetName(</span>
+<span class="lineNum">     130 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     131 </span>                :            :         const interface::types::AssetNameType &amp;asset_name) const {
+<span class="lineNum">     132 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          6 :       if (not std::regex_match(asset_name, name_pattern_)) {</span>
+<span class="lineNum">     133 </span>                :            :         auto message =
+<span class="lineNum">     134 </span>                :            :             (boost::format(&quot;Wrongly formed asset_name, passed value: '%s'&quot;)
+<span class="lineNum">     135 </span>[<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          4 :              % asset_name)</span>
+<span class="lineNum">     136 </span>        [<span class="branchCov" title="Branch 1 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :                 .str();</span>
+<span class="lineNum">     137 </span>        [<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          4 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     138 </span>                :            :       }
+<a name="139"><span class="lineNum">     139 </span>                :<span class="lineCov">          6 :     }</span></a>
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :<span class="lineCov">         10 :     void FieldValidator::validateAccountDetailKey(</span>
+<span class="lineNum">     142 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     143 </span>                :            :         const interface::SetAccountDetail::AccountDetailKeyType &amp;key) const {
+<span class="lineNum">     144 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span>]:<span class="lineCov">         10 :       if (not std::regex_match(key, detail_key_pattern_)) {</span>
+<span class="lineNum">     145 </span>                :            :         auto message =
+<span class="lineNum">     146 </span>[<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          6 :             (boost::format(&quot;Wrongly formed key, passed value: '%s'&quot;) % key)</span>
+<span class="lineNum">     147 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         12 :                 .str();</span>
+<span class="lineNum">     148 </span>        [<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          6 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     149 </span>                :            :       }
+<a name="150"><span class="lineNum">     150 </span>                :<span class="lineCov">         10 :     }</span></a>
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :<span class="lineCov">          2 :     void FieldValidator::validatePrecision(</span>
+<span class="lineNum">     153 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     154 </span>                :            :         const interface::types::PrecisionType &amp;precision) const {
+<span class="lineNum">     155 </span>                :            :       // define precision constraints
+<a name="156"><span class="lineNum">     156 </span>                :<span class="lineCov">          2 :     }</span></a>
+<span class="lineNum">     157 </span>                :            : 
+<span class="lineNum">     158 </span>                :<span class="lineCov">          2 :     void FieldValidator::validatePermission(</span>
+<span class="lineNum">     159 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     160 </span>                :            :         const interface::types::PermissionNameType &amp;permission_name) const {
+<span class="lineNum">     161 </span>                :            :       // define permission constraints
+<a name="162"><span class="lineNum">     162 </span>                :<span class="lineCov">          2 :     }</span></a>
+<span class="lineNum">     163 </span>                :            : 
+<span class="lineNum">     164 </span>                :<span class="lineCov">          3 :     void FieldValidator::validatePermissions(</span>
+<span class="lineNum">     165 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     166 </span>                :            :         const interface::CreateRole::PermissionsType &amp;permissions) const {
+<span class="lineNum">     167 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          3 :       if (permissions.empty()) {</span>
+<span class="lineNum">     168 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         reason.second.push_back(</span>
+<span class="lineNum">     169 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :             &quot;Permission set should contain at least one permission&quot;);</span>
+<span class="lineNum">     170 </span>                :            :       }
+<a name="171"><span class="lineNum">     171 </span>                :<span class="lineCov">          3 :     }</span></a>
+<span class="lineNum">     172 </span>                :            : 
+<span class="lineNum">     173 </span>                :<span class="lineCov">          2 :     void FieldValidator::validateQuorum(</span>
+<span class="lineNum">     174 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     175 </span>                :            :         const interface::types::QuorumType &amp;quorum) const {
+<span class="lineNum">     176 </span>                :            :       // define quorum constraints
+<a name="177"><span class="lineNum">     177 </span>                :<span class="lineCov">          2 :     }</span></a>
+<span class="lineNum">     178 </span>                :            : 
+<span class="lineNum">     179 </span>                :<span class="lineCov">         27 :     void FieldValidator::validateCreatorAccountId(</span>
+<span class="lineNum">     180 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     181 </span>                :            :         const interface::types::AccountIdType &amp;account_id) const {
+<span class="lineNum">     182 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchCov" title="Branch 2 was taken 15 times"> + </span>]:<span class="lineCov">         27 :       if (not std::regex_match(account_id, account_id_pattern_)) {</span>
+<span class="lineNum">     183 </span>                :            :         auto message =
+<span class="lineNum">     184 </span>                :            :             (boost::format(
+<span class="lineNum">     185 </span>                :            :                  &quot;Wrongly formed creator_account_id, passed value: '%s'&quot;)
+<span class="lineNum">     186 </span>[<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         12 :              % account_id)</span>
+<span class="lineNum">     187 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :                 .str();</span>
+<span class="lineNum">     188 </span>        [<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         12 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     189 </span>                :            :       }
+<a name="190"><span class="lineNum">     190 </span>                :<span class="lineCov">         27 :     }</span></a>
+<span class="lineNum">     191 </span>                :            : 
+<span class="lineNum">     192 </span>                :<span class="lineCov">         33 :     void FieldValidator::validateCreatedTime(</span>
+<span class="lineNum">     193 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     194 </span>                :            :         const interface::types::TimestampType &amp;timestamp) const {
+<span class="lineNum">     195 </span>                :<span class="lineCov">         33 :       iroha::ts64_t now = iroha::time::now();</span>
+<span class="lineNum">     196 </span>                :            : 
+<span class="lineNum">     197 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 31 times"> + </span>]:<span class="lineCov">         33 :       if (now + future_gap_ &lt; timestamp) {</span>
+<span class="lineNum">     198 </span>                :            :         auto message = (boost::format(&quot;bad timestamp: sent from future, &quot;
+<span class="lineNum">     199 </span>                :            :                                       &quot;timestamp: %llu, now: %llu&quot;)
+<span class="lineNum">     200 </span>[<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          2 :                         % timestamp % now)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     201 </span>        [<span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          4 :                            .str();</span>
+<span class="lineNum">     202 </span>        [<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     203 </span>                :            :       }
+<span class="lineNum">     204 </span>                :            : 
+<span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchCov" title="Branch 1 was taken 21 times"> + </span>]:<span class="lineCov">         33 :       if (now &gt; max_delay + timestamp) {</span>
+<span class="lineNum">     206 </span>                :            :         auto message =
+<span class="lineNum">     207 </span>                :            :             (boost::format(&quot;bad timestamp: too old, timestamp: %llu, now: %llu&quot;)
+<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         12 :              % timestamp % now)</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 7 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]
+<span class="lineNum">     209 </span>        [<span class="branchCov" title="Branch 1 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         24 :                 .str();</span>
+<span class="lineNum">     210 </span>        [<span class="branchCov" title="Branch 2 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         12 :         reason.second.push_back(std::move(message));</span>
+<span class="lineNum">     211 </span>                :            :       }
+<a name="212"><span class="lineNum">     212 </span>                :<span class="lineCov">         33 :     }</span></a>
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :<span class="lineCov">         31 :     void FieldValidator::validateCounter(</span>
+<span class="lineNum">     215 </span>                :            :         ReasonsGroupType &amp;reason,
+<span class="lineNum">     216 </span>                :            :         const interface::types::CounterType &amp;counter) const {
+<span class="lineNum">     217 </span>        [<span class="branchCov" title="Branch 0 was taken 13 times"> + </span><span class="branchCov" title="Branch 1 was taken 18 times"> + </span>]:<span class="lineCov">         31 :       if (counter &lt;= 0) {</span>
+<span class="lineNum">     218 </span>                :            :         auto message =
+<span class="lineNum">     219 </span>[<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         13 :             (boost::format(&quot;Counter should be &gt; 0, passed value: %d&quot;) % counter)</span>
+<span class="lineNum">     220 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         26 :                 .str();</span>
+<span class="lineNum">     221 </span>        [<span class="branchCov" title="Branch 1 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         13 :         reason.second.push_back(message);</span>
+<span class="lineNum">     222 </span>                :            :       }
+<span class="lineNum">     223 </span>                :<span class="lineCov">         31 :     }</span>
+<a name="224"><span class="lineNum">     224 </span>                :            : </a>
+<span class="lineNum">     225 </span>                :            :   }  // namespace validation
+<span class="lineNum">     226 </span>[<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         24 : }  // namespace shared_model</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/proto_utils.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - proto_utils.h<span style="font-size: 80%;"> (source / <a href="proto_utils.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">41</td>
+            <td class="headerCovTableEntry">96</td>
+            <td class="headerCovTableEntryLo">42.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">21</td>
+            <td class="headerCovTableEntryLo">52.4 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_PROTO_UTILS_H
+<span class="lineNum">      20 </span>            : #define GRPCXX_IMPL_CODEGEN_PROTO_UTILS_H
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;type_traits&gt;
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : #include &lt;grpc++/impl/codegen/config_protobuf.h&gt;
+<span class="lineNum">      25 </span>            : #include &lt;grpc++/impl/codegen/core_codegen_interface.h&gt;
+<span class="lineNum">      26 </span>            : #include &lt;grpc++/impl/codegen/serialization_traits.h&gt;
+<span class="lineNum">      27 </span>            : #include &lt;grpc++/impl/codegen/status.h&gt;
+<span class="lineNum">      28 </span>            : #include &lt;grpc/impl/codegen/byte_buffer_reader.h&gt;
+<span class="lineNum">      29 </span>            : #include &lt;grpc/impl/codegen/grpc_types.h&gt;
+<span class="lineNum">      30 </span>            : #include &lt;grpc/impl/codegen/slice.h&gt;
+<span class="lineNum">      31 </span>            : 
+<span class="lineNum">      32 </span>            : namespace grpc {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : extern CoreCodegenInterface* g_core_codegen_interface;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : namespace internal {
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : class GrpcBufferWriterPeer;
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : const int kGrpcBufferWriterMaxBufferLength = 1024 * 1024;
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : class GrpcBufferWriter final
+<a name="43"><span class="lineNum">      43 </span>            :     : public ::grpc::protobuf::io::ZeroCopyOutputStream {</a>
+<span class="lineNum">      44 </span>            :  public:
+<span class="lineNum">      45 </span><span class="lineNoCov">          0 :   explicit GrpcBufferWriter(grpc_byte_buffer** bp, int block_size)</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :       : block_size_(block_size), byte_count_(0), have_backup_(false) {</span>
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 :     *bp = g_core_codegen_interface-&gt;grpc_raw_byte_buffer_create(NULL, 0);</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     slice_buffer_ = &amp;(*bp)-&gt;data.raw.slice_buffer;</span>
+<a name="49"><span class="lineNum">      49 </span><span class="lineNoCov">          0 :   }</span></a>
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :   ~GrpcBufferWriter() override {</span>
+<span class="lineNum">      52 </span><span class="lineNoCov">          0 :     if (have_backup_) {</span>
+<span class="lineNum">      53 </span><span class="lineNoCov">          0 :       g_core_codegen_interface-&gt;grpc_slice_unref(backup_slice_);</span>
+<span class="lineNum">      54 </span>            :     }
+<a name="55"><span class="lineNum">      55 </span><span class="lineNoCov">          0 :   }</span></a>
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :   bool Next(void** data, int* size) override {</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :     if (have_backup_) {</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :       slice_ = backup_slice_;</span>
+<span class="lineNum">      60 </span><span class="lineNoCov">          0 :       have_backup_ = false;</span>
+<span class="lineNum">      61 </span>            :     } else {
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :       slice_ = g_core_codegen_interface-&gt;grpc_slice_malloc(block_size_);</span>
+<span class="lineNum">      63 </span>            :     }
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :     *data = GRPC_SLICE_START_PTR(slice_);</span>
+<span class="lineNum">      65 </span>            :     // On win x64, int is only 32bit
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :     GPR_CODEGEN_ASSERT(GRPC_SLICE_LENGTH(slice_) &lt;= INT_MAX);</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :     byte_count_ += * size = (int)GRPC_SLICE_LENGTH(slice_);</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :     g_core_codegen_interface-&gt;grpc_slice_buffer_add(slice_buffer_, slice_);</span>
+<span class="lineNum">      69 </span><span class="lineNoCov">          0 :     return true;</span>
+<a name="70"><span class="lineNum">      70 </span>            :   }</a>
+<span class="lineNum">      71 </span>            : 
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :   void BackUp(int count) override {</span>
+<span class="lineNum">      73 </span><span class="lineNoCov">          0 :     g_core_codegen_interface-&gt;grpc_slice_buffer_pop(slice_buffer_);</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :     if (count == block_size_) {</span>
+<span class="lineNum">      75 </span><span class="lineNoCov">          0 :       backup_slice_ = slice_;</span>
+<span class="lineNum">      76 </span>            :     } else {
+<span class="lineNum">      77 </span>            :       backup_slice_ = g_core_codegen_interface-&gt;grpc_slice_split_tail(
+<span class="lineNum">      78 </span><span class="lineNoCov">          0 :           &amp;slice_, GRPC_SLICE_LENGTH(slice_) - count);</span>
+<span class="lineNum">      79 </span><span class="lineNoCov">          0 :       g_core_codegen_interface-&gt;grpc_slice_buffer_add(slice_buffer_, slice_);</span>
+<span class="lineNum">      80 </span>            :     }
+<span class="lineNum">      81 </span>            :     // It's dangerous to keep an inlined grpc_slice as the backup slice, since
+<span class="lineNum">      82 </span>            :     // on a following Next() call, a reference will be returned to this slice
+<span class="lineNum">      83 </span>            :     // via GRPC_SLICE_START_PTR, which will not be an adddress held by
+<span class="lineNum">      84 </span>            :     // slice_buffer_.
+<span class="lineNum">      85 </span><span class="lineNoCov">          0 :     have_backup_ = backup_slice_.refcount != NULL;</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :     byte_count_ -= count;</span>
+<a name="87"><span class="lineNum">      87 </span><span class="lineNoCov">          0 :   }</span></a>
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span><span class="lineNoCov">          0 :   grpc::protobuf::int64 ByteCount() const override { return byte_count_; }</span>
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :  private:
+<span class="lineNum">      92 </span>            :   friend class GrpcBufferWriterPeer;
+<span class="lineNum">      93 </span>            :   const int block_size_;
+<span class="lineNum">      94 </span>            :   int64_t byte_count_;
+<span class="lineNum">      95 </span>            :   grpc_slice_buffer* slice_buffer_;
+<span class="lineNum">      96 </span>            :   bool have_backup_;
+<span class="lineNum">      97 </span>            :   grpc_slice backup_slice_;
+<span class="lineNum">      98 </span>            :   grpc_slice slice_;
+<span class="lineNum">      99 </span>            : };
+<span class="lineNum">     100 </span>            : 
+<span class="lineNum">     101 </span>            : class GrpcBufferReader final
+<a name="102"><span class="lineNum">     102 </span>            :     : public ::grpc::protobuf::io::ZeroCopyInputStream {</a>
+<span class="lineNum">     103 </span>            :  public:
+<span class="lineNum">     104 </span><span class="lineCov">        149 :   explicit GrpcBufferReader(grpc_byte_buffer* buffer)</span>
+<span class="lineNum">     105 </span><span class="lineCov">        149 :       : byte_count_(0), backup_count_(0), status_() {</span>
+<span class="lineNum">     106 </span><span class="lineCov">        149 :     if (!g_core_codegen_interface-&gt;grpc_byte_buffer_reader_init(&amp;reader_,</span>
+<span class="lineNum">     107 </span><span class="lineCov">        149 :                                                                 buffer)) {</span>
+<span class="lineNum">     108 </span><span class="lineNoCov">          0 :       status_ = Status(StatusCode::INTERNAL,</span>
+<span class="lineNum">     109 </span><span class="lineNoCov">          0 :                        &quot;Couldn't initialize byte buffer reader&quot;);</span>
+<a name="110"><span class="lineNum">     110 </span>            :     }</a>
+<span class="lineNum">     111 </span><span class="lineCov">        149 :   }</span>
+<span class="lineNum">     112 </span><span class="lineCov">        298 :   ~GrpcBufferReader() override {</span>
+<span class="lineNum">     113 </span><span class="lineCov">        149 :     g_core_codegen_interface-&gt;grpc_byte_buffer_reader_destroy(&amp;reader_);</span>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">        149 :   }</span></a>
+<span class="lineNum">     115 </span>            : 
+<span class="lineNum">     116 </span><span class="lineCov">        298 :   bool Next(const void** data, int* size) override {</span>
+<span class="lineNum">     117 </span><span class="lineCov">        298 :     if (!status_.ok()) {</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :       return false;</span>
+<span class="lineNum">     119 </span>            :     }
+<span class="lineNum">     120 </span><span class="lineCov">        298 :     if (backup_count_ &gt; 0) {</span>
+<span class="lineNum">     121 </span><span class="lineNoCov">          0 :       *data = GRPC_SLICE_START_PTR(slice_) + GRPC_SLICE_LENGTH(slice_) -</span>
+<span class="lineNum">     122 </span><span class="lineNoCov">          0 :               backup_count_;</span>
+<span class="lineNum">     123 </span><span class="lineNoCov">          0 :       GPR_CODEGEN_ASSERT(backup_count_ &lt;= INT_MAX);</span>
+<span class="lineNum">     124 </span><span class="lineNoCov">          0 :       *size = (int)backup_count_;</span>
+<span class="lineNum">     125 </span><span class="lineNoCov">          0 :       backup_count_ = 0;</span>
+<span class="lineNum">     126 </span><span class="lineNoCov">          0 :       return true;</span>
+<span class="lineNum">     127 </span>            :     }
+<span class="lineNum">     128 </span><span class="lineCov">        298 :     if (!g_core_codegen_interface-&gt;grpc_byte_buffer_reader_next(&amp;reader_,</span>
+<span class="lineNum">     129 </span><span class="lineCov">        298 :                                                                 &amp;slice_)) {</span>
+<span class="lineNum">     130 </span><span class="lineCov">        161 :       return false;</span>
+<span class="lineNum">     131 </span>            :     }
+<span class="lineNum">     132 </span><span class="lineCov">        137 :     g_core_codegen_interface-&gt;grpc_slice_unref(slice_);</span>
+<span class="lineNum">     133 </span><span class="lineCov">        137 :     *data = GRPC_SLICE_START_PTR(slice_);</span>
+<span class="lineNum">     134 </span>            :     // On win x64, int is only 32bit
+<span class="lineNum">     135 </span><span class="lineCov">        137 :     GPR_CODEGEN_ASSERT(GRPC_SLICE_LENGTH(slice_) &lt;= INT_MAX);</span>
+<span class="lineNum">     136 </span><span class="lineCov">        137 :     byte_count_ += * size = (int)GRPC_SLICE_LENGTH(slice_);</span>
+<span class="lineNum">     137 </span><span class="lineCov">        137 :     return true;</span>
+<a name="138"><span class="lineNum">     138 </span>            :   }</a>
+<span class="lineNum">     139 </span>            : 
+<a name="140"><span class="lineNum">     140 </span><span class="lineCov">        298 :   Status status() const { return status_; }</span></a>
+<span class="lineNum">     141 </span>            : 
+<a name="142"><span class="lineNum">     142 </span><span class="lineNoCov">          0 :   void BackUp(int count) override { backup_count_ = count; }</span></a>
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span><span class="lineNoCov">          0 :   bool Skip(int count) override {</span>
+<span class="lineNum">     145 </span>            :     const void* data;
+<span class="lineNum">     146 </span>            :     int size;
+<span class="lineNum">     147 </span><span class="lineNoCov">          0 :     while (Next(&amp;data, &amp;size)) {</span>
+<span class="lineNum">     148 </span><span class="lineNoCov">          0 :       if (size &gt;= count) {</span>
+<span class="lineNum">     149 </span><span class="lineNoCov">          0 :         BackUp(size - count);</span>
+<span class="lineNum">     150 </span><span class="lineNoCov">          0 :         return true;</span>
+<span class="lineNum">     151 </span>            :       }
+<span class="lineNum">     152 </span>            :       // size &lt; count;
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :       count -= size;</span>
+<span class="lineNum">     154 </span>            :     }
+<span class="lineNum">     155 </span>            :     // error or we have too large count;
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :     return false;</span>
+<a name="157"><span class="lineNum">     157 </span>            :   }</a>
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span><span class="lineNoCov">          0 :   grpc::protobuf::int64 ByteCount() const override {</span>
+<span class="lineNum">     160 </span><span class="lineNoCov">          0 :     return byte_count_ - backup_count_;</span>
+<span class="lineNum">     161 </span>            :   }
+<span class="lineNum">     162 </span>            : 
+<span class="lineNum">     163 </span>            :  private:
+<span class="lineNum">     164 </span>            :   int64_t byte_count_;
+<span class="lineNum">     165 </span>            :   int64_t backup_count_;
+<span class="lineNum">     166 </span>            :   grpc_byte_buffer_reader reader_;
+<span class="lineNum">     167 </span>            :   grpc_slice slice_;
+<span class="lineNum">     168 </span>            :   Status status_;
+<span class="lineNum">     169 </span>            : };
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            : }  // namespace internal
+<span class="lineNum">     172 </span>            : 
+<span class="lineNum">     173 </span>            : template &lt;class T&gt;
+<span class="lineNum">     174 </span>            : class SerializationTraits&lt;T, typename std::enable_if&lt;std::is_base_of&lt;
+<a name="175"><span class="lineNum">     175 </span>            :                                  grpc::protobuf::Message, T&gt;::value&gt;::type&gt; {</a>
+<span class="lineNum">     176 </span>            :  public:
+<span class="lineNum">     177 </span><span class="lineCov">         70 :   static Status Serialize(const grpc::protobuf::Message&amp; msg,</span>
+<span class="lineNum">     178 </span>            :                           grpc_byte_buffer** bp, bool* own_buffer) {
+<span class="lineNum">     179 </span><span class="lineCov">         70 :     *own_buffer = true;</span>
+<span class="lineNum">     180 </span><span class="lineCov">         70 :     int byte_size = msg.ByteSize();</span>
+<span class="lineNum">     181 </span><span class="lineCov">         70 :     if (byte_size &lt;= internal::kGrpcBufferWriterMaxBufferLength) {</span>
+<span class="lineNum">     182 </span><span class="lineCov">         70 :       grpc_slice slice = g_core_codegen_interface-&gt;grpc_slice_malloc(byte_size);</span>
+<span class="lineNum">     183 </span><span class="lineCov">         70 :       GPR_CODEGEN_ASSERT(</span>
+<span class="lineNum">     184 </span>            :           GRPC_SLICE_END_PTR(slice) ==
+<span class="lineNum">     185 </span>            :           msg.SerializeWithCachedSizesToArray(GRPC_SLICE_START_PTR(slice)));
+<span class="lineNum">     186 </span><span class="lineCov">         70 :       *bp = g_core_codegen_interface-&gt;grpc_raw_byte_buffer_create(&amp;slice, 1);</span>
+<span class="lineNum">     187 </span><span class="lineCov">         70 :       g_core_codegen_interface-&gt;grpc_slice_unref(slice);</span>
+<span class="lineNum">     188 </span><span class="lineCov">         70 :       return g_core_codegen_interface-&gt;ok();</span>
+<span class="lineNum">     189 </span>            :     } else {
+<span class="lineNum">     190 </span>            :       internal::GrpcBufferWriter writer(
+<span class="lineNum">     191 </span><span class="lineCov">         70 :           bp, internal::kGrpcBufferWriterMaxBufferLength);</span>
+<span class="lineNum">     192 </span><span class="lineNoCov">          0 :       return msg.SerializeToZeroCopyStream(&amp;writer)</span>
+<span class="lineNum">     193 </span><span class="lineNoCov">          0 :                  ? g_core_codegen_interface-&gt;ok()</span>
+<span class="lineNum">     194 </span><span class="lineNoCov">          0 :                  : Status(StatusCode::INTERNAL, &quot;Failed to serialize message&quot;);</span>
+<span class="lineNum">     195 </span>            :     }
+<a name="196"><span class="lineNum">     196 </span>            :   }</a>
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span><span class="lineCov">         79 :   static Status Deserialize(grpc_byte_buffer* buffer,</span>
+<span class="lineNum">     199 </span>            :                             grpc::protobuf::Message* msg) {
+<span class="lineNum">     200 </span><span class="lineCov">         79 :     if (buffer == nullptr) {</span>
+<span class="lineNum">     201 </span><span class="lineNoCov">          0 :       return Status(StatusCode::INTERNAL, &quot;No payload&quot;);</span>
+<span class="lineNum">     202 </span>            :     }
+<span class="lineNum">     203 </span><span class="lineCov">        158 :     Status result = g_core_codegen_interface-&gt;ok();</span>
+<span class="lineNum">     204 </span>            :     {
+<span class="lineNum">     205 </span><span class="lineCov">        158 :       internal::GrpcBufferReader reader(buffer);</span>
+<span class="lineNum">     206 </span><span class="lineCov">         79 :       if (!reader.status().ok()) {</span>
+<span class="lineNum">     207 </span><span class="lineNoCov">          0 :         return reader.status();</span>
+<span class="lineNum">     208 </span>            :       }
+<span class="lineNum">     209 </span><span class="lineCov">        158 :       ::grpc::protobuf::io::CodedInputStream decoder(&amp;reader);</span>
+<span class="lineNum">     210 </span><span class="lineCov">         79 :       decoder.SetTotalBytesLimit(INT_MAX, INT_MAX);</span>
+<span class="lineNum">     211 </span><span class="lineCov">         79 :       if (!msg-&gt;ParseFromCodedStream(&amp;decoder)) {</span>
+<span class="lineNum">     212 </span><span class="lineNoCov">          0 :         result = Status(StatusCode::INTERNAL, msg-&gt;InitializationErrorString());</span>
+<span class="lineNum">     213 </span>            :       }
+<span class="lineNum">     214 </span><span class="lineCov">         79 :       if (!decoder.ConsumedEntireMessage()) {</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 :         result = Status(StatusCode::INTERNAL, &quot;Did not read entire message&quot;);</span>
+<span class="lineNum">     216 </span>            :       }
+<span class="lineNum">     217 </span>            :     }
+<span class="lineNum">     218 </span><span class="lineCov">         79 :     g_core_codegen_interface-&gt;grpc_byte_buffer_destroy(buffer);</span>
+<span class="lineNum">     219 </span><span class="lineCov">         79 :     return result;</span>
+<span class="lineNum">     220 </span>            :   }
+<span class="lineNum">     221 </span>            : };
+<span class="lineNum">     222 </span>            : 
+<span class="lineNum">     223 </span>            : }  // namespace grpc
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_PROTO_UTILS_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

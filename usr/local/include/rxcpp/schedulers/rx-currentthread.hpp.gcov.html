@@ -1,0 +1,348 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/schedulers/rx-currentthread.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/schedulers</a> - rx-currentthread.hpp<span style="font-size: 80%;"> (source / <a href="rx-currentthread.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">99</td>
+            <td class="headerCovTableEntry">111</td>
+            <td class="headerCovTableEntryMed">89.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">28</td>
+            <td class="headerCovTableEntry">34</td>
+            <td class="headerCovTableEntryMed">82.4 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : #if !defined(RXCPP_RX_SCHEDULER_CURRENT_THREAD_HPP)
+<span class="lineNum">       6 </span>            : #define RXCPP_RX_SCHEDULER_CURRENT_THREAD_HPP
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : namespace rxcpp {
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : namespace schedulers {
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : namespace detail {
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : struct action_queue
+<span class="lineNum">      17 </span>            : {
+<span class="lineNum">      18 </span>            :     typedef action_queue this_type;
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            :     typedef scheduler_base::clock_type clock;
+<span class="lineNum">      21 </span>            :     typedef time_schedulable&lt;clock::time_point&gt; item_type;
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : private:
+<span class="lineNum">      24 </span>            :     typedef schedulable_queue&lt;item_type::time_point_type&gt; queue_item_time;
+<a name="25"><span class="lineNum">      25 </span>            : </a>
+<span class="lineNum">      26 </span>            : public:
+<span class="lineNum">      27 </span><span class="lineCov">       1038 :     struct current_thread_queue_type {</span>
+<span class="lineNum">      28 </span>            :         std::shared_ptr&lt;worker_interface&gt; w;
+<span class="lineNum">      29 </span>            :         recursion r;
+<span class="lineNum">      30 </span>            :         queue_item_time q;
+<span class="lineNum">      31 </span>            :     };
+<span class="lineNum">      32 </span>            : 
+<a name="33"><span class="lineNum">      33 </span>            : private:</a>
+<span class="lineNum">      34 </span>            : #if defined(RXCPP_THREAD_LOCAL)
+<span class="lineNum">      35 </span><span class="lineCov">       4070 :      static current_thread_queue_type*&amp; current_thread_queue() {</span>
+<span class="lineNum">      36 </span>            :          static RXCPP_THREAD_LOCAL current_thread_queue_type* q;
+<span class="lineNum">      37 </span><span class="lineCov">       4070 :          return q;</span>
+<span class="lineNum">      38 </span>            :      }
+<span class="lineNum">      39 </span>            : #else
+<span class="lineNum">      40 </span>            :     static rxu::thread_local_storage&lt;current_thread_queue_type&gt;&amp; current_thread_queue() {
+<span class="lineNum">      41 </span>            :         static rxu::thread_local_storage&lt;current_thread_queue_type&gt; q;
+<span class="lineNum">      42 </span>            :         return q;
+<span class="lineNum">      43 </span>            :     }
+<span class="lineNum">      44 </span>            : #endif
+<span class="lineNum">      45 </span>            : 
+<a name="46"><span class="lineNum">      46 </span>            : public:</a>
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span><span class="lineCov">        807 :     static bool owned() {</span>
+<a name="49"><span class="lineNum">      49 </span><span class="lineCov">        807 :         return !!current_thread_queue();</span></a>
+<span class="lineNum">      50 </span>            :     }
+<span class="lineNum">      51 </span><span class="lineCov">         69 :     static const std::shared_ptr&lt;worker_interface&gt;&amp; get_worker_interface() {</span>
+<a name="52"><span class="lineNum">      52 </span><span class="lineCov">         69 :         return current_thread_queue()-&gt;w;</span></a>
+<span class="lineNum">      53 </span>            :     }
+<span class="lineNum">      54 </span><span class="lineCov">        290 :     static recursion&amp; get_recursion() {</span>
+<a name="55"><span class="lineNum">      55 </span><span class="lineCov">        290 :         return current_thread_queue()-&gt;r;</span></a>
+<span class="lineNum">      56 </span>            :     }
+<span class="lineNum">      57 </span><span class="lineCov">        321 :     static bool empty() {</span>
+<span class="lineNum">      58 </span><span class="lineCov">        321 :         if (!current_thread_queue()) {</span>
+<span class="lineNum">      59 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">      60 </span>            :         }
+<a name="61"><span class="lineNum">      61 </span><span class="lineCov">        321 :         return current_thread_queue()-&gt;q.empty();</span></a>
+<span class="lineNum">      62 </span>            :     }
+<span class="lineNum">      63 </span><span class="lineCov">         62 :     static queue_item_time::const_reference top() {</span>
+<span class="lineNum">      64 </span><span class="lineCov">         62 :         if (!current_thread_queue()) {</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">      66 </span>            :         }
+<a name="67"><span class="lineNum">      67 </span><span class="lineCov">         62 :         return current_thread_queue()-&gt;q.top();</span></a>
+<span class="lineNum">      68 </span>            :     }
+<span class="lineNum">      69 </span><span class="lineCov">         31 :     static void pop() {</span>
+<span class="lineNum">      70 </span><span class="lineCov">         31 :         auto&amp; state = current_thread_queue();</span>
+<span class="lineNum">      71 </span><span class="lineCov">         31 :         if (!state) {</span>
+<span class="lineNum">      72 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">      73 </span>            :         }
+<span class="lineNum">      74 </span><span class="lineCov">         31 :         state-&gt;q.pop();</span>
+<span class="lineNum">      75 </span><span class="lineCov">         31 :         if (state-&gt;q.empty()) {</span>
+<span class="lineNum">      76 </span>            :             // allow recursion
+<span class="lineNum">      77 </span><span class="lineCov">         28 :             state-&gt;r.reset(true);</span>
+<a name="78"><span class="lineNum">      78 </span>            :         }</a>
+<span class="lineNum">      79 </span><span class="lineCov">         31 :     }</span>
+<span class="lineNum">      80 </span><span class="lineCov">         31 :     static void push(item_type item) {</span>
+<span class="lineNum">      81 </span><span class="lineCov">         31 :         auto&amp; state = current_thread_queue();</span>
+<span class="lineNum">      82 </span><span class="lineCov">         31 :         if (!state) {</span>
+<span class="lineNum">      83 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">      84 </span>            :         }
+<span class="lineNum">      85 </span><span class="lineCov">         31 :         if (!item.what.is_subscribed()) {</span>
+<span class="lineNum">      86 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">      87 </span>            :         }
+<span class="lineNum">      88 </span><span class="lineCov">         31 :         state-&gt;q.push(std::move(item));</span>
+<span class="lineNum">      89 </span>            :         // disallow recursion
+<a name="90"><span class="lineNum">      90 </span><span class="lineCov">         31 :         state-&gt;r.reset(false);</span></a>
+<span class="lineNum">      91 </span>            :     }
+<span class="lineNum">      92 </span><span class="lineCov">        346 :     static std::shared_ptr&lt;worker_interface&gt; ensure(std::shared_ptr&lt;worker_interface&gt; w) {</span>
+<span class="lineNum">      93 </span><span class="lineCov">        346 :         if (!!current_thread_queue()) {</span>
+<span class="lineNum">      94 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">      95 </span>            :         }
+<span class="lineNum">      96 </span>            :         // create and publish new queue
+<span class="lineNum">      97 </span><span class="lineCov">        346 :         current_thread_queue() = new current_thread_queue_type();</span>
+<span class="lineNum">      98 </span><span class="lineCov">        346 :         current_thread_queue()-&gt;w = w;</span>
+<span class="lineNum">      99 </span><span class="lineCov">        346 :         return w;</span>
+<span class="lineNum">     100 </span>            :     }
+<span class="lineNum">     101 </span>            :     static std::unique_ptr&lt;current_thread_queue_type&gt; create(std::shared_ptr&lt;worker_interface&gt; w) {
+<span class="lineNum">     102 </span>            :         std::unique_ptr&lt;current_thread_queue_type&gt; result(new current_thread_queue_type());
+<span class="lineNum">     103 </span>            :         result-&gt;w = std::move(w);
+<span class="lineNum">     104 </span>            :         return result;
+<span class="lineNum">     105 </span>            :     }
+<span class="lineNum">     106 </span>            :     static void set(current_thread_queue_type* q) {
+<span class="lineNum">     107 </span>            :         if (!!current_thread_queue()) {
+<span class="lineNum">     108 </span>            :             std::terminate();
+<span class="lineNum">     109 </span>            :         }
+<span class="lineNum">     110 </span>            :         // publish new queue
+<a name="111"><span class="lineNum">     111 </span>            :         current_thread_queue() = q;</a>
+<span class="lineNum">     112 </span>            :     }
+<span class="lineNum">     113 </span><span class="lineCov">        346 :     static void destroy(current_thread_queue_type* q) {</span>
+<a name="114"><span class="lineNum">     114 </span><span class="lineCov">        346 :         delete q;</span></a>
+<span class="lineNum">     115 </span><span class="lineCov">        346 :     }</span>
+<span class="lineNum">     116 </span><span class="lineCov">        346 :     static void destroy() {</span>
+<span class="lineNum">     117 </span><span class="lineCov">        346 :         if (!current_thread_queue()) {</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :             std::terminate();</span>
+<span class="lineNum">     119 </span>            :         }
+<span class="lineNum">     120 </span>            : #if defined(RXCPP_THREAD_LOCAL)
+<span class="lineNum">     121 </span><span class="lineCov">        346 :          destroy(current_thread_queue());</span>
+<span class="lineNum">     122 </span>            : #else
+<span class="lineNum">     123 </span>            :         destroy(current_thread_queue().get());
+<span class="lineNum">     124 </span>            : #endif
+<span class="lineNum">     125 </span><span class="lineCov">        346 :         current_thread_queue() = nullptr;</span>
+<span class="lineNum">     126 </span><span class="lineCov">        346 :     }</span>
+<span class="lineNum">     127 </span>            : };
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span>            : }
+<span class="lineNum">     130 </span>            : 
+<span class="lineNum">     131 </span>            : struct current_thread : public scheduler_interface
+<span class="lineNum">     132 </span>            : {
+<span class="lineNum">     133 </span>            : private:
+<span class="lineNum">     134 </span>            :     typedef current_thread this_type;
+<span class="lineNum">     135 </span>            :     current_thread(const this_type&amp;);
+<span class="lineNum">     136 </span>            : 
+<span class="lineNum">     137 </span>            :     typedef detail::action_queue queue_type;
+<span class="lineNum">     138 </span>            : 
+<span class="lineNum">     139 </span>            :     struct derecurser : public worker_interface
+<span class="lineNum">     140 </span>            :     {
+<span class="lineNum">     141 </span>            :     private:
+<span class="lineNum">     142 </span>            :         typedef current_thread this_type;
+<a name="143"><span class="lineNum">     143 </span>            :         derecurser(const this_type&amp;);</a>
+<span class="lineNum">     144 </span>            :     public:
+<span class="lineNum">     145 </span><span class="lineCov">        290 :         derecurser()</span>
+<a name="146"><span class="lineNum">     146 </span><span class="lineCov">        290 :         {</span></a>
+<span class="lineNum">     147 </span><span class="lineCov">        290 :         }</span>
+<span class="lineNum">     148 </span><span class="lineCov">        290 :         virtual ~derecurser()</span>
+<span class="lineNum">     149 </span><span class="lineCov">        290 :         {</span>
+<a name="150"><span class="lineNum">     150 </span><span class="lineCov">        290 :         }</span></a>
+<span class="lineNum">     151 </span>            : 
+<span class="lineNum">     152 </span><span class="lineNoCov">          0 :         virtual clock_type::time_point now() const {</span>
+<span class="lineNum">     153 </span><span class="lineNoCov">          0 :             return clock_type::now();</span>
+<a name="154"><span class="lineNum">     154 </span>            :         }</a>
+<span class="lineNum">     155 </span>            : 
+<span class="lineNum">     156 </span><span class="lineNoCov">          0 :         virtual void schedule(const schedulable&amp; scbl) const {</span>
+<span class="lineNum">     157 </span><span class="lineNoCov">          0 :             queue_type::push(queue_type::item_type(now(), scbl));</span>
+<a name="158"><span class="lineNum">     158 </span><span class="lineNoCov">          0 :         }</span></a>
+<span class="lineNum">     159 </span>            : 
+<span class="lineNum">     160 </span><span class="lineCov">         31 :         virtual void schedule(clock_type::time_point when, const schedulable&amp; scbl) const {</span>
+<span class="lineNum">     161 </span><span class="lineCov">         31 :             queue_type::push(queue_type::item_type(when, scbl));</span>
+<span class="lineNum">     162 </span><span class="lineCov">         31 :         }</span>
+<span class="lineNum">     163 </span>            :     };
+<span class="lineNum">     164 </span>            : 
+<span class="lineNum">     165 </span>            :     struct current_worker : public worker_interface
+<span class="lineNum">     166 </span>            :     {
+<span class="lineNum">     167 </span>            :     private:
+<span class="lineNum">     168 </span>            :         typedef current_thread this_type;
+<a name="169"><span class="lineNum">     169 </span>            :         current_worker(const this_type&amp;);</a>
+<span class="lineNum">     170 </span>            :     public:
+<span class="lineNum">     171 </span><span class="lineCov">         29 :         current_worker()</span>
+<a name="172"><span class="lineNum">     172 </span><span class="lineCov">         29 :         {</span></a>
+<span class="lineNum">     173 </span><span class="lineCov">         29 :         }</span>
+<span class="lineNum">     174 </span><span class="lineCov">         27 :         virtual ~current_worker()</span>
+<span class="lineNum">     175 </span><span class="lineCov">         27 :         {</span>
+<a name="176"><span class="lineNum">     176 </span><span class="lineCov">         27 :         }</span></a>
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span><span class="lineCov">        335 :         virtual clock_type::time_point now() const {</span>
+<span class="lineNum">     179 </span><span class="lineCov">        335 :             return clock_type::now();</span>
+<a name="180"><span class="lineNum">     180 </span>            :         }</a>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineCov">        331 :         virtual void schedule(const schedulable&amp; scbl) const {</span>
+<span class="lineNum">     183 </span><span class="lineCov">        331 :             schedule(now(), scbl);</span>
+<a name="184"><span class="lineNum">     184 </span><span class="lineCov">        331 :         }</span></a>
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineCov">        360 :         virtual void schedule(clock_type::time_point when, const schedulable&amp; scbl) const {</span>
+<span class="lineNum">     187 </span><span class="lineCov">        360 :             if (!scbl.is_subscribed()) {</span>
+<span class="lineNum">     188 </span><span class="lineCov">        360 :                 return;</span>
+<span class="lineNum">     189 </span>            :             }
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :             {
+<span class="lineNum">     192 </span>            :                 // check ownership
+<span class="lineNum">     193 </span><span class="lineCov">        359 :                 if (queue_type::owned()) {</span>
+<span class="lineNum">     194 </span>            :                     // already has an owner - delegate
+<span class="lineNum">     195 </span><span class="lineCov">         69 :                     queue_type::get_worker_interface()-&gt;schedule(when, scbl);</span>
+<span class="lineNum">     196 </span><span class="lineCov">         69 :                     return;</span>
+<span class="lineNum">     197 </span>            :                 }
+<span class="lineNum">     198 </span>            : 
+<span class="lineNum">     199 </span>            :                 // take ownership
+<span class="lineNum">     200 </span><span class="lineCov">        290 :                 queue_type::ensure(std::make_shared&lt;derecurser&gt;());</span>
+<a name="201"><span class="lineNum">     201 </span>            :             }</a>
+<span class="lineNum">     202 </span>            :             // release ownership
+<span class="lineNum">     203 </span><span class="lineCov">        897 :             RXCPP_UNWIND_AUTO([]{</span>
+<span class="lineNum">     204 </span>            :                 queue_type::destroy();
+<span class="lineNum">     205 </span>            :             });
+<span class="lineNum">     206 </span>            : 
+<span class="lineNum">     207 </span><span class="lineCov">        290 :             const auto&amp; recursor = queue_type::get_recursion().get_recurse();</span>
+<span class="lineNum">     208 </span><span class="lineCov">        290 :             std::this_thread::sleep_until(when);</span>
+<span class="lineNum">     209 </span><span class="lineCov">        290 :             if (scbl.is_subscribed()) {</span>
+<span class="lineNum">     210 </span><span class="lineCov">        290 :                 scbl(recursor);</span>
+<span class="lineNum">     211 </span>            :             }
+<span class="lineNum">     212 </span><span class="lineCov">        290 :             if (queue_type::empty()) {</span>
+<span class="lineNum">     213 </span><span class="lineCov">        263 :                 return;</span>
+<span class="lineNum">     214 </span>            :             }
+<span class="lineNum">     215 </span>            : 
+<span class="lineNum">     216 </span>            :             // loop until queue is empty
+<span class="lineNum">     217 </span><span class="lineCov">        325 :             for (</span>
+<span class="lineNum">     218 </span><span class="lineCov">         27 :                 auto next = queue_type::top().when;</span>
+<span class="lineNum">     219 </span><span class="lineCov">         31 :                 (std::this_thread::sleep_until(next), true);</span>
+<span class="lineNum">     220 </span><span class="lineCov">         31 :                 next = queue_type::top().when</span>
+<span class="lineNum">     221 </span>            :             ) {
+<span class="lineNum">     222 </span><span class="lineCov">         35 :                 auto what = queue_type::top().what;</span>
+<span class="lineNum">     223 </span>            : 
+<span class="lineNum">     224 </span><span class="lineCov">         31 :                 queue_type::pop();</span>
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span><span class="lineCov">         31 :                 if (what.is_subscribed()) {</span>
+<span class="lineNum">     227 </span><span class="lineCov">         30 :                     what(recursor);</span>
+<span class="lineNum">     228 </span>            :                 }
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span><span class="lineCov">         31 :                 if (queue_type::empty()) {</span>
+<span class="lineNum">     231 </span><span class="lineCov">         31 :                     break;</span>
+<span class="lineNum">     232 </span>            :                 }
+<span class="lineNum">     233 </span>            :             }
+<span class="lineNum">     234 </span>            :         }
+<span class="lineNum">     235 </span>            :     };
+<span class="lineNum">     236 </span>            : 
+<span class="lineNum">     237 </span>            :     std::shared_ptr&lt;current_worker&gt; wi;
+<a name="238"><span class="lineNum">     238 </span>            : </a>
+<span class="lineNum">     239 </span>            : public:
+<span class="lineNum">     240 </span><span class="lineCov">         29 :     current_thread()</span>
+<span class="lineNum">     241 </span><span class="lineCov">         29 :         : wi(std::make_shared&lt;current_worker&gt;())</span>
+<a name="242"><span class="lineNum">     242 </span>            :     {</a>
+<span class="lineNum">     243 </span><span class="lineCov">         29 :     }</span>
+<span class="lineNum">     244 </span><span class="lineCov">         27 :     virtual ~current_thread()</span>
+<span class="lineNum">     245 </span><span class="lineCov">         27 :     {</span>
+<a name="246"><span class="lineNum">     246 </span><span class="lineCov">         27 :     }</span></a>
+<span class="lineNum">     247 </span>            : 
+<span class="lineNum">     248 </span><span class="lineCov">        896 :     static bool is_schedule_required() { return !queue_type::owned(); }</span>
+<span class="lineNum">     249 </span>            : 
+<span class="lineNum">     250 </span>            :     inline bool is_tail_recursion_allowed() const {
+<span class="lineNum">     251 </span>            :         return queue_type::empty();
+<a name="252"><span class="lineNum">     252 </span>            :     }</a>
+<span class="lineNum">     253 </span>            : 
+<span class="lineNum">     254 </span><span class="lineCov">         27 :     virtual clock_type::time_point now() const {</span>
+<span class="lineNum">     255 </span><span class="lineCov">         27 :         return clock_type::now();</span>
+<a name="256"><span class="lineNum">     256 </span>            :     }</a>
+<span class="lineNum">     257 </span>            : 
+<span class="lineNum">     258 </span><span class="lineCov">        390 :     virtual worker create_worker(composite_subscription cs) const {</span>
+<span class="lineNum">     259 </span><span class="lineCov">        390 :         return worker(std::move(cs), wi);</span>
+<span class="lineNum">     260 </span>            :     }
+<a name="261"><span class="lineNum">     261 </span>            : };</a>
+<span class="lineNum">     262 </span>            : 
+<span class="lineNum">     263 </span><span class="lineCov">        302 : inline const scheduler&amp; make_current_thread() {</span>
+<span class="lineNum">     264 </span><span class="lineCov">        302 :     static scheduler instance = make_scheduler&lt;current_thread&gt;();</span>
+<span class="lineNum">     265 </span><span class="lineCov">        302 :     return instance;</span>
+<span class="lineNum">     266 </span>            : }
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : }
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : }
+<span class="lineNum">     271 </span>            : 
+<span class="lineNum">     272 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

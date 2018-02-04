@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/tbb/machine/gcc_ia32_common.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/tbb/machine</a> - gcc_ia32_common.h<span style="font-size: 80%;"> (source / <a href="gcc_ia32_common.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryLo">0.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2005-2017 Intel Corporation
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>            :     you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>            :     You may obtain a copy of the License at
+<span class="lineNum">       7 </span>            : 
+<span class="lineNum">       8 </span>            :         http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>            :     distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>            :     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>            :     See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>            :     limitations under the License.
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : */
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #ifndef __TBB_machine_gcc_ia32_common_H
+<span class="lineNum">      22 </span>            : #define __TBB_machine_gcc_ia32_common_H
+<span class="lineNum">      23 </span>            : 
+<span class="lineNum">      24 </span>            : //TODO: Add a higher-level function, e.g. tbb::internal::log2(), into tbb_stddef.h, which
+<span class="lineNum">      25 </span>            : //uses __TBB_Log2 and contains the assert and remove the assert from here and all other
+<span class="lineNum">      26 </span>            : //platform-specific headers.
+<span class="lineNum">      27 </span>            : //TODO: Check if use of gcc intrinsic gives a better chance for cross call optimizations
+<span class="lineNum">      28 </span>            : template &lt;typename T&gt;
+<span class="lineNum">      29 </span>            : static inline intptr_t __TBB_machine_lg( T x ) {
+<span class="lineNum">      30 </span>            :     __TBB_ASSERT(x&gt;0, &quot;The logarithm of a non-positive value is undefined.&quot;);
+<span class="lineNum">      31 </span>            :     uintptr_t j, i = x;
+<span class="lineNum">      32 </span>            :     __asm__(&quot;bsr %1,%0&quot; : &quot;=r&quot;(j) : &quot;r&quot;(i));
+<span class="lineNum">      33 </span>            :     return j;
+<span class="lineNum">      34 </span>            : }
+<span class="lineNum">      35 </span>            : #define __TBB_Log2(V)  __TBB_machine_lg(V)
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            : #ifndef __TBB_Pause
+<span class="lineNum">      38 </span>            : //TODO: check if raising a ratio of pause instructions to loop control instructions
+<span class="lineNum">      39 </span>            : //(via e.g. loop unrolling) gives any benefit for HT.  E.g, the current implementation
+<span class="lineNum">      40 </span>            : //does about 2 CPU-consuming instructions for every pause instruction.  Perhaps for
+<span class="lineNum">      41 </span>            : //high pause counts it should use an unrolled loop to raise the ratio, and thus free
+<span class="lineNum">      42 </span>            : //up more integer cycles for the other hyperthread.  On the other hand, if the loop is
+<span class="lineNum">      43 </span>            : //unrolled too far, it won't fit in the core's loop cache, and thus take away
+<span class="lineNum">      44 </span>            : //instruction decode slots from the other hyperthread.
+<a name="45"><span class="lineNum">      45 </span>            : </a>
+<span class="lineNum">      46 </span>            : //TODO: check if use of gcc __builtin_ia32_pause intrinsic gives a &quot;some how&quot; better performing code
+<span class="lineNum">      47 </span><span class="lineNoCov">          0 : static inline void __TBB_machine_pause( int32_t delay ) {</span>
+<span class="lineNum">      48 </span><span class="lineNoCov">          0 :     for (int32_t i = 0; i &lt; delay; i++) {</span>
+<span class="lineNum">      49 </span><span class="lineNoCov">          0 :        __asm__ __volatile__(&quot;pause;&quot;);</span>
+<span class="lineNum">      50 </span>            :     }
+<span class="lineNum">      51 </span><span class="lineNoCov">          0 :     return;</span>
+<span class="lineNum">      52 </span>            : }
+<span class="lineNum">      53 </span>            : #define __TBB_Pause(V) __TBB_machine_pause(V)
+<span class="lineNum">      54 </span>            : #endif /* !__TBB_Pause */
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            : namespace tbb { namespace internal { typedef uint64_t machine_tsc_t; } }
+<span class="lineNum">      57 </span>            : static inline tbb::internal::machine_tsc_t __TBB_machine_time_stamp() {
+<span class="lineNum">      58 </span>            : #if __INTEL_COMPILER
+<span class="lineNum">      59 </span>            :     return _rdtsc();
+<span class="lineNum">      60 </span>            : #else
+<span class="lineNum">      61 </span>            :     tbb::internal::uint32_t hi, lo;
+<span class="lineNum">      62 </span>            :     __asm__ __volatile__(&quot;rdtsc&quot; : &quot;=d&quot;(hi), &quot;=a&quot;(lo));
+<span class="lineNum">      63 </span>            :     return (tbb::internal::machine_tsc_t( hi ) &lt;&lt; 32) | lo;
+<span class="lineNum">      64 </span>            : #endif
+<span class="lineNum">      65 </span>            : }
+<span class="lineNum">      66 </span>            : #define __TBB_time_stamp() __TBB_machine_time_stamp()
+<span class="lineNum">      67 </span>            : 
+<span class="lineNum">      68 </span>            : // API to retrieve/update FPU control setting
+<span class="lineNum">      69 </span>            : #ifndef __TBB_CPU_CTL_ENV_PRESENT
+<span class="lineNum">      70 </span>            : #define __TBB_CPU_CTL_ENV_PRESENT 1
+<span class="lineNum">      71 </span>            : namespace tbb {
+<span class="lineNum">      72 </span>            : namespace internal {
+<span class="lineNum">      73 </span>            : class cpu_ctl_env {
+<span class="lineNum">      74 </span>            : private:
+<span class="lineNum">      75 </span>            :     int     mxcsr;
+<span class="lineNum">      76 </span>            :     short   x87cw;
+<span class="lineNum">      77 </span>            :     static const int MXCSR_CONTROL_MASK = ~0x3f; /* all except last six status bits */
+<span class="lineNum">      78 </span>            : public:
+<span class="lineNum">      79 </span>            :     bool operator!=( const cpu_ctl_env&amp; ctl ) const { return mxcsr != ctl.mxcsr || x87cw != ctl.x87cw; }
+<span class="lineNum">      80 </span>            :     void get_env() {
+<span class="lineNum">      81 </span>            :     #if __TBB_ICC_12_0_INL_ASM_FSTCW_BROKEN
+<span class="lineNum">      82 </span>            :         cpu_ctl_env loc_ctl;
+<span class="lineNum">      83 </span>            :         __asm__ __volatile__ (
+<span class="lineNum">      84 </span>            :                 &quot;stmxcsr %0\n\t&quot;
+<span class="lineNum">      85 </span>            :                 &quot;fstcw %1&quot;
+<span class="lineNum">      86 </span>            :                 : &quot;=m&quot;(loc_ctl.mxcsr), &quot;=m&quot;(loc_ctl.x87cw)
+<span class="lineNum">      87 </span>            :         );
+<span class="lineNum">      88 </span>            :         *this = loc_ctl;
+<span class="lineNum">      89 </span>            :     #else
+<span class="lineNum">      90 </span>            :         __asm__ __volatile__ (
+<span class="lineNum">      91 </span>            :                 &quot;stmxcsr %0\n\t&quot;
+<span class="lineNum">      92 </span>            :                 &quot;fstcw %1&quot;
+<span class="lineNum">      93 </span>            :                 : &quot;=m&quot;(mxcsr), &quot;=m&quot;(x87cw)
+<span class="lineNum">      94 </span>            :         );
+<span class="lineNum">      95 </span>            :     #endif
+<span class="lineNum">      96 </span>            :         mxcsr &amp;= MXCSR_CONTROL_MASK;
+<span class="lineNum">      97 </span>            :     }
+<span class="lineNum">      98 </span>            :     void set_env() const {
+<span class="lineNum">      99 </span>            :         __asm__ __volatile__ (
+<span class="lineNum">     100 </span>            :                 &quot;ldmxcsr %0\n\t&quot;
+<span class="lineNum">     101 </span>            :                 &quot;fldcw %1&quot;
+<span class="lineNum">     102 </span>            :                 : : &quot;m&quot;(mxcsr), &quot;m&quot;(x87cw)
+<span class="lineNum">     103 </span>            :         );
+<span class="lineNum">     104 </span>            :     }
+<span class="lineNum">     105 </span>            : };
+<span class="lineNum">     106 </span>            : } // namespace internal
+<span class="lineNum">     107 </span>            : } // namespace tbb
+<span class="lineNum">     108 </span>            : #endif /* !__TBB_CPU_CTL_ENV_PRESENT */
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : #include &quot;gcc_itsx.h&quot;
+<span class="lineNum">     111 </span>            : 
+<span class="lineNum">     112 </span>            : #endif /* __TBB_machine_gcc_ia32_common_H */
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

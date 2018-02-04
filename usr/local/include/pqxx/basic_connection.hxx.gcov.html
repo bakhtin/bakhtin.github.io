@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/pqxx/basic_connection.hxx</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">usr/local/include/pqxx</a> - basic_connection.hxx<span style="font-size: 80%;"> (source / <a href="basic_connection.hxx.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*-------------------------------------------------------------------------</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  *   FILE
+<span class="lineNum">       4 </span>            :  *      pqxx/basic_connection.hxx
+<span class="lineNum">       5 </span>            :  *
+<span class="lineNum">       6 </span>            :  *   DESCRIPTION
+<span class="lineNum">       7 </span>            :  *      definition of the pqxx::basic_connection class template
+<span class="lineNum">       8 </span>            :  *   Instantiations of basic_connection bring connections and policies together
+<span class="lineNum">       9 </span>            :  *   DO NOT INCLUDE THIS FILE DIRECTLY; include pqxx/basic_connection instead.
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Copyright (c) 2006-2015, Jeroen T. Vermeulen &lt;jtv@xs4all.nl&gt;
+<span class="lineNum">      12 </span>            :  *
+<span class="lineNum">      13 </span>            :  * See COPYING for copyright license.  If you did not receive a file called
+<span class="lineNum">      14 </span>            :  * COPYING with this source code, please notify the distributor of this mistake,
+<span class="lineNum">      15 </span>            :  * or contact the author.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  *-------------------------------------------------------------------------
+<span class="lineNum">      18 </span>            :  */
+<span class="lineNum">      19 </span>            : #ifndef PQXX_H_BASIC_CONNECTION
+<span class="lineNum">      20 </span>            : #define PQXX_H_BASIC_CONNECTION
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &quot;pqxx/compiler-public.hxx&quot;
+<span class="lineNum">      23 </span>            : #include &quot;pqxx/compiler-internal-pre.hxx&quot;
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : #include &lt;memory&gt;
+<span class="lineNum">      26 </span>            : #include &lt;string&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &quot;pqxx/connection_base&quot;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : namespace pqxx
+<span class="lineNum">      32 </span>            : {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : // TODO: Also mix in thread synchronization policy here!
+<span class="lineNum">      35 </span>            : /// The ultimate template that defines a connection type
+<span class="lineNum">      36 </span>            : /** Combines connection_base (the highly complex class implementing essentially
+<span class="lineNum">      37 </span>            :  * all connection-related functionality) with a connection policy (a simpler
+<span class="lineNum">      38 </span>            :  * helper class determining the rules that govern the process of setting up the
+<span class="lineNum">      39 </span>            :  * underlying connection to the backend).
+<span class="lineNum">      40 </span>            :  *
+<span class="lineNum">      41 </span>            :  * The pattern used to combine these classes is the same as for
+<span class="lineNum">      42 </span>            :  * basic_transaction.  Through use of the template mechanism, the policy object
+<span class="lineNum">      43 </span>            :  * is embedded in the basic_connection object so that it does not need to be
+<span class="lineNum">      44 </span>            :  * allocated separately.  At the same time this construct avoids the need for
+<span class="lineNum">      45 </span>            :  * any virtual functions in this class, which reduces risks of bugs in
+<span class="lineNum">      46 </span>            :  * construction and destruction; as well as any need to templatize the larger
+<span class="lineNum">      47 </span>            :  * body of code in the connection_base class which might otherwise lead to
+<span class="lineNum">      48 </span>            :  * unacceptable code duplication.
+<span class="lineNum">      49 </span>            :  */
+<span class="lineNum">      50 </span>            : template&lt;typename CONNECTPOLICY&gt; class basic_connection :
+<span class="lineNum">      51 </span>            :   public connection_base
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span>            : public:
+<span class="lineNum">      54 </span>            :   basic_connection() :
+<span class="lineNum">      55 </span>            :     connection_base(m_policy),
+<span class="lineNum">      56 </span>            :     m_options(std::string()),
+<span class="lineNum">      57 </span>            :     m_policy(m_options)
+<a name="58"><span class="lineNum">      58 </span>            :         { init(); }</a>
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span><span class="lineCov">        130 :   explicit basic_connection(const std::string &amp;opt) :</span>
+<span class="lineNum">      61 </span><span class="lineCov">        130 :     connection_base(m_policy), m_options(opt), m_policy(m_options) {init();}</span>
+<span class="lineNum">      62 </span>            : 
+<span class="lineNum">      63 </span>            :   explicit basic_connection(const char opt[]) :
+<span class="lineNum">      64 </span>            :     connection_base(m_policy),
+<span class="lineNum">      65 </span>            :     m_options(opt?opt:std::string()),
+<span class="lineNum">      66 </span>            :     m_policy(m_options)
+<a name="67"><span class="lineNum">      67 </span>            :         { init(); }</a>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span><span class="lineCov">        260 :   ~basic_connection() PQXX_NOEXCEPT                                 { close(); }</span>
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :   const std::string &amp;options() const PQXX_NOEXCEPT                  //[t1]
+<span class="lineNum">      72 </span>            :         {return m_policy.options();}
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : private:
+<span class="lineNum">      75 </span>            :   /// Connect string.  @warn Must be initialized before the connector!
+<span class="lineNum">      76 </span>            :   std::string m_options;
+<span class="lineNum">      77 </span>            :   /// Connection policy.  @warn Must be initialized after the connect string!
+<span class="lineNum">      78 </span>            :   CONNECTPOLICY m_policy;
+<span class="lineNum">      79 </span>            : };
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : } // namespace
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : #include &quot;pqxx/compiler-internal-post.hxx&quot;
+<span class="lineNum">      84 </span>            : 
+<span class="lineNum">      85 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

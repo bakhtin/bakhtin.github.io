@@ -1,0 +1,384 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - shared_model/validators/transaction_validator.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">shared_model/validators</a> - transaction_validator.hpp<span style="font-size: 80%;"> (source / <a href="transaction_validator.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">127</td>
+            <td class="headerCovTableEntry">127</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">130</td>
+            <td class="headerCovTableEntry">252</td>
+            <td class="headerCovTableEntryLo">51.6 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #ifndef IROHA_SHARED_MODEL_TRANSACTION_VALIDATOR_HPP
+<span class="lineNum">      19 </span>                :            : #define IROHA_SHARED_MODEL_TRANSACTION_VALIDATOR_HPP
+<span class="lineNum">      20 </span>                :            : 
+<span class="lineNum">      21 </span>                :            : #include &lt;boost/format.hpp&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;boost/variant/static_visitor.hpp&gt;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : #include &quot;interfaces/transaction.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;validators/answer.hpp&quot;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : namespace shared_model {
+<span class="lineNum">      28 </span>                :            :   namespace validation {
+<span class="lineNum">      29 </span>                :            : 
+<span class="lineNum">      30 </span>                :            :     /**
+<span class="lineNum">      31 </span>                :            :      * Visitor used by transaction validator to validate each command
+<span class="lineNum">      32 </span>                :            :      * @tparam FieldValidator - field validator type
+<a name="33"><span class="lineNum">      33 </span>                :            :      */</a>
+<span class="lineNum">      34 </span>                :            :     template &lt;typename FieldValidator&gt;
+<span class="lineNum">      35 </span>                :<span class="lineCov">         70 :     class CommandValidatorVisitor</span>
+<a name="36"><span class="lineNum">      36 </span>                :            :         : public boost::static_visitor&lt;ReasonsGroupType&gt; {</a>
+<span class="lineNum">      37 </span>                :            :      public:
+<span class="lineNum">      38 </span>                :<span class="lineCov">          5 :       CommandValidatorVisitor(</span>
+<span class="lineNum">      39 </span>                :            :           const FieldValidator &amp;validator = FieldValidator())
+<a name="40"><span class="lineNum">      40 </span>                :<span class="lineCov">          5 :           : validator_(validator) {}</span></a>
+<span class="lineNum">      41 </span>                :            : 
+<span class="lineNum">      42 </span>                :<span class="lineCov">          4 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">      43 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::AddAssetQuantity&gt; &amp;aaq)
+<span class="lineNum">      44 </span>                :            :           const {
+<span class="lineNum">      45 </span>                :<span class="lineCov">          4 :         ReasonsGroupType reason;</span>
+<span class="lineNum">      46 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         addInvalidCommand(reason, &quot;AddAssetQuantity&quot;);</span>
+<span class="lineNum">      47 </span>                :            : 
+<span class="lineNum">      48 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         validator_.validateAccountId(reason, aaq-&gt;accountId());</span>
+<span class="lineNum">      49 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         validator_.validateAssetId(reason, aaq-&gt;assetId());</span>
+<span class="lineNum">      50 </span>[<span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 4 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          4 :         validator_.validateAmount(reason, aaq-&gt;amount());</span>
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :<span class="lineCov">          4 :         return reason;</span>
+<a name="53"><span class="lineNum">      53 </span>                :            :       }</a>
+<span class="lineNum">      54 </span>                :            : 
+<span class="lineNum">      55 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">      56 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::AddPeer&gt; &amp;ap) const {
+<span class="lineNum">      57 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">      58 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;AddPeer&quot;);</span>
+<span class="lineNum">      59 </span>                :            : 
+<span class="lineNum">      60 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePubkey(reason, ap-&gt;peerKey());</span>
+<span class="lineNum">      61 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePeerAddress(reason, ap-&gt;peerAddress());</span>
+<span class="lineNum">      62 </span>                :            : 
+<span class="lineNum">      63 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="64"><span class="lineNum">      64 </span>                :            :       }</a>
+<span class="lineNum">      65 </span>                :            : 
+<span class="lineNum">      66 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">      67 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::AddSignatory&gt; &amp;as) const {
+<span class="lineNum">      68 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">      69 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;AddSignatory&quot;);</span>
+<span class="lineNum">      70 </span>                :            : 
+<span class="lineNum">      71 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, as-&gt;accountId());</span>
+<span class="lineNum">      72 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePubkey(reason, as-&gt;pubkey());</span>
+<span class="lineNum">      73 </span>                :            : 
+<span class="lineNum">      74 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="75"><span class="lineNum">      75 </span>                :            :       }</a>
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">      78 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::AppendRole&gt; &amp;ar) const {
+<span class="lineNum">      79 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">      80 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;AppendRole&quot;);</span>
+<span class="lineNum">      81 </span>                :            : 
+<span class="lineNum">      82 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, ar-&gt;accountId());</span>
+<span class="lineNum">      83 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateRoleId(reason, ar-&gt;roleName());</span>
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="86"><span class="lineNum">      86 </span>                :            :       }</a>
+<span class="lineNum">      87 </span>                :            : 
+<span class="lineNum">      88 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">      89 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::CreateAccount&gt; &amp;ca)
+<span class="lineNum">      90 </span>                :            :           const {
+<span class="lineNum">      91 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">      92 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;CreateAccount&quot;);</span>
+<span class="lineNum">      93 </span>                :            : 
+<span class="lineNum">      94 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePubkey(reason, ca-&gt;pubkey());</span>
+<span class="lineNum">      95 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountName(reason, ca-&gt;accountName());</span>
+<span class="lineNum">      96 </span>                :            : 
+<span class="lineNum">      97 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="98"><span class="lineNum">      98 </span>                :            :       }</a>
+<span class="lineNum">      99 </span>                :            : 
+<span class="lineNum">     100 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     101 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::CreateAsset&gt; &amp;ca) const {
+<span class="lineNum">     102 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     103 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;CreateAsset&quot;);</span>
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAssetName(reason, ca-&gt;assetName());</span>
+<span class="lineNum">     106 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateDomainId(reason, ca-&gt;domainId());</span>
+<span class="lineNum">     107 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePrecision(reason, ca-&gt;precision());</span>
+<span class="lineNum">     108 </span>                :            : 
+<span class="lineNum">     109 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="110"><span class="lineNum">     110 </span>                :            :       }</a>
+<span class="lineNum">     111 </span>                :            : 
+<span class="lineNum">     112 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     113 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::CreateDomain&gt; &amp;cd) const {
+<span class="lineNum">     114 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     115 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;CreateDomain&quot;);</span>
+<span class="lineNum">     116 </span>                :            : 
+<span class="lineNum">     117 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateDomainId(reason, cd-&gt;domainId());</span>
+<span class="lineNum">     118 </span>                :            : 
+<span class="lineNum">     119 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="120"><span class="lineNum">     120 </span>                :            :       }</a>
+<span class="lineNum">     121 </span>                :            : 
+<span class="lineNum">     122 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     123 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::CreateRole&gt; &amp;cr) const {
+<span class="lineNum">     124 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     125 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;CreateRole&quot;);</span>
+<span class="lineNum">     126 </span>                :            : 
+<span class="lineNum">     127 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateRoleId(reason, cr-&gt;roleName());</span>
+<span class="lineNum">     128 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePermissions(reason, cr-&gt;rolePermissions());</span>
+<span class="lineNum">     129 </span>                :            : 
+<span class="lineNum">     130 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="131"><span class="lineNum">     131 </span>                :            :       }</a>
+<span class="lineNum">     132 </span>                :            : 
+<span class="lineNum">     133 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     134 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::DetachRole&gt; &amp;dr) const {
+<span class="lineNum">     135 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     136 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;DetachRole&quot;);</span>
+<span class="lineNum">     137 </span>                :            : 
+<span class="lineNum">     138 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, dr-&gt;accountId());</span>
+<span class="lineNum">     139 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateRoleId(reason, dr-&gt;roleName());</span>
+<span class="lineNum">     140 </span>                :            : 
+<span class="lineNum">     141 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="142"><span class="lineNum">     142 </span>                :            :       }</a>
+<span class="lineNum">     143 </span>                :            : 
+<span class="lineNum">     144 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     145 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::GrantPermission&gt; &amp;gp)
+<span class="lineNum">     146 </span>                :            :           const {
+<span class="lineNum">     147 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     148 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;GrantPermission&quot;);</span>
+<span class="lineNum">     149 </span>                :            : 
+<span class="lineNum">     150 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, gp-&gt;accountId());</span>
+<span class="lineNum">     151 </span>                :            : 
+<span class="lineNum">     152 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="153"><span class="lineNum">     153 </span>                :            :       }</a>
+<span class="lineNum">     154 </span>                :            : 
+<span class="lineNum">     155 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     156 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::RemoveSignatory&gt; &amp;rs)
+<span class="lineNum">     157 </span>                :            :           const {
+<span class="lineNum">     158 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     159 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;RemoveSignatory&quot;);</span>
+<span class="lineNum">     160 </span>                :            : 
+<span class="lineNum">     161 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, rs-&gt;accountId());</span>
+<span class="lineNum">     162 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePubkey(reason, rs-&gt;pubkey());</span>
+<span class="lineNum">     163 </span>                :            : 
+<a name="164"><span class="lineNum">     164 </span>                :<span class="lineCov">          2 :         return reason;</span></a>
+<span class="lineNum">     165 </span>                :            :       }
+<span class="lineNum">     166 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     167 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::RevokePermission&gt; &amp;rp)
+<span class="lineNum">     168 </span>                :            :           const {
+<span class="lineNum">     169 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     170 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;RevokePermission&quot;);</span>
+<span class="lineNum">     171 </span>                :            : 
+<span class="lineNum">     172 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, rp-&gt;accountId());</span>
+<span class="lineNum">     173 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validatePermission(reason, rp-&gt;permissionName());</span>
+<span class="lineNum">     174 </span>                :            : 
+<span class="lineNum">     175 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="176"><span class="lineNum">     176 </span>                :            :       }</a>
+<span class="lineNum">     177 </span>                :            : 
+<span class="lineNum">     178 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     179 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::SetAccountDetail&gt; &amp;sad)
+<span class="lineNum">     180 </span>                :            :           const {
+<span class="lineNum">     181 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     182 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;SetAccountDetail&quot;);</span>
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, sad-&gt;accountId());</span>
+<span class="lineNum">     185 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountDetailKey(reason, sad-&gt;key());</span>
+<span class="lineNum">     186 </span>                :            : 
+<span class="lineNum">     187 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="188"><span class="lineNum">     188 </span>                :            :       }</a>
+<span class="lineNum">     189 </span>                :            : 
+<span class="lineNum">     190 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     191 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::SetQuorum&gt; &amp;sq) const {
+<span class="lineNum">     192 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     193 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;SetQuorum&quot;);</span>
+<span class="lineNum">     194 </span>                :            : 
+<span class="lineNum">     195 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, sq-&gt;accountId());</span>
+<span class="lineNum">     196 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateQuorum(reason, sq-&gt;newQuorum());</span>
+<span class="lineNum">     197 </span>                :            : 
+<span class="lineNum">     198 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="199"><span class="lineNum">     199 </span>                :            :       }</a>
+<span class="lineNum">     200 </span>                :            : 
+<span class="lineNum">     201 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     202 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::SubtractAssetQuantity&gt;
+<span class="lineNum">     203 </span>                :            :               &amp;saq) const {
+<span class="lineNum">     204 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     205 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;SubtractAssetQuantity&quot;);</span>
+<span class="lineNum">     206 </span>                :            : 
+<span class="lineNum">     207 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, saq-&gt;accountId());</span>
+<span class="lineNum">     208 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAssetId(reason, saq-&gt;assetId());</span>
+<span class="lineNum">     209 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAmount(reason, saq-&gt;amount());</span>
+<span class="lineNum">     210 </span>                :            : 
+<span class="lineNum">     211 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<a name="212"><span class="lineNum">     212 </span>                :            :       }</a>
+<span class="lineNum">     213 </span>                :            : 
+<span class="lineNum">     214 </span>                :<span class="lineCov">          2 :       ReasonsGroupType operator()(</span>
+<span class="lineNum">     215 </span>                :            :           const detail::PolymorphicWrapper&lt;interface::TransferAsset&gt; &amp;ta)
+<span class="lineNum">     216 </span>                :            :           const {
+<span class="lineNum">     217 </span>                :<span class="lineCov">          2 :         ReasonsGroupType reason;</span>
+<span class="lineNum">     218 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         addInvalidCommand(reason, &quot;TransferAsset&quot;);</span>
+<span class="lineNum">     219 </span>                :            : 
+<span class="lineNum">     220 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, ta-&gt;srcAccountId());</span>
+<span class="lineNum">     221 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAccountId(reason, ta-&gt;destAccountId());</span>
+<span class="lineNum">     222 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAssetId(reason, ta-&gt;assetId());</span>
+<span class="lineNum">     223 </span>[<span class="branchCov" title="Branch 2 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          2 :         validator_.validateAmount(reason, ta-&gt;amount());</span>
+<span class="lineNum">     224 </span>                :            : 
+<span class="lineNum">     225 </span>                :<span class="lineCov">          2 :         return reason;</span>
+<span class="lineNum">     226 </span>                :            :       }
+<span class="lineNum">     227 </span>                :            : 
+<span class="lineNum">     228 </span>                :            :      private:
+<span class="lineNum">     229 </span>                :            :       FieldValidator validator_;
+<span class="lineNum">     230 </span>                :            :       mutable int command_counter{0};
+<a name="231"><span class="lineNum">     231 </span>                :            : </a>
+<span class="lineNum">     232 </span>                :            :       // adds command to a reason, appends and increments counter
+<span class="lineNum">     233 </span>                :<span class="lineCov">         34 :       void addInvalidCommand(ReasonsGroupType &amp;reason,</span>
+<span class="lineNum">     234 </span>                :            :                              const std::string &amp;command_name) const {
+<span class="lineNum">     235 </span>[<span class="branchCov" title="Branch 1 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">         34 :         reason.first =</span>
+<span class="lineNum">     236 </span>[<span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         68 :             (boost::format(&quot;%d %s&quot;) % command_counter % command_name).str();</span>
+<span class="lineNum">     237 </span>                :<span class="lineCov">         34 :         command_counter++;</span>
+<span class="lineNum">     238 </span>                :<span class="lineCov">         34 :       }</span>
+<span class="lineNum">     239 </span>                :            :     };
+<span class="lineNum">     240 </span>                :            : 
+<span class="lineNum">     241 </span>                :            :     /**
+<span class="lineNum">     242 </span>                :            :      * Class that validates commands from transaction
+<span class="lineNum">     243 </span>                :            :      * @tparam FieldValidator
+<span class="lineNum">     244 </span>                :            :      * @tparam CommandValidator
+<a name="245"><span class="lineNum">     245 </span>                :            :      */</a>
+<span class="lineNum">     246 </span>                :            :     template &lt;typename FieldValidator, typename CommandValidator&gt;
+<a name="247"><span class="lineNum">     247 </span>                :<span class="lineCov">         50 :     class TransactionValidator {</span></a>
+<span class="lineNum">     248 </span>                :            :      public:
+<span class="lineNum">     249 </span>                :<span class="lineCov">          5 :       TransactionValidator(</span>
+<span class="lineNum">     250 </span>                :            :           const FieldValidator &amp;field_validator = FieldValidator(),
+<span class="lineNum">     251 </span>                :            :           const CommandValidator &amp;command_validator = CommandValidator())
+<span class="lineNum">     252 </span>                :            :           : field_validator_(field_validator),
+<span class="lineNum">     253 </span>                :<span class="lineCov">          5 :             command_validator_(command_validator) {}</span>
+<span class="lineNum">     254 </span>                :            : 
+<span class="lineNum">     255 </span>                :            :       /**
+<span class="lineNum">     256 </span>                :            :        * Applies validation to given transaction
+<span class="lineNum">     257 </span>                :            :        * @param tx - transaction to validate
+<a name="258"><span class="lineNum">     258 </span>                :            :        * @return Answer containing found error if any</a>
+<span class="lineNum">     259 </span>                :            :        */
+<span class="lineNum">     260 </span>                :<span class="lineCov">          5 :       Answer validate(</span>
+<span class="lineNum">     261 </span>                :            :           detail::PolymorphicWrapper&lt;interface::Transaction&gt; tx) const {
+<span class="lineNum">     262 </span>                :<span class="lineCov">          5 :         Answer answer;</span>
+<span class="lineNum">     263 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         10 :         std::string tx_reason_name = &quot;Transaction&quot;;</span>
+<span class="lineNum">     264 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         10 :         ReasonsGroupType tx_reason(tx_reason_name, GroupedReasons());</span>
+<span class="lineNum">     265 </span>                :            : 
+<span class="lineNum">     266 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchCov" title="Branch 6 was taken 4 times"> + </span>]:<span class="lineCov">          5 :         if (tx-&gt;commands().empty()) {</span>
+<span class="lineNum">     267 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :           tx_reason.second.push_back(</span>
+<span class="lineNum">     268 </span>                :            :               &quot;Transaction should contain at least one command&quot;);
+<span class="lineNum">     269 </span>                :            :         }
+<span class="lineNum">     270 </span>                :            : 
+<span class="lineNum">     271 </span>        [<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          5 :         field_validator_.validateCreatorAccountId(tx_reason,</span>
+<span class="lineNum">     272 </span>        [<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          5 :                                                   tx-&gt;creatorAccountId());</span>
+<span class="lineNum">     273 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          5 :         field_validator_.validateCreatedTime(tx_reason, tx-&gt;createdTime());</span>
+<span class="lineNum">     274 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          5 :         field_validator_.validateCounter(tx_reason, tx-&gt;transactionCounter());</span>
+<span class="lineNum">     275 </span>                :            : 
+<span class="lineNum">     276 </span>        [<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchCov" title="Branch 2 was taken 2 times"> + </span>]:<span class="lineCov">          5 :         if (not tx_reason.second.empty()) {</span>
+<span class="lineNum">     277 </span>        [<span class="branchCov" title="Branch 2 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          3 :           answer.addReason(std::move(tx_reason));</span>
+<span class="lineNum">     278 </span>                :            :         }
+<span class="lineNum">     279 </span>                :            : 
+<span class="lineNum">     280 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 34 times"> + </span><span class="branchCov" title="Branch 8 was taken 5 times"> + </span>]:<span class="lineCov">         39 :         for (const auto &amp;command : tx-&gt;commands()) {</span>
+<span class="lineNum">     281 </span>                :            :           auto reason =
+<span class="lineNum">     282 </span>[<span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         68 :               boost::apply_visitor(command_validator_, command-&gt;get());</span>
+<span class="lineNum">     283 </span>        [<span class="branchCov" title="Branch 1 was taken 17 times"> + </span><span class="branchCov" title="Branch 2 was taken 17 times"> + </span>]:<span class="lineCov">         34 :           if (not reason.second.empty()) {</span>
+<span class="lineNum">     284 </span>        [<span class="branchCov" title="Branch 2 was taken 17 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         17 :             answer.addReason(std::move(reason));</span>
+<span class="lineNum">     285 </span>                :            :           }
+<span class="lineNum">     286 </span>                :            :         }
+<span class="lineNum">     287 </span>                :            : 
+<span class="lineNum">     288 </span>                :<span class="lineCov">         10 :         return answer;</span>
+<span class="lineNum">     289 </span>                :            :       }
+<span class="lineNum">     290 </span>                :            : 
+<span class="lineNum">     291 </span>                :            :      private:
+<span class="lineNum">     292 </span>                :            :       FieldValidator field_validator_;
+<span class="lineNum">     293 </span>                :            :       CommandValidator command_validator_;
+<span class="lineNum">     294 </span>                :            :     };
+<span class="lineNum">     295 </span>                :            : 
+<span class="lineNum">     296 </span>                :            :   }  // namespace validation
+<span class="lineNum">     297 </span>                :            : }  // namespace shared_model
+<span class="lineNum">     298 </span>                :            : 
+<span class="lineNum">     299 </span>                :            : #endif  // IROHA_SHARED_MODEL_TRANSACTION_VALIDATOR_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

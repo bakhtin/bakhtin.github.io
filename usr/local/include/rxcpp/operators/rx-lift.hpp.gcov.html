@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/operators/rx-lift.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/operators</a> - rx-lift.hpp<span style="font-size: 80%;"> (source / <a href="rx-lift.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : /*! \file rx-lift.hpp
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :     \brief  takes any function that will take a subscriber for this observable and produce a subscriber.
+<span class="lineNum">       8 </span>            :             this is intended to allow externally defined operators, that use make_subscriber, to be connected into the expression.
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     \tparam ResultType  the type of the emitted results.
+<span class="lineNum">      11 </span>            :     \tparam Operator    the type of the operator.
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            :     \return An observable that emitting the items from its source.
+<span class="lineNum">      14 </span>            :  */
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : #if !defined(RXCPP_OPERATORS_RX_LIFT_HPP)
+<span class="lineNum">      17 </span>            : #define RXCPP_OPERATORS_RX_LIFT_HPP
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : namespace rxcpp {
+<span class="lineNum">      22 </span>            : 
+<span class="lineNum">      23 </span>            : namespace detail {
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : template&lt;class V, class S, class F&gt;
+<span class="lineNum">      26 </span>            : struct is_lift_function_for {
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            :     struct tag_not_valid {};
+<span class="lineNum">      29 </span>            :     template&lt;class CS, class CF&gt;
+<span class="lineNum">      30 </span>            :     static auto check(int) -&gt; decltype((*(CF*)nullptr)(*(CS*)nullptr));
+<span class="lineNum">      31 </span>            :     template&lt;class CS, class CF&gt;
+<span class="lineNum">      32 </span>            :     static tag_not_valid check(...);
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            :     using for_type = rxu::decay_t&lt;S&gt;;
+<span class="lineNum">      35 </span>            :     using func_type = rxu::decay_t&lt;F&gt;;
+<span class="lineNum">      36 </span>            :     using detail_result = decltype(check&lt;for_type, func_type&gt;(0));
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            :     static const bool value = rxu::all_true_type&lt;
+<span class="lineNum">      39 </span>            :         is_subscriber&lt;detail_result&gt;,
+<span class="lineNum">      40 </span>            :         is_subscriber&lt;for_type&gt;,
+<span class="lineNum">      41 </span>            :         std::is_convertible&lt;V, typename rxu::value_type_from&lt;detail_result&gt;::type&gt;&gt;::value;
+<span class="lineNum">      42 </span>            : };
+<span class="lineNum">      43 </span>            : 
+<span class="lineNum">      44 </span>            : }
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : namespace operators {
+<span class="lineNum">      47 </span>            : 
+<span class="lineNum">      48 </span>            : namespace detail {
+<span class="lineNum">      49 </span>            : 
+<span class="lineNum">      50 </span>            : template&lt;class ResultType, class SourceOperator, class Operator&gt;
+<span class="lineNum">      51 </span>            : struct lift_traits
+<span class="lineNum">      52 </span>            : {
+<span class="lineNum">      53 </span>            :     typedef rxu::decay_t&lt;ResultType&gt; result_value_type;
+<span class="lineNum">      54 </span>            :     typedef rxu::decay_t&lt;SourceOperator&gt; source_operator_type;
+<span class="lineNum">      55 </span>            :     typedef rxu::decay_t&lt;Operator&gt; operator_type;
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            :     typedef typename source_operator_type::value_type source_value_type;
+<span class="lineNum">      58 </span>            : };
+<a name="59"><span class="lineNum">      59 </span>            : </a>
+<span class="lineNum">      60 </span>            : template&lt;class ResultType, class SourceOperator, class Operator&gt;
+<span class="lineNum">      61 </span><span class="lineCov">        464 : struct lift_operator : public operator_base&lt;typename lift_traits&lt;ResultType, SourceOperator, Operator&gt;::result_value_type&gt;</span>
+<span class="lineNum">      62 </span>            : {
+<span class="lineNum">      63 </span>            :     typedef lift_traits&lt;ResultType, SourceOperator, Operator&gt; traits;
+<span class="lineNum">      64 </span>            :     typedef typename traits::source_operator_type source_operator_type;
+<span class="lineNum">      65 </span>            :     typedef typename traits::operator_type operator_type;
+<span class="lineNum">      66 </span>            :     source_operator_type source;
+<a name="67"><span class="lineNum">      67 </span>            :     operator_type chain;</a>
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span><span class="lineCov">         10 :     lift_operator(source_operator_type s, operator_type op)</span>
+<span class="lineNum">      70 </span><span class="lineCov">         10 :         : source(std::move(s))</span>
+<span class="lineNum">      71 </span><span class="lineCov">         20 :         , chain(std::move(op))</span>
+<span class="lineNum">      72 </span>            :     {
+<a name="73"><span class="lineNum">      73 </span><span class="lineCov">          5 :     }</span></a>
+<span class="lineNum">      74 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">      75 </span><span class="lineCov">         10 :     void on_subscribe(Subscriber o) const {</span>
+<span class="lineNum">      76 </span><span class="lineCov">         20 :         auto lifted = chain(std::move(o));</span>
+<span class="lineNum">      77 </span><span class="lineCov">         10 :         trace_activity().lift_enter(source, chain, o, lifted);</span>
+<span class="lineNum">      78 </span><span class="lineCov">         10 :         source.on_subscribe(std::move(lifted));</span>
+<span class="lineNum">      79 </span><span class="lineCov">         10 :         trace_activity().lift_return(source, chain);</span>
+<span class="lineNum">      80 </span><span class="lineCov">         10 :     }</span>
+<span class="lineNum">      81 </span>            : };
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : template&lt;class ResultType, class Operator&gt;
+<span class="lineNum">      84 </span>            : class lift_factory
+<span class="lineNum">      85 </span>            : {
+<span class="lineNum">      86 </span>            :     typedef rxu::decay_t&lt;Operator&gt; operator_type;
+<span class="lineNum">      87 </span>            :     operator_type chain;
+<span class="lineNum">      88 </span>            : public:
+<span class="lineNum">      89 </span>            :     lift_factory(operator_type op) : chain(std::move(op)) {}
+<span class="lineNum">      90 </span>            :     template&lt;class Observable&gt;
+<span class="lineNum">      91 </span>            :     auto operator()(const Observable&amp; source)
+<span class="lineNum">      92 </span>            :         -&gt; decltype(source.template lift&lt;ResultType&gt;(chain)) {
+<span class="lineNum">      93 </span>            :         return      source.template lift&lt;ResultType&gt;(chain);
+<span class="lineNum">      94 </span>            :         static_assert(rxcpp::detail::is_lift_function_for&lt;rxu::value_type_t&lt;Observable&gt;, subscriber&lt;ResultType&gt;, Operator&gt;::value, &quot;Function passed for lift() must have the signature subscriber&lt;...&gt;(subscriber&lt;T, ...&gt;)&quot;);
+<span class="lineNum">      95 </span>            :     }
+<span class="lineNum">      96 </span>            : };
+<span class="lineNum">      97 </span>            : 
+<span class="lineNum">      98 </span>            : }
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            : template&lt;class ResultType, class Operator&gt;
+<span class="lineNum">     101 </span>            : auto lift(Operator&amp;&amp; op)
+<span class="lineNum">     102 </span>            :     -&gt;      detail::lift_factory&lt;ResultType, Operator&gt; {
+<span class="lineNum">     103 </span>            :     return  detail::lift_factory&lt;ResultType, Operator&gt;(std::forward&lt;Operator&gt;(op));
+<span class="lineNum">     104 </span>            : }
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            : }
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            : }
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

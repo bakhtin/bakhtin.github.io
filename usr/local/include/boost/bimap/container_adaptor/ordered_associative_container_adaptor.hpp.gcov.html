@@ -1,0 +1,388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/bimap/container_adaptor/ordered_associative_container_adaptor.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/bimap/container_adaptor</a> - ordered_associative_container_adaptor.hpp<span style="font-size: 80%;"> (source / <a href="ordered_associative_container_adaptor.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntry">2</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Boost.Bimap</a>
+<span class="lineNum">       2 </span>            : //
+<span class="lineNum">       3 </span>            : // Copyright (c) 2006-2007 Matias Capeletto
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // Distributed under the Boost Software License, Version 1.0.
+<span class="lineNum">       6 </span>            : // (See accompanying file LICENSE_1_0.txt or copy at
+<span class="lineNum">       7 </span>            : // http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : /// \file container_adaptor/ordered_associative_container_adaptor.hpp
+<span class="lineNum">      10 </span>            : /// \brief Container adaptor to build a type that is compliant to the concept of an ordered associative container.
+<span class="lineNum">      11 </span>            : 
+<span class="lineNum">      12 </span>            : #ifndef BOOST_BIMAP_CONTAINER_ADAPTOR_ORDERED_ASSOCIATIVE_CONTAINER_ADAPTOR_HPP
+<span class="lineNum">      13 </span>            : #define BOOST_BIMAP_CONTAINER_ADAPTOR_ORDERED_ASSOCIATIVE_CONTAINER_ADAPTOR_HPP
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      16 </span>            : #pragma once
+<span class="lineNum">      17 </span>            : #endif
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;boost/bimap/container_adaptor/associative_container_adaptor.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/bimap/container_adaptor/detail/comparison_adaptor.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/mpl/if.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/mpl/vector.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/mpl/push_front.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/mpl/aux_/na.hpp&gt;
+<span class="lineNum">      27 </span>            : #include &lt;boost/operators.hpp&gt;
+<span class="lineNum">      28 </span>            : #include &lt;boost/call_traits.hpp&gt;
+<span class="lineNum">      29 </span>            : 
+<span class="lineNum">      30 </span>            : namespace boost {
+<span class="lineNum">      31 </span>            : namespace bimaps {
+<span class="lineNum">      32 </span>            : namespace container_adaptor {
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #ifndef BOOST_BIMAP_DOXYGEN_WILL_NOT_PROCESS_THE_FOLLOWING_LINES
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : template
+<span class="lineNum">      37 </span>            : &lt;
+<span class="lineNum">      38 </span>            :     class Base, class Iterator, class ConstIterator,
+<span class="lineNum">      39 </span>            :     class ReverseIterator, class ConstReverseIterator, class KeyType,
+<span class="lineNum">      40 </span>            :     class IteratorToBaseConverter, class IteratorFromBaseConverter,
+<span class="lineNum">      41 </span>            :     class ReverseIteratorFromBaseConverter,
+<span class="lineNum">      42 </span>            :     class ValueToBaseConverter, class ValueFromBaseConverter, 
+<span class="lineNum">      43 </span>            :     class KeyToBaseConverter,
+<span class="lineNum">      44 </span>            :     class FunctorsFromDerivedClasses
+<span class="lineNum">      45 </span>            : &gt;
+<span class="lineNum">      46 </span>            : struct ordered_associative_container_adaptor_base
+<span class="lineNum">      47 </span>            : {
+<span class="lineNum">      48 </span>            :     typedef associative_container_adaptor&lt;
+<span class="lineNum">      49 </span>            :         Base, Iterator, ConstIterator, KeyType,
+<span class="lineNum">      50 </span>            :         IteratorToBaseConverter, IteratorFromBaseConverter,
+<span class="lineNum">      51 </span>            :         ValueToBaseConverter, ValueFromBaseConverter, KeyToBaseConverter,
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            :         BOOST_DEDUCED_TYPENAME mpl::push_front&lt;
+<span class="lineNum">      54 </span>            : 
+<span class="lineNum">      55 </span>            :             FunctorsFromDerivedClasses,
+<span class="lineNum">      56 </span>            : 
+<span class="lineNum">      57 </span>            :             BOOST_DEDUCED_TYPENAME mpl::if_&lt;
+<span class="lineNum">      58 </span>            :                 ::boost::mpl::is_na&lt;ReverseIteratorFromBaseConverter&gt;,
+<span class="lineNum">      59 </span>            :             // {
+<span class="lineNum">      60 </span>            :                     detail::iterator_from_base_identity
+<span class="lineNum">      61 </span>            :                     &lt;
+<span class="lineNum">      62 </span>            :                         BOOST_DEDUCED_TYPENAME Base::reverse_iterator,
+<span class="lineNum">      63 </span>            :                         ReverseIterator,
+<span class="lineNum">      64 </span>            :                         BOOST_DEDUCED_TYPENAME Base::const_reverse_iterator,
+<span class="lineNum">      65 </span>            :                         ConstReverseIterator
+<span class="lineNum">      66 </span>            :                     &gt;,
+<span class="lineNum">      67 </span>            :             // }
+<span class="lineNum">      68 </span>            :             // else
+<span class="lineNum">      69 </span>            :             // {
+<span class="lineNum">      70 </span>            :                     ReverseIteratorFromBaseConverter
+<span class="lineNum">      71 </span>            :             // }
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :             &gt;::type
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :         &gt;::type
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            :     &gt; type;
+<span class="lineNum">      78 </span>            : };
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            : #endif // BOOST_BIMAP_DOXYGEN_WILL_NOT_PROCESS_THE_FOLLOWING_LINES
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            : /// \brief Container adaptor to build a type that is compliant to the concept of an ordered associative container.
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            : template
+<span class="lineNum">      85 </span>            : &lt;
+<span class="lineNum">      86 </span>            :     class Base,
+<span class="lineNum">      87 </span>            : 
+<span class="lineNum">      88 </span>            :     class Iterator,
+<span class="lineNum">      89 </span>            :     class ConstIterator,
+<span class="lineNum">      90 </span>            :     class ReverseIterator,
+<span class="lineNum">      91 </span>            :     class ConstReverseIterator,
+<span class="lineNum">      92 </span>            : 
+<span class="lineNum">      93 </span>            :     class KeyType,
+<span class="lineNum">      94 </span>            : 
+<span class="lineNum">      95 </span>            :     class IteratorToBaseConverter          = ::boost::mpl::na,
+<span class="lineNum">      96 </span>            :     class IteratorFromBaseConverter        = ::boost::mpl::na,
+<span class="lineNum">      97 </span>            :     class ReverseIteratorFromBaseConverter = ::boost::mpl::na,
+<span class="lineNum">      98 </span>            :     class ValueToBaseConverter             = ::boost::mpl::na,
+<span class="lineNum">      99 </span>            :     class ValueFromBaseConverter           = ::boost::mpl::na,
+<span class="lineNum">     100 </span>            :     class KeyToBaseConverter               = ::boost::mpl::na,
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span>            :     class FunctorsFromDerivedClasses = mpl::vector&lt;&gt;
+<span class="lineNum">     103 </span>            : &gt;
+<span class="lineNum">     104 </span>            : class ordered_associative_container_adaptor :
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :     public ordered_associative_container_adaptor_base
+<span class="lineNum">     107 </span>            :     &lt;
+<span class="lineNum">     108 </span>            :         Base, Iterator, ConstIterator,
+<span class="lineNum">     109 </span>            :         ReverseIterator, ConstReverseIterator, KeyType,
+<span class="lineNum">     110 </span>            :         IteratorToBaseConverter, IteratorFromBaseConverter,
+<span class="lineNum">     111 </span>            :         ReverseIteratorFromBaseConverter,
+<span class="lineNum">     112 </span>            :         ValueToBaseConverter, ValueFromBaseConverter, KeyToBaseConverter,
+<span class="lineNum">     113 </span>            :         FunctorsFromDerivedClasses
+<span class="lineNum">     114 </span>            : 
+<span class="lineNum">     115 </span>            :     &gt;::type,
+<span class="lineNum">     116 </span>            : 
+<span class="lineNum">     117 </span>            :     ::boost::totally_ordered
+<span class="lineNum">     118 </span>            :     &lt;
+<span class="lineNum">     119 </span>            :         ordered_associative_container_adaptor
+<span class="lineNum">     120 </span>            :         &lt;
+<span class="lineNum">     121 </span>            :             Base, Iterator, ConstIterator,
+<span class="lineNum">     122 </span>            :             ReverseIterator, ConstReverseIterator,
+<span class="lineNum">     123 </span>            :             KeyType, IteratorToBaseConverter, IteratorFromBaseConverter,
+<span class="lineNum">     124 </span>            :             ReverseIteratorFromBaseConverter,
+<span class="lineNum">     125 </span>            :             ValueToBaseConverter, ValueFromBaseConverter,
+<span class="lineNum">     126 </span>            :             KeyToBaseConverter, FunctorsFromDerivedClasses
+<span class="lineNum">     127 </span>            :         &gt;
+<span class="lineNum">     128 </span>            :     &gt;
+<span class="lineNum">     129 </span>            : {
+<span class="lineNum">     130 </span>            :     // MetaData -------------------------------------------------------------
+<span class="lineNum">     131 </span>            : 
+<span class="lineNum">     132 </span>            :     typedef BOOST_DEDUCED_TYPENAME ordered_associative_container_adaptor_base
+<span class="lineNum">     133 </span>            :     &lt;
+<span class="lineNum">     134 </span>            :         Base, Iterator, ConstIterator,
+<span class="lineNum">     135 </span>            :         ReverseIterator, ConstReverseIterator, KeyType,
+<span class="lineNum">     136 </span>            :         IteratorToBaseConverter, IteratorFromBaseConverter,
+<span class="lineNum">     137 </span>            :         ReverseIteratorFromBaseConverter,
+<span class="lineNum">     138 </span>            :         ValueToBaseConverter, ValueFromBaseConverter, KeyToBaseConverter,
+<span class="lineNum">     139 </span>            :         FunctorsFromDerivedClasses
+<span class="lineNum">     140 </span>            : 
+<span class="lineNum">     141 </span>            :     &gt;::type base_;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :     public:
+<span class="lineNum">     144 </span>            : 
+<span class="lineNum">     145 </span>            :     typedef detail::compatible_comparison_adaptor
+<span class="lineNum">     146 </span>            :     &lt;
+<span class="lineNum">     147 </span>            :         BOOST_DEDUCED_TYPENAME Base::key_compare,
+<span class="lineNum">     148 </span>            :         BOOST_DEDUCED_TYPENAME base_::key_type,
+<span class="lineNum">     149 </span>            :         BOOST_DEDUCED_TYPENAME base_::key_to_base
+<span class="lineNum">     150 </span>            : 
+<span class="lineNum">     151 </span>            :     &gt; key_compare;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            :     typedef detail::comparison_adaptor
+<span class="lineNum">     154 </span>            :     &lt;
+<span class="lineNum">     155 </span>            :         BOOST_DEDUCED_TYPENAME Base::value_compare,
+<span class="lineNum">     156 </span>            :         BOOST_DEDUCED_TYPENAME base_::value_type,
+<span class="lineNum">     157 </span>            :         BOOST_DEDUCED_TYPENAME base_::value_to_base
+<span class="lineNum">     158 </span>            : 
+<span class="lineNum">     159 </span>            :     &gt; value_compare;
+<span class="lineNum">     160 </span>            : 
+<span class="lineNum">     161 </span>            :     typedef ReverseIterator      reverse_iterator;
+<span class="lineNum">     162 </span>            :     typedef ConstReverseIterator const_reverse_iterator;
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :     protected:
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span>            :     typedef BOOST_DEDUCED_TYPENAME mpl::if_&lt;
+<span class="lineNum">     167 </span>            :         ::boost::mpl::is_na&lt;ReverseIteratorFromBaseConverter&gt;,
+<span class="lineNum">     168 </span>            :         // {
+<span class="lineNum">     169 </span>            :                 detail::iterator_from_base_identity
+<span class="lineNum">     170 </span>            :                 &lt;
+<span class="lineNum">     171 </span>            :                     BOOST_DEDUCED_TYPENAME Base::reverse_iterator,
+<span class="lineNum">     172 </span>            :                     reverse_iterator,
+<span class="lineNum">     173 </span>            :                     BOOST_DEDUCED_TYPENAME Base::const_reverse_iterator,
+<span class="lineNum">     174 </span>            :                     const_reverse_iterator
+<span class="lineNum">     175 </span>            :                 &gt;,
+<span class="lineNum">     176 </span>            :         // }
+<span class="lineNum">     177 </span>            :         // else
+<span class="lineNum">     178 </span>            :         // {
+<span class="lineNum">     179 </span>            :                 ReverseIteratorFromBaseConverter
+<span class="lineNum">     180 </span>            :         // }
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span>            :         &gt;::type reverse_iterator_from_base;
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :     // Access -----------------------------------------------------------------
+<span class="lineNum">     185 </span>            : 
+<a name="186"><span class="lineNum">     186 </span>            :     public:</a>
+<span class="lineNum">     187 </span>            : 
+<span class="lineNum">     188 </span><span class="lineCov">       6600 :     explicit ordered_associative_container_adaptor(Base &amp; c)</span>
+<span class="lineNum">     189 </span><span class="lineCov">       6600 :         : base_(c) {}</span>
+<span class="lineNum">     190 </span>            : 
+<span class="lineNum">     191 </span>            :     protected:
+<span class="lineNum">     192 </span>            : 
+<span class="lineNum">     193 </span>            :     typedef ordered_associative_container_adaptor
+<span class="lineNum">     194 </span>            :                 ordered_associative_container_adaptor_;
+<span class="lineNum">     195 </span>            : 
+<span class="lineNum">     196 </span>            :     // Interface --------------------------------------------------------------
+<span class="lineNum">     197 </span>            : 
+<span class="lineNum">     198 </span>            :     public:
+<span class="lineNum">     199 </span>            : 
+<span class="lineNum">     200 </span>            :     reverse_iterator rbegin()
+<span class="lineNum">     201 </span>            :     {
+<span class="lineNum">     202 </span>            :         return this-&gt;template functor&lt;
+<span class="lineNum">     203 </span>            :             reverse_iterator_from_base
+<span class="lineNum">     204 </span>            :         &gt;()                            ( this-&gt;base().rbegin() );
+<span class="lineNum">     205 </span>            : 
+<span class="lineNum">     206 </span>            :     }
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :     reverse_iterator rend()
+<span class="lineNum">     209 </span>            :     {
+<span class="lineNum">     210 </span>            :         return this-&gt;template functor&lt;
+<span class="lineNum">     211 </span>            :             reverse_iterator_from_base
+<span class="lineNum">     212 </span>            :         &gt;()                            ( this-&gt;base().rend() );
+<span class="lineNum">     213 </span>            :     }
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :     const_reverse_iterator rbegin() const
+<span class="lineNum">     216 </span>            :     {
+<span class="lineNum">     217 </span>            :         return this-&gt;template functor&lt;
+<span class="lineNum">     218 </span>            :             reverse_iterator_from_base
+<span class="lineNum">     219 </span>            :         &gt;()                            ( this-&gt;base().rbegin() );
+<span class="lineNum">     220 </span>            :     }
+<span class="lineNum">     221 </span>            : 
+<span class="lineNum">     222 </span>            :     const_reverse_iterator rend() const
+<span class="lineNum">     223 </span>            :     {
+<span class="lineNum">     224 </span>            :         return this-&gt;template functor&lt;
+<span class="lineNum">     225 </span>            :             reverse_iterator_from_base
+<span class="lineNum">     226 </span>            :         &gt;()                            ( this-&gt;base().rend() );
+<span class="lineNum">     227 </span>            :     }
+<span class="lineNum">     228 </span>            : 
+<span class="lineNum">     229 </span>            :     key_compare key_comp() const
+<span class="lineNum">     230 </span>            :     {
+<span class="lineNum">     231 </span>            :         typedef BOOST_DEDUCED_TYPENAME base_::key_to_base key_to_base_;
+<span class="lineNum">     232 </span>            : 
+<span class="lineNum">     233 </span>            :         return key_compare(
+<span class="lineNum">     234 </span>            :             this-&gt;base().key_comp(),
+<span class="lineNum">     235 </span>            :             this-&gt;template functor&lt;key_to_base_&gt;()
+<span class="lineNum">     236 </span>            :         );
+<span class="lineNum">     237 </span>            :     }
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            :     value_compare value_comp() const
+<span class="lineNum">     240 </span>            :     {
+<span class="lineNum">     241 </span>            :         typedef BOOST_DEDUCED_TYPENAME base_::value_to_base value_to_base_;
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            :         return value_compare(
+<span class="lineNum">     244 </span>            :             this-&gt;base().value_comp(),
+<span class="lineNum">     245 </span>            :             this-&gt;template functor&lt;value_to_base_&gt;()
+<span class="lineNum">     246 </span>            :         );
+<span class="lineNum">     247 </span>            :     }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            :     template&lt; class CompatibleKey &gt;
+<span class="lineNum">     250 </span>            :     BOOST_DEDUCED_TYPENAME base_::iterator lower_bound(const CompatibleKey &amp; k)
+<span class="lineNum">     251 </span>            :     {
+<span class="lineNum">     252 </span>            :        return this-&gt;template functor&lt;
+<span class="lineNum">     253 </span>            :             BOOST_DEDUCED_TYPENAME base_::iterator_from_base&gt;()(
+<span class="lineNum">     254 </span>            :                 this-&gt;base().lower_bound(
+<span class="lineNum">     255 </span>            :                     this-&gt;template functor&lt;BOOST_DEDUCED_TYPENAME base_::key_to_base&gt;()(k)
+<span class="lineNum">     256 </span>            :                 )
+<span class="lineNum">     257 </span>            :             );
+<span class="lineNum">     258 </span>            :     }
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            :     template&lt; class CompatibleKey &gt;
+<span class="lineNum">     261 </span>            :     BOOST_DEDUCED_TYPENAME base_::const_iterator lower_bound(const CompatibleKey &amp; k) const
+<span class="lineNum">     262 </span>            :     {
+<span class="lineNum">     263 </span>            :        return this-&gt;template functor&lt;
+<span class="lineNum">     264 </span>            :             BOOST_DEDUCED_TYPENAME base_::iterator_from_base&gt;()(
+<span class="lineNum">     265 </span>            :                 this-&gt;base().lower_bound(
+<span class="lineNum">     266 </span>            :                     this-&gt;template functor&lt;BOOST_DEDUCED_TYPENAME base_::key_to_base&gt;()(k)
+<span class="lineNum">     267 </span>            :                 )
+<span class="lineNum">     268 </span>            :             );
+<span class="lineNum">     269 </span>            :     }
+<span class="lineNum">     270 </span>            : 
+<span class="lineNum">     271 </span>            :     template&lt; class CompatibleKey &gt;
+<span class="lineNum">     272 </span>            :     BOOST_DEDUCED_TYPENAME base_::iterator upper_bound(const CompatibleKey &amp; k)
+<span class="lineNum">     273 </span>            :     {
+<span class="lineNum">     274 </span>            :        return this-&gt;template functor&lt;
+<span class="lineNum">     275 </span>            :             BOOST_DEDUCED_TYPENAME base_::iterator_from_base&gt;()(
+<span class="lineNum">     276 </span>            :                 this-&gt;base().upper_bound(
+<span class="lineNum">     277 </span>            :                     this-&gt;template functor&lt;BOOST_DEDUCED_TYPENAME base_::key_to_base&gt;()(k)
+<span class="lineNum">     278 </span>            :                 )
+<span class="lineNum">     279 </span>            :             );
+<span class="lineNum">     280 </span>            :     }
+<span class="lineNum">     281 </span>            : 
+<span class="lineNum">     282 </span>            :     template&lt; class CompatibleKey &gt;
+<span class="lineNum">     283 </span>            :     BOOST_DEDUCED_TYPENAME base_::const_iterator upper_bound(const CompatibleKey &amp; k) const
+<span class="lineNum">     284 </span>            :     {
+<span class="lineNum">     285 </span>            :         return this-&gt;template functor&lt;
+<span class="lineNum">     286 </span>            :             BOOST_DEDUCED_TYPENAME base_::iterator_from_base&gt;()(
+<span class="lineNum">     287 </span>            :                 this-&gt;base().upper_bound(
+<span class="lineNum">     288 </span>            :                     this-&gt;template functor&lt;BOOST_DEDUCED_TYPENAME base_::key_to_base&gt;()(k)
+<span class="lineNum">     289 </span>            :                 )
+<span class="lineNum">     290 </span>            :             );
+<span class="lineNum">     291 </span>            :     }
+<span class="lineNum">     292 </span>            : 
+<span class="lineNum">     293 </span>            :     // Totally ordered implementation
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :     bool operator==(const ordered_associative_container_adaptor &amp; c) const
+<span class="lineNum">     296 </span>            :     {
+<span class="lineNum">     297 </span>            :         return ( this-&gt;base() == c.base() );
+<span class="lineNum">     298 </span>            :     }
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :     bool operator&lt;(const ordered_associative_container_adaptor &amp; c) const
+<span class="lineNum">     301 </span>            :     {
+<span class="lineNum">     302 </span>            :         return ( this-&gt;base() &lt; c.base() );
+<span class="lineNum">     303 </span>            :     }
+<span class="lineNum">     304 </span>            : };
+<span class="lineNum">     305 </span>            : 
+<span class="lineNum">     306 </span>            : 
+<span class="lineNum">     307 </span>            : } // namespace container_adaptor
+<span class="lineNum">     308 </span>            : } // namespace bimaps
+<span class="lineNum">     309 </span>            : } // namespace boost
+<span class="lineNum">     310 </span>            : 
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            : #endif // BOOST_BIMAP_CONTAINER_ADAPTOR_ORDERED_ASSOCIATIVE_CONTAINER_ADAPTOR_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

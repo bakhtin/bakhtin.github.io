@@ -1,0 +1,606 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/multiprecision/detail/generic_interconvert.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/multiprecision/detail</a> - generic_interconvert.hpp<span style="font-size: 80%;"> (source / <a href="generic_interconvert.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">15</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntryLo">62.5 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : ///////////////////////////////////////////////////////////////////////////////</a>
+<span class="lineNum">       2 </span>            : //  Copyright 2011 John Maddock. Distributed under the Boost
+<span class="lineNum">       3 </span>            : //  Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef BOOST_MP_GENERIC_INTERCONVERT_HPP
+<span class="lineNum">       7 </span>            : #define BOOST_MP_GENERIC_INTERCONVERT_HPP
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #include &lt;boost/multiprecision/detail/default_ops.hpp&gt;
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">      12 </span>            : #pragma warning(push)
+<span class="lineNum">      13 </span>            : #pragma warning(disable:4127 6326)
+<span class="lineNum">      14 </span>            : #endif
+<span class="lineNum">      15 </span>            : 
+<span class="lineNum">      16 </span>            : namespace boost{ namespace multiprecision{ namespace detail{
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">      19 </span>            : inline To do_cast(const From &amp; from)
+<span class="lineNum">      20 </span>            : {
+<span class="lineNum">      21 </span>            :    return static_cast&lt;To&gt;(from);
+<span class="lineNum">      22 </span>            : }
+<span class="lineNum">      23 </span>            : template &lt;class To, class B, ::boost::multiprecision::expression_template_option et&gt;
+<span class="lineNum">      24 </span>            : inline To do_cast(const number&lt;B, et&gt;&amp; from)
+<span class="lineNum">      25 </span>            : {
+<span class="lineNum">      26 </span>            :    return from.template convert_to&lt;To&gt;();
+<span class="lineNum">      27 </span>            : }
+<a name="28"><span class="lineNum">      28 </span>            : </a>
+<span class="lineNum">      29 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">      30 </span><span class="lineCov">       7654 : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_integer&gt;&amp; /*from_type*/)</span>
+<span class="lineNum">      31 </span>            : {
+<span class="lineNum">      32 </span>            :    using default_ops::eval_get_sign;
+<span class="lineNum">      33 </span>            :    using default_ops::eval_bitwise_and;
+<span class="lineNum">      34 </span>            :    using default_ops::eval_convert_to;
+<span class="lineNum">      35 </span>            :    using default_ops::eval_right_shift;
+<span class="lineNum">      36 </span>            :    using default_ops::eval_ldexp;
+<span class="lineNum">      37 </span>            :    using default_ops::eval_add;
+<span class="lineNum">      38 </span>            :    using default_ops::eval_is_zero;
+<span class="lineNum">      39 </span>            :    // smallest unsigned type handled natively by &quot;From&quot; is likely to be it's limb_type:
+<span class="lineNum">      40 </span>            :    typedef typename canonical&lt;unsigned char, From&gt;::type   l_limb_type;
+<span class="lineNum">      41 </span>            :    // get the corresponding type that we can assign to &quot;To&quot;:
+<span class="lineNum">      42 </span>            :    typedef typename canonical&lt;l_limb_type, To&gt;::type         to_type;
+<span class="lineNum">      43 </span><span class="lineCov">       7654 :    From t(from);</span>
+<span class="lineNum">      44 </span><span class="lineCov">       7654 :    bool is_neg = eval_get_sign(t) &lt; 0;</span>
+<span class="lineNum">      45 </span><span class="lineCov">       7654 :    if(is_neg)</span>
+<span class="lineNum">      46 </span><span class="lineNoCov">          0 :       t.negate();</span>
+<span class="lineNum">      47 </span>            :    // Pick off the first limb:
+<span class="lineNum">      48 </span>            :    l_limb_type limb;
+<span class="lineNum">      49 </span><span class="lineCov">       7654 :    l_limb_type mask = static_cast&lt;l_limb_type&gt;(~static_cast&lt;l_limb_type&gt;(0));</span>
+<span class="lineNum">      50 </span><span class="lineCov">       7654 :    From fl;</span>
+<span class="lineNum">      51 </span><span class="lineCov">       7654 :    eval_bitwise_and(fl, t, mask);</span>
+<span class="lineNum">      52 </span><span class="lineCov">       7654 :    eval_convert_to(&amp;limb, fl);</span>
+<span class="lineNum">      53 </span><span class="lineCov">       7654 :    to = static_cast&lt;to_type&gt;(limb);</span>
+<span class="lineNum">      54 </span><span class="lineCov">       7654 :    eval_right_shift(t, std::numeric_limits&lt;l_limb_type&gt;::digits);</span>
+<span class="lineNum">      55 </span>            :    //
+<span class="lineNum">      56 </span>            :    // Then keep picking off more limbs until &quot;t&quot; is zero:
+<span class="lineNum">      57 </span>            :    //
+<span class="lineNum">      58 </span><span class="lineCov">       7654 :    To l;</span>
+<span class="lineNum">      59 </span><span class="lineCov">       7654 :    unsigned shift = std::numeric_limits&lt;l_limb_type&gt;::digits;</span>
+<span class="lineNum">      60 </span><span class="lineCov">       7654 :    while(!eval_is_zero(t))</span>
+<span class="lineNum">      61 </span>            :    {
+<span class="lineNum">      62 </span><span class="lineNoCov">          0 :       eval_bitwise_and(fl, t, mask);</span>
+<span class="lineNum">      63 </span><span class="lineNoCov">          0 :       eval_convert_to(&amp;limb, fl);</span>
+<span class="lineNum">      64 </span><span class="lineNoCov">          0 :       l = static_cast&lt;to_type&gt;(limb);</span>
+<span class="lineNum">      65 </span><span class="lineNoCov">          0 :       eval_right_shift(t, std::numeric_limits&lt;l_limb_type&gt;::digits);</span>
+<span class="lineNum">      66 </span><span class="lineNoCov">          0 :       eval_ldexp(l, l, shift);</span>
+<span class="lineNum">      67 </span><span class="lineNoCov">          0 :       eval_add(to, l);</span>
+<span class="lineNum">      68 </span><span class="lineNoCov">          0 :       shift += std::numeric_limits&lt;l_limb_type&gt;::digits;</span>
+<span class="lineNum">      69 </span>            :    }
+<span class="lineNum">      70 </span>            :    //
+<span class="lineNum">      71 </span>            :    // Finish off by setting the sign:
+<span class="lineNum">      72 </span>            :    //
+<span class="lineNum">      73 </span><span class="lineCov">       7654 :    if(is_neg)</span>
+<span class="lineNum">      74 </span><span class="lineNoCov">          0 :       to.negate();</span>
+<span class="lineNum">      75 </span><span class="lineCov">       7654 : }</span>
+<span class="lineNum">      76 </span>            : 
+<span class="lineNum">      77 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">      78 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_integer&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_integer&gt;&amp; /*from_type*/)
+<span class="lineNum">      79 </span>            : {
+<span class="lineNum">      80 </span>            :    using default_ops::eval_get_sign;
+<span class="lineNum">      81 </span>            :    using default_ops::eval_bitwise_and;
+<span class="lineNum">      82 </span>            :    using default_ops::eval_convert_to;
+<span class="lineNum">      83 </span>            :    using default_ops::eval_right_shift;
+<span class="lineNum">      84 </span>            :    using default_ops::eval_left_shift;
+<span class="lineNum">      85 </span>            :    using default_ops::eval_bitwise_or;
+<span class="lineNum">      86 </span>            :    using default_ops::eval_is_zero;
+<span class="lineNum">      87 </span>            :    // smallest unsigned type handled natively by &quot;From&quot; is likely to be it's limb_type:
+<span class="lineNum">      88 </span>            :    typedef typename canonical&lt;unsigned char, From&gt;::type   limb_type;
+<span class="lineNum">      89 </span>            :    // get the corresponding type that we can assign to &quot;To&quot;:
+<span class="lineNum">      90 </span>            :    typedef typename canonical&lt;limb_type, To&gt;::type         to_type;
+<span class="lineNum">      91 </span>            :    From t(from);
+<span class="lineNum">      92 </span>            :    bool is_neg = eval_get_sign(t) &lt; 0;
+<span class="lineNum">      93 </span>            :    if(is_neg)
+<span class="lineNum">      94 </span>            :       t.negate();
+<span class="lineNum">      95 </span>            :    // Pick off the first limb:
+<span class="lineNum">      96 </span>            :    limb_type limb;
+<span class="lineNum">      97 </span>            :    limb_type mask = static_cast&lt;limb_type&gt;(~static_cast&lt;limb_type&gt;(0));
+<span class="lineNum">      98 </span>            :    From fl;
+<span class="lineNum">      99 </span>            :    eval_bitwise_and(fl, t, mask);
+<span class="lineNum">     100 </span>            :    eval_convert_to(&amp;limb, fl);
+<span class="lineNum">     101 </span>            :    to = static_cast&lt;to_type&gt;(limb);
+<span class="lineNum">     102 </span>            :    eval_right_shift(t, std::numeric_limits&lt;limb_type&gt;::digits);
+<span class="lineNum">     103 </span>            :    //
+<span class="lineNum">     104 </span>            :    // Then keep picking off more limbs until &quot;t&quot; is zero:
+<span class="lineNum">     105 </span>            :    //
+<span class="lineNum">     106 </span>            :    To l;
+<span class="lineNum">     107 </span>            :    unsigned shift = std::numeric_limits&lt;limb_type&gt;::digits;
+<span class="lineNum">     108 </span>            :    while(!eval_is_zero(t))
+<span class="lineNum">     109 </span>            :    {
+<span class="lineNum">     110 </span>            :       eval_bitwise_and(fl, t, mask);
+<span class="lineNum">     111 </span>            :       eval_convert_to(&amp;limb, fl);
+<span class="lineNum">     112 </span>            :       l = static_cast&lt;to_type&gt;(limb);
+<span class="lineNum">     113 </span>            :       eval_right_shift(t, std::numeric_limits&lt;limb_type&gt;::digits);
+<span class="lineNum">     114 </span>            :       eval_left_shift(l, shift);
+<span class="lineNum">     115 </span>            :       eval_bitwise_or(to, l);
+<span class="lineNum">     116 </span>            :       shift += std::numeric_limits&lt;limb_type&gt;::digits;
+<span class="lineNum">     117 </span>            :    }
+<span class="lineNum">     118 </span>            :    //
+<span class="lineNum">     119 </span>            :    // Finish off by setting the sign:
+<span class="lineNum">     120 </span>            :    //
+<span class="lineNum">     121 </span>            :    if(is_neg)
+<span class="lineNum">     122 </span>            :       to.negate();
+<span class="lineNum">     123 </span>            : }
+<span class="lineNum">     124 </span>            : 
+<span class="lineNum">     125 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     126 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*from_type*/)
+<span class="lineNum">     127 </span>            : {
+<span class="lineNum">     128 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">     129 </span>            : #pragma warning(push)
+<span class="lineNum">     130 </span>            : #pragma warning(disable:4127)
+<span class="lineNum">     131 </span>            : #endif
+<span class="lineNum">     132 </span>            :    //
+<span class="lineNum">     133 </span>            :    // The code here only works when the radix of &quot;From&quot; is 2, we could try shifting by other
+<span class="lineNum">     134 </span>            :    // radixes but it would complicate things.... use a string conversion when the radix is other
+<span class="lineNum">     135 </span>            :    // than 2:
+<span class="lineNum">     136 </span>            :    //
+<span class="lineNum">     137 </span>            :    if(std::numeric_limits&lt;number&lt;From&gt; &gt;::radix != 2)
+<span class="lineNum">     138 </span>            :    {
+<span class="lineNum">     139 </span>            :       to = from.str(0, std::ios_base::fmtflags()).c_str();
+<span class="lineNum">     140 </span>            :       return;
+<span class="lineNum">     141 </span>            :    }
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :    typedef typename canonical&lt;unsigned char, To&gt;::type ui_type;
+<span class="lineNum">     145 </span>            : 
+<span class="lineNum">     146 </span>            :    using default_ops::eval_fpclassify;
+<span class="lineNum">     147 </span>            :    using default_ops::eval_add;
+<span class="lineNum">     148 </span>            :    using default_ops::eval_subtract;
+<span class="lineNum">     149 </span>            :    using default_ops::eval_convert_to;
+<span class="lineNum">     150 </span>            :    using default_ops::eval_get_sign;
+<span class="lineNum">     151 </span>            :    using default_ops::eval_is_zero;
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span>            :    //
+<span class="lineNum">     154 </span>            :    // First classify the input, then handle the special cases:
+<span class="lineNum">     155 </span>            :    //
+<span class="lineNum">     156 </span>            :    int c = eval_fpclassify(from);
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span>            :    if(c == (int)FP_ZERO)
+<span class="lineNum">     159 </span>            :    {
+<span class="lineNum">     160 </span>            :       to = ui_type(0);
+<span class="lineNum">     161 </span>            :       return;
+<span class="lineNum">     162 </span>            :    }
+<span class="lineNum">     163 </span>            :    else if(c == (int)FP_NAN)
+<span class="lineNum">     164 </span>            :    {
+<span class="lineNum">     165 </span>            :       to = static_cast&lt;const char*&gt;(&quot;nan&quot;);
+<span class="lineNum">     166 </span>            :       return;
+<span class="lineNum">     167 </span>            :    }
+<span class="lineNum">     168 </span>            :    else if(c == (int)FP_INFINITE)
+<span class="lineNum">     169 </span>            :    {
+<span class="lineNum">     170 </span>            :       to = static_cast&lt;const char*&gt;(&quot;inf&quot;);
+<span class="lineNum">     171 </span>            :       if(eval_get_sign(from) &lt; 0)
+<span class="lineNum">     172 </span>            :          to.negate();
+<span class="lineNum">     173 </span>            :       return;
+<span class="lineNum">     174 </span>            :    }
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span>            :    typename From::exponent_type e;
+<span class="lineNum">     177 </span>            :    From f, term;
+<span class="lineNum">     178 </span>            :    to = ui_type(0);
+<span class="lineNum">     179 </span>            : 
+<span class="lineNum">     180 </span>            :    eval_frexp(f, from, &amp;e);
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span>            :    static const int shift = std::numeric_limits&lt;boost::intmax_t&gt;::digits - 1;
+<span class="lineNum">     183 </span>            : 
+<span class="lineNum">     184 </span>            :    while(!eval_is_zero(f))
+<span class="lineNum">     185 </span>            :    {
+<span class="lineNum">     186 </span>            :       // extract int sized bits from f:
+<span class="lineNum">     187 </span>            :       eval_ldexp(f, f, shift);
+<span class="lineNum">     188 </span>            :       eval_floor(term, f);
+<span class="lineNum">     189 </span>            :       e -= shift;
+<span class="lineNum">     190 </span>            :       eval_ldexp(to, to, shift);
+<span class="lineNum">     191 </span>            :       typename boost::multiprecision::detail::canonical&lt;boost::intmax_t, To&gt;::type ll;
+<span class="lineNum">     192 </span>            :       eval_convert_to(&amp;ll, term);
+<span class="lineNum">     193 </span>            :       eval_add(to, ll);
+<span class="lineNum">     194 </span>            :       eval_subtract(f, term);
+<span class="lineNum">     195 </span>            :    }
+<span class="lineNum">     196 </span>            :    typedef typename To::exponent_type to_exponent;
+<span class="lineNum">     197 </span>            :    if((e &gt; (std::numeric_limits&lt;to_exponent&gt;::max)()) || (e &lt; (std::numeric_limits&lt;to_exponent&gt;::min)()))
+<span class="lineNum">     198 </span>            :    {
+<span class="lineNum">     199 </span>            :       to = static_cast&lt;const char*&gt;(&quot;inf&quot;);
+<span class="lineNum">     200 </span>            :       if(eval_get_sign(from) &lt; 0)
+<span class="lineNum">     201 </span>            :          to.negate();
+<span class="lineNum">     202 </span>            :       return;
+<span class="lineNum">     203 </span>            :    }
+<span class="lineNum">     204 </span>            :    eval_ldexp(to, to, static_cast&lt;to_exponent&gt;(e));
+<span class="lineNum">     205 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">     206 </span>            : #pragma warning(pop)
+<span class="lineNum">     207 </span>            : #endif
+<span class="lineNum">     208 </span>            : }
+<span class="lineNum">     209 </span>            : 
+<span class="lineNum">     210 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     211 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_rational&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_rational&gt;&amp; /*from_type*/)
+<span class="lineNum">     212 </span>            : {
+<span class="lineNum">     213 </span>            :    typedef typename component_type&lt;number&lt;To&gt; &gt;::type     to_component_type;
+<span class="lineNum">     214 </span>            : 
+<span class="lineNum">     215 </span>            :    number&lt;From&gt; t(from);
+<span class="lineNum">     216 </span>            :    to_component_type n(numerator(t)), d(denominator(t));
+<span class="lineNum">     217 </span>            :    using default_ops::assign_components;
+<span class="lineNum">     218 </span>            :    assign_components(to, n.backend(), d.backend());
+<span class="lineNum">     219 </span>            : }
+<span class="lineNum">     220 </span>            : 
+<span class="lineNum">     221 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     222 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_rational&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_integer&gt;&amp; /*from_type*/)
+<span class="lineNum">     223 </span>            : {
+<span class="lineNum">     224 </span>            :    typedef typename component_type&lt;number&lt;To&gt; &gt;::type     to_component_type;
+<span class="lineNum">     225 </span>            : 
+<span class="lineNum">     226 </span>            :    number&lt;From&gt; t(from);
+<span class="lineNum">     227 </span>            :    to_component_type n(t), d(1);
+<span class="lineNum">     228 </span>            :    using default_ops::assign_components;
+<span class="lineNum">     229 </span>            :    assign_components(to, n.backend(), d.backend());
+<span class="lineNum">     230 </span>            : }
+<span class="lineNum">     231 </span>            : 
+<span class="lineNum">     232 </span>            : template &lt;class R, class LargeInteger&gt;
+<span class="lineNum">     233 </span>            : R safe_convert_to_float(const LargeInteger&amp; i)
+<span class="lineNum">     234 </span>            : {
+<span class="lineNum">     235 </span>            :    using std::ldexp;
+<span class="lineNum">     236 </span>            :    if(!i)
+<span class="lineNum">     237 </span>            :       return R(0);
+<span class="lineNum">     238 </span>            :    if(std::numeric_limits&lt;R&gt;::is_specialized &amp;&amp; std::numeric_limits&lt;R&gt;::max_exponent)
+<span class="lineNum">     239 </span>            :    {
+<span class="lineNum">     240 </span>            :       LargeInteger val(i);
+<span class="lineNum">     241 </span>            :       if(val.sign() &lt; 0)
+<span class="lineNum">     242 </span>            :          val = -val;
+<span class="lineNum">     243 </span>            :       unsigned mb = msb(val);
+<span class="lineNum">     244 </span>            :       if(mb &gt;= std::numeric_limits&lt;R&gt;::max_exponent)
+<span class="lineNum">     245 </span>            :       {
+<span class="lineNum">     246 </span>            :          int scale_factor = (int)mb + 1 - std::numeric_limits&lt;R&gt;::max_exponent;
+<span class="lineNum">     247 </span>            :          BOOST_ASSERT(scale_factor &gt;= 1);
+<span class="lineNum">     248 </span>            :          val &gt;&gt;= scale_factor;
+<span class="lineNum">     249 </span>            :          R result = val.template convert_to&lt;R&gt;();
+<span class="lineNum">     250 </span>            :          if(std::numeric_limits&lt;R&gt;::digits == 0 || std::numeric_limits&lt;R&gt;::digits &gt;= std::numeric_limits&lt;R&gt;::max_exponent)
+<span class="lineNum">     251 </span>            :          {
+<span class="lineNum">     252 </span>            :             //
+<span class="lineNum">     253 </span>            :             // Calculate and add on the remainder, only if there are more
+<span class="lineNum">     254 </span>            :             // digits in the mantissa that the size of the exponent, in 
+<span class="lineNum">     255 </span>            :             // other words if we are dropping digits in the conversion
+<span class="lineNum">     256 </span>            :             // otherwise:
+<span class="lineNum">     257 </span>            :             //
+<span class="lineNum">     258 </span>            :             LargeInteger remainder(i);
+<span class="lineNum">     259 </span>            :             remainder &amp;= (LargeInteger(1) &lt;&lt; scale_factor) - 1;
+<span class="lineNum">     260 </span>            :             result += ldexp(safe_convert_to_float&lt;R&gt;(remainder), -scale_factor);
+<span class="lineNum">     261 </span>            :          }
+<span class="lineNum">     262 </span>            :          return i.sign() &lt; 0 ? static_cast&lt;R&gt;(-result) : result;
+<span class="lineNum">     263 </span>            :       }
+<span class="lineNum">     264 </span>            :    }
+<span class="lineNum">     265 </span>            :    return i.template convert_to&lt;R&gt;();
+<span class="lineNum">     266 </span>            : }
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : template &lt;class To, class Integer&gt;
+<span class="lineNum">     269 </span>            : inline typename disable_if_c&lt;is_number&lt;To&gt;::value || is_floating_point&lt;To&gt;::value&gt;::type 
+<span class="lineNum">     270 </span>            :    generic_convert_rational_to_float_imp(To&amp; result, const Integer&amp; n, const Integer&amp; d, const mpl::true_&amp;)
+<span class="lineNum">     271 </span>            : {
+<span class="lineNum">     272 </span>            :    //
+<span class="lineNum">     273 </span>            :    // If we get here, then there's something about one type or the other
+<span class="lineNum">     274 </span>            :    // that prevents an exactly rounded result from being calculated
+<span class="lineNum">     275 </span>            :    // (or at least it's not clear how to implement such a thing).
+<span class="lineNum">     276 </span>            :    //
+<span class="lineNum">     277 </span>            :    using default_ops::eval_divide;
+<span class="lineNum">     278 </span>            :    number&lt;To&gt; fn(safe_convert_to_float&lt;number&lt;To&gt; &gt;(n)), fd(safe_convert_to_float&lt;number&lt;To&gt; &gt;(d));
+<span class="lineNum">     279 </span>            :    eval_divide(result, fn.backend(), fd.backend());
+<span class="lineNum">     280 </span>            : }
+<span class="lineNum">     281 </span>            : template &lt;class To, class Integer&gt;
+<span class="lineNum">     282 </span>            : inline typename enable_if_c&lt;is_number&lt;To&gt;::value || is_floating_point&lt;To&gt;::value&gt;::type 
+<span class="lineNum">     283 </span>            :    generic_convert_rational_to_float_imp(To&amp; result, const Integer&amp; n, const Integer&amp; d, const mpl::true_&amp;)
+<span class="lineNum">     284 </span>            : {
+<span class="lineNum">     285 </span>            :    //
+<span class="lineNum">     286 </span>            :    // If we get here, then there's something about one type or the other
+<span class="lineNum">     287 </span>            :    // that prevents an exactly rounded result from being calculated
+<span class="lineNum">     288 </span>            :    // (or at least it's not clear how to implement such a thing).
+<span class="lineNum">     289 </span>            :    //
+<span class="lineNum">     290 </span>            :    To fd(safe_convert_to_float&lt;To&gt;(d));
+<span class="lineNum">     291 </span>            :    result = safe_convert_to_float&lt;To&gt;(n);
+<span class="lineNum">     292 </span>            :    result /= fd;
+<span class="lineNum">     293 </span>            : }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            : template &lt;class To, class Integer&gt;
+<span class="lineNum">     296 </span>            : typename enable_if_c&lt;is_number&lt;To&gt;::value || is_floating_point&lt;To&gt;::value&gt;::type 
+<span class="lineNum">     297 </span>            :    generic_convert_rational_to_float_imp(To&amp; result, Integer&amp; num, Integer&amp; denom, const mpl::false_&amp;)
+<span class="lineNum">     298 </span>            : {
+<span class="lineNum">     299 </span>            :    //
+<span class="lineNum">     300 </span>            :    // If we get here, then the precision of type To is known, and the integer type is unbounded
+<span class="lineNum">     301 </span>            :    // so we can use integer division plus manipulation of the remainder to get an exactly
+<span class="lineNum">     302 </span>            :    // rounded result.
+<span class="lineNum">     303 </span>            :    //
+<span class="lineNum">     304 </span>            :    if(num == 0)
+<span class="lineNum">     305 </span>            :    {
+<span class="lineNum">     306 </span>            :       result = 0;
+<span class="lineNum">     307 </span>            :       return;
+<span class="lineNum">     308 </span>            :    }
+<span class="lineNum">     309 </span>            :    bool s = false;
+<span class="lineNum">     310 </span>            :    if(num &lt; 0)
+<span class="lineNum">     311 </span>            :    {
+<span class="lineNum">     312 </span>            :       s = true;
+<span class="lineNum">     313 </span>            :       num = -num;
+<span class="lineNum">     314 </span>            :    }
+<span class="lineNum">     315 </span>            :    int denom_bits = msb(denom);
+<span class="lineNum">     316 </span>            :    int shift = std::numeric_limits&lt;To&gt;::digits + denom_bits - msb(num);
+<span class="lineNum">     317 </span>            :    if(shift &gt; 0)
+<span class="lineNum">     318 </span>            :       num &lt;&lt;= shift;
+<span class="lineNum">     319 </span>            :    else if(shift &lt; 0)
+<span class="lineNum">     320 </span>            :       denom &lt;&lt;= boost::multiprecision::detail::unsigned_abs(shift);
+<span class="lineNum">     321 </span>            :    Integer q, r;
+<span class="lineNum">     322 </span>            :    divide_qr(num, denom, q, r);
+<span class="lineNum">     323 </span>            :    int q_bits = msb(q);
+<span class="lineNum">     324 </span>            :    if(q_bits == std::numeric_limits&lt;To&gt;::digits - 1)
+<span class="lineNum">     325 </span>            :    {
+<span class="lineNum">     326 </span>            :       //
+<span class="lineNum">     327 </span>            :       // Round up if 2 * r &gt; denom:
+<span class="lineNum">     328 </span>            :       //
+<span class="lineNum">     329 </span>            :       r &lt;&lt;= 1;
+<span class="lineNum">     330 </span>            :       int c = r.compare(denom);
+<span class="lineNum">     331 </span>            :       if(c &gt; 0)
+<span class="lineNum">     332 </span>            :          ++q;
+<span class="lineNum">     333 </span>            :       else if((c == 0) &amp;&amp; (q &amp; 1u))
+<span class="lineNum">     334 </span>            :       {
+<span class="lineNum">     335 </span>            :          ++q;
+<span class="lineNum">     336 </span>            :       }
+<span class="lineNum">     337 </span>            :    }
+<span class="lineNum">     338 </span>            :    else
+<span class="lineNum">     339 </span>            :    {
+<span class="lineNum">     340 </span>            :       BOOST_ASSERT(q_bits == std::numeric_limits&lt;To&gt;::digits);
+<span class="lineNum">     341 </span>            :       //
+<span class="lineNum">     342 </span>            :       // We basically already have the rounding info:
+<span class="lineNum">     343 </span>            :       //
+<span class="lineNum">     344 </span>            :       if(q &amp; 1u)
+<span class="lineNum">     345 </span>            :       {
+<span class="lineNum">     346 </span>            :          if(r || (q &amp; 2u))
+<span class="lineNum">     347 </span>            :             ++q;
+<span class="lineNum">     348 </span>            :       }
+<span class="lineNum">     349 </span>            :    }
+<span class="lineNum">     350 </span>            :    using std::ldexp;
+<span class="lineNum">     351 </span>            :    result = do_cast&lt;To&gt;(q);
+<span class="lineNum">     352 </span>            :    result = ldexp(result, -shift);
+<span class="lineNum">     353 </span>            :    if(s)
+<span class="lineNum">     354 </span>            :       result = -result;
+<span class="lineNum">     355 </span>            : }
+<span class="lineNum">     356 </span>            : template &lt;class To, class Integer&gt;
+<span class="lineNum">     357 </span>            : inline typename disable_if_c&lt;is_number&lt;To&gt;::value || is_floating_point&lt;To&gt;::value&gt;::type
+<span class="lineNum">     358 </span>            :    generic_convert_rational_to_float_imp(To&amp; result, Integer&amp; num, Integer&amp; denom, const mpl::false_&amp; tag)
+<span class="lineNum">     359 </span>            : {
+<span class="lineNum">     360 </span>            :    number&lt;To&gt; t;
+<span class="lineNum">     361 </span>            :    generic_convert_rational_to_float_imp(t, num, denom, tag);
+<span class="lineNum">     362 </span>            :    result = t.backend();
+<span class="lineNum">     363 </span>            : }
+<span class="lineNum">     364 </span>            : 
+<span class="lineNum">     365 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     366 </span>            : inline void generic_convert_rational_to_float(To&amp; result, const From&amp; f)
+<span class="lineNum">     367 </span>            : {
+<span class="lineNum">     368 </span>            :    //
+<span class="lineNum">     369 </span>            :    // Type From is always a Backend to number&lt;&gt;, or an
+<span class="lineNum">     370 </span>            :    // instance of number&lt;&gt;, but we allow
+<span class="lineNum">     371 </span>            :    // To to be either a Backend type, or a real number type,
+<span class="lineNum">     372 </span>            :    // that way we can call this from generic conversions, and
+<span class="lineNum">     373 </span>            :    // from specific conversions to built in types.
+<span class="lineNum">     374 </span>            :    //
+<span class="lineNum">     375 </span>            :    typedef typename mpl::if_c&lt;is_number&lt;From&gt;::value, From, number&lt;From&gt; &gt;::type actual_from_type;
+<span class="lineNum">     376 </span>            :    typedef typename mpl::if_c&lt;is_number&lt;To&gt;::value || is_floating_point&lt;To&gt;::value, To, number&lt;To&gt; &gt;::type actual_to_type;
+<span class="lineNum">     377 </span>            :    typedef typename component_type&lt;actual_from_type&gt;::type integer_type;
+<span class="lineNum">     378 </span>            :    typedef mpl::bool_&lt;!std::numeric_limits&lt;integer_type&gt;::is_specialized 
+<span class="lineNum">     379 </span>            :                       || std::numeric_limits&lt;integer_type&gt;::is_bounded
+<span class="lineNum">     380 </span>            :                       || !std::numeric_limits&lt;actual_to_type&gt;::is_specialized 
+<span class="lineNum">     381 </span>            :                       || !std::numeric_limits&lt;actual_to_type&gt;::is_bounded
+<span class="lineNum">     382 </span>            :                       || (std::numeric_limits&lt;actual_to_type&gt;::radix != 2)&gt; dispatch_tag;
+<span class="lineNum">     383 </span>            : 
+<span class="lineNum">     384 </span>            :    integer_type n(numerator(static_cast&lt;actual_from_type&gt;(f))), d(denominator(static_cast&lt;actual_from_type&gt;(f)));
+<span class="lineNum">     385 </span>            :    generic_convert_rational_to_float_imp(result, n, d, dispatch_tag());
+<span class="lineNum">     386 </span>            : }
+<span class="lineNum">     387 </span>            : 
+<span class="lineNum">     388 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     389 </span>            : inline void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_rational&gt;&amp; /*from_type*/)
+<span class="lineNum">     390 </span>            : {
+<span class="lineNum">     391 </span>            :    generic_convert_rational_to_float(to, from);
+<span class="lineNum">     392 </span>            : }
+<span class="lineNum">     393 </span>            : 
+<span class="lineNum">     394 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     395 </span>            : void generic_interconvert_float2rational(To&amp; to, const From&amp; from, const mpl::int_&lt;2&gt;&amp; /*radix*/)
+<span class="lineNum">     396 </span>            : {
+<span class="lineNum">     397 </span>            :    typedef typename mpl::front&lt;typename To::unsigned_types&gt;::type ui_type;
+<span class="lineNum">     398 </span>            :    static const int shift = std::numeric_limits&lt;boost::long_long_type&gt;::digits;
+<span class="lineNum">     399 </span>            :    typename From::exponent_type e;
+<span class="lineNum">     400 </span>            :    typename component_type&lt;number&lt;To&gt; &gt;::type num, denom;
+<span class="lineNum">     401 </span>            :    number&lt;From&gt; val(from);
+<span class="lineNum">     402 </span>            :    val = frexp(val, &amp;e);
+<span class="lineNum">     403 </span>            :    while(val)
+<span class="lineNum">     404 </span>            :    {
+<span class="lineNum">     405 </span>            :       val = ldexp(val, shift);
+<span class="lineNum">     406 </span>            :       e -= shift;
+<span class="lineNum">     407 </span>            :       boost::long_long_type ll = boost::math::lltrunc(val);
+<span class="lineNum">     408 </span>            :       val -= ll;
+<span class="lineNum">     409 </span>            :       num &lt;&lt;= shift;
+<span class="lineNum">     410 </span>            :       num += ll;
+<span class="lineNum">     411 </span>            :    }
+<span class="lineNum">     412 </span>            :    denom = ui_type(1u);
+<span class="lineNum">     413 </span>            :    if(e &lt; 0)
+<span class="lineNum">     414 </span>            :       denom &lt;&lt;= -e;
+<span class="lineNum">     415 </span>            :    else if(e &gt; 0)
+<span class="lineNum">     416 </span>            :       num &lt;&lt;= e;
+<span class="lineNum">     417 </span>            :    assign_components(to, num.backend(), denom.backend());
+<span class="lineNum">     418 </span>            : }
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span>            : template &lt;class To, class From, int Radix&gt;
+<span class="lineNum">     421 </span>            : void generic_interconvert_float2rational(To&amp; to, const From&amp; from, const mpl::int_&lt;Radix&gt;&amp; /*radix*/)
+<span class="lineNum">     422 </span>            : {
+<span class="lineNum">     423 </span>            :    //
+<span class="lineNum">     424 </span>            :    // This is almost the same as the binary case above, but we have to use
+<span class="lineNum">     425 </span>            :    // scalbn and ilogb rather than ldexp and frexp, we also only extract
+<span class="lineNum">     426 </span>            :    // one Radix digit at a time which is terribly inefficient!
+<span class="lineNum">     427 </span>            :    //
+<span class="lineNum">     428 </span>            :    typedef typename mpl::front&lt;typename To::unsigned_types&gt;::type ui_type;
+<span class="lineNum">     429 </span>            :    typename From::exponent_type e;
+<span class="lineNum">     430 </span>            :    typename component_type&lt;number&lt;To&gt; &gt;::type num, denom;
+<span class="lineNum">     431 </span>            :    number&lt;From&gt; val(from);
+<span class="lineNum">     432 </span>            :    e = ilogb(val);
+<span class="lineNum">     433 </span>            :    val = scalbn(val, -e);
+<span class="lineNum">     434 </span>            :    while(val)
+<span class="lineNum">     435 </span>            :    {
+<span class="lineNum">     436 </span>            :       boost::long_long_type ll = boost::math::lltrunc(val);
+<span class="lineNum">     437 </span>            :       val -= ll;
+<span class="lineNum">     438 </span>            :       val = scalbn(val, 1);
+<span class="lineNum">     439 </span>            :       num *= Radix;
+<span class="lineNum">     440 </span>            :       num += ll;
+<span class="lineNum">     441 </span>            :       --e;
+<span class="lineNum">     442 </span>            :    }
+<span class="lineNum">     443 </span>            :    ++e;
+<span class="lineNum">     444 </span>            :    denom = ui_type(Radix);
+<span class="lineNum">     445 </span>            :    denom = pow(denom, abs(e));
+<span class="lineNum">     446 </span>            :    if(e &gt; 0)
+<span class="lineNum">     447 </span>            :    {
+<span class="lineNum">     448 </span>            :       num *= denom;
+<span class="lineNum">     449 </span>            :       denom = 1;
+<span class="lineNum">     450 </span>            :    }
+<span class="lineNum">     451 </span>            :    assign_components(to, num.backend(), denom.backend());
+<span class="lineNum">     452 </span>            : }
+<span class="lineNum">     453 </span>            : 
+<span class="lineNum">     454 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     455 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_rational&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*from_type*/)
+<span class="lineNum">     456 </span>            : {
+<span class="lineNum">     457 </span>            :    generic_interconvert_float2rational(to, from, mpl::int_&lt;std::numeric_limits&lt;number&lt;From&gt; &gt;::radix&gt;());
+<span class="lineNum">     458 </span>            : }
+<span class="lineNum">     459 </span>            : 
+<span class="lineNum">     460 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     461 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_integer&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_rational&gt;&amp; /*from_type*/)
+<span class="lineNum">     462 </span>            : {
+<span class="lineNum">     463 </span>            :    number&lt;From&gt; t(from);
+<span class="lineNum">     464 </span>            :    number&lt;To&gt; result(numerator(t) / denominator(t));
+<span class="lineNum">     465 </span>            :    to = result.backend();
+<span class="lineNum">     466 </span>            : }
+<span class="lineNum">     467 </span>            : 
+<span class="lineNum">     468 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     469 </span>            : void generic_interconvert_float2int(To&amp; to, const From&amp; from, const mpl::int_&lt;2&gt;&amp; /*radix*/)
+<span class="lineNum">     470 </span>            : {
+<span class="lineNum">     471 </span>            :    typedef typename From::exponent_type exponent_type;
+<span class="lineNum">     472 </span>            :    static const exponent_type shift = std::numeric_limits&lt;boost::long_long_type&gt;::digits;
+<span class="lineNum">     473 </span>            :    exponent_type e;
+<span class="lineNum">     474 </span>            :    number&lt;To&gt;   num(0u);
+<span class="lineNum">     475 </span>            :    number&lt;From&gt; val(from);
+<span class="lineNum">     476 </span>            :    val = frexp(val, &amp;e);
+<span class="lineNum">     477 </span>            :    while(e &gt; 0)
+<span class="lineNum">     478 </span>            :    {
+<span class="lineNum">     479 </span>            :       int s = (std::min)(e, shift);
+<span class="lineNum">     480 </span>            :       val = ldexp(val, s);
+<span class="lineNum">     481 </span>            :       e -= s;
+<span class="lineNum">     482 </span>            :       boost::long_long_type ll = boost::math::lltrunc(val);
+<span class="lineNum">     483 </span>            :       val -= ll;
+<span class="lineNum">     484 </span>            :       num &lt;&lt;= s;
+<span class="lineNum">     485 </span>            :       num += ll;
+<span class="lineNum">     486 </span>            :    }
+<span class="lineNum">     487 </span>            :    to = num.backend();
+<span class="lineNum">     488 </span>            : }
+<span class="lineNum">     489 </span>            : 
+<span class="lineNum">     490 </span>            : template &lt;class To, class From, int Radix&gt;
+<span class="lineNum">     491 </span>            : void generic_interconvert_float2int(To&amp; to, const From&amp; from, const mpl::int_&lt;Radix&gt;&amp; /*radix*/)
+<span class="lineNum">     492 </span>            : {
+<span class="lineNum">     493 </span>            :    //
+<span class="lineNum">     494 </span>            :    // This is almost the same as the binary case above, but we have to use
+<span class="lineNum">     495 </span>            :    // scalbn and ilogb rather than ldexp and frexp, we also only extract
+<span class="lineNum">     496 </span>            :    // one Radix digit at a time which is terribly inefficient!
+<span class="lineNum">     497 </span>            :    //
+<span class="lineNum">     498 </span>            :    typename From::exponent_type e;
+<span class="lineNum">     499 </span>            :    number&lt;To&gt; num(0u);
+<span class="lineNum">     500 </span>            :    number&lt;From&gt; val(from);
+<span class="lineNum">     501 </span>            :    e = ilogb(val);
+<span class="lineNum">     502 </span>            :    val = scalbn(val, -e);
+<span class="lineNum">     503 </span>            :    while(e &gt;= 0)
+<span class="lineNum">     504 </span>            :    {
+<span class="lineNum">     505 </span>            :       boost::long_long_type ll = boost::math::lltrunc(val);
+<span class="lineNum">     506 </span>            :       val -= ll;
+<span class="lineNum">     507 </span>            :       val = scalbn(val, 1);
+<span class="lineNum">     508 </span>            :       num *= Radix;
+<span class="lineNum">     509 </span>            :       num += ll;
+<span class="lineNum">     510 </span>            :       --e;
+<span class="lineNum">     511 </span>            :    }
+<span class="lineNum">     512 </span>            :    to = num.backend();
+<span class="lineNum">     513 </span>            : }
+<span class="lineNum">     514 </span>            : 
+<span class="lineNum">     515 </span>            : template &lt;class To, class From&gt;
+<span class="lineNum">     516 </span>            : void generic_interconvert(To&amp; to, const From&amp; from, const mpl::int_&lt;number_kind_integer&gt;&amp; /*to_type*/, const mpl::int_&lt;number_kind_floating_point&gt;&amp; /*from_type*/)
+<span class="lineNum">     517 </span>            : {
+<span class="lineNum">     518 </span>            :    generic_interconvert_float2int(to, from, mpl::int_&lt;std::numeric_limits&lt;number&lt;From&gt; &gt;::radix&gt;());
+<span class="lineNum">     519 </span>            : }
+<span class="lineNum">     520 </span>            : 
+<span class="lineNum">     521 </span>            : }
+<span class="lineNum">     522 </span>            : }
+<span class="lineNum">     523 </span>            : } // namespaces
+<span class="lineNum">     524 </span>            : 
+<span class="lineNum">     525 </span>            : #ifdef BOOST_MSVC
+<span class="lineNum">     526 </span>            : #pragma warning(pop)
+<span class="lineNum">     527 </span>            : #endif
+<span class="lineNum">     528 </span>            : 
+<span class="lineNum">     529 </span>            : #endif  // BOOST_MP_GENERIC_INTERCONVERT_HPP
+<span class="lineNum">     530 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

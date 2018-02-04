@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/model/converters/pb_query_factory.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../index.html">top level</a> - <a href="index.html">irohad/model/converters</a> - pb_query_factory.hpp<span style="font-size: 80%;"> (source / <a href="pb_query_factory.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntry">0</td>
+            <td class="headerCovTableEntryHi">-</td>
+          </tr>
+          <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : #ifndef IROHA_PB_QUERY_FACTORY_HPP
+<span class="lineNum">      18 </span>                :            : #define IROHA_PB_QUERY_FACTORY_HPP
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;typeindex&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;unordered_map&gt;
+<span class="lineNum">      22 </span>                :            : #include &quot;logger/logger.hpp&quot;
+<span class="lineNum">      23 </span>                :            : #include &quot;model/common.hpp&quot;
+<span class="lineNum">      24 </span>                :            : #include &quot;model/query.hpp&quot;
+<span class="lineNum">      25 </span>                :            : #include &quot;queries.pb.h&quot;
+<span class="lineNum">      26 </span>                :            : 
+<span class="lineNum">      27 </span>                :            : namespace iroha {
+<span class="lineNum">      28 </span>                :            :   namespace model {
+<span class="lineNum">      29 </span>                :            :     namespace converters {
+<span class="lineNum">      30 </span>                :            : 
+<span class="lineNum">      31 </span>                :            :       /**
+<a name="32"><span class="lineNum">      32 </span>                :            :        * Converting business objects to protobuf and vice versa</a>
+<span class="lineNum">      33 </span>                :            :        */
+<span class="lineNum">      34 </span>                :<span class="lineCov">        150 :       class PbQueryFactory {</span>
+<span class="lineNum">      35 </span>                :            :        public:
+<span class="lineNum">      36 </span>                :            :         /**
+<span class="lineNum">      37 </span>                :            :          * Convert proto query to model query
+<span class="lineNum">      38 </span>                :            :          * @param pb_block - reference to proto query
+<span class="lineNum">      39 </span>                :            :          * @return model Query
+<span class="lineNum">      40 </span>                :            :          */
+<span class="lineNum">      41 </span>                :            :         optional_ptr&lt;model::Query&gt; deserialize(
+<span class="lineNum">      42 </span>                :            :             const protocol::Query &amp;pb_query) const;
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            :         /**
+<span class="lineNum">      45 </span>                :            :          * Convert model query to proto query
+<span class="lineNum">      46 </span>                :            :          * @param query - model query to serialize
+<span class="lineNum">      47 </span>                :            :          * @return nonstd::nullopt if no query type is found
+<span class="lineNum">      48 </span>                :            :          */
+<span class="lineNum">      49 </span>                :            :         nonstd::optional&lt;protocol::Query&gt; serialize(
+<span class="lineNum">      50 </span>                :            :             std::shared_ptr&lt;const model::Query&gt; query) const;
+<span class="lineNum">      51 </span>                :            : 
+<span class="lineNum">      52 </span>                :            :         PbQueryFactory();
+<span class="lineNum">      53 </span>                :            : 
+<span class="lineNum">      54 </span>                :            :        private:
+<span class="lineNum">      55 </span>                :            :         // Query serializer:
+<span class="lineNum">      56 </span>                :            :         protocol::Query serializeGetAccount(
+<span class="lineNum">      57 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      58 </span>                :            :         protocol::Query serializeGetAccountAssets(
+<span class="lineNum">      59 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      60 </span>                :            :         protocol::Query serializeGetAccountDetail(
+<span class="lineNum">      61 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      62 </span>                :            :         protocol::Query serializeGetTransactions(
+<span class="lineNum">      63 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      64 </span>                :            :         protocol::Query serializeGetAccountTransactions(
+<span class="lineNum">      65 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      66 </span>                :            :         protocol::Query serializeGetAccountAssetTransactions(
+<span class="lineNum">      67 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      68 </span>                :            :         protocol::Query serializeGetSignatories(
+<span class="lineNum">      69 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      70 </span>                :            :         protocol::Query serializeGetAssetInfo(
+<span class="lineNum">      71 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      72 </span>                :            :         protocol::Query serializeGetRoles(
+<span class="lineNum">      73 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      74 </span>                :            :         protocol::Query serializeGetRolePermissions(
+<span class="lineNum">      75 </span>                :            :             std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            :         /**
+<span class="lineNum">      78 </span>                :            :          * Serialize and add meta data of model query to proto query
+<span class="lineNum">      79 </span>                :            :          * @param pb_query - protocol query  object
+<span class="lineNum">      80 </span>                :            :          * @param query - model query to serialize
+<span class="lineNum">      81 </span>                :            :          */
+<span class="lineNum">      82 </span>                :            :         void serializeQueryMetaData(protocol::Query &amp;pb_query,
+<span class="lineNum">      83 </span>                :            :                                     std::shared_ptr&lt;const Query&gt; query) const;
+<span class="lineNum">      84 </span>                :            : 
+<span class="lineNum">      85 </span>                :            :         using Serializer = protocol::Query (PbQueryFactory::*)(
+<span class="lineNum">      86 </span>                :            :             std::shared_ptr&lt;const Query&gt;) const;
+<span class="lineNum">      87 </span>                :            :         std::unordered_map&lt;std::type_index, Serializer&gt; serializers_;
+<span class="lineNum">      88 </span>                :            : 
+<span class="lineNum">      89 </span>                :            :         logger::Logger log_;
+<span class="lineNum">      90 </span>                :            :       };
+<span class="lineNum">      91 </span>                :            : 
+<span class="lineNum">      92 </span>                :            :     }  // namespace converters
+<span class="lineNum">      93 </span>                :            :   }    // namespace model
+<span class="lineNum">      94 </span>                :            : }  // namespace iroha
+<span class="lineNum">      95 </span>                :            : 
+<span class="lineNum">      96 </span>                :            : #endif  // IROHA_PB_QUERY_FACTORY_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/qi/nonterminal/rule.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/qi/nonterminal</a> - rule.hpp<span style="font-size: 80%;"> (source / <a href="rule.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntry">23</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntry">14</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            : 
+<span class="lineNum">       4 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       5 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       6 </span>            : ==============================================================================*/
+<span class="lineNum">       7 </span>            : #if !defined(BOOST_SPIRIT_RULE_FEBRUARY_12_2007_1020AM)
+<span class="lineNum">       8 </span>            : #define BOOST_SPIRIT_RULE_FEBRUARY_12_2007_1020AM
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      11 </span>            : #pragma once
+<span class="lineNum">      12 </span>            : #endif
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            : #include &lt;boost/assert.hpp&gt;
+<span class="lineNum">      15 </span>            : #include &lt;boost/config.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/function.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/mpl/vector.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/type_traits/add_reference.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/type_traits/is_same.hpp&gt;
+<span class="lineNum">      20 </span>            : 
+<span class="lineNum">      21 </span>            : #include &lt;boost/fusion/include/vector.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/fusion/include/size.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/fusion/include/make_vector.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/fusion/include/cons.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/fusion/include/as_list.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/fusion/include/as_vector.hpp&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : #include &lt;boost/spirit/home/support/unused.hpp&gt;
+<span class="lineNum">      29 </span>            : #include &lt;boost/spirit/home/support/argument.hpp&gt;
+<span class="lineNum">      30 </span>            : #include &lt;boost/spirit/home/support/context.hpp&gt;
+<span class="lineNum">      31 </span>            : #include &lt;boost/spirit/home/support/info.hpp&gt;
+<span class="lineNum">      32 </span>            : #include &lt;boost/spirit/home/qi/detail/attributes.hpp&gt;
+<span class="lineNum">      33 </span>            : #include &lt;boost/spirit/home/support/nonterminal/extract_param.hpp&gt;
+<span class="lineNum">      34 </span>            : #include &lt;boost/spirit/home/support/nonterminal/locals.hpp&gt;
+<span class="lineNum">      35 </span>            : #include &lt;boost/spirit/home/qi/reference.hpp&gt;
+<span class="lineNum">      36 </span>            : #include &lt;boost/spirit/home/qi/nonterminal/detail/parameterized.hpp&gt;
+<span class="lineNum">      37 </span>            : #include &lt;boost/spirit/home/qi/nonterminal/detail/parser_binder.hpp&gt;
+<span class="lineNum">      38 </span>            : #include &lt;boost/spirit/home/qi/nonterminal/nonterminal_fwd.hpp&gt;
+<span class="lineNum">      39 </span>            : #include &lt;boost/spirit/home/qi/skip_over.hpp&gt;
+<span class="lineNum">      40 </span>            : 
+<span class="lineNum">      41 </span>            : #if defined(BOOST_MSVC)
+<span class="lineNum">      42 </span>            : # pragma warning(push)
+<span class="lineNum">      43 </span>            : # pragma warning(disable: 4355) // 'this' : used in base member initializer list warning
+<span class="lineNum">      44 </span>            : # pragma warning(disable: 4127) // conditional expression is constant
+<span class="lineNum">      45 </span>            : #endif
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span>            : namespace boost { namespace spirit { namespace qi
+<span class="lineNum">      48 </span>            : {
+<span class="lineNum">      49 </span>            :     BOOST_PP_REPEAT(SPIRIT_ATTRIBUTES_LIMIT, SPIRIT_USING_ATTRIBUTE, _)
+<span class="lineNum">      50 </span>            : 
+<span class="lineNum">      51 </span>            :     using spirit::_pass_type;
+<span class="lineNum">      52 </span>            :     using spirit::_val_type;
+<span class="lineNum">      53 </span>            :     using spirit::_a_type;
+<span class="lineNum">      54 </span>            :     using spirit::_b_type;
+<span class="lineNum">      55 </span>            :     using spirit::_c_type;
+<span class="lineNum">      56 </span>            :     using spirit::_d_type;
+<span class="lineNum">      57 </span>            :     using spirit::_e_type;
+<span class="lineNum">      58 </span>            :     using spirit::_f_type;
+<span class="lineNum">      59 </span>            :     using spirit::_g_type;
+<span class="lineNum">      60 </span>            :     using spirit::_h_type;
+<span class="lineNum">      61 </span>            :     using spirit::_i_type;
+<span class="lineNum">      62 </span>            :     using spirit::_j_type;
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            : #ifndef BOOST_SPIRIT_NO_PREDEFINED_TERMINALS
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span>            :     using spirit::_pass;
+<span class="lineNum">      67 </span>            :     using spirit::_val;
+<span class="lineNum">      68 </span>            :     using spirit::_a;
+<span class="lineNum">      69 </span>            :     using spirit::_b;
+<span class="lineNum">      70 </span>            :     using spirit::_c;
+<span class="lineNum">      71 </span>            :     using spirit::_d;
+<span class="lineNum">      72 </span>            :     using spirit::_e;
+<span class="lineNum">      73 </span>            :     using spirit::_f;
+<span class="lineNum">      74 </span>            :     using spirit::_g;
+<span class="lineNum">      75 </span>            :     using spirit::_h;
+<span class="lineNum">      76 </span>            :     using spirit::_i;
+<span class="lineNum">      77 </span>            :     using spirit::_j;
+<span class="lineNum">      78 </span>            : 
+<span class="lineNum">      79 </span>            : #endif
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            :     using spirit::info;
+<span class="lineNum">      82 </span>            :     using spirit::locals;
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :     template &lt;
+<a name="85"><span class="lineNum">      85 </span>            :         typename Iterator, typename T1, typename T2, typename T3</a>
+<span class="lineNum">      86 </span>            :       , typename T4&gt;
+<span class="lineNum">      87 </span><span class="lineCov">        276 :     struct rule</span>
+<span class="lineNum">      88 </span>            :       : proto::extends&lt;
+<span class="lineNum">      89 </span>            :             typename proto::terminal&lt;
+<span class="lineNum">      90 </span>            :                 reference&lt;rule&lt;Iterator, T1, T2, T3, T4&gt; const&gt;
+<span class="lineNum">      91 </span>            :             &gt;::type
+<span class="lineNum">      92 </span>            :           , rule&lt;Iterator, T1, T2, T3, T4&gt;
+<span class="lineNum">      93 </span>            :         &gt;
+<span class="lineNum">      94 </span>            :       , parser&lt;rule&lt;Iterator, T1, T2, T3, T4&gt; &gt;
+<span class="lineNum">      95 </span>            :     {
+<span class="lineNum">      96 </span>            :         typedef Iterator iterator_type;
+<span class="lineNum">      97 </span>            :         typedef rule&lt;Iterator, T1, T2, T3, T4&gt; this_type;
+<span class="lineNum">      98 </span>            :         typedef reference&lt;this_type const&gt; reference_;
+<span class="lineNum">      99 </span>            :         typedef typename proto::terminal&lt;reference_&gt;::type terminal;
+<span class="lineNum">     100 </span>            :         typedef proto::extends&lt;terminal, this_type&gt; base_type;
+<span class="lineNum">     101 </span>            :         typedef mpl::vector&lt;T1, T2, T3, T4&gt; template_params;
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            :         // The rule's locals_type: a sequence of types to be used as local variables
+<span class="lineNum">     104 </span>            :         typedef typename
+<span class="lineNum">     105 </span>            :             spirit::detail::extract_locals&lt;template_params&gt;::type
+<span class="lineNum">     106 </span>            :         locals_type;
+<span class="lineNum">     107 </span>            : 
+<span class="lineNum">     108 </span>            :         // The rule's skip-parser type
+<span class="lineNum">     109 </span>            :         typedef typename
+<span class="lineNum">     110 </span>            :             spirit::detail::extract_component&lt;
+<span class="lineNum">     111 </span>            :                 qi::domain, template_params&gt;::type
+<span class="lineNum">     112 </span>            :         skipper_type;
+<span class="lineNum">     113 </span>            : 
+<span class="lineNum">     114 </span>            :         // The rule's encoding type
+<span class="lineNum">     115 </span>            :         typedef typename
+<span class="lineNum">     116 </span>            :             spirit::detail::extract_encoding&lt;template_params&gt;::type
+<span class="lineNum">     117 </span>            :         encoding_type;
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span>            :         // The rule's signature
+<span class="lineNum">     120 </span>            :         typedef typename
+<span class="lineNum">     121 </span>            :             spirit::detail::extract_sig&lt;template_params, encoding_type, qi::domain&gt;::type
+<span class="lineNum">     122 </span>            :         sig_type;
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            :         // This is the rule's attribute type
+<span class="lineNum">     125 </span>            :         typedef typename
+<span class="lineNum">     126 </span>            :             spirit::detail::attr_from_sig&lt;sig_type&gt;::type
+<span class="lineNum">     127 </span>            :         attr_type;
+<span class="lineNum">     128 </span>            :         typedef typename add_reference&lt;attr_type&gt;::type attr_reference_type;
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span>            :         // parameter_types is a sequence of types passed as parameters to the rule
+<span class="lineNum">     131 </span>            :         typedef typename
+<span class="lineNum">     132 </span>            :             spirit::detail::params_from_sig&lt;sig_type&gt;::type
+<span class="lineNum">     133 </span>            :         parameter_types;
+<span class="lineNum">     134 </span>            : 
+<span class="lineNum">     135 </span>            :         static size_t const params_size =
+<span class="lineNum">     136 </span>            :             fusion::result_of::size&lt;parameter_types&gt;::type::value;
+<span class="lineNum">     137 </span>            : 
+<span class="lineNum">     138 </span>            :         typedef context&lt;
+<span class="lineNum">     139 </span>            :             fusion::cons&lt;attr_reference_type, parameter_types&gt;
+<span class="lineNum">     140 </span>            :           , locals_type&gt;
+<span class="lineNum">     141 </span>            :         context_type;
+<span class="lineNum">     142 </span>            : 
+<span class="lineNum">     143 </span>            :         typedef function&lt;
+<span class="lineNum">     144 </span>            :             bool(Iterator&amp; first, Iterator const&amp; last
+<span class="lineNum">     145 </span>            :               , context_type&amp; context
+<span class="lineNum">     146 </span>            :               , skipper_type const&amp; skipper
+<span class="lineNum">     147 </span>            :             )&gt;
+<span class="lineNum">     148 </span>            :         function_type;
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :         typedef typename
+<span class="lineNum">     151 </span>            :             mpl::if_&lt;
+<span class="lineNum">     152 </span>            :                 is_same&lt;encoding_type, unused_type&gt;
+<span class="lineNum">     153 </span>            :               , unused_type
+<span class="lineNum">     154 </span>            :               , tag::char_code&lt;tag::encoding, encoding_type&gt;
+<span class="lineNum">     155 </span>            :             &gt;::type
+<a name="156"><span class="lineNum">     156 </span>            :         encoding_modifier_type;</a>
+<span class="lineNum">     157 </span>            : 
+<span class="lineNum">     158 </span><span class="lineCov">        138 :         explicit rule(std::string const&amp; name = &quot;unnamed-rule&quot;)</span>
+<span class="lineNum">     159 </span><span class="lineCov">        138 :           : base_type(terminal::make(reference_(*this)))</span>
+<span class="lineNum">     160 </span><span class="lineCov">        138 :           , name_(name)</span>
+<span class="lineNum">     161 </span>            :         {
+<span class="lineNum">     162 </span><span class="lineCov">        138 :         }</span>
+<span class="lineNum">     163 </span>            : 
+<span class="lineNum">     164 </span>            :         rule(rule const&amp; rhs)
+<span class="lineNum">     165 </span>            :           : base_type(terminal::make(reference_(*this)))
+<span class="lineNum">     166 </span>            :           , name_(rhs.name_)
+<span class="lineNum">     167 </span>            :           , f(rhs.f)
+<span class="lineNum">     168 </span>            :         {
+<span class="lineNum">     169 </span>            :         }
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :         template &lt;typename Auto, typename Expr&gt;
+<span class="lineNum">     172 </span>            :         static void define(rule&amp; /*lhs*/, Expr const&amp; /*expr*/, mpl::false_)
+<span class="lineNum">     173 </span>            :         {
+<span class="lineNum">     174 </span>            :             // Report invalid expression error as early as possible.
+<span class="lineNum">     175 </span>            :             // If you got an error_invalid_expression error message here,
+<span class="lineNum">     176 </span>            :             // then the expression (expr) is not a valid spirit qi expression.
+<span class="lineNum">     177 </span>            :             BOOST_SPIRIT_ASSERT_MATCH(qi::domain, Expr);
+<span class="lineNum">     178 </span>            :         }
+<a name="179"><span class="lineNum">     179 </span>            : </a>
+<span class="lineNum">     180 </span>            :         template &lt;typename Auto, typename Expr&gt;
+<span class="lineNum">     181 </span><span class="lineCov">        115 :         static void define(rule&amp; lhs, Expr const&amp; expr, mpl::true_)</span>
+<span class="lineNum">     182 </span>            :         {
+<span class="lineNum">     183 </span><span class="lineCov">        115 :             lhs.f = detail::bind_parser&lt;Auto&gt;(</span>
+<span class="lineNum">     184 </span><span class="lineCov">         23 :                 compile&lt;qi::domain&gt;(expr, encoding_modifier_type()));</span>
+<span class="lineNum">     185 </span><span class="lineCov">        115 :         }</span>
+<span class="lineNum">     186 </span>            : 
+<span class="lineNum">     187 </span>            :         template &lt;typename Expr&gt;
+<span class="lineNum">     188 </span>            :         rule(Expr const&amp; expr, std::string const&amp; name = &quot;unnamed-rule&quot;)
+<span class="lineNum">     189 </span>            :           : base_type(terminal::make(reference_(*this)))
+<span class="lineNum">     190 </span>            :           , name_(name)
+<span class="lineNum">     191 </span>            :         {
+<span class="lineNum">     192 </span>            :             define&lt;mpl::false_&gt;(*this, expr, traits::matches&lt;qi::domain, Expr&gt;());
+<span class="lineNum">     193 </span>            :         }
+<span class="lineNum">     194 </span>            : 
+<span class="lineNum">     195 </span>            :         rule&amp; operator=(rule const&amp; rhs)
+<span class="lineNum">     196 </span>            :         {
+<span class="lineNum">     197 </span>            :             // The following assertion fires when you try to initialize a rule
+<span class="lineNum">     198 </span>            :             // from an uninitialized one. Did you mean to refer to the right
+<span class="lineNum">     199 </span>            :             // hand side rule instead of assigning from it? In this case you
+<span class="lineNum">     200 </span>            :             // should write lhs = rhs.alias();
+<span class="lineNum">     201 </span>            :             BOOST_ASSERT(rhs.f &amp;&amp; &quot;Did you mean rhs.alias() instead of rhs?&quot;);
+<span class="lineNum">     202 </span>            : 
+<span class="lineNum">     203 </span>            :             f = rhs.f;
+<span class="lineNum">     204 </span>            :             name_ = rhs.name_;
+<span class="lineNum">     205 </span>            :             return *this;
+<span class="lineNum">     206 </span>            :         }
+<span class="lineNum">     207 </span>            : 
+<span class="lineNum">     208 </span>            :         std::string const&amp; name() const
+<span class="lineNum">     209 </span>            :         {
+<span class="lineNum">     210 </span>            :             return name_;
+<span class="lineNum">     211 </span>            :         }
+<span class="lineNum">     212 </span>            : 
+<span class="lineNum">     213 </span>            :         void name(std::string const&amp; str)
+<span class="lineNum">     214 </span>            :         {
+<span class="lineNum">     215 </span>            :             name_ = str;
+<span class="lineNum">     216 </span>            :         }
+<a name="217"><span class="lineNum">     217 </span>            : </a>
+<span class="lineNum">     218 </span>            :         template &lt;typename Expr&gt;
+<span class="lineNum">     219 </span><span class="lineCov">        115 :         rule&amp; operator=(Expr const&amp; expr)</span>
+<span class="lineNum">     220 </span>            :         {
+<span class="lineNum">     221 </span><span class="lineCov">        115 :             define&lt;mpl::false_&gt;(*this, expr, traits::matches&lt;qi::domain, Expr&gt;());</span>
+<span class="lineNum">     222 </span><span class="lineCov">        115 :             return *this;</span>
+<span class="lineNum">     223 </span>            :         }
+<span class="lineNum">     224 </span>            : 
+<span class="lineNum">     225 </span>            : // VC7.1 has problems to resolve 'rule' without explicit template parameters
+<span class="lineNum">     226 </span>            : #if !BOOST_WORKAROUND(BOOST_MSVC, &lt; 1400)
+<span class="lineNum">     227 </span>            :         // g++ 3.3 barfs if this is a member function :(
+<span class="lineNum">     228 </span>            :         template &lt;typename Expr&gt;
+<span class="lineNum">     229 </span>            :         friend rule&amp; operator%=(rule&amp; r, Expr const&amp; expr)
+<span class="lineNum">     230 </span>            :         {
+<span class="lineNum">     231 </span>            :             define&lt;mpl::true_&gt;(r, expr, traits::matches&lt;qi::domain, Expr&gt;());
+<span class="lineNum">     232 </span>            :             return r;
+<span class="lineNum">     233 </span>            :         }
+<span class="lineNum">     234 </span>            : 
+<span class="lineNum">     235 </span>            : #if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+<span class="lineNum">     236 </span>            :         // non-const version needed to suppress proto's %= kicking in
+<span class="lineNum">     237 </span>            :         template &lt;typename Expr&gt;
+<span class="lineNum">     238 </span>            :         friend rule&amp; operator%=(rule&amp; r, Expr&amp; expr)
+<span class="lineNum">     239 </span>            :         {
+<span class="lineNum">     240 </span>            :             return r %= static_cast&lt;Expr const&amp;&gt;(expr);
+<span class="lineNum">     241 </span>            :         }
+<span class="lineNum">     242 </span>            : #else
+<span class="lineNum">     243 </span>            :         // for rvalue references
+<span class="lineNum">     244 </span>            :         template &lt;typename Expr&gt;
+<span class="lineNum">     245 </span>            :         friend rule&amp; operator%=(rule&amp; r, Expr&amp;&amp; expr)
+<span class="lineNum">     246 </span>            :         {
+<span class="lineNum">     247 </span>            :             define&lt;mpl::true_&gt;(r, expr, traits::matches&lt;qi::domain, Expr&gt;());
+<span class="lineNum">     248 </span>            :             return r;
+<span class="lineNum">     249 </span>            :         }
+<span class="lineNum">     250 </span>            : #endif
+<span class="lineNum">     251 </span>            : 
+<span class="lineNum">     252 </span>            : #else
+<span class="lineNum">     253 </span>            :         // both friend functions have to be defined out of class as VC7.1
+<span class="lineNum">     254 </span>            :         // will complain otherwise
+<span class="lineNum">     255 </span>            :         template &lt;typename OutputIterator_, typename T1_, typename T2_
+<span class="lineNum">     256 </span>            :           , typename T3_, typename T4_, typename Expr&gt;
+<span class="lineNum">     257 </span>            :         friend rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; operator%=(
+<span class="lineNum">     258 </span>            :             rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; r, Expr const&amp; expr);
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            :         // non-const version needed to suppress proto's %= kicking in
+<span class="lineNum">     261 </span>            :         template &lt;typename OutputIterator_, typename T1_, typename T2_
+<span class="lineNum">     262 </span>            :           , typename T3_, typename T4_, typename Expr&gt;
+<span class="lineNum">     263 </span>            :         friend rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; operator%=(
+<span class="lineNum">     264 </span>            :             rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; r, Expr&amp; expr);
+<span class="lineNum">     265 </span>            : #endif
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :         template &lt;typename Context, typename Iterator_&gt;
+<span class="lineNum">     268 </span>            :         struct attribute
+<span class="lineNum">     269 </span>            :         {
+<span class="lineNum">     270 </span>            :             typedef attr_type type;
+<span class="lineNum">     271 </span>            :         };
+<a name="272"><span class="lineNum">     272 </span>            : </a>
+<span class="lineNum">     273 </span>            :         template &lt;typename Context, typename Skipper, typename Attribute&gt;
+<span class="lineNum">     274 </span><span class="lineCov">        942 :         bool parse(Iterator&amp; first, Iterator const&amp; last</span>
+<span class="lineNum">     275 </span>            :           , Context&amp; /*context*/, Skipper const&amp; skipper
+<span class="lineNum">     276 </span>            :           , Attribute&amp; attr_param) const
+<span class="lineNum">     277 </span>            :         {
+<span class="lineNum">     278 </span><span class="lineCov">        942 :             if (f)</span>
+<span class="lineNum">     279 </span>            :             {
+<span class="lineNum">     280 </span>            :                 // do a preskip if this is an implied lexeme
+<span class="lineNum">     281 </span>            :                 if (is_same&lt;skipper_type, unused_type&gt;::value)
+<span class="lineNum">     282 </span><span class="lineCov">        942 :                     qi::skip_over(first, last, skipper);</span>
+<span class="lineNum">     283 </span>            : 
+<span class="lineNum">     284 </span>            :                 typedef traits::make_attribute&lt;attr_type, Attribute&gt; make_attribute;
+<span class="lineNum">     285 </span>            : 
+<span class="lineNum">     286 </span>            :                 // do down-stream transformation, provides attribute for
+<span class="lineNum">     287 </span>            :                 // rhs parser
+<span class="lineNum">     288 </span>            :                 typedef traits::transform_attribute&lt;
+<span class="lineNum">     289 </span>            :                     typename make_attribute::type, attr_type, domain&gt;
+<span class="lineNum">     290 </span>            :                 transform;
+<span class="lineNum">     291 </span>            : 
+<span class="lineNum">     292 </span><span class="lineCov">        942 :                 typename make_attribute::type made_attr = make_attribute::call(attr_param);</span>
+<span class="lineNum">     293 </span><span class="lineCov">        942 :                 typename transform::type attr_ = transform::pre(made_attr);</span>
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :                 // If you are seeing a compilation error here, you are probably
+<span class="lineNum">     296 </span>            :                 // trying to use a rule or a grammar which has inherited
+<span class="lineNum">     297 </span>            :                 // attributes, without passing values for them.
+<span class="lineNum">     298 </span><span class="lineCov">        942 :                 context_type context(attr_);</span>
+<span class="lineNum">     299 </span>            : 
+<span class="lineNum">     300 </span>            :                 // If you are seeing a compilation error here stating that the
+<span class="lineNum">     301 </span>            :                 // fourth parameter can't be converted to a required target type
+<span class="lineNum">     302 </span>            :                 // then you are probably trying to use a rule or a grammar with
+<span class="lineNum">     303 </span>            :                 // an incompatible skipper type.
+<span class="lineNum">     304 </span><span class="lineCov">        942 :                 if (f(first, last, context, skipper))</span>
+<span class="lineNum">     305 </span>            :                 {
+<span class="lineNum">     306 </span>            :                     // do up-stream transformation, this integrates the results
+<span class="lineNum">     307 </span>            :                     // back into the original attribute value, if appropriate
+<span class="lineNum">     308 </span><span class="lineCov">        829 :                     traits::post_transform(attr_param, attr_);</span>
+<span class="lineNum">     309 </span><span class="lineCov">        829 :                     return true;</span>
+<span class="lineNum">     310 </span>            :                 }
+<span class="lineNum">     311 </span>            : 
+<span class="lineNum">     312 </span>            :                 // inform attribute transformation of failed rhs
+<span class="lineNum">     313 </span><span class="lineCov">        113 :                 traits::fail_transform(attr_param, attr_);</span>
+<span class="lineNum">     314 </span>            :             }
+<span class="lineNum">     315 </span><span class="lineCov">        942 :             return false;</span>
+<span class="lineNum">     316 </span>            :         }
+<span class="lineNum">     317 </span>            : 
+<span class="lineNum">     318 </span>            :         template &lt;typename Context, typename Skipper
+<span class="lineNum">     319 </span>            :           , typename Attribute, typename Params&gt;
+<span class="lineNum">     320 </span>            :         bool parse(Iterator&amp; first, Iterator const&amp; last
+<span class="lineNum">     321 </span>            :           , Context&amp; caller_context, Skipper const&amp; skipper
+<span class="lineNum">     322 </span>            :           , Attribute&amp; attr_param, Params const&amp; params) const
+<span class="lineNum">     323 </span>            :         {
+<span class="lineNum">     324 </span>            :             if (f)
+<span class="lineNum">     325 </span>            :             {
+<span class="lineNum">     326 </span>            :                 // do a preskip if this is an implied lexeme
+<span class="lineNum">     327 </span>            :                 if (is_same&lt;skipper_type, unused_type&gt;::value)
+<span class="lineNum">     328 </span>            :                     qi::skip_over(first, last, skipper);
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            :                 typedef traits::make_attribute&lt;attr_type, Attribute&gt; make_attribute;
+<span class="lineNum">     331 </span>            : 
+<span class="lineNum">     332 </span>            :                 // do down-stream transformation, provides attribute for
+<span class="lineNum">     333 </span>            :                 // rhs parser
+<span class="lineNum">     334 </span>            :                 typedef traits::transform_attribute&lt;
+<span class="lineNum">     335 </span>            :                     typename make_attribute::type, attr_type, domain&gt;
+<span class="lineNum">     336 </span>            :                 transform;
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            :                 typename make_attribute::type made_attr = make_attribute::call(attr_param);
+<span class="lineNum">     339 </span>            :                 typename transform::type attr_ = transform::pre(made_attr);
+<span class="lineNum">     340 </span>            : 
+<span class="lineNum">     341 </span>            :                 // If you are seeing a compilation error here, you are probably
+<span class="lineNum">     342 </span>            :                 // trying to use a rule or a grammar which has inherited
+<span class="lineNum">     343 </span>            :                 // attributes, passing values of incompatible types for them.
+<span class="lineNum">     344 </span>            :                 context_type context(attr_, params, caller_context);
+<span class="lineNum">     345 </span>            : 
+<span class="lineNum">     346 </span>            :                 // If you are seeing a compilation error here stating that the
+<span class="lineNum">     347 </span>            :                 // fourth parameter can't be converted to a required target type
+<span class="lineNum">     348 </span>            :                 // then you are probably trying to use a rule or a grammar with
+<span class="lineNum">     349 </span>            :                 // an incompatible skipper type.
+<span class="lineNum">     350 </span>            :                 if (f(first, last, context, skipper))
+<span class="lineNum">     351 </span>            :                 {
+<span class="lineNum">     352 </span>            :                     // do up-stream transformation, this integrates the results
+<span class="lineNum">     353 </span>            :                     // back into the original attribute value, if appropriate
+<span class="lineNum">     354 </span>            :                     traits::post_transform(attr_param, attr_);
+<span class="lineNum">     355 </span>            :                     return true;
+<span class="lineNum">     356 </span>            :                 }
+<span class="lineNum">     357 </span>            : 
+<span class="lineNum">     358 </span>            :                 // inform attribute transformation of failed rhs
+<span class="lineNum">     359 </span>            :                 traits::fail_transform(attr_param, attr_);
+<span class="lineNum">     360 </span>            :             }
+<span class="lineNum">     361 </span>            :             return false;
+<span class="lineNum">     362 </span>            :         }
+<span class="lineNum">     363 </span>            : 
+<span class="lineNum">     364 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">     365 </span>            :         info what(Context&amp; /*context*/) const
+<span class="lineNum">     366 </span>            :         {
+<span class="lineNum">     367 </span>            :             return info(name_);
+<span class="lineNum">     368 </span>            :         }
+<span class="lineNum">     369 </span>            : 
+<span class="lineNum">     370 </span>            :         reference_ alias() const
+<span class="lineNum">     371 </span>            :         {
+<span class="lineNum">     372 </span>            :             return reference_(*this);
+<span class="lineNum">     373 </span>            :         }
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            :         typename proto::terminal&lt;this_type&gt;::type copy() const
+<span class="lineNum">     376 </span>            :         {
+<span class="lineNum">     377 </span>            :             typename proto::terminal&lt;this_type&gt;::type result = {*this};
+<span class="lineNum">     378 </span>            :             return result;
+<span class="lineNum">     379 </span>            :         }
+<span class="lineNum">     380 </span>            : 
+<span class="lineNum">     381 </span>            :         // bring in the operator() overloads
+<span class="lineNum">     382 </span>            :         rule const&amp; get_parameterized_subject() const { return *this; }
+<span class="lineNum">     383 </span>            :         typedef rule parameterized_subject_type;
+<span class="lineNum">     384 </span>            :         #include &lt;boost/spirit/home/qi/nonterminal/detail/fcall.hpp&gt;
+<span class="lineNum">     385 </span>            : 
+<span class="lineNum">     386 </span>            :         std::string name_;
+<span class="lineNum">     387 </span>            :         function_type f;
+<span class="lineNum">     388 </span>            :     };
+<span class="lineNum">     389 </span>            : 
+<span class="lineNum">     390 </span>            : #if BOOST_WORKAROUND(BOOST_MSVC, &lt; 1400)
+<span class="lineNum">     391 </span>            :     template &lt;typename OutputIterator_, typename T1_, typename T2_
+<span class="lineNum">     392 </span>            :       , typename T3_, typename T4_, typename Expr&gt;
+<span class="lineNum">     393 </span>            :     rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; operator%=(
+<span class="lineNum">     394 </span>            :         rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;&amp; r, Expr const&amp; expr)
+<span class="lineNum">     395 </span>            :     {
+<span class="lineNum">     396 </span>            :         // Report invalid expression error as early as possible.
+<span class="lineNum">     397 </span>            :         // If you got an error_invalid_expression error message here,
+<span class="lineNum">     398 </span>            :         // then the expression (expr) is not a valid spirit qi expression.
+<span class="lineNum">     399 </span>            :         BOOST_SPIRIT_ASSERT_MATCH(qi::domain, Expr);
+<span class="lineNum">     400 </span>            : 
+<span class="lineNum">     401 </span>            :         typedef typename
+<span class="lineNum">     402 </span>            :             rule&lt;OutputIterator_, T1_, T2_, T3_, T4_&gt;::encoding_modifier_type
+<span class="lineNum">     403 </span>            :         encoding_modifier_type;
+<span class="lineNum">     404 </span>            : 
+<span class="lineNum">     405 </span>            :         r.f = detail::bind_parser&lt;mpl::true_&gt;(
+<span class="lineNum">     406 </span>            :             compile&lt;qi::domain&gt;(expr, encoding_modifier_type()));
+<span class="lineNum">     407 </span>            :         return r;
+<span class="lineNum">     408 </span>            :     }
+<span class="lineNum">     409 </span>            : 
+<span class="lineNum">     410 </span>            :     template &lt;typename Iterator_, typename T1_, typename T2_
+<span class="lineNum">     411 </span>            :       , typename T3_, typename T4_, typename Expr&gt;
+<span class="lineNum">     412 </span>            :     rule&lt;Iterator_, T1_, T2_, T3_, T4_&gt;&amp; operator%=(
+<span class="lineNum">     413 </span>            :         rule&lt;Iterator_, T1_, T2_, T3_, T4_&gt;&amp; r, Expr&amp; expr)
+<span class="lineNum">     414 </span>            :     {
+<span class="lineNum">     415 </span>            :         return r %= static_cast&lt;Expr const&amp;&gt;(expr);
+<span class="lineNum">     416 </span>            :     }
+<span class="lineNum">     417 </span>            : #endif
+<span class="lineNum">     418 </span>            : }}}
+<span class="lineNum">     419 </span>            : 
+<span class="lineNum">     420 </span>            : namespace boost { namespace spirit { namespace traits
+<span class="lineNum">     421 </span>            : {
+<span class="lineNum">     422 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     423 </span>            :     template &lt;
+<span class="lineNum">     424 </span>            :         typename IteratorA, typename IteratorB, typename Attribute
+<span class="lineNum">     425 </span>            :       , typename Context, typename T1, typename T2, typename T3, typename T4&gt;
+<span class="lineNum">     426 </span>            :     struct handles_container&lt;
+<span class="lineNum">     427 </span>            :         qi::rule&lt;IteratorA, T1, T2, T3, T4&gt;, Attribute, Context, IteratorB&gt;
+<span class="lineNum">     428 </span>            :       : traits::is_container&lt;
+<span class="lineNum">     429 </span>            :           typename attribute_of&lt;
+<span class="lineNum">     430 </span>            :               qi::rule&lt;IteratorA, T1, T2, T3, T4&gt;, Context, IteratorB
+<span class="lineNum">     431 </span>            :           &gt;::type
+<span class="lineNum">     432 </span>            :         &gt;
+<span class="lineNum">     433 </span>            :     {};
+<span class="lineNum">     434 </span>            : }}}
+<span class="lineNum">     435 </span>            : 
+<span class="lineNum">     436 </span>            : #if defined(BOOST_MSVC)
+<span class="lineNum">     437 </span>            : # pragma warning(pop)
+<span class="lineNum">     438 </span>            : #endif
+<span class="lineNum">     439 </span>            : 
+<span class="lineNum">     440 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

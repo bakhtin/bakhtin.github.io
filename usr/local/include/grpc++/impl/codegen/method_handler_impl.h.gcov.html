@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/grpc++/impl/codegen/method_handler_impl.h</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/grpc++/impl/codegen</a> - method_handler_impl.h<span style="font-size: 80%;"> (source / <a href="method_handler_impl.h.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">39</td>
+            <td class="headerCovTableEntry">42</td>
+            <td class="headerCovTableEntryHi">92.9 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 13:10:54</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">36</td>
+            <td class="headerCovTableEntry">40</td>
+            <td class="headerCovTableEntryHi">90.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*</a>
+<span class="lineNum">       2 </span>            :  *
+<span class="lineNum">       3 </span>            :  * Copyright 2015 gRPC authors.
+<span class="lineNum">       4 </span>            :  *
+<span class="lineNum">       5 </span>            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>            :  *
+<span class="lineNum">       9 </span>            :  *     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>            :  *
+<span class="lineNum">      11 </span>            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>            :  * limitations under the License.
+<span class="lineNum">      16 </span>            :  *
+<span class="lineNum">      17 </span>            :  */
+<span class="lineNum">      18 </span>            : 
+<span class="lineNum">      19 </span>            : #ifndef GRPCXX_IMPL_CODEGEN_METHOD_HANDLER_IMPL_H
+<span class="lineNum">      20 </span>            : #define GRPCXX_IMPL_CODEGEN_METHOD_HANDLER_IMPL_H
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            : #include &lt;grpc++/impl/codegen/core_codegen_interface.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;grpc++/impl/codegen/rpc_service_method.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;grpc++/impl/codegen/sync_stream.h&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : namespace grpc {
+<span class="lineNum">      27 </span>            : 
+<a name="28"><span class="lineNum">      28 </span>            : /// A wrapper class of an application provided rpc method handler.</a>
+<span class="lineNum">      29 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<a name="30"><span class="lineNum">      30 </span><span class="lineCov">        200 : class RpcMethodHandler : public MethodHandler {</span></a>
+<span class="lineNum">      31 </span>            :  public:
+<span class="lineNum">      32 </span><span class="lineCov">        100 :   RpcMethodHandler(std::function&lt;Status(ServiceType*, ServerContext*,</span>
+<span class="lineNum">      33 </span>            :                                         const RequestType*, ResponseType*)&gt;
+<span class="lineNum">      34 </span>            :                        func,
+<span class="lineNum">      35 </span>            :                    ServiceType* service)
+<a name="36"><span class="lineNum">      36 </span><span class="lineCov">        100 :       : func_(func), service_(service) {}</span></a>
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span><span class="lineCov">         54 :   void RunHandler(const HandlerParameter&amp; param) final {</span>
+<span class="lineNum">      39 </span><span class="lineCov">        108 :     RequestType req;</span>
+<span class="lineNum">      40 </span>            :     Status status =
+<span class="lineNum">      41 </span><span class="lineCov">        108 :         SerializationTraits&lt;RequestType&gt;::Deserialize(param.request, &amp;req);</span>
+<span class="lineNum">      42 </span><span class="lineCov">        108 :     ResponseType rsp;</span>
+<span class="lineNum">      43 </span><span class="lineCov">         54 :     if (status.ok()) {</span>
+<span class="lineNum">      44 </span><span class="lineCov">         54 :       status = func_(service_, param.server_context, &amp;req, &amp;rsp);</span>
+<span class="lineNum">      45 </span>            :     }
+<span class="lineNum">      46 </span>            : 
+<span class="lineNum">      47 </span><span class="lineCov">         54 :     GPR_CODEGEN_ASSERT(!param.server_context-&gt;sent_initial_metadata_);</span>
+<span class="lineNum">      48 </span>            :     CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">      49 </span>            :               CallOpServerSendStatus&gt;
+<span class="lineNum">      50 </span><span class="lineCov">        108 :         ops;</span>
+<span class="lineNum">      51 </span><span class="lineCov">         54 :     ops.SendInitialMetadata(param.server_context-&gt;initial_metadata_,</span>
+<span class="lineNum">      52 </span><span class="lineCov">         54 :                             param.server_context-&gt;initial_metadata_flags());</span>
+<span class="lineNum">      53 </span><span class="lineCov">         54 :     if (param.server_context-&gt;compression_level_set()) {</span>
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :       ops.set_compression_level(param.server_context-&gt;compression_level());</span>
+<span class="lineNum">      55 </span>            :     }
+<span class="lineNum">      56 </span><span class="lineCov">         54 :     if (status.ok()) {</span>
+<span class="lineNum">      57 </span><span class="lineCov">         53 :       status = ops.SendMessage(rsp);</span>
+<span class="lineNum">      58 </span>            :     }
+<span class="lineNum">      59 </span><span class="lineCov">         54 :     ops.ServerSendStatus(param.server_context-&gt;trailing_metadata_, status);</span>
+<span class="lineNum">      60 </span><span class="lineCov">         54 :     param.call-&gt;PerformOps(&amp;ops);</span>
+<span class="lineNum">      61 </span><span class="lineCov">         54 :     param.call-&gt;cq()-&gt;Pluck(&amp;ops);</span>
+<span class="lineNum">      62 </span><span class="lineCov">         54 :   }</span>
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :  private:
+<span class="lineNum">      65 </span>            :   /// Application provided rpc handler function.
+<span class="lineNum">      66 </span>            :   std::function&lt;Status(ServiceType*, ServerContext*, const RequestType*,
+<span class="lineNum">      67 </span>            :                        ResponseType*)&gt;
+<span class="lineNum">      68 </span>            :       func_;
+<span class="lineNum">      69 </span>            :   // The class the above handler function lives in.
+<span class="lineNum">      70 </span>            :   ServiceType* service_;
+<span class="lineNum">      71 </span>            : };
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            : /// A wrapper class of an application provided client streaming handler.
+<span class="lineNum">      74 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">      75 </span>            : class ClientStreamingHandler : public MethodHandler {
+<span class="lineNum">      76 </span>            :  public:
+<span class="lineNum">      77 </span>            :   ClientStreamingHandler(
+<span class="lineNum">      78 </span>            :       std::function&lt;Status(ServiceType*, ServerContext*,
+<span class="lineNum">      79 </span>            :                            ServerReader&lt;RequestType&gt;*, ResponseType*)&gt;
+<span class="lineNum">      80 </span>            :           func,
+<span class="lineNum">      81 </span>            :       ServiceType* service)
+<span class="lineNum">      82 </span>            :       : func_(func), service_(service) {}
+<span class="lineNum">      83 </span>            : 
+<span class="lineNum">      84 </span>            :   void RunHandler(const HandlerParameter&amp; param) final {
+<span class="lineNum">      85 </span>            :     ServerReader&lt;RequestType&gt; reader(param.call, param.server_context);
+<span class="lineNum">      86 </span>            :     ResponseType rsp;
+<span class="lineNum">      87 </span>            :     Status status = func_(service_, param.server_context, &amp;reader, &amp;rsp);
+<span class="lineNum">      88 </span>            : 
+<span class="lineNum">      89 </span>            :     GPR_CODEGEN_ASSERT(!param.server_context-&gt;sent_initial_metadata_);
+<span class="lineNum">      90 </span>            :     CallOpSet&lt;CallOpSendInitialMetadata, CallOpSendMessage,
+<span class="lineNum">      91 </span>            :               CallOpServerSendStatus&gt;
+<span class="lineNum">      92 </span>            :         ops;
+<span class="lineNum">      93 </span>            :     ops.SendInitialMetadata(param.server_context-&gt;initial_metadata_,
+<span class="lineNum">      94 </span>            :                             param.server_context-&gt;initial_metadata_flags());
+<span class="lineNum">      95 </span>            :     if (param.server_context-&gt;compression_level_set()) {
+<span class="lineNum">      96 </span>            :       ops.set_compression_level(param.server_context-&gt;compression_level());
+<span class="lineNum">      97 </span>            :     }
+<span class="lineNum">      98 </span>            :     if (status.ok()) {
+<span class="lineNum">      99 </span>            :       status = ops.SendMessage(rsp);
+<span class="lineNum">     100 </span>            :     }
+<span class="lineNum">     101 </span>            :     ops.ServerSendStatus(param.server_context-&gt;trailing_metadata_, status);
+<span class="lineNum">     102 </span>            :     param.call-&gt;PerformOps(&amp;ops);
+<span class="lineNum">     103 </span>            :     param.call-&gt;cq()-&gt;Pluck(&amp;ops);
+<span class="lineNum">     104 </span>            :   }
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span>            :  private:
+<span class="lineNum">     107 </span>            :   std::function&lt;Status(ServiceType*, ServerContext*, ServerReader&lt;RequestType&gt;*,
+<span class="lineNum">     108 </span>            :                        ResponseType*)&gt;
+<span class="lineNum">     109 </span>            :       func_;
+<span class="lineNum">     110 </span>            :   ServiceType* service_;
+<span class="lineNum">     111 </span>            : };
+<span class="lineNum">     112 </span>            : 
+<a name="113"><span class="lineNum">     113 </span>            : /// A wrapper class of an application provided server streaming handler.</a>
+<span class="lineNum">     114 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<a name="115"><span class="lineNum">     115 </span><span class="lineCov">         16 : class ServerStreamingHandler : public MethodHandler {</span></a>
+<span class="lineNum">     116 </span>            :  public:
+<span class="lineNum">     117 </span><span class="lineCov">          8 :   ServerStreamingHandler(</span>
+<span class="lineNum">     118 </span>            :       std::function&lt;Status(ServiceType*, ServerContext*, const RequestType*,
+<span class="lineNum">     119 </span>            :                            ServerWriter&lt;ResponseType&gt;*)&gt;
+<span class="lineNum">     120 </span>            :           func,
+<span class="lineNum">     121 </span>            :       ServiceType* service)
+<a name="122"><span class="lineNum">     122 </span><span class="lineCov">          8 :       : func_(func), service_(service) {}</span></a>
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span><span class="lineCov">          3 :   void RunHandler(const HandlerParameter&amp; param) final {</span>
+<span class="lineNum">     125 </span><span class="lineCov">          6 :     RequestType req;</span>
+<span class="lineNum">     126 </span>            :     Status status =
+<span class="lineNum">     127 </span><span class="lineCov">          6 :         SerializationTraits&lt;RequestType&gt;::Deserialize(param.request, &amp;req);</span>
+<span class="lineNum">     128 </span>            : 
+<span class="lineNum">     129 </span><span class="lineCov">          3 :     if (status.ok()) {</span>
+<span class="lineNum">     130 </span><span class="lineCov">          6 :       ServerWriter&lt;ResponseType&gt; writer(param.call, param.server_context);</span>
+<span class="lineNum">     131 </span><span class="lineCov">          3 :       status = func_(service_, param.server_context, &amp;req, &amp;writer);</span>
+<span class="lineNum">     132 </span>            :     }
+<span class="lineNum">     133 </span>            : 
+<span class="lineNum">     134 </span><span class="lineCov">          6 :     CallOpSet&lt;CallOpSendInitialMetadata, CallOpServerSendStatus&gt; ops;</span>
+<span class="lineNum">     135 </span><span class="lineCov">          3 :     if (!param.server_context-&gt;sent_initial_metadata_) {</span>
+<span class="lineNum">     136 </span><span class="lineCov">          1 :       ops.SendInitialMetadata(param.server_context-&gt;initial_metadata_,</span>
+<span class="lineNum">     137 </span><span class="lineCov">          1 :                               param.server_context-&gt;initial_metadata_flags());</span>
+<span class="lineNum">     138 </span><span class="lineCov">          1 :       if (param.server_context-&gt;compression_level_set()) {</span>
+<span class="lineNum">     139 </span><span class="lineNoCov">          0 :         ops.set_compression_level(param.server_context-&gt;compression_level());</span>
+<span class="lineNum">     140 </span>            :       }
+<span class="lineNum">     141 </span>            :     }
+<span class="lineNum">     142 </span><span class="lineCov">          3 :     ops.ServerSendStatus(param.server_context-&gt;trailing_metadata_, status);</span>
+<span class="lineNum">     143 </span><span class="lineCov">          3 :     param.call-&gt;PerformOps(&amp;ops);</span>
+<span class="lineNum">     144 </span><span class="lineCov">          3 :     if (param.server_context-&gt;has_pending_ops_) {</span>
+<span class="lineNum">     145 </span><span class="lineNoCov">          0 :       param.call-&gt;cq()-&gt;Pluck(&amp;param.server_context-&gt;pending_ops_);</span>
+<span class="lineNum">     146 </span>            :     }
+<span class="lineNum">     147 </span><span class="lineCov">          3 :     param.call-&gt;cq()-&gt;Pluck(&amp;ops);</span>
+<span class="lineNum">     148 </span><span class="lineCov">          3 :   }</span>
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :  private:
+<span class="lineNum">     151 </span>            :   std::function&lt;Status(ServiceType*, ServerContext*, const RequestType*,
+<span class="lineNum">     152 </span>            :                        ServerWriter&lt;ResponseType&gt;*)&gt;
+<span class="lineNum">     153 </span>            :       func_;
+<span class="lineNum">     154 </span>            :   ServiceType* service_;
+<span class="lineNum">     155 </span>            : };
+<span class="lineNum">     156 </span>            : 
+<span class="lineNum">     157 </span>            : /// A wrapper class of an application provided bidi-streaming handler.
+<span class="lineNum">     158 </span>            : /// This also applies to server-streamed implementation of a unary method
+<span class="lineNum">     159 </span>            : /// with the additional requirement that such methods must have done a
+<span class="lineNum">     160 </span>            : /// write for status to be ok
+<span class="lineNum">     161 </span>            : /// Since this is used by more than 1 class, the service is not passed in.
+<span class="lineNum">     162 </span>            : /// Instead, it is expected to be an implicitly-captured argument of func
+<span class="lineNum">     163 </span>            : /// (through bind or something along those lines)
+<span class="lineNum">     164 </span>            : template &lt;class Streamer, bool WriteNeeded&gt;
+<span class="lineNum">     165 </span>            : class TemplatedBidiStreamingHandler : public MethodHandler {
+<span class="lineNum">     166 </span>            :  public:
+<span class="lineNum">     167 </span>            :   TemplatedBidiStreamingHandler(
+<span class="lineNum">     168 </span>            :       std::function&lt;Status(ServerContext*, Streamer*)&gt; func)
+<span class="lineNum">     169 </span>            :       : func_(func), write_needed_(WriteNeeded) {}
+<span class="lineNum">     170 </span>            : 
+<span class="lineNum">     171 </span>            :   void RunHandler(const HandlerParameter&amp; param) final {
+<span class="lineNum">     172 </span>            :     Streamer stream(param.call, param.server_context);
+<span class="lineNum">     173 </span>            :     Status status = func_(param.server_context, &amp;stream);
+<span class="lineNum">     174 </span>            : 
+<span class="lineNum">     175 </span>            :     CallOpSet&lt;CallOpSendInitialMetadata, CallOpServerSendStatus&gt; ops;
+<span class="lineNum">     176 </span>            :     if (!param.server_context-&gt;sent_initial_metadata_) {
+<span class="lineNum">     177 </span>            :       ops.SendInitialMetadata(param.server_context-&gt;initial_metadata_,
+<span class="lineNum">     178 </span>            :                               param.server_context-&gt;initial_metadata_flags());
+<span class="lineNum">     179 </span>            :       if (param.server_context-&gt;compression_level_set()) {
+<span class="lineNum">     180 </span>            :         ops.set_compression_level(param.server_context-&gt;compression_level());
+<span class="lineNum">     181 </span>            :       }
+<span class="lineNum">     182 </span>            :       if (write_needed_ &amp;&amp; status.ok()) {
+<span class="lineNum">     183 </span>            :         // If we needed a write but never did one, we need to mark the
+<span class="lineNum">     184 </span>            :         // status as a fail
+<span class="lineNum">     185 </span>            :         status = Status(StatusCode::INTERNAL,
+<span class="lineNum">     186 </span>            :                         &quot;Service did not provide response message&quot;);
+<span class="lineNum">     187 </span>            :       }
+<span class="lineNum">     188 </span>            :     }
+<span class="lineNum">     189 </span>            :     ops.ServerSendStatus(param.server_context-&gt;trailing_metadata_, status);
+<span class="lineNum">     190 </span>            :     param.call-&gt;PerformOps(&amp;ops);
+<span class="lineNum">     191 </span>            :     if (param.server_context-&gt;has_pending_ops_) {
+<span class="lineNum">     192 </span>            :       param.call-&gt;cq()-&gt;Pluck(&amp;param.server_context-&gt;pending_ops_);
+<span class="lineNum">     193 </span>            :     }
+<span class="lineNum">     194 </span>            :     param.call-&gt;cq()-&gt;Pluck(&amp;ops);
+<span class="lineNum">     195 </span>            :   }
+<span class="lineNum">     196 </span>            : 
+<span class="lineNum">     197 </span>            :  private:
+<span class="lineNum">     198 </span>            :   std::function&lt;Status(ServerContext*, Streamer*)&gt; func_;
+<span class="lineNum">     199 </span>            :   const bool write_needed_;
+<span class="lineNum">     200 </span>            : };
+<span class="lineNum">     201 </span>            : 
+<span class="lineNum">     202 </span>            : template &lt;class ServiceType, class RequestType, class ResponseType&gt;
+<span class="lineNum">     203 </span>            : class BidiStreamingHandler
+<span class="lineNum">     204 </span>            :     : public TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     205 </span>            :           ServerReaderWriter&lt;ResponseType, RequestType&gt;, false&gt; {
+<span class="lineNum">     206 </span>            :  public:
+<span class="lineNum">     207 </span>            :   BidiStreamingHandler(
+<span class="lineNum">     208 </span>            :       std::function&lt;Status(ServiceType*, ServerContext*,
+<span class="lineNum">     209 </span>            :                            ServerReaderWriter&lt;ResponseType, RequestType&gt;*)&gt;
+<span class="lineNum">     210 </span>            :           func,
+<span class="lineNum">     211 </span>            :       ServiceType* service)
+<span class="lineNum">     212 </span>            :       : TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     213 </span>            :             ServerReaderWriter&lt;ResponseType, RequestType&gt;, false&gt;(std::bind(
+<span class="lineNum">     214 </span>            :             func, service, std::placeholders::_1, std::placeholders::_2)) {}
+<span class="lineNum">     215 </span>            : };
+<span class="lineNum">     216 </span>            : 
+<span class="lineNum">     217 </span>            : template &lt;class RequestType, class ResponseType&gt;
+<span class="lineNum">     218 </span>            : class StreamedUnaryHandler
+<span class="lineNum">     219 </span>            :     : public TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     220 </span>            :           ServerUnaryStreamer&lt;RequestType, ResponseType&gt;, true&gt; {
+<span class="lineNum">     221 </span>            :  public:
+<span class="lineNum">     222 </span>            :   explicit StreamedUnaryHandler(
+<span class="lineNum">     223 </span>            :       std::function&lt;Status(ServerContext*,
+<span class="lineNum">     224 </span>            :                            ServerUnaryStreamer&lt;RequestType, ResponseType&gt;*)&gt;
+<span class="lineNum">     225 </span>            :           func)
+<span class="lineNum">     226 </span>            :       : TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     227 </span>            :             ServerUnaryStreamer&lt;RequestType, ResponseType&gt;, true&gt;(func) {}
+<span class="lineNum">     228 </span>            : };
+<span class="lineNum">     229 </span>            : 
+<span class="lineNum">     230 </span>            : template &lt;class RequestType, class ResponseType&gt;
+<span class="lineNum">     231 </span>            : class SplitServerStreamingHandler
+<span class="lineNum">     232 </span>            :     : public TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     233 </span>            :           ServerSplitStreamer&lt;RequestType, ResponseType&gt;, false&gt; {
+<span class="lineNum">     234 </span>            :  public:
+<span class="lineNum">     235 </span>            :   explicit SplitServerStreamingHandler(
+<span class="lineNum">     236 </span>            :       std::function&lt;Status(ServerContext*,
+<span class="lineNum">     237 </span>            :                            ServerSplitStreamer&lt;RequestType, ResponseType&gt;*)&gt;
+<span class="lineNum">     238 </span>            :           func)
+<span class="lineNum">     239 </span>            :       : TemplatedBidiStreamingHandler&lt;
+<span class="lineNum">     240 </span>            :             ServerSplitStreamer&lt;RequestType, ResponseType&gt;, false&gt;(func) {}
+<span class="lineNum">     241 </span>            : };
+<span class="lineNum">     242 </span>            : 
+<span class="lineNum">     243 </span>            : /// Handle unknown method by returning UNIMPLEMENTED error.
+<span class="lineNum">     244 </span>            : class UnknownMethodHandler : public MethodHandler {
+<span class="lineNum">     245 </span>            :  public:
+<span class="lineNum">     246 </span>            :   template &lt;class T&gt;
+<span class="lineNum">     247 </span>            :   static void FillOps(ServerContext* context, T* ops) {
+<span class="lineNum">     248 </span>            :     Status status(StatusCode::UNIMPLEMENTED, &quot;&quot;);
+<span class="lineNum">     249 </span>            :     if (!context-&gt;sent_initial_metadata_) {
+<span class="lineNum">     250 </span>            :       ops-&gt;SendInitialMetadata(context-&gt;initial_metadata_,
+<span class="lineNum">     251 </span>            :                                context-&gt;initial_metadata_flags());
+<span class="lineNum">     252 </span>            :       if (context-&gt;compression_level_set()) {
+<span class="lineNum">     253 </span>            :         ops-&gt;set_compression_level(context-&gt;compression_level());
+<span class="lineNum">     254 </span>            :       }
+<span class="lineNum">     255 </span>            :       context-&gt;sent_initial_metadata_ = true;
+<span class="lineNum">     256 </span>            :     }
+<span class="lineNum">     257 </span>            :     ops-&gt;ServerSendStatus(context-&gt;trailing_metadata_, status);
+<span class="lineNum">     258 </span>            :   }
+<span class="lineNum">     259 </span>            : 
+<span class="lineNum">     260 </span>            :   void RunHandler(const HandlerParameter&amp; param) final {
+<span class="lineNum">     261 </span>            :     CallOpSet&lt;CallOpSendInitialMetadata, CallOpServerSendStatus&gt; ops;
+<span class="lineNum">     262 </span>            :     FillOps(param.server_context, &amp;ops);
+<span class="lineNum">     263 </span>            :     param.call-&gt;PerformOps(&amp;ops);
+<span class="lineNum">     264 </span>            :     param.call-&gt;cq()-&gt;Pluck(&amp;ops);
+<span class="lineNum">     265 </span>            :   }
+<span class="lineNum">     266 </span>            : };
+<span class="lineNum">     267 </span>            : 
+<span class="lineNum">     268 </span>            : }  // namespace grpc
+<span class="lineNum">     269 </span>            : 
+<span class="lineNum">     270 </span>            : #endif  // GRPCXX_IMPL_CODEGEN_METHOD_HANDLER_IMPL_H
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

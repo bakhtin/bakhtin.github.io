@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/consensus/yac/impl/yac_gate_impl.cpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../index.html">top level</a> - <a href="index.html">irohad/consensus/yac/impl</a> - yac_gate_impl.cpp<span style="font-size: 80%;"> (source / <a href="yac_gate_impl.cpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">54</td>
+            <td class="headerCovTableEntry">60</td>
+            <td class="headerCovTableEntryHi">90.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">24</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntryHi">96.0 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">58</td>
+            <td class="headerCovTableEntry">108</td>
+            <td class="headerCovTableEntryLo">53.7 %</td>
+          </tr>
+          <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /**</a>
+<span class="lineNum">       2 </span>                :            :  * Copyright Soramitsu Co., Ltd. 2017 All Rights Reserved.
+<span class="lineNum">       3 </span>                :            :  * http://soramitsu.co.jp
+<span class="lineNum">       4 </span>                :            :  *
+<span class="lineNum">       5 </span>                :            :  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       6 </span>                :            :  * you may not use this file except in compliance with the License.
+<span class="lineNum">       7 </span>                :            :  * You may obtain a copy of the License at
+<span class="lineNum">       8 </span>                :            :  *
+<span class="lineNum">       9 </span>                :            :  *        http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">      10 </span>                :            :  *
+<span class="lineNum">      11 </span>                :            :  * Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      12 </span>                :            :  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      13 </span>                :            :  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      14 </span>                :            :  * See the License for the specific language governing permissions and
+<span class="lineNum">      15 </span>                :            :  * limitations under the License.
+<span class="lineNum">      16 </span>                :            :  */
+<span class="lineNum">      17 </span>                :            : 
+<span class="lineNum">      18 </span>                :            : #include &quot;consensus/yac/impl/yac_gate_impl.hpp&quot;
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &quot;consensus/yac/storage/yac_common.hpp&quot;
+<span class="lineNum">      21 </span>                :            : 
+<span class="lineNum">      22 </span>                :            : namespace iroha {
+<span class="lineNum">      23 </span>                :            :   namespace consensus {
+<a name="24"><span class="lineNum">      24 </span>                :            :     namespace yac {</a>
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :<span class="lineCov">          6 :       YacGateImpl::YacGateImpl(</span>
+<span class="lineNum">      27 </span>                :            :           std::shared_ptr&lt;HashGate&gt; hash_gate,
+<span class="lineNum">      28 </span>                :            :           std::shared_ptr&lt;YacPeerOrderer&gt; orderer,
+<span class="lineNum">      29 </span>                :            :           std::shared_ptr&lt;YacHashProvider&gt; hash_provider,
+<span class="lineNum">      30 </span>                :            :           std::shared_ptr&lt;simulator::BlockCreator&gt; block_creator,
+<span class="lineNum">      31 </span>                :            :           std::shared_ptr&lt;network::BlockLoader&gt; block_loader,
+<span class="lineNum">      32 </span>                :            :           uint64_t delay)
+<span class="lineNum">      33 </span>                :<span class="lineCov">          6 :           : hash_gate_(std::move(hash_gate)),</span>
+<span class="lineNum">      34 </span>                :<span class="lineCov">          6 :             orderer_(std::move(orderer)),</span>
+<span class="lineNum">      35 </span>                :<span class="lineCov">          6 :             hash_provider_(std::move(hash_provider)),</span>
+<span class="lineNum">      36 </span>                :<span class="lineCov">          6 :             block_creator_(std::move(block_creator)),</span>
+<span class="lineNum">      37 </span>                :<span class="lineCov">          6 :             block_loader_(std::move(block_loader)),</span>
+<span class="lineNum">      38 </span>        [<span class="branchCov" title="Branch 8 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>]:<span class="lineCov">         36 :             delay_(delay) {</span>
+<a name="39"><span class="lineNum">      39 </span>[<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          6 :         log_ = logger::log(&quot;YacGate&quot;);</span></a>
+<span class="lineNum">      40 </span>        [<span class="branchCov" title="Branch 2 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         12 :         block_creator_-&gt;on_block().subscribe(</span>
+<span class="lineNum">      41 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">         14 :             [this](auto block) { this-&gt;vote(block); });</span>
+<a name="42"><span class="lineNum">      42 </span>                :<span class="lineCov">          6 :       }</span></a>
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :<span class="lineCov">          8 :       void YacGateImpl::vote(model::Block block) {</span>
+<span class="lineNum">      45 </span>        [<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">         16 :         auto hash = hash_provider_-&gt;makeHash(block);</span>
+<span class="lineNum">      46 </span>                :<span class="lineCov">          8 :         log_-&gt;info(</span>
+<span class="lineNum">      47 </span>        [<span class="branchCov" title="Branch 1 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          8 :             &quot;vote for block ({}, {})&quot;, hash.proposal_hash, hash.block_hash);</span>
+<span class="lineNum">      48 </span>[<span class="branchCov" title="Branch 2 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 7 times"> + </span><span class="branchCov" title="Branch 6 was taken 1 time"> + </span>]:<span class="lineCov">         16 :         auto order = orderer_-&gt;getOrdering(hash);</span>
+<span class="lineNum">      49 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchCov" title="Branch 2 was taken 7 times"> + </span>]:<span class="lineCov">          8 :         if (not order.has_value()) {</span>
+<span class="lineNum">      50 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :           log_-&gt;error(&quot;ordering doesn't provide peers =&gt; pass round&quot;);</span>
+<span class="lineNum">      51 </span>                :<span class="lineCov">          1 :           return;</span>
+<span class="lineNum">      52 </span>                :            :         }
+<span class="lineNum">      53 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          7 :         current_block_ = std::make_pair(hash, block);</span>
+<span class="lineNum">      54 </span>[<span class="branchCov" title="Branch 2 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          8 :         hash_gate_-&gt;vote(hash, order.value());</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 16 was taken 7 times"> + </span><span class="branchCov" title="Branch 17 was taken 1 time"> + </span>]
+<a name="55"><span class="lineNum">      55 </span>                :            :       }</a>
+<a name="56"><span class="lineNum">      56 </span>                :            : </a>
+<span class="lineNum">      57 </span>                :<span class="lineCov">          5 :       rxcpp::observable&lt;model::Block&gt; YacGateImpl::on_commit() {</span>
+<span class="lineNum">      58 </span>[<span class="branchCov" title="Branch 2 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">         17 :         return hash_gate_-&gt;on_commit().flat_map([this](auto commit_message) {</span>
+<a name="59"><span class="lineNum">      59 </span>                :            :           // map commit to block if it is present or loaded from other peer</a>
+<span class="lineNum">      60 </span>                :            :           return rxcpp::observable&lt;&gt;::create&lt;model::Block&gt;(
+<span class="lineNum">      61 </span>                :<span class="lineCov">        385 :               [this, commit_message](auto subscriber) {</span>
+<span class="lineNum">      62 </span>        [<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">         14 :                 const auto hash = getHash(commit_message.votes);</span>
+<span class="lineNum">      63 </span>        [<span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 7 times"> + </span>]:<span class="lineCov">          7 :                 if (not hash.has_value()) {</span>
+<span class="lineNum">      64 </span>        [<span class="branchNoExec" title="Branch 2 was not executed"> # </span><span class="branchNoExec" title="Branch 3 was not executed"> # </span>]:<span class="lineNoCov">          0 :                   log_-&gt;info(&quot;Invalid commit message, hashes are different&quot;);</span>
+<span class="lineNum">      65 </span>        [<span class="branchNoExec" title="Branch 1 was not executed"> # </span><span class="branchNoExec" title="Branch 2 was not executed"> # </span>]:<span class="lineNoCov">          0 :                   subscriber.on_completed();</span>
+<span class="lineNum">      66 </span>                :<span class="lineNoCov">          0 :                   return;</span>
+<span class="lineNum">      67 </span>                :            :                 }
+<span class="lineNum">      68 </span>                :            :                 // if node has voted for the committed block
+<span class="lineNum">      69 </span>[<span class="branchCov" title="Branch 1 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 1 time"> + </span>]:<span class="lineCov">          7 :                 if (hash == current_block_.first) {</span>
+<span class="lineNum">      70 </span>                :            :                   // append signatures of other nodes
+<span class="lineNum">      71 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                   this-&gt;copySignatures(commit_message);</span>
+<span class="lineNum">      72 </span>        [<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">          6 :                   log_-&gt;info(&quot;consensus: commit top block: height {}, hash {}&quot;,</span>
+<span class="lineNum">      73 </span>                :            :                              current_block_.second.height,
+<span class="lineNum">      74 </span>                :            :                              current_block_.second.hash.to_hexstring());
+<span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                   subscriber.on_next(current_block_.second);</span>
+<span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :                   subscriber.on_completed();</span>
+<span class="lineNum">      77 </span>                :<span class="lineCov">          6 :                   return;</span>
+<span class="lineNum">      78 </span>                :            :                 }
+<span class="lineNum">      79 </span>                :            :                 // node has voted for another block - load committed block
+<span class="lineNum">      80 </span>                :            :                 const auto model_hash =
+<span class="lineNum">      81 </span>[<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 5 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 6 was not taken"> - </span>]:<span class="lineCov">          1 :                     hash_provider_-&gt;toModelHash(hash.value());</span>
+<span class="lineNum">      82 </span>                :            :                 // iterate over peers who voted for the committed block
+<span class="lineNum">      83 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          7 :                 rxcpp::observable&lt;&gt;::iterate(commit_message.votes)</span>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 8 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 9 was not taken"> - </span>][<span class="branchCov" title="Branch 11 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 12 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 14 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 15 was not taken"> - </span>][<span class="branchCov" title="Branch 17 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 18 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 20 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 21 was not taken"> - </span>][<span class="branchCov" title="Branch 23 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>]
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 34 was taken 1 time"> + </span><span class="branchCov" title="Branch 35 was taken 6 times"> + </span>]
+<a name="84"><span class="lineNum">      84 </span>                :            :                     // allow other peers to apply commit</a>
+<span class="lineNum">      85 </span>                :            :                     .delay(std::chrono::milliseconds(delay_))
+<span class="lineNum">      86 </span>                :<span class="lineCov">          1 :                     .flat_map([this, model_hash](auto vote) {</span>
+<a name="87"><span class="lineNum">      87 </span>                :            :                       // map vote to block if it can be loaded</a>
+<span class="lineNum">      88 </span>                :            :                       return rxcpp::observable&lt;&gt;::create&lt;model::Block&gt;(
+<span class="lineNum">      89 </span>                :<span class="lineCov">         55 :                           [this, model_hash, vote](auto subscriber) {</span>
+<span class="lineNum">      90 </span>                :            :                             auto block = block_loader_-&gt;retrieveBlock(
+<span class="lineNum">      91 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          2 :                                 vote.signature.pubkey, model_hash);</span>
+<span class="lineNum">      92 </span>                :            :                             // if load is successful
+<span class="lineNum">      93 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                             if (block.has_value()) {</span>
+<span class="lineNum">      94 </span>[<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 4 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>]:<span class="lineCov">          1 :                               subscriber.on_next(block.value());</span>
+<span class="lineNum">      95 </span>                :            :                             }
+<span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 1 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          1 :                             subscriber.on_completed();</span>
+<span class="lineNum">      97 </span>                :<span class="lineCov">          1 :                           });</span>
+<span class="lineNum">      98 </span>        [<span class="branchCov" title="Branch 2 was taken 1 time"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">          1 :                     })</span>
+<span class="lineNum">      99 </span>                :            :                     // need only the first
+<span class="lineNum">     100 </span>                :            :                     .first()
+<a name="101"><span class="lineNum">     101 </span>                :            :                     .subscribe(</a>
+<span class="lineNum">     102 </span>                :            :                         // if load is successful from at least one node
+<span class="lineNum">     103 </span>                :<span class="lineCov">         27 :                         [subscriber](auto block) {</span>
+<span class="lineNum">     104 </span>                :<span class="lineCov">          1 :                           subscriber.on_next(block);</span>
+<span class="lineNum">     105 </span>                :<span class="lineCov">          1 :                           subscriber.on_completed();</span>
+<a name="106"><span class="lineNum">     106 </span>                :<span class="lineCov">          1 :                         },</span></a>
+<span class="lineNum">     107 </span>                :            :                         // if load has failed, no peers provided the block
+<span class="lineNum">     108 </span>                :<span class="lineCov">         26 :                         [this, subscriber](std::exception_ptr) {</span>
+<span class="lineNum">     109 </span>                :<span class="lineNoCov">          0 :                           log_-&gt;error(&quot;Cannot load committed block&quot;);</span>
+<span class="lineNum">     110 </span>                :<span class="lineNoCov">          0 :                           subscriber.on_completed();</span>
+<span class="lineNum">     111 </span>                :<span class="lineNoCov">          0 :                         });</span>
+<span class="lineNum">     112 </span>                :            :               });
+<span class="lineNum">     113 </span>[<span class="branchCov" title="Branch 1 was taken 5 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 7 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">         17 :         });</span>
+<a name="114"><span class="lineNum">     114 </span>                :            :       }</a>
+<span class="lineNum">     115 </span>                :            : 
+<span class="lineNum">     116 </span>                :<span class="lineCov">          6 :       void YacGateImpl::copySignatures(const CommitMessage &amp;commit) {</span>
+<span class="lineNum">     117 </span>                :<span class="lineCov">          6 :         current_block_.second.sigs.clear();</span>
+<span class="lineNum">     118 </span>        [<span class="branchCov" title="Branch 3 was taken 6 times"> + </span><span class="branchCov" title="Branch 4 was taken 6 times"> + </span>]:<span class="lineCov">         12 :         for (const auto &amp;vote : commit.votes) {</span>
+<span class="lineNum">     119 </span>        [<span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">          6 :           current_block_.second.sigs.push_back(vote.hash.block_signature);</span>
+<span class="lineNum">     120 </span>                :            :         }
+<span class="lineNum">     121 </span>                :<span class="lineCov">          6 :       }</span>
+<a name="122"><span class="lineNum">     122 </span>                :            :     }  // namespace yac</a>
+<span class="lineNum">     123 </span>                :            :   }    // namespace consensus
+<span class="lineNum">     124 </span>[<span class="branchCov" title="Branch 1 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 3 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         12 : }  // namespace iroha</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

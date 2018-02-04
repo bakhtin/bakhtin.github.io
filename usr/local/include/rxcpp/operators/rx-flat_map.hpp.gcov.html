@@ -1,0 +1,416 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/rxcpp/operators/rx-flat_map.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/rxcpp/operators</a> - rx-flat_map.hpp<span style="font-size: 80%;"> (source / <a href="rx-flat_map.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">62</td>
+            <td class="headerCovTableEntry">68</td>
+            <td class="headerCovTableEntryHi">91.2 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">115</td>
+            <td class="headerCovTableEntry">123</td>
+            <td class="headerCovTableEntryHi">93.5 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : // Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.</a>
+<span class="lineNum">       2 </span>            : 
+<span class="lineNum">       3 </span>            : #pragma once
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            : /*! \file rx-flat_map.hpp
+<span class="lineNum">       6 </span>            : 
+<span class="lineNum">       7 </span>            :     \brief For each item from this observable use the CollectionSelector to produce an observable and subscribe to that observable.
+<span class="lineNum">       8 </span>            :            For each item from all of the produced observables use the ResultSelector to produce a value to emit from the new observable that is returned.
+<span class="lineNum">       9 </span>            : 
+<span class="lineNum">      10 </span>            :     \tparam CollectionSelector  the type of the observable producing function. CollectionSelector must be a function with the signature observable(flat_map::source_value_type)
+<span class="lineNum">      11 </span>            :     \tparam ResultSelector      the type of the aggregation function (optional). ResultSelector must be a function with the signature flat_map::value_type(flat_map::source_value_type, flat_map::collection_value_type).
+<span class="lineNum">      12 </span>            :     \tparam Coordination        the type of the scheduler (optional).
+<span class="lineNum">      13 </span>            : 
+<span class="lineNum">      14 </span>            :     \param  s   a function that returns an observable for each item emitted by the source observable.
+<span class="lineNum">      15 </span>            :     \param  rs  a function that combines one item emitted by each of the source and collection observables and returns an item to be emitted by the resulting observable (optional).
+<span class="lineNum">      16 </span>            :     \param  cn  the scheduler to synchronize sources from different contexts (optional).
+<span class="lineNum">      17 </span>            : 
+<span class="lineNum">      18 </span>            :     \return  Observable that emits the results of applying a function to a pair of values emitted by the source observable and the collection observable.
+<span class="lineNum">      19 </span>            : 
+<span class="lineNum">      20 </span>            :     Observables, produced by the CollectionSelector, are merged. There is another operator rxcpp::observable&lt;T,SourceType&gt;::flat_map that works similar but concatenates the observables.
+<span class="lineNum">      21 </span>            : 
+<span class="lineNum">      22 </span>            :     \sample
+<span class="lineNum">      23 </span>            :     \snippet flat_map.cpp flat_map sample
+<span class="lineNum">      24 </span>            :     \snippet output.txt flat_map sample
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            :     \sample
+<span class="lineNum">      27 </span>            :     \snippet flat_map.cpp threaded flat_map sample
+<span class="lineNum">      28 </span>            :     \snippet output.txt threaded flat_map sample
+<span class="lineNum">      29 </span>            : */
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #if !defined(RXCPP_OPERATORS_RX_FLATMAP_HPP)
+<span class="lineNum">      32 </span>            : #define RXCPP_OPERATORS_RX_FLATMAP_HPP
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #include &quot;../rx-includes.hpp&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : namespace rxcpp {
+<span class="lineNum">      37 </span>            : 
+<span class="lineNum">      38 </span>            : namespace operators {
+<span class="lineNum">      39 </span>            : 
+<span class="lineNum">      40 </span>            : namespace detail {
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      43 </span>            : struct flat_map_invalid_arguments {};
+<span class="lineNum">      44 </span>            : 
+<span class="lineNum">      45 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      46 </span>            : struct flat_map_invalid : public rxo::operator_base&lt;flat_map_invalid_arguments&lt;AN...&gt;&gt; {
+<span class="lineNum">      47 </span>            :     using type = observable&lt;flat_map_invalid_arguments&lt;AN...&gt;, flat_map_invalid&lt;AN...&gt;&gt;;
+<span class="lineNum">      48 </span>            : };
+<span class="lineNum">      49 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">      50 </span>            : using flat_map_invalid_t = typename flat_map_invalid&lt;AN...&gt;::type;
+<span class="lineNum">      51 </span>            : 
+<span class="lineNum">      52 </span>            : template&lt;class Observable, class CollectionSelector, class ResultSelector, class Coordination&gt;
+<span class="lineNum">      53 </span>            : struct flat_map_traits {
+<span class="lineNum">      54 </span>            :     typedef rxu::decay_t&lt;Observable&gt; source_type;
+<span class="lineNum">      55 </span>            :     typedef rxu::decay_t&lt;CollectionSelector&gt; collection_selector_type;
+<span class="lineNum">      56 </span>            :     typedef rxu::decay_t&lt;ResultSelector&gt; result_selector_type;
+<span class="lineNum">      57 </span>            :     typedef rxu::decay_t&lt;Coordination&gt; coordination_type;
+<span class="lineNum">      58 </span>            : 
+<span class="lineNum">      59 </span>            :     typedef typename source_type::value_type source_value_type;
+<span class="lineNum">      60 </span>            : 
+<span class="lineNum">      61 </span>            :     struct tag_not_valid {};
+<span class="lineNum">      62 </span>            :     template&lt;class CV, class CCS&gt;
+<span class="lineNum">      63 </span>            :     static auto collection_check(int) -&gt; decltype((*(CCS*)nullptr)(*(CV*)nullptr));
+<span class="lineNum">      64 </span>            :     template&lt;class CV, class CCS&gt;
+<span class="lineNum">      65 </span>            :     static tag_not_valid collection_check(...);
+<span class="lineNum">      66 </span>            : 
+<span class="lineNum">      67 </span>            :     static_assert(!std::is_same&lt;decltype(collection_check&lt;source_value_type, collection_selector_type&gt;(0)), tag_not_valid&gt;::value, &quot;flat_map CollectionSelector must be a function with the signature observable(flat_map::source_value_type)&quot;);
+<span class="lineNum">      68 </span>            : 
+<span class="lineNum">      69 </span>            :     typedef rxu::decay_t&lt;decltype((*(collection_selector_type*)nullptr)((*(source_value_type*)nullptr)))&gt; collection_type;
+<span class="lineNum">      70 </span>            : 
+<span class="lineNum">      71 </span>            :     static_assert(is_observable&lt;collection_type&gt;::value, &quot;flat_map CollectionSelector must return an observable&quot;);
+<span class="lineNum">      72 </span>            : 
+<span class="lineNum">      73 </span>            :     typedef typename collection_type::value_type collection_value_type;
+<span class="lineNum">      74 </span>            : 
+<span class="lineNum">      75 </span>            :     template&lt;class CV, class CCV, class CRS&gt;
+<span class="lineNum">      76 </span>            :     static auto result_check(int) -&gt; decltype((*(CRS*)nullptr)(*(CV*)nullptr, *(CCV*)nullptr));
+<span class="lineNum">      77 </span>            :     template&lt;class CV, class CCV, class CRS&gt;
+<span class="lineNum">      78 </span>            :     static tag_not_valid result_check(...);
+<span class="lineNum">      79 </span>            : 
+<span class="lineNum">      80 </span>            :     static_assert(!std::is_same&lt;decltype(result_check&lt;source_value_type, collection_value_type, result_selector_type&gt;(0)), tag_not_valid&gt;::value, &quot;flat_map ResultSelector must be a function with the signature flat_map::value_type(flat_map::source_value_type, flat_map::collection_value_type)&quot;);
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :     typedef rxu::decay_t&lt;decltype((*(result_selector_type*)nullptr)(*(source_value_type*)nullptr, *(collection_value_type*)nullptr))&gt; value_type;
+<span class="lineNum">      83 </span>            : };
+<a name="84"><span class="lineNum">      84 </span>            : </a>
+<span class="lineNum">      85 </span>            : template&lt;class Observable, class CollectionSelector, class ResultSelector, class Coordination&gt;
+<span class="lineNum">      86 </span><span class="lineCov">       1178 : struct flat_map</span>
+<span class="lineNum">      87 </span>            :     : public operator_base&lt;rxu::value_type_t&lt;flat_map_traits&lt;Observable, CollectionSelector, ResultSelector, Coordination&gt;&gt;&gt;
+<span class="lineNum">      88 </span>            : {
+<span class="lineNum">      89 </span>            :     typedef flat_map&lt;Observable, CollectionSelector, ResultSelector, Coordination&gt; this_type;
+<span class="lineNum">      90 </span>            :     typedef flat_map_traits&lt;Observable, CollectionSelector, ResultSelector, Coordination&gt; traits;
+<span class="lineNum">      91 </span>            : 
+<span class="lineNum">      92 </span>            :     typedef typename traits::source_type source_type;
+<span class="lineNum">      93 </span>            :     typedef typename traits::collection_selector_type collection_selector_type;
+<span class="lineNum">      94 </span>            :     typedef typename traits::result_selector_type result_selector_type;
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            :     typedef typename traits::source_value_type source_value_type;
+<span class="lineNum">      97 </span>            :     typedef typename traits::collection_type collection_type;
+<span class="lineNum">      98 </span>            :     typedef typename traits::collection_value_type collection_value_type;
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :     typedef typename traits::coordination_type coordination_type;
+<a name="101"><span class="lineNum">     101 </span>            :     typedef typename coordination_type::coordinator_type coordinator_type;</a>
+<span class="lineNum">     102 </span>            : 
+<a name="103"><span class="lineNum">     103 </span><span class="lineCov">       1436 :     struct values</span></a>
+<span class="lineNum">     104 </span>            :     {
+<span class="lineNum">     105 </span><span class="lineCov">         33 :         values(source_type o, collection_selector_type s, result_selector_type rs, coordination_type sf)</span>
+<span class="lineNum">     106 </span><span class="lineCov">         33 :             : source(std::move(o))</span>
+<span class="lineNum">     107 </span><span class="lineCov">         33 :             , selectCollection(std::move(s))</span>
+<span class="lineNum">     108 </span><span class="lineCov">         33 :             , selectResult(std::move(rs))</span>
+<span class="lineNum">     109 </span><span class="lineCov">         66 :             , coordination(std::move(sf))</span>
+<span class="lineNum">     110 </span>            :         {
+<span class="lineNum">     111 </span><span class="lineCov">         33 :         }</span>
+<span class="lineNum">     112 </span>            :         source_type source;
+<span class="lineNum">     113 </span>            :         collection_selector_type selectCollection;
+<span class="lineNum">     114 </span>            :         result_selector_type selectResult;
+<span class="lineNum">     115 </span>            :         coordination_type coordination;
+<span class="lineNum">     116 </span>            :     };
+<a name="117"><span class="lineNum">     117 </span>            :     values initial;</a>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span><span class="lineCov">         33 :     flat_map(source_type o, collection_selector_type s, result_selector_type rs, coordination_type sf)</span>
+<span class="lineNum">     120 </span><span class="lineCov">         33 :         : initial(std::move(o), std::move(s), std::move(rs), std::move(sf))</span>
+<span class="lineNum">     121 </span>            :     {
+<span class="lineNum">     122 </span><span class="lineCov">         33 :     }</span>
+<a name="123"><span class="lineNum">     123 </span>            : </a>
+<span class="lineNum">     124 </span>            :     template&lt;class Subscriber&gt;
+<span class="lineNum">     125 </span><span class="lineCov">         33 :     void on_subscribe(Subscriber scbr) const {</span>
+<span class="lineNum">     126 </span>            :         static_assert(is_subscriber&lt;Subscriber&gt;::value, &quot;subscribe must be passed a subscriber&quot;);
+<span class="lineNum">     127 </span>            : 
+<a name="128"><span class="lineNum">     128 </span>            :         typedef Subscriber output_type;</a>
+<span class="lineNum">     129 </span>            : 
+<span class="lineNum">     130 </span><span class="lineCov">         60 :         struct state_type</span>
+<span class="lineNum">     131 </span>            :             : public std::enable_shared_from_this&lt;state_type&gt;
+<a name="132"><span class="lineNum">     132 </span>            :             , public values</a>
+<span class="lineNum">     133 </span>            :         {
+<span class="lineNum">     134 </span><span class="lineCov">         33 :             state_type(values i, coordinator_type coor, output_type oarg)</span>
+<span class="lineNum">     135 </span><span class="lineCov">         33 :                 : values(std::move(i))</span>
+<span class="lineNum">     136 </span>            :                 , pendingCompletions(0)
+<span class="lineNum">     137 </span><span class="lineCov">         33 :                 , coordinator(std::move(coor))</span>
+<span class="lineNum">     138 </span><span class="lineCov">         99 :                 , out(std::move(oarg))</span>
+<span class="lineNum">     139 </span>            :             {
+<span class="lineNum">     140 </span><span class="lineCov">         33 :             }</span>
+<span class="lineNum">     141 </span>            :             // on_completed on the output must wait until all the
+<span class="lineNum">     142 </span>            :             // subscriptions have received on_completed
+<span class="lineNum">     143 </span>            :             int pendingCompletions;
+<span class="lineNum">     144 </span>            :             coordinator_type coordinator;
+<span class="lineNum">     145 </span>            :             output_type out;
+<span class="lineNum">     146 </span>            :         };
+<span class="lineNum">     147 </span>            : 
+<span class="lineNum">     148 </span><span class="lineCov">         66 :         auto coordinator = initial.coordination.create_coordinator(scbr.get_subscription());</span>
+<span class="lineNum">     149 </span>            : 
+<span class="lineNum">     150 </span>            :         // take a copy of the values for each subscription
+<span class="lineNum">     151 </span><span class="lineCov">         66 :         auto state = std::make_shared&lt;state_type&gt;(initial, std::move(coordinator), std::move(scbr));</span>
+<span class="lineNum">     152 </span>            : 
+<span class="lineNum">     153 </span><span class="lineCov">         66 :         composite_subscription outercs;</span>
+<span class="lineNum">     154 </span>            : 
+<span class="lineNum">     155 </span>            :         // when the out observer is unsubscribed all the
+<span class="lineNum">     156 </span>            :         // inner subscriptions are unsubscribed as well
+<span class="lineNum">     157 </span><span class="lineCov">         33 :         state-&gt;out.add(outercs);</span>
+<a name="158"><span class="lineNum">     158 </span>            : </a>
+<span class="lineNum">     159 </span>            :         auto source = on_exception(
+<span class="lineNum">     160 </span><span class="lineCov">         33 :             [&amp;](){return state-&gt;coordinator.in(state-&gt;source);},</span>
+<span class="lineNum">     161 </span><span class="lineCov">         66 :             state-&gt;out);</span>
+<span class="lineNum">     162 </span><span class="lineCov">         33 :         if (source.empty()) {</span>
+<span class="lineNum">     163 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">     164 </span>            :         }
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineCov">         33 :         ++state-&gt;pendingCompletions;</span>
+<span class="lineNum">     167 </span>            :         // this subscribe does not share the observer subscription
+<span class="lineNum">     168 </span>            :         // so that when it is unsubscribed the observer can be called
+<span class="lineNum">     169 </span>            :         // until the inner subscriptions have finished
+<span class="lineNum">     170 </span>            :         auto sink = make_subscriber&lt;source_value_type&gt;(
+<span class="lineNum">     171 </span><span class="lineCov">         33 :             state-&gt;out,</span>
+<a name="172"><span class="lineNum">     172 </span>            :             outercs,</a>
+<span class="lineNum">     173 </span>            :         // on_next
+<span class="lineNum">     174 </span><span class="lineCov">       2388 :             [state](source_value_type st) {</span>
+<span class="lineNum">     175 </span>            : 
+<span class="lineNum">     176 </span><span class="lineCov">         80 :                 composite_subscription innercs;</span>
+<span class="lineNum">     177 </span>            : 
+<span class="lineNum">     178 </span>            :                 // when the out observer is unsubscribed all the
+<span class="lineNum">     179 </span>            :                 // inner subscriptions are unsubscribed as well
+<a name="180"><span class="lineNum">     180 </span><span class="lineCov">         80 :                 auto innercstoken = state-&gt;out.add(innercs);</span></a>
+<span class="lineNum">     181 </span>            : 
+<span class="lineNum">     182 </span><span class="lineCov">        800 :                 innercs.add(make_subscription([state, innercstoken](){</span>
+<span class="lineNum">     183 </span><span class="lineCov">         40 :                     state-&gt;out.remove(innercstoken);</span>
+<span class="lineNum">     184 </span><span class="lineCov">         40 :                 }));</span>
+<span class="lineNum">     185 </span>            : 
+<span class="lineNum">     186 </span><span class="lineCov">         80 :                 auto selectedCollection = state-&gt;selectCollection(st);</span>
+<span class="lineNum">     187 </span><span class="lineCov">         80 :                 auto selectedSource = state-&gt;coordinator.in(selectedCollection);</span>
+<span class="lineNum">     188 </span>            : 
+<span class="lineNum">     189 </span><span class="lineCov">         40 :                 ++state-&gt;pendingCompletions;</span>
+<span class="lineNum">     190 </span>            :                 // this subscribe does not share the source subscription
+<span class="lineNum">     191 </span>            :                 // so that when it is unsubscribed the source will continue
+<span class="lineNum">     192 </span>            :                 auto sinkInner = make_subscriber&lt;collection_value_type&gt;(
+<span class="lineNum">     193 </span><span class="lineCov">         40 :                     state-&gt;out,</span>
+<a name="194"><span class="lineNum">     194 </span>            :                     innercs,</a>
+<span class="lineNum">     195 </span>            :                 // on_next
+<span class="lineNum">     196 </span><span class="lineCov">       1735 :                     [state, st](collection_value_type ct) {</span>
+<span class="lineNum">     197 </span><span class="lineCov">         74 :                         auto selectedResult = state-&gt;selectResult(st, std::move(ct));</span>
+<span class="lineNum">     198 </span><span class="lineCov">         37 :                         state-&gt;out.on_next(std::move(selectedResult));</span>
+<a name="199"><span class="lineNum">     199 </span><span class="lineCov">         37 :                     },</span></a>
+<span class="lineNum">     200 </span>            :                 // on_error
+<span class="lineNum">     201 </span><span class="lineCov">       1736 :                     [state](std::exception_ptr e) {</span>
+<span class="lineNum">     202 </span><span class="lineNoCov">          0 :                         state-&gt;out.on_error(e);</span>
+<a name="203"><span class="lineNum">     203 </span><span class="lineNoCov">          0 :                     },</span></a>
+<span class="lineNum">     204 </span>            :                 //on_completed
+<span class="lineNum">     205 </span><span class="lineCov">       1775 :                     [state](){</span>
+<span class="lineNum">     206 </span><span class="lineCov">         39 :                         if (--state-&gt;pendingCompletions == 0) {</span>
+<span class="lineNum">     207 </span><span class="lineCov">          1 :                             state-&gt;out.on_completed();</span>
+<span class="lineNum">     208 </span>            :                         }
+<span class="lineNum">     209 </span><span class="lineCov">         39 :                     }</span>
+<span class="lineNum">     210 </span><span class="lineCov">        120 :                 );</span>
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span><span class="lineCov">         80 :                 auto selectedSinkInner = state-&gt;coordinator.out(sinkInner);</span>
+<span class="lineNum">     213 </span><span class="lineCov">         40 :                 selectedSource.subscribe(std::move(selectedSinkInner));</span>
+<a name="214"><span class="lineNum">     214 </span><span class="lineCov">         40 :             },</span></a>
+<span class="lineNum">     215 </span>            :         // on_error
+<span class="lineNum">     216 </span><span class="lineCov">       2348 :             [state](std::exception_ptr e) {</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :                 state-&gt;out.on_error(e);</span>
+<a name="218"><span class="lineNum">     218 </span><span class="lineNoCov">          0 :             },</span></a>
+<span class="lineNum">     219 </span>            :         // on_completed
+<span class="lineNum">     220 </span><span class="lineCov">       2377 :             [state]() {</span>
+<span class="lineNum">     221 </span><span class="lineCov">         29 :                 if (--state-&gt;pendingCompletions == 0) {</span>
+<span class="lineNum">     222 </span><span class="lineCov">         28 :                     state-&gt;out.on_completed();</span>
+<span class="lineNum">     223 </span>            :                 }
+<span class="lineNum">     224 </span><span class="lineCov">         29 :             }</span>
+<span class="lineNum">     225 </span><span class="lineCov">         99 :         );</span>
+<a name="226"><span class="lineNum">     226 </span>            : </a>
+<span class="lineNum">     227 </span>            :         auto selectedSink = on_exception(
+<span class="lineNum">     228 </span><span class="lineCov">         33 :             [&amp;](){return state-&gt;coordinator.out(sink);},</span>
+<span class="lineNum">     229 </span><span class="lineCov">         66 :             state-&gt;out);</span>
+<span class="lineNum">     230 </span><span class="lineCov">         33 :         if (selectedSink.empty()) {</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 :             return;</span>
+<span class="lineNum">     232 </span>            :         }
+<span class="lineNum">     233 </span>            : 
+<span class="lineNum">     234 </span><span class="lineCov">         33 :         source-&gt;subscribe(std::move(selectedSink.get()));</span>
+<span class="lineNum">     235 </span>            : 
+<span class="lineNum">     236 </span>            :     }
+<span class="lineNum">     237 </span>            : };
+<span class="lineNum">     238 </span>            : 
+<span class="lineNum">     239 </span>            : }
+<span class="lineNum">     240 </span>            : 
+<span class="lineNum">     241 </span>            : /*! @copydoc rx-flat_map.hpp
+<span class="lineNum">     242 </span>            : */
+<span class="lineNum">     243 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     244 </span>            : auto flat_map(AN&amp;&amp;... an)
+<span class="lineNum">     245 </span>            : -&gt;     operator_factory&lt;flat_map_tag, AN...&gt; {
+<span class="lineNum">     246 </span>            :     return operator_factory&lt;flat_map_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     247 </span>            : }
+<span class="lineNum">     248 </span>            : 
+<span class="lineNum">     249 </span>            : /*! @copydoc rx-flat_map.hpp
+<span class="lineNum">     250 </span>            : */
+<span class="lineNum">     251 </span>            : template&lt;class... AN&gt;
+<span class="lineNum">     252 </span>            : auto merge_transform(AN&amp;&amp;... an)
+<span class="lineNum">     253 </span>            : -&gt;     operator_factory&lt;flat_map_tag, AN...&gt; {
+<span class="lineNum">     254 </span>            :     return operator_factory&lt;flat_map_tag, AN...&gt;(std::make_tuple(std::forward&lt;AN&gt;(an)...));
+<span class="lineNum">     255 </span>            : }
+<span class="lineNum">     256 </span>            : 
+<span class="lineNum">     257 </span>            : }
+<span class="lineNum">     258 </span>            : 
+<span class="lineNum">     259 </span>            : template&lt;&gt;
+<span class="lineNum">     260 </span>            : struct member_overload&lt;flat_map_tag&gt;
+<span class="lineNum">     261 </span>            : {
+<span class="lineNum">     262 </span>            :     template&lt;class Observable, class CollectionSelector,
+<span class="lineNum">     263 </span>            :         class CollectionSelectorType = rxu::decay_t&lt;CollectionSelector&gt;,
+<span class="lineNum">     264 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     265 </span>            :         class CollectionType = rxu::result_of_t&lt;CollectionSelectorType(SourceValue)&gt;,
+<span class="lineNum">     266 </span>            :         class ResultSelectorType = rxu::detail::take_at&lt;1&gt;,
+<span class="lineNum">     267 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     268 </span>            :             all_observables&lt;Observable, CollectionType&gt;&gt;,
+<span class="lineNum">     269 </span>            :         class FlatMap = rxo::detail::flat_map&lt;rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;CollectionSelector&gt;, ResultSelectorType, identity_one_worker&gt;,
+<span class="lineNum">     270 </span>            :         class CollectionValueType = rxu::value_type_t&lt;CollectionType&gt;,
+<span class="lineNum">     271 </span>            :         class Value = rxu::result_of_t&lt;ResultSelectorType(SourceValue, CollectionValueType)&gt;,
+<a name="272"><span class="lineNum">     272 </span>            :         class Result = observable&lt;Value, FlatMap&gt;</a>
+<span class="lineNum">     273 </span>            :     &gt;
+<span class="lineNum">     274 </span><span class="lineCov">         33 :     static Result member(Observable&amp;&amp; o, CollectionSelector&amp;&amp; s) {</span>
+<span class="lineNum">     275 </span><span class="lineCov">         33 :         return Result(FlatMap(std::forward&lt;Observable&gt;(o), std::forward&lt;CollectionSelector&gt;(s), ResultSelectorType(), identity_current_thread()));</span>
+<span class="lineNum">     276 </span>            :     }
+<span class="lineNum">     277 </span>            : 
+<span class="lineNum">     278 </span>            :     template&lt;class Observable, class CollectionSelector, class Coordination,
+<span class="lineNum">     279 </span>            :         class CollectionSelectorType = rxu::decay_t&lt;CollectionSelector&gt;,
+<span class="lineNum">     280 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     281 </span>            :         class CollectionType = rxu::result_of_t&lt;CollectionSelectorType(SourceValue)&gt;,
+<span class="lineNum">     282 </span>            :         class ResultSelectorType = rxu::detail::take_at&lt;1&gt;,
+<span class="lineNum">     283 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     284 </span>            :             all_observables&lt;Observable, CollectionType&gt;,
+<span class="lineNum">     285 </span>            :             is_coordination&lt;Coordination&gt;&gt;,
+<span class="lineNum">     286 </span>            :         class FlatMap = rxo::detail::flat_map&lt;rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;CollectionSelector&gt;, ResultSelectorType, rxu::decay_t&lt;Coordination&gt;&gt;,
+<span class="lineNum">     287 </span>            :         class CollectionValueType = rxu::value_type_t&lt;CollectionType&gt;,
+<span class="lineNum">     288 </span>            :         class Value = rxu::result_of_t&lt;ResultSelectorType(SourceValue, CollectionValueType)&gt;,
+<span class="lineNum">     289 </span>            :         class Result = observable&lt;Value, FlatMap&gt;
+<span class="lineNum">     290 </span>            :     &gt;
+<span class="lineNum">     291 </span>            :     static Result member(Observable&amp;&amp; o, CollectionSelector&amp;&amp; s, Coordination&amp;&amp; cn) {
+<span class="lineNum">     292 </span>            :         return Result(FlatMap(std::forward&lt;Observable&gt;(o), std::forward&lt;CollectionSelector&gt;(s), ResultSelectorType(), std::forward&lt;Coordination&gt;(cn)));
+<span class="lineNum">     293 </span>            :     }
+<span class="lineNum">     294 </span>            : 
+<span class="lineNum">     295 </span>            :     template&lt;class Observable, class CollectionSelector, class ResultSelector,
+<span class="lineNum">     296 </span>            :         class IsCoordination = is_coordination&lt;ResultSelector&gt;,
+<span class="lineNum">     297 </span>            :         class CollectionSelectorType = rxu::decay_t&lt;CollectionSelector&gt;,
+<span class="lineNum">     298 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     299 </span>            :         class CollectionType = rxu::result_of_t&lt;CollectionSelectorType(SourceValue)&gt;,
+<span class="lineNum">     300 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     301 </span>            :             all_observables&lt;Observable, CollectionType&gt;,
+<span class="lineNum">     302 </span>            :             rxu::negation&lt;IsCoordination&gt;&gt;,
+<span class="lineNum">     303 </span>            :         class FlatMap = rxo::detail::flat_map&lt;rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;CollectionSelector&gt;, rxu::decay_t&lt;ResultSelector&gt;, identity_one_worker&gt;,
+<span class="lineNum">     304 </span>            :         class CollectionValueType = rxu::value_type_t&lt;CollectionType&gt;,
+<span class="lineNum">     305 </span>            :         class ResultSelectorType = rxu::decay_t&lt;ResultSelector&gt;,
+<span class="lineNum">     306 </span>            :         class Value = rxu::result_of_t&lt;ResultSelectorType(SourceValue, CollectionValueType)&gt;,
+<span class="lineNum">     307 </span>            :         class Result = observable&lt;Value, FlatMap&gt;
+<span class="lineNum">     308 </span>            :     &gt;
+<span class="lineNum">     309 </span>            :     static Result member(Observable&amp;&amp; o, CollectionSelector&amp;&amp; s, ResultSelector&amp;&amp; rs) {
+<span class="lineNum">     310 </span>            :         return Result(FlatMap(std::forward&lt;Observable&gt;(o), std::forward&lt;CollectionSelector&gt;(s), std::forward&lt;ResultSelector&gt;(rs), identity_current_thread()));
+<span class="lineNum">     311 </span>            :     }
+<span class="lineNum">     312 </span>            : 
+<span class="lineNum">     313 </span>            :     template&lt;class Observable, class CollectionSelector, class ResultSelector, class Coordination,
+<span class="lineNum">     314 </span>            :         class CollectionSelectorType = rxu::decay_t&lt;CollectionSelector&gt;,
+<span class="lineNum">     315 </span>            :         class SourceValue = rxu::value_type_t&lt;Observable&gt;,
+<span class="lineNum">     316 </span>            :         class CollectionType = rxu::result_of_t&lt;CollectionSelectorType(SourceValue)&gt;,
+<span class="lineNum">     317 </span>            :         class Enabled = rxu::enable_if_all_true_type_t&lt;
+<span class="lineNum">     318 </span>            :             all_observables&lt;Observable, CollectionType&gt;,
+<span class="lineNum">     319 </span>            :             is_coordination&lt;Coordination&gt;&gt;,
+<span class="lineNum">     320 </span>            :         class FlatMap = rxo::detail::flat_map&lt;rxu::decay_t&lt;Observable&gt;, rxu::decay_t&lt;CollectionSelector&gt;, rxu::decay_t&lt;ResultSelector&gt;, rxu::decay_t&lt;Coordination&gt;&gt;,
+<span class="lineNum">     321 </span>            :         class CollectionValueType = rxu::value_type_t&lt;CollectionType&gt;,
+<span class="lineNum">     322 </span>            :         class ResultSelectorType = rxu::decay_t&lt;ResultSelector&gt;,
+<span class="lineNum">     323 </span>            :         class Value = rxu::result_of_t&lt;ResultSelectorType(SourceValue, CollectionValueType)&gt;,
+<span class="lineNum">     324 </span>            :         class Result = observable&lt;Value, FlatMap&gt;
+<span class="lineNum">     325 </span>            :     &gt;
+<span class="lineNum">     326 </span>            :     static Result member(Observable&amp;&amp; o, CollectionSelector&amp;&amp; s, ResultSelector&amp;&amp; rs, Coordination&amp;&amp; cn) {
+<span class="lineNum">     327 </span>            :         return Result(FlatMap(std::forward&lt;Observable&gt;(o), std::forward&lt;CollectionSelector&gt;(s), std::forward&lt;ResultSelector&gt;(rs), std::forward&lt;Coordination&gt;(cn)));
+<span class="lineNum">     328 </span>            :     }
+<span class="lineNum">     329 </span>            : 
+<span class="lineNum">     330 </span>            :     template&lt;class... AN&gt;
+<span class="lineNum">     331 </span>            :     static operators::detail::flat_map_invalid_t&lt;AN...&gt; member(AN...) {
+<span class="lineNum">     332 </span>            :         std::terminate();
+<span class="lineNum">     333 </span>            :         return {};
+<span class="lineNum">     334 </span>            :         static_assert(sizeof...(AN) == 10000, &quot;flat_map takes (CollectionSelector, optional ResultSelector, optional Coordination)&quot;);
+<span class="lineNum">     335 </span>            :     }
+<span class="lineNum">     336 </span>            : };
+<span class="lineNum">     337 </span>            : 
+<span class="lineNum">     338 </span>            : }
+<span class="lineNum">     339 </span>            : 
+<span class="lineNum">     340 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

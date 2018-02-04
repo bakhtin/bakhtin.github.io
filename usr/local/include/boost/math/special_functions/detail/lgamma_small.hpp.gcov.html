@@ -1,0 +1,598 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/math/special_functions/detail/lgamma_small.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/math/special_functions/detail</a> - lgamma_small.hpp<span style="font-size: 80%;"> (source / <a href="lgamma_small.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">67</td>
+            <td class="headerCovTableEntry">77</td>
+            <td class="headerCovTableEntryMed">87.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //  (C) Copyright John Maddock 2006.</a>
+<span class="lineNum">       2 </span>            : //  Use, modification and distribution are subject to the
+<span class="lineNum">       3 </span>            : //  Boost Software License, Version 1.0. (See accompanying file
+<span class="lineNum">       4 </span>            : //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       5 </span>            : 
+<span class="lineNum">       6 </span>            : #ifndef BOOST_MATH_SPECIAL_FUNCTIONS_DETAIL_LGAMMA_SMALL
+<span class="lineNum">       7 </span>            : #define BOOST_MATH_SPECIAL_FUNCTIONS_DETAIL_LGAMMA_SMALL
+<span class="lineNum">       8 </span>            : 
+<span class="lineNum">       9 </span>            : #ifdef _MSC_VER
+<span class="lineNum">      10 </span>            : #pragma once
+<span class="lineNum">      11 </span>            : #endif
+<span class="lineNum">      12 </span>            : 
+<span class="lineNum">      13 </span>            : #include &lt;boost/math/tools/big_constant.hpp&gt;
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : namespace boost{ namespace math{ namespace detail{
+<span class="lineNum">      16 </span>            : 
+<span class="lineNum">      17 </span>            : //
+<span class="lineNum">      18 </span>            : // These need forward declaring to keep GCC happy:
+<span class="lineNum">      19 </span>            : //
+<span class="lineNum">      20 </span>            : template &lt;class T, class Policy, class Lanczos&gt;
+<span class="lineNum">      21 </span>            : T gamma_imp(T z, const Policy&amp; pol, const Lanczos&amp; l);
+<span class="lineNum">      22 </span>            : template &lt;class T, class Policy&gt;
+<span class="lineNum">      23 </span>            : T gamma_imp(T z, const Policy&amp; pol, const lanczos::undefined_lanczos&amp; l);
+<span class="lineNum">      24 </span>            : 
+<span class="lineNum">      25 </span>            : //
+<span class="lineNum">      26 </span>            : // lgamma for small arguments:
+<a name="27"><span class="lineNum">      27 </span>            : //</a>
+<span class="lineNum">      28 </span>            : template &lt;class T, class Policy, class Lanczos&gt;
+<span class="lineNum">      29 </span><span class="lineCov">          3 : T lgamma_small_imp(T z, T zm1, T zm2, const mpl::int_&lt;64&gt;&amp;, const Policy&amp; /* l */, const Lanczos&amp;)</span>
+<span class="lineNum">      30 </span>            : {
+<span class="lineNum">      31 </span>            :    // This version uses rational approximations for small
+<span class="lineNum">      32 </span>            :    // values of z accurate enough for 64-bit mantissas
+<span class="lineNum">      33 </span>            :    // (80-bit long doubles), works well for 53-bit doubles as well.
+<span class="lineNum">      34 </span>            :    // Lanczos is only used to select the Lanczos function.
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            :    BOOST_MATH_STD_USING  // for ADL of std names
+<span class="lineNum">      37 </span><span class="lineCov">          3 :    T result = 0;</span>
+<span class="lineNum">      38 </span><span class="lineCov">          3 :    if(z &lt; tools::epsilon&lt;T&gt;())</span>
+<span class="lineNum">      39 </span>            :    {
+<span class="lineNum">      40 </span><span class="lineNoCov">          0 :       result = -log(z);</span>
+<span class="lineNum">      41 </span>            :    }
+<span class="lineNum">      42 </span><span class="lineCov">          3 :    else if((zm1 == 0) || (zm2 == 0))</span>
+<span class="lineNum">      43 </span>            :    {
+<span class="lineNum">      44 </span>            :       // nothing to do, result is zero....
+<span class="lineNum">      45 </span>            :    }
+<span class="lineNum">      46 </span><span class="lineCov">          3 :    else if(z &gt; 2)</span>
+<span class="lineNum">      47 </span>            :    {
+<span class="lineNum">      48 </span>            :       //
+<span class="lineNum">      49 </span>            :       // Begin by performing argument reduction until
+<span class="lineNum">      50 </span>            :       // z is in [2,3):
+<span class="lineNum">      51 </span>            :       //
+<span class="lineNum">      52 </span><span class="lineCov">          1 :       if(z &gt;= 3)</span>
+<span class="lineNum">      53 </span>            :       {
+<span class="lineNum">      54 </span><span class="lineNoCov">          0 :          do</span>
+<span class="lineNum">      55 </span>            :          {
+<span class="lineNum">      56 </span><span class="lineNoCov">          0 :             z -= 1;</span>
+<span class="lineNum">      57 </span><span class="lineNoCov">          0 :             zm2 -= 1;</span>
+<span class="lineNum">      58 </span><span class="lineNoCov">          0 :             result += log(z);</span>
+<span class="lineNum">      59 </span>            :          }while(z &gt;= 3);
+<span class="lineNum">      60 </span>            :          // Update zm2, we need it below:
+<span class="lineNum">      61 </span><span class="lineNoCov">          0 :          zm2 = z - 2;</span>
+<span class="lineNum">      62 </span>            :       }
+<span class="lineNum">      63 </span>            : 
+<span class="lineNum">      64 </span>            :       //
+<span class="lineNum">      65 </span>            :       // Use the following form:
+<span class="lineNum">      66 </span>            :       //
+<span class="lineNum">      67 </span>            :       // lgamma(z) = (z-2)(z+1)(Y + R(z-2))
+<span class="lineNum">      68 </span>            :       //
+<span class="lineNum">      69 </span>            :       // where R(z-2) is a rational approximation optimised for
+<span class="lineNum">      70 </span>            :       // low absolute error - as long as it's absolute error
+<span class="lineNum">      71 </span>            :       // is small compared to the constant Y - then any rounding
+<span class="lineNum">      72 </span>            :       // error in it's computation will get wiped out.
+<span class="lineNum">      73 </span>            :       //
+<span class="lineNum">      74 </span>            :       // R(z-2) has the following properties:
+<span class="lineNum">      75 </span>            :       //
+<span class="lineNum">      76 </span>            :       // At double: Max error found:                    4.231e-18
+<span class="lineNum">      77 </span>            :       // At long double: Max error found:               1.987e-21
+<span class="lineNum">      78 </span>            :       // Maximum Deviation Found (approximation error): 5.900e-24
+<span class="lineNum">      79 </span>            :       //
+<span class="lineNum">      80 </span>            :       static const T P[] = {
+<span class="lineNum">      81 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.180355685678449379109e-1)),</span>
+<span class="lineNum">      82 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.25126649619989678683e-1)),</span>
+<span class="lineNum">      83 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.494103151567532234274e-1)),</span>
+<span class="lineNum">      84 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.172491608709613993966e-1)),</span>
+<span class="lineNum">      85 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.259453563205438108893e-3)),</span>
+<span class="lineNum">      86 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.541009869215204396339e-3)),</span>
+<span class="lineNum">      87 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.324588649825948492091e-4))</span>
+<span class="lineNum">      88 </span><span class="lineCov">          2 :       };</span>
+<span class="lineNum">      89 </span>            :       static const T Q[] = {
+<span class="lineNum">      90 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.1e1)),</span>
+<span class="lineNum">      91 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.196202987197795200688e1)),</span>
+<span class="lineNum">      92 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.148019669424231326694e1)),</span>
+<span class="lineNum">      93 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.541391432071720958364e0)),</span>
+<span class="lineNum">      94 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.988504251128010129477e-1)),</span>
+<span class="lineNum">      95 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.82130967464889339326e-2)),</span>
+<span class="lineNum">      96 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.224936291922115757597e-3)),</span>
+<span class="lineNum">      97 </span><span class="lineCov">          1 :          static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.223352763208617092964e-6))</span>
+<span class="lineNum">      98 </span><span class="lineCov">          2 :       };</span>
+<span class="lineNum">      99 </span>            : 
+<span class="lineNum">     100 </span>            :       static const float Y = 0.158963680267333984375e0f;
+<span class="lineNum">     101 </span>            : 
+<span class="lineNum">     102 </span><span class="lineCov">          1 :       T r = zm2 * (z + 1);</span>
+<span class="lineNum">     103 </span><span class="lineCov">          1 :       T R = tools::evaluate_polynomial(P, zm2);</span>
+<span class="lineNum">     104 </span><span class="lineCov">          1 :       R /= tools::evaluate_polynomial(Q, zm2);</span>
+<span class="lineNum">     105 </span>            : 
+<span class="lineNum">     106 </span><span class="lineCov">          1 :       result +=  r * Y + r * R;</span>
+<span class="lineNum">     107 </span>            :    }
+<span class="lineNum">     108 </span>            :    else
+<span class="lineNum">     109 </span>            :    {
+<span class="lineNum">     110 </span>            :       //
+<span class="lineNum">     111 </span>            :       // If z is less than 1 use recurrance to shift to
+<span class="lineNum">     112 </span>            :       // z in the interval [1,2]:
+<span class="lineNum">     113 </span>            :       //
+<span class="lineNum">     114 </span><span class="lineCov">          2 :       if(z &lt; 1)</span>
+<span class="lineNum">     115 </span>            :       {
+<span class="lineNum">     116 </span><span class="lineNoCov">          0 :          result += -log(z);</span>
+<span class="lineNum">     117 </span><span class="lineNoCov">          0 :          zm2 = zm1;</span>
+<span class="lineNum">     118 </span><span class="lineNoCov">          0 :          zm1 = z;</span>
+<span class="lineNum">     119 </span><span class="lineNoCov">          0 :          z += 1;</span>
+<span class="lineNum">     120 </span>            :       }
+<span class="lineNum">     121 </span>            :       //
+<span class="lineNum">     122 </span>            :       // Two approximations, on for z in [1,1.5] and
+<span class="lineNum">     123 </span>            :       // one for z in [1.5,2]:
+<span class="lineNum">     124 </span>            :       //
+<span class="lineNum">     125 </span><span class="lineCov">          2 :       if(z &lt;= 1.5)</span>
+<span class="lineNum">     126 </span>            :       {
+<span class="lineNum">     127 </span>            :          //
+<span class="lineNum">     128 </span>            :          // Use the following form:
+<span class="lineNum">     129 </span>            :          //
+<span class="lineNum">     130 </span>            :          // lgamma(z) = (z-1)(z-2)(Y + R(z-1))
+<span class="lineNum">     131 </span>            :          //
+<span class="lineNum">     132 </span>            :          // where R(z-1) is a rational approximation optimised for
+<span class="lineNum">     133 </span>            :          // low absolute error - as long as it's absolute error
+<span class="lineNum">     134 </span>            :          // is small compared to the constant Y - then any rounding
+<span class="lineNum">     135 </span>            :          // error in it's computation will get wiped out.
+<span class="lineNum">     136 </span>            :          //
+<span class="lineNum">     137 </span>            :          // R(z-1) has the following properties:
+<span class="lineNum">     138 </span>            :          //
+<span class="lineNum">     139 </span>            :          // At double precision: Max error found:                1.230011e-17
+<span class="lineNum">     140 </span>            :          // At 80-bit long double precision:   Max error found:  5.631355e-21
+<span class="lineNum">     141 </span>            :          // Maximum Deviation Found:                             3.139e-021
+<span class="lineNum">     142 </span>            :          // Expected Error Term:                                 3.139e-021
+<span class="lineNum">     143 </span>            : 
+<span class="lineNum">     144 </span>            :          //
+<span class="lineNum">     145 </span>            :          static const float Y = 0.52815341949462890625f;
+<span class="lineNum">     146 </span>            : 
+<span class="lineNum">     147 </span>            :          static const T P[] = {
+<span class="lineNum">     148 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.490622454069039543534e-1)),</span>
+<span class="lineNum">     149 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.969117530159521214579e-1)),</span>
+<span class="lineNum">     150 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.414983358359495381969e0)),</span>
+<span class="lineNum">     151 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.406567124211938417342e0)),</span>
+<span class="lineNum">     152 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.158413586390692192217e0)),</span>
+<span class="lineNum">     153 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.240149820648571559892e-1)),</span>
+<span class="lineNum">     154 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.100346687696279557415e-2))</span>
+<span class="lineNum">     155 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     156 </span>            :          static const T Q[] = {
+<span class="lineNum">     157 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.1e1)),</span>
+<span class="lineNum">     158 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.302349829846463038743e1)),</span>
+<span class="lineNum">     159 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.348739585360723852576e1)),</span>
+<span class="lineNum">     160 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.191415588274426679201e1)),</span>
+<span class="lineNum">     161 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.507137738614363510846e0)),</span>
+<span class="lineNum">     162 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.577039722690451849648e-1)),</span>
+<span class="lineNum">     163 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.195768102601107189171e-2))</span>
+<span class="lineNum">     164 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     165 </span>            : 
+<span class="lineNum">     166 </span><span class="lineCov">          1 :          T r = tools::evaluate_polynomial(P, zm1) / tools::evaluate_polynomial(Q, zm1);</span>
+<span class="lineNum">     167 </span><span class="lineCov">          1 :          T prefix = zm1 * zm2;</span>
+<span class="lineNum">     168 </span>            : 
+<span class="lineNum">     169 </span><span class="lineCov">          1 :          result += prefix * Y + prefix * r;</span>
+<span class="lineNum">     170 </span>            :       }
+<span class="lineNum">     171 </span>            :       else
+<span class="lineNum">     172 </span>            :       {
+<span class="lineNum">     173 </span>            :          //
+<span class="lineNum">     174 </span>            :          // Use the following form:
+<span class="lineNum">     175 </span>            :          //
+<span class="lineNum">     176 </span>            :          // lgamma(z) = (2-z)(1-z)(Y + R(2-z))
+<span class="lineNum">     177 </span>            :          //
+<span class="lineNum">     178 </span>            :          // where R(2-z) is a rational approximation optimised for
+<span class="lineNum">     179 </span>            :          // low absolute error - as long as it's absolute error
+<span class="lineNum">     180 </span>            :          // is small compared to the constant Y - then any rounding
+<span class="lineNum">     181 </span>            :          // error in it's computation will get wiped out.
+<span class="lineNum">     182 </span>            :          //
+<span class="lineNum">     183 </span>            :          // R(2-z) has the following properties:
+<span class="lineNum">     184 </span>            :          //
+<span class="lineNum">     185 </span>            :          // At double precision, max error found:              1.797565e-17
+<span class="lineNum">     186 </span>            :          // At 80-bit long double precision, max error found:  9.306419e-21
+<span class="lineNum">     187 </span>            :          // Maximum Deviation Found:                           2.151e-021
+<span class="lineNum">     188 </span>            :          // Expected Error Term:                               2.150e-021
+<span class="lineNum">     189 </span>            :          //
+<span class="lineNum">     190 </span>            :          static const float Y = 0.452017307281494140625f;
+<span class="lineNum">     191 </span>            : 
+<span class="lineNum">     192 </span>            :          static const T P[] = {
+<span class="lineNum">     193 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.292329721830270012337e-1)), </span>
+<span class="lineNum">     194 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.144216267757192309184e0)),</span>
+<span class="lineNum">     195 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.142440390738631274135e0)),</span>
+<span class="lineNum">     196 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.542809694055053558157e-1)),</span>
+<span class="lineNum">     197 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.850535976868336437746e-2)),</span>
+<span class="lineNum">     198 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.431171342679297331241e-3))</span>
+<span class="lineNum">     199 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     200 </span>            :          static const T Q[] = {
+<span class="lineNum">     201 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.1e1)),</span>
+<span class="lineNum">     202 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.150169356054485044494e1)),</span>
+<span class="lineNum">     203 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.846973248876495016101e0)),</span>
+<span class="lineNum">     204 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.220095151814995745555e0)),</span>
+<span class="lineNum">     205 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, 0.25582797155975869989e-1)),</span>
+<span class="lineNum">     206 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.100666795539143372762e-2)),</span>
+<span class="lineNum">     207 </span><span class="lineCov">          1 :             static_cast&lt;T&gt;(BOOST_MATH_BIG_CONSTANT(T, 64, -0.827193521891290553639e-6))</span>
+<span class="lineNum">     208 </span><span class="lineCov">          2 :          };</span>
+<span class="lineNum">     209 </span><span class="lineCov">          1 :          T r = zm2 * zm1;</span>
+<span class="lineNum">     210 </span><span class="lineCov">          1 :          T R = tools::evaluate_polynomial(P, T(-zm2)) / tools::evaluate_polynomial(Q, T(-zm2));</span>
+<span class="lineNum">     211 </span>            : 
+<span class="lineNum">     212 </span><span class="lineCov">          1 :          result += r * Y + r * R;</span>
+<span class="lineNum">     213 </span>            :       }
+<span class="lineNum">     214 </span>            :    }
+<span class="lineNum">     215 </span><span class="lineCov">          3 :    return result;</span>
+<span class="lineNum">     216 </span>            : }
+<span class="lineNum">     217 </span>            : template &lt;class T, class Policy, class Lanczos&gt;
+<span class="lineNum">     218 </span>            : T lgamma_small_imp(T z, T zm1, T zm2, const mpl::int_&lt;113&gt;&amp;, const Policy&amp; /* l */, const Lanczos&amp;)
+<span class="lineNum">     219 </span>            : {
+<span class="lineNum">     220 </span>            :    //
+<span class="lineNum">     221 </span>            :    // This version uses rational approximations for small
+<span class="lineNum">     222 </span>            :    // values of z accurate enough for 113-bit mantissas
+<span class="lineNum">     223 </span>            :    // (128-bit long doubles).
+<span class="lineNum">     224 </span>            :    //
+<span class="lineNum">     225 </span>            :    BOOST_MATH_STD_USING  // for ADL of std names
+<span class="lineNum">     226 </span>            :    T result = 0;
+<span class="lineNum">     227 </span>            :    if(z &lt; tools::epsilon&lt;T&gt;())
+<span class="lineNum">     228 </span>            :    {
+<span class="lineNum">     229 </span>            :       result = -log(z);
+<span class="lineNum">     230 </span>            :       BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     231 </span>            :    }
+<span class="lineNum">     232 </span>            :    else if((zm1 == 0) || (zm2 == 0))
+<span class="lineNum">     233 </span>            :    {
+<span class="lineNum">     234 </span>            :       // nothing to do, result is zero....
+<span class="lineNum">     235 </span>            :    }
+<span class="lineNum">     236 </span>            :    else if(z &gt; 2)
+<span class="lineNum">     237 </span>            :    {
+<span class="lineNum">     238 </span>            :       //
+<span class="lineNum">     239 </span>            :       // Begin by performing argument reduction until
+<span class="lineNum">     240 </span>            :       // z is in [2,3):
+<span class="lineNum">     241 </span>            :       //
+<span class="lineNum">     242 </span>            :       if(z &gt;= 3)
+<span class="lineNum">     243 </span>            :       {
+<span class="lineNum">     244 </span>            :          do
+<span class="lineNum">     245 </span>            :          {
+<span class="lineNum">     246 </span>            :             z -= 1;
+<span class="lineNum">     247 </span>            :             result += log(z);
+<span class="lineNum">     248 </span>            :          }while(z &gt;= 3);
+<span class="lineNum">     249 </span>            :          zm2 = z - 2;
+<span class="lineNum">     250 </span>            :       }
+<span class="lineNum">     251 </span>            :       BOOST_MATH_INSTRUMENT_CODE(zm2);
+<span class="lineNum">     252 </span>            :       BOOST_MATH_INSTRUMENT_CODE(z);
+<span class="lineNum">     253 </span>            :       BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     254 </span>            : 
+<span class="lineNum">     255 </span>            :       //
+<span class="lineNum">     256 </span>            :       // Use the following form:
+<span class="lineNum">     257 </span>            :       //
+<span class="lineNum">     258 </span>            :       // lgamma(z) = (z-2)(z+1)(Y + R(z-2))
+<span class="lineNum">     259 </span>            :       //
+<span class="lineNum">     260 </span>            :       // where R(z-2) is a rational approximation optimised for
+<span class="lineNum">     261 </span>            :       // low absolute error - as long as it's absolute error
+<span class="lineNum">     262 </span>            :       // is small compared to the constant Y - then any rounding
+<span class="lineNum">     263 </span>            :       // error in it's computation will get wiped out.
+<span class="lineNum">     264 </span>            :       //
+<span class="lineNum">     265 </span>            :       // Maximum Deviation Found (approximation error)      3.73e-37
+<span class="lineNum">     266 </span>            : 
+<span class="lineNum">     267 </span>            :       static const T P[] = {
+<span class="lineNum">     268 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.018035568567844937910504030027467476655),
+<span class="lineNum">     269 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.013841458273109517271750705401202404195),
+<span class="lineNum">     270 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.062031842739486600078866923383017722399),
+<span class="lineNum">     271 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.052518418329052161202007865149435256093),
+<span class="lineNum">     272 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.01881718142472784129191838493267755758),
+<span class="lineNum">     273 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0025104830367021839316463675028524702846),
+<span class="lineNum">     274 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.00021043176101831873281848891452678568311),
+<span class="lineNum">     275 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.00010249622350908722793327719494037981166),
+<span class="lineNum">     276 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.11381479670982006841716879074288176994e-4),
+<span class="lineNum">     277 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.49999811718089980992888533630523892389e-6),
+<span class="lineNum">     278 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.70529798686542184668416911331718963364e-8)
+<span class="lineNum">     279 </span>            :       };
+<span class="lineNum">     280 </span>            :       static const T Q[] = {
+<span class="lineNum">     281 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     282 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 2.5877485070422317542808137697939233685),
+<span class="lineNum">     283 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 2.8797959228352591788629602533153837126),
+<span class="lineNum">     284 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 1.8030885955284082026405495275461180977),
+<span class="lineNum">     285 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.69774331297747390169238306148355428436),
+<span class="lineNum">     286 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.17261566063277623942044077039756583802),
+<span class="lineNum">     287 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.02729301254544230229429621192443000121),
+<span class="lineNum">     288 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.0026776425891195270663133581960016620433),
+<span class="lineNum">     289 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.00015244249160486584591370355730402168106),
+<span class="lineNum">     290 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.43997034032479866020546814475414346627e-5),
+<span class="lineNum">     291 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.46295080708455613044541885534408170934e-7),
+<span class="lineNum">     292 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, -0.93326638207459533682980757982834180952e-11),
+<span class="lineNum">     293 </span>            :          BOOST_MATH_BIG_CONSTANT(T, 113, 0.42316456553164995177177407325292867513e-13)
+<span class="lineNum">     294 </span>            :       };
+<span class="lineNum">     295 </span>            : 
+<span class="lineNum">     296 </span>            :       T R = tools::evaluate_polynomial(P, zm2);
+<span class="lineNum">     297 </span>            :       R /= tools::evaluate_polynomial(Q, zm2);
+<span class="lineNum">     298 </span>            : 
+<span class="lineNum">     299 </span>            :       static const float Y = 0.158963680267333984375F;
+<span class="lineNum">     300 </span>            : 
+<span class="lineNum">     301 </span>            :       T r = zm2 * (z + 1);
+<span class="lineNum">     302 </span>            : 
+<span class="lineNum">     303 </span>            :       result +=  r * Y + r * R;
+<span class="lineNum">     304 </span>            :       BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     305 </span>            :    }
+<span class="lineNum">     306 </span>            :    else
+<span class="lineNum">     307 </span>            :    {
+<span class="lineNum">     308 </span>            :       //
+<span class="lineNum">     309 </span>            :       // If z is less than 1 use recurrance to shift to
+<span class="lineNum">     310 </span>            :       // z in the interval [1,2]:
+<span class="lineNum">     311 </span>            :       //
+<span class="lineNum">     312 </span>            :       if(z &lt; 1)
+<span class="lineNum">     313 </span>            :       {
+<span class="lineNum">     314 </span>            :          result += -log(z);
+<span class="lineNum">     315 </span>            :          zm2 = zm1;
+<span class="lineNum">     316 </span>            :          zm1 = z;
+<span class="lineNum">     317 </span>            :          z += 1;
+<span class="lineNum">     318 </span>            :       }
+<span class="lineNum">     319 </span>            :       BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     320 </span>            :       BOOST_MATH_INSTRUMENT_CODE(z);
+<span class="lineNum">     321 </span>            :       BOOST_MATH_INSTRUMENT_CODE(zm2);
+<span class="lineNum">     322 </span>            :       //
+<span class="lineNum">     323 </span>            :       // Three approximations, on for z in [1,1.35], [1.35,1.625] and [1.625,1]
+<span class="lineNum">     324 </span>            :       //
+<span class="lineNum">     325 </span>            :       if(z &lt;= 1.35)
+<span class="lineNum">     326 </span>            :       {
+<span class="lineNum">     327 </span>            :          //
+<span class="lineNum">     328 </span>            :          // Use the following form:
+<span class="lineNum">     329 </span>            :          //
+<span class="lineNum">     330 </span>            :          // lgamma(z) = (z-1)(z-2)(Y + R(z-1))
+<span class="lineNum">     331 </span>            :          //
+<span class="lineNum">     332 </span>            :          // where R(z-1) is a rational approximation optimised for
+<span class="lineNum">     333 </span>            :          // low absolute error - as long as it's absolute error
+<span class="lineNum">     334 </span>            :          // is small compared to the constant Y - then any rounding
+<span class="lineNum">     335 </span>            :          // error in it's computation will get wiped out.
+<span class="lineNum">     336 </span>            :          //
+<span class="lineNum">     337 </span>            :          // R(z-1) has the following properties:
+<span class="lineNum">     338 </span>            :          //
+<span class="lineNum">     339 </span>            :          // Maximum Deviation Found (approximation error)            1.659e-36
+<span class="lineNum">     340 </span>            :          // Expected Error Term (theoretical error)                  1.343e-36
+<span class="lineNum">     341 </span>            :          // Max error found at 128-bit long double precision         1.007e-35
+<span class="lineNum">     342 </span>            :          //
+<span class="lineNum">     343 </span>            :          static const float Y = 0.54076099395751953125f;
+<span class="lineNum">     344 </span>            : 
+<span class="lineNum">     345 </span>            :          static const T P[] = {
+<span class="lineNum">     346 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.036454670944013329356512090082402429697),
+<span class="lineNum">     347 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.066235835556476033710068679907798799959),
+<span class="lineNum">     348 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.67492399795577182387312206593595565371),
+<span class="lineNum">     349 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -1.4345555263962411429855341651960000166),
+<span class="lineNum">     350 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -1.4894319559821365820516771951249649563),
+<span class="lineNum">     351 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.87210277668067964629483299712322411566),
+<span class="lineNum">     352 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.29602090537771744401524080430529369136),
+<span class="lineNum">     353 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0561832587517836908929331992218879676),
+<span class="lineNum">     354 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0053236785487328044334381502530383140443),
+<span class="lineNum">     355 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.00018629360291358130461736386077971890789),
+<span class="lineNum">     356 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.10164985672213178500790406939467614498e-6),
+<span class="lineNum">     357 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.13680157145361387405588201461036338274e-8)
+<span class="lineNum">     358 </span>            :          };
+<span class="lineNum">     359 </span>            :          static const T Q[] = {
+<span class="lineNum">     360 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     361 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 4.9106336261005990534095838574132225599),
+<span class="lineNum">     362 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 10.258804800866438510889341082793078432),
+<span class="lineNum">     363 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 11.88588976846826108836629960537466889),
+<span class="lineNum">     364 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 8.3455000546999704314454891036700998428),
+<span class="lineNum">     365 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 3.6428823682421746343233362007194282703),
+<span class="lineNum">     366 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.97465989807254572142266753052776132252),
+<span class="lineNum">     367 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.15121052897097822172763084966793352524),
+<span class="lineNum">     368 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.012017363555383555123769849654484594893),
+<span class="lineNum">     369 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0003583032812720649835431669893011257277)
+<span class="lineNum">     370 </span>            :          };
+<span class="lineNum">     371 </span>            : 
+<span class="lineNum">     372 </span>            :          T r = tools::evaluate_polynomial(P, zm1) / tools::evaluate_polynomial(Q, zm1);
+<span class="lineNum">     373 </span>            :          T prefix = zm1 * zm2;
+<span class="lineNum">     374 </span>            : 
+<span class="lineNum">     375 </span>            :          result += prefix * Y + prefix * r;
+<span class="lineNum">     376 </span>            :          BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     377 </span>            :       }
+<span class="lineNum">     378 </span>            :       else if(z &lt;= 1.625)
+<span class="lineNum">     379 </span>            :       {
+<span class="lineNum">     380 </span>            :          //
+<span class="lineNum">     381 </span>            :          // Use the following form:
+<span class="lineNum">     382 </span>            :          //
+<span class="lineNum">     383 </span>            :          // lgamma(z) = (2-z)(1-z)(Y + R(2-z))
+<span class="lineNum">     384 </span>            :          //
+<span class="lineNum">     385 </span>            :          // where R(2-z) is a rational approximation optimised for
+<span class="lineNum">     386 </span>            :          // low absolute error - as long as it's absolute error
+<span class="lineNum">     387 </span>            :          // is small compared to the constant Y - then any rounding
+<span class="lineNum">     388 </span>            :          // error in it's computation will get wiped out.
+<span class="lineNum">     389 </span>            :          //
+<span class="lineNum">     390 </span>            :          // R(2-z) has the following properties:
+<span class="lineNum">     391 </span>            :          //
+<span class="lineNum">     392 </span>            :          // Max error found at 128-bit long double precision  9.634e-36
+<span class="lineNum">     393 </span>            :          // Maximum Deviation Found (approximation error)     1.538e-37
+<span class="lineNum">     394 </span>            :          // Expected Error Term (theoretical error)           2.350e-38
+<span class="lineNum">     395 </span>            :          //
+<span class="lineNum">     396 </span>            :          static const float Y = 0.483787059783935546875f;
+<span class="lineNum">     397 </span>            : 
+<span class="lineNum">     398 </span>            :          static const T P[] = {
+<span class="lineNum">     399 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.017977422421608624353488126610933005432),
+<span class="lineNum">     400 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.18484528905298309555089509029244135703),
+<span class="lineNum">     401 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.40401251514859546989565001431430884082),
+<span class="lineNum">     402 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.40277179799147356461954182877921388182),
+<span class="lineNum">     403 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.21993421441282936476709677700477598816),
+<span class="lineNum">     404 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.069595742223850248095697771331107571011),
+<span class="lineNum">     405 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.012681481427699686635516772923547347328),
+<span class="lineNum">     406 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0012489322866834830413292771335113136034),
+<span class="lineNum">     407 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.57058739515423112045108068834668269608e-4),
+<span class="lineNum">     408 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.8207548771933585614380644961342925976e-6)
+<span class="lineNum">     409 </span>            :          };
+<span class="lineNum">     410 </span>            :          static const T Q[] = {
+<span class="lineNum">     411 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     412 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -2.9629552288944259229543137757200262073),
+<span class="lineNum">     413 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 3.7118380799042118987185957298964772755),
+<span class="lineNum">     414 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -2.5569815272165399297600586376727357187),
+<span class="lineNum">     415 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0546764918220835097855665680632153367),
+<span class="lineNum">     416 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.26574021300894401276478730940980810831),
+<span class="lineNum">     417 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.03996289731752081380552901986471233462),
+<span class="lineNum">     418 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0033398680924544836817826046380586480873),
+<span class="lineNum">     419 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.00013288854760548251757651556792598235735),
+<span class="lineNum">     420 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.17194794958274081373243161848194745111e-5)
+<span class="lineNum">     421 </span>            :          };
+<span class="lineNum">     422 </span>            :          T r = zm2 * zm1;
+<span class="lineNum">     423 </span>            :          T R = tools::evaluate_polynomial(P, T(0.625 - zm1)) / tools::evaluate_polynomial(Q, T(0.625 - zm1));
+<span class="lineNum">     424 </span>            : 
+<span class="lineNum">     425 </span>            :          result += r * Y + r * R;
+<span class="lineNum">     426 </span>            :          BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     427 </span>            :       }
+<span class="lineNum">     428 </span>            :       else
+<span class="lineNum">     429 </span>            :       {
+<span class="lineNum">     430 </span>            :          //
+<span class="lineNum">     431 </span>            :          // Same form as above.
+<span class="lineNum">     432 </span>            :          //
+<span class="lineNum">     433 </span>            :          // Max error found (at 128-bit long double precision) 1.831e-35
+<span class="lineNum">     434 </span>            :          // Maximum Deviation Found (approximation error)      8.588e-36
+<span class="lineNum">     435 </span>            :          // Expected Error Term (theoretical error)            1.458e-36
+<span class="lineNum">     436 </span>            :          //
+<span class="lineNum">     437 </span>            :          static const float Y = 0.443811893463134765625f;
+<span class="lineNum">     438 </span>            : 
+<span class="lineNum">     439 </span>            :          static const T P[] = {
+<span class="lineNum">     440 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.021027558364667626231512090082402429494),
+<span class="lineNum">     441 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.15128811104498736604523586803722368377),
+<span class="lineNum">     442 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.26249631480066246699388544451126410278),
+<span class="lineNum">     443 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.21148748610533489823742352180628489742),
+<span class="lineNum">     444 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.093964130697489071999873506148104370633),
+<span class="lineNum">     445 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.024292059227009051652542804957550866827),
+<span class="lineNum">     446 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.0036284453226534839926304745756906117066),
+<span class="lineNum">     447 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.0002939230129315195346843036254392485984),
+<span class="lineNum">     448 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.11088589183158123733132268042570710338e-4),
+<span class="lineNum">     449 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.13240510580220763969511741896361984162e-6)
+<span class="lineNum">     450 </span>            :          };
+<span class="lineNum">     451 </span>            :          static const T Q[] = {
+<span class="lineNum">     452 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 1.0),
+<span class="lineNum">     453 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -2.4240003754444040525462170802796471996),
+<span class="lineNum">     454 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 2.4868383476933178722203278602342786002),
+<span class="lineNum">     455 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -1.4047068395206343375520721509193698547),
+<span class="lineNum">     456 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.47583809087867443858344765659065773369),
+<span class="lineNum">     457 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.09865724264554556400463655444270700132),
+<span class="lineNum">     458 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.012238223514176587501074150988445109735),
+<span class="lineNum">     459 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.00084625068418239194670614419707491797097),
+<span class="lineNum">     460 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, 0.2796574430456237061420839429225710602e-4),
+<span class="lineNum">     461 </span>            :             BOOST_MATH_BIG_CONSTANT(T, 113, -0.30202973883316730694433702165188835331e-6)
+<span class="lineNum">     462 </span>            :          };
+<span class="lineNum">     463 </span>            :          // (2 - x) * (1 - x) * (c + R(2 - x))
+<span class="lineNum">     464 </span>            :          T r = zm2 * zm1;
+<span class="lineNum">     465 </span>            :          T R = tools::evaluate_polynomial(P, T(-zm2)) / tools::evaluate_polynomial(Q, T(-zm2));
+<span class="lineNum">     466 </span>            : 
+<span class="lineNum">     467 </span>            :          result += r * Y + r * R;
+<span class="lineNum">     468 </span>            :          BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     469 </span>            :       }
+<span class="lineNum">     470 </span>            :    }
+<span class="lineNum">     471 </span>            :    BOOST_MATH_INSTRUMENT_CODE(result);
+<span class="lineNum">     472 </span>            :    return result;
+<span class="lineNum">     473 </span>            : }
+<span class="lineNum">     474 </span>            : template &lt;class T, class Policy, class Lanczos&gt;
+<span class="lineNum">     475 </span>            : T lgamma_small_imp(T z, T zm1, T zm2, const mpl::int_&lt;0&gt;&amp;, const Policy&amp; pol, const Lanczos&amp;)
+<span class="lineNum">     476 </span>            : {
+<span class="lineNum">     477 </span>            :    //
+<span class="lineNum">     478 </span>            :    // No rational approximations are available because either
+<span class="lineNum">     479 </span>            :    // T has no numeric_limits support (so we can't tell how
+<span class="lineNum">     480 </span>            :    // many digits it has), or T has more digits than we know
+<span class="lineNum">     481 </span>            :    // what to do with.... we do have a Lanczos approximation
+<span class="lineNum">     482 </span>            :    // though, and that can be used to keep errors under control.
+<span class="lineNum">     483 </span>            :    //
+<span class="lineNum">     484 </span>            :    BOOST_MATH_STD_USING  // for ADL of std names
+<span class="lineNum">     485 </span>            :    T result = 0;
+<span class="lineNum">     486 </span>            :    if(z &lt; tools::epsilon&lt;T&gt;())
+<span class="lineNum">     487 </span>            :    {
+<span class="lineNum">     488 </span>            :       result = -log(z);
+<span class="lineNum">     489 </span>            :    }
+<span class="lineNum">     490 </span>            :    else if(z &lt; 0.5)
+<span class="lineNum">     491 </span>            :    {
+<span class="lineNum">     492 </span>            :       // taking the log of tgamma reduces the error, no danger of overflow here:
+<span class="lineNum">     493 </span>            :       result = log(gamma_imp(z, pol, Lanczos()));
+<span class="lineNum">     494 </span>            :    }
+<span class="lineNum">     495 </span>            :    else if(z &gt;= 3)
+<span class="lineNum">     496 </span>            :    {
+<span class="lineNum">     497 </span>            :       // taking the log of tgamma reduces the error, no danger of overflow here:
+<span class="lineNum">     498 </span>            :       result = log(gamma_imp(z, pol, Lanczos()));
+<span class="lineNum">     499 </span>            :    }
+<span class="lineNum">     500 </span>            :    else if(z &gt;= 1.5)
+<span class="lineNum">     501 </span>            :    {
+<span class="lineNum">     502 </span>            :       // special case near 2:
+<span class="lineNum">     503 </span>            :       T dz = zm2;
+<span class="lineNum">     504 </span>            :       result = dz * log((z + Lanczos::g() - T(0.5)) / boost::math::constants::e&lt;T&gt;());
+<span class="lineNum">     505 </span>            :       result += boost::math::log1p(dz / (Lanczos::g() + T(1.5)), pol) * T(1.5);
+<span class="lineNum">     506 </span>            :       result += boost::math::log1p(Lanczos::lanczos_sum_near_2(dz), pol);
+<span class="lineNum">     507 </span>            :    }
+<span class="lineNum">     508 </span>            :    else
+<span class="lineNum">     509 </span>            :    {
+<span class="lineNum">     510 </span>            :       // special case near 1:
+<span class="lineNum">     511 </span>            :       T dz = zm1;
+<span class="lineNum">     512 </span>            :       result = dz * log((z + Lanczos::g() - T(0.5)) / boost::math::constants::e&lt;T&gt;());
+<span class="lineNum">     513 </span>            :       result += boost::math::log1p(dz / (Lanczos::g() + T(0.5)), pol) / 2;
+<span class="lineNum">     514 </span>            :       result += boost::math::log1p(Lanczos::lanczos_sum_near_1(dz), pol);
+<span class="lineNum">     515 </span>            :    }
+<span class="lineNum">     516 </span>            :    return result;
+<span class="lineNum">     517 </span>            : }
+<span class="lineNum">     518 </span>            : 
+<span class="lineNum">     519 </span>            : }}} // namespaces
+<span class="lineNum">     520 </span>            : 
+<span class="lineNum">     521 </span>            : #endif // BOOST_MATH_SPECIAL_FUNCTIONS_DETAIL_LGAMMA_SMALL
+<span class="lineNum">     522 </span>            : 
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

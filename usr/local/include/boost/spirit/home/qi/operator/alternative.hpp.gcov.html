@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage.info - /usr/local/include/boost/spirit/home/qi/operator/alternative.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../../../../index.html">top level</a> - <a href="index.html">usr/local/include/boost/spirit/home/qi/operator</a> - alternative.hpp<span style="font-size: 80%;"> (source / <a href="alternative.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:10:39</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntry">12</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : /*=============================================================================</a>
+<span class="lineNum">       2 </span>            :     Copyright (c) 2001-2011 Joel de Guzman
+<span class="lineNum">       3 </span>            :     Copyright (c) 2001-2011 Hartmut Kaiser
+<span class="lineNum">       4 </span>            : 
+<span class="lineNum">       5 </span>            :     Distributed under the Boost Software License, Version 1.0. (See accompanying
+<span class="lineNum">       6 </span>            :     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+<span class="lineNum">       7 </span>            : =============================================================================*/
+<span class="lineNum">       8 </span>            : #if !defined(SPIRIT_ALTERNATIVE_FEBRUARY_05_2007_1153AM)
+<span class="lineNum">       9 </span>            : #define SPIRIT_ALTERNATIVE_FEBRUARY_05_2007_1153AM
+<span class="lineNum">      10 </span>            : 
+<span class="lineNum">      11 </span>            : #if defined(_MSC_VER)
+<span class="lineNum">      12 </span>            : #pragma once
+<span class="lineNum">      13 </span>            : #endif
+<span class="lineNum">      14 </span>            : 
+<span class="lineNum">      15 </span>            : #include &lt;boost/spirit/home/qi/detail/alternative_function.hpp&gt;
+<span class="lineNum">      16 </span>            : #include &lt;boost/spirit/home/qi/meta_compiler.hpp&gt;
+<span class="lineNum">      17 </span>            : #include &lt;boost/spirit/home/qi/parser.hpp&gt;
+<span class="lineNum">      18 </span>            : #include &lt;boost/spirit/home/qi/detail/attributes.hpp&gt;
+<span class="lineNum">      19 </span>            : #include &lt;boost/spirit/home/support/has_semantic_action.hpp&gt;
+<span class="lineNum">      20 </span>            : #include &lt;boost/spirit/home/support/handles_container.hpp&gt;
+<span class="lineNum">      21 </span>            : #include &lt;boost/spirit/home/support/detail/what_function.hpp&gt;
+<span class="lineNum">      22 </span>            : #include &lt;boost/spirit/home/support/unused.hpp&gt;
+<span class="lineNum">      23 </span>            : #include &lt;boost/spirit/home/support/info.hpp&gt;
+<span class="lineNum">      24 </span>            : #include &lt;boost/fusion/include/any.hpp&gt;
+<span class="lineNum">      25 </span>            : #include &lt;boost/fusion/include/mpl.hpp&gt;
+<span class="lineNum">      26 </span>            : #include &lt;boost/fusion/include/for_each.hpp&gt;
+<span class="lineNum">      27 </span>            : 
+<span class="lineNum">      28 </span>            : namespace boost { namespace spirit
+<span class="lineNum">      29 </span>            : {
+<span class="lineNum">      30 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      31 </span>            :     // Enablers
+<span class="lineNum">      32 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      33 </span>            :     template &lt;&gt;
+<span class="lineNum">      34 </span>            :     struct use_operator&lt;qi::domain, proto::tag::bitwise_or&gt; // enables |
+<span class="lineNum">      35 </span>            :       : mpl::true_ {};
+<span class="lineNum">      36 </span>            : 
+<span class="lineNum">      37 </span>            :     template &lt;&gt;
+<span class="lineNum">      38 </span>            :     struct flatten_tree&lt;qi::domain, proto::tag::bitwise_or&gt; // flattens |
+<span class="lineNum">      39 </span>            :       : mpl::true_ {};
+<span class="lineNum">      40 </span>            : }}
+<span class="lineNum">      41 </span>            : 
+<span class="lineNum">      42 </span>            : namespace boost { namespace spirit { namespace qi
+<a name="43"><span class="lineNum">      43 </span>            : {</a>
+<span class="lineNum">      44 </span>            :     template &lt;typename Elements&gt;
+<span class="lineNum">      45 </span><span class="lineCov">       2300 :     struct alternative : nary_parser&lt;alternative&lt;Elements&gt; &gt;</span>
+<span class="lineNum">      46 </span>            :     {
+<span class="lineNum">      47 </span>            :         template &lt;typename Context, typename Iterator&gt;
+<span class="lineNum">      48 </span>            :         struct attribute
+<span class="lineNum">      49 </span>            :         {
+<span class="lineNum">      50 </span>            :             // Put all the element attributes in a tuple
+<span class="lineNum">      51 </span>            :             typedef typename traits::build_attribute_sequence&lt;
+<span class="lineNum">      52 </span>            :                 Elements, Context, traits::alternative_attribute_transform
+<span class="lineNum">      53 </span>            :               , Iterator, qi::domain
+<span class="lineNum">      54 </span>            :             &gt;::type all_attributes;
+<span class="lineNum">      55 </span>            : 
+<span class="lineNum">      56 </span>            :             // Ok, now make a variant over the attribute sequence. Note that
+<span class="lineNum">      57 </span>            :             // build_variant makes sure that 1) all attributes in the variant
+<span class="lineNum">      58 </span>            :             // are unique 2) puts the unused attribute, if there is any, to
+<span class="lineNum">      59 </span>            :             // the front and 3) collapses single element variants, variant&lt;T&gt;
+<span class="lineNum">      60 </span>            :             // to T.
+<span class="lineNum">      61 </span>            :             typedef typename
+<span class="lineNum">      62 </span>            :                 traits::build_variant&lt;all_attributes&gt;::type
+<span class="lineNum">      63 </span>            :             type;
+<a name="64"><span class="lineNum">      64 </span>            :         };</a>
+<span class="lineNum">      65 </span>            : 
+<span class="lineNum">      66 </span><span class="lineCov">         92 :         alternative(Elements const&amp; elements_)</span>
+<span class="lineNum">      67 </span><span class="lineCov">         92 :           : elements(elements_) {}</span>
+<span class="lineNum">      68 </span>            : 
+<a name="69"><span class="lineNum">      69 </span>            :         template &lt;typename Iterator, typename Context</a>
+<span class="lineNum">      70 </span>            :           , typename Skipper, typename Attribute&gt;
+<span class="lineNum">      71 </span><span class="lineCov">        892 :         bool parse(Iterator&amp; first, Iterator const&amp; last</span>
+<span class="lineNum">      72 </span>            :           , Context&amp; context, Skipper const&amp; skipper
+<span class="lineNum">      73 </span>            :           , Attribute&amp; attr_) const
+<span class="lineNum">      74 </span>            :         {
+<span class="lineNum">      75 </span>            :             detail::alternative_function&lt;Iterator, Context, Skipper, Attribute&gt;
+<span class="lineNum">      76 </span><span class="lineCov">        892 :                 f(first, last, context, skipper, attr_);</span>
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            :             // return true if *any* of the parsers succeed
+<span class="lineNum">      79 </span><span class="lineCov">        892 :             return fusion::any(elements, f);</span>
+<span class="lineNum">      80 </span>            :         }
+<span class="lineNum">      81 </span>            : 
+<span class="lineNum">      82 </span>            :         template &lt;typename Context&gt;
+<span class="lineNum">      83 </span>            :         info what(Context&amp; context) const
+<span class="lineNum">      84 </span>            :         {
+<span class="lineNum">      85 </span>            :             info result(&quot;alternative&quot;);
+<span class="lineNum">      86 </span>            :             fusion::for_each(elements,
+<span class="lineNum">      87 </span>            :                 spirit::detail::what_function&lt;Context&gt;(result, context));
+<span class="lineNum">      88 </span>            :             return result;
+<span class="lineNum">      89 </span>            :         }
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            :         Elements elements;
+<span class="lineNum">      92 </span>            :     };
+<span class="lineNum">      93 </span>            : 
+<span class="lineNum">      94 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      95 </span>            :     // Parser generators: make_xxx function (objects)
+<span class="lineNum">      96 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">      97 </span>            :     template &lt;typename Elements, typename Modifiers&gt;
+<span class="lineNum">      98 </span>            :     struct make_composite&lt;proto::tag::bitwise_or, Elements, Modifiers&gt;
+<span class="lineNum">      99 </span>            :       : make_nary_composite&lt;Elements, alternative&gt;
+<span class="lineNum">     100 </span>            :     {};
+<span class="lineNum">     101 </span>            : }}}
+<span class="lineNum">     102 </span>            : 
+<span class="lineNum">     103 </span>            : namespace boost { namespace spirit { namespace traits
+<span class="lineNum">     104 </span>            : {
+<span class="lineNum">     105 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     106 </span>            :     template &lt;typename Elements&gt;
+<span class="lineNum">     107 </span>            :     struct has_semantic_action&lt;qi::alternative&lt;Elements&gt; &gt;
+<span class="lineNum">     108 </span>            :       : nary_has_semantic_action&lt;Elements&gt; {};
+<span class="lineNum">     109 </span>            : 
+<span class="lineNum">     110 </span>            :     ///////////////////////////////////////////////////////////////////////////
+<span class="lineNum">     111 </span>            :     template &lt;typename Elements, typename Attribute, typename Context
+<span class="lineNum">     112 </span>            :       , typename Iterator&gt;
+<span class="lineNum">     113 </span>            :     struct handles_container&lt;qi::alternative&lt;Elements&gt;, Attribute, Context
+<span class="lineNum">     114 </span>            :       , Iterator&gt;
+<span class="lineNum">     115 </span>            :       : nary_handles_container&lt;Elements, Attribute, Context, Iterator&gt; {};
+<span class="lineNum">     116 </span>            : }}}
+<span class="lineNum">     117 </span>            : 
+<span class="lineNum">     118 </span>            : #endif
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>

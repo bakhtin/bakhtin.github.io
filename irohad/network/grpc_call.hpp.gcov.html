@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - coverage_full_filtered.info - irohad/network/grpc_call.hpp</title>
+  <link rel="stylesheet" type="text/css" href="../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../index.html">top level</a> - <a href="index.html">irohad/network</a> - grpc_call.hpp<span style="font-size: 80%;"> (source / <a href="grpc_call.hpp.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">coverage_full_filtered.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2018-02-04 14:56:31</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">31</td>
+            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntryHi">96.9 %</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="headerItem">Branches:</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntry">59</td>
+            <td class="headerCovTableEntryLo">50.8 %</td>
+          </tr>
+          <tr><td><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">           Branch data     Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>                :            : /*</a>
+<span class="lineNum">       2 </span>                :            : Copyright 2016 Soramitsu Co., Ltd.
+<span class="lineNum">       3 </span>                :            : 
+<span class="lineNum">       4 </span>                :            : Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+<span class="lineNum">       5 </span>                :            : you may not use this file except in compliance with the License.
+<span class="lineNum">       6 </span>                :            : You may obtain a copy of the License at
+<span class="lineNum">       7 </span>                :            : 
+<span class="lineNum">       8 </span>                :            :     http://www.apache.org/licenses/LICENSE-2.0
+<span class="lineNum">       9 </span>                :            : 
+<span class="lineNum">      10 </span>                :            : Unless required by applicable law or agreed to in writing, software
+<span class="lineNum">      11 </span>                :            : distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+<span class="lineNum">      12 </span>                :            : WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<span class="lineNum">      13 </span>                :            : See the License for the specific language governing permissions and
+<span class="lineNum">      14 </span>                :            : limitations under the License.
+<span class="lineNum">      15 </span>                :            :  */
+<span class="lineNum">      16 </span>                :            : 
+<span class="lineNum">      17 </span>                :            : #ifndef NETWORK_GRPC_CALL_HPP
+<span class="lineNum">      18 </span>                :            : #define NETWORK_GRPC_CALL_HPP
+<span class="lineNum">      19 </span>                :            : 
+<span class="lineNum">      20 </span>                :            : #include &lt;assert.h&gt;
+<span class="lineNum">      21 </span>                :            : #include &lt;grpc++/grpc++.h&gt;
+<span class="lineNum">      22 </span>                :            : #include &lt;network/grpc_async_service.hpp&gt;
+<span class="lineNum">      23 </span>                :            : 
+<span class="lineNum">      24 </span>                :            : namespace network {
+<span class="lineNum">      25 </span>                :            : 
+<span class="lineNum">      26 </span>                :            :   /**
+<span class="lineNum">      27 </span>                :            :    * to use polymorphism in ServiceHandler::handleRpcs()
+<span class="lineNum">      28 </span>                :            :    * @tparam ServiceHandler
+<a name="29"><span class="lineNum">      29 </span>                :            :    */</a>
+<span class="lineNum">      30 </span>                :            :   template &lt;typename ServiceHandler&gt;
+<a name="31"><span class="lineNum">      31 </span>                :<span class="lineCov">        133 :   class UntypedCall {</span></a>
+<span class="lineNum">      32 </span>                :            :    public:
+<span class="lineNum">      33 </span>        [<span class="branchNoCov" title="Branch 2 was not taken"> - </span><span class="branchCov" title="Branch 3 was taken 133 times"> + </span>]:<span class="lineCov">        266 :     virtual ~UntypedCall() {}</span>
+<span class="lineNum">      34 </span>                :            : 
+<span class="lineNum">      35 </span>                :            :     enum class State { RequestCreated, ResponseSent };
+<span class="lineNum">      36 </span>                :            : 
+<span class="lineNum">      37 </span>                :            :     /**
+<span class="lineNum">      38 </span>                :            :      * invokes when state is RequestReceivedTag.
+<span class="lineNum">      39 </span>                :            :      * @param serviceHandler - an instance that has all rpc handlers. e.g.
+<span class="lineNum">      40 </span>                :            :      * CommandService
+<span class="lineNum">      41 </span>                :            :      */
+<span class="lineNum">      42 </span>                :            :     virtual void requestReceived(ServiceHandler *serviceHandler) = 0;
+<span class="lineNum">      43 </span>                :            : 
+<span class="lineNum">      44 </span>                :            :     /**
+<span class="lineNum">      45 </span>                :            :      * invokes when state is ResponseSentTag.
+<span class="lineNum">      46 </span>                :            :      */
+<span class="lineNum">      47 </span>                :            :     virtual void responseSent() = 0;
+<span class="lineNum">      48 </span>                :            : 
+<span class="lineNum">      49 </span>                :            :     /**
+<span class="lineNum">      50 </span>                :            :      * owns concrete Call type and executes derived functions.
+<span class="lineNum">      51 </span>                :            :      * container for vtable to work if casts UntypedCall&lt;&gt; from void*
+<span class="lineNum">      52 </span>                :            :      */
+<a name="53"><span class="lineNum">      53 </span>                :            :     class CallOwner {</a>
+<span class="lineNum">      54 </span>                :            :      public:
+<span class="lineNum">      55 </span>                :<span class="lineCov">        266 :       CallOwner(UntypedCall *call, UntypedCall::State state)</span>
+<span class="lineNum">      56 </span>                :<span class="lineCov">        266 :           : call_(call), state_(state) {}</span>
+<span class="lineNum">      57 </span>                :            : 
+<span class="lineNum">      58 </span>                :            :       /**
+<span class="lineNum">      59 </span>                :            :        * selects a procedure by state and invokes it by using polymorphism.
+<span class="lineNum">      60 </span>                :            :        * this is called from ServiceHandler::handleRpcs()
+<span class="lineNum">      61 </span>                :            :        * @param serviceHandler - an instance that has all rpc handlers. e.g.
+<a name="62"><span class="lineNum">      62 </span>                :            :        * CommandService</a>
+<span class="lineNum">      63 </span>                :            :        */
+<span class="lineNum">      64 </span>                :<span class="lineCov">        140 :       void onCompleted(ServiceHandler *serviceHandler) {</span>
+<span class="lineNum">      65 </span>     [<span class="branchCov" title="Branch 0 was taken 70 times"> + </span><span class="branchCov" title="Branch 1 was taken 70 times"> + </span><span class="branchNoCov" title="Branch 2 was not taken"> - </span>]:<span class="lineCov">        140 :         switch (state_) {</span>
+<span class="lineNum">      66 </span>                :            :           case UntypedCall::State::RequestCreated: {
+<span class="lineNum">      67 </span>                :<span class="lineCov">         70 :             call_-&gt;requestReceived(serviceHandler);</span>
+<span class="lineNum">      68 </span>                :<span class="lineCov">         70 :             break;</span>
+<span class="lineNum">      69 </span>                :            :           }
+<span class="lineNum">      70 </span>                :            :           case UntypedCall::State::ResponseSent: {
+<span class="lineNum">      71 </span>                :<span class="lineCov">         70 :             call_-&gt;responseSent();</span>
+<span class="lineNum">      72 </span>                :<span class="lineCov">         70 :             break;</span>
+<span class="lineNum">      73 </span>                :            :           }
+<span class="lineNum">      74 </span>                :            :         }
+<span class="lineNum">      75 </span>                :<span class="lineCov">        140 :       }</span>
+<span class="lineNum">      76 </span>                :            : 
+<span class="lineNum">      77 </span>                :            :      private:
+<span class="lineNum">      78 </span>                :            :       UntypedCall *call_;  // owns concrete Call type, works vtable.
+<span class="lineNum">      79 </span>                :            :       const UntypedCall::State state_;
+<span class="lineNum">      80 </span>                :            :     };
+<span class="lineNum">      81 </span>                :            :   };
+<span class="lineNum">      82 </span>                :            : 
+<span class="lineNum">      83 </span>                :            :   /**
+<span class="lineNum">      84 </span>                :            :    * to manage the state of one rpc.
+<span class="lineNum">      85 </span>                :            :    * @tparam ServiceHandler - class that has interface GrpcAsyncService.
+<span class="lineNum">      86 </span>                :            :    * @tparam AsyncService - [SomeService]::AsyncService in *.grpc.pb.h
+<span class="lineNum">      87 </span>                :            :    * @tparam RequestType - type of a request from client
+<span class="lineNum">      88 </span>                :            :    * @tparam ResponseType - type of a response to client
+<span class="lineNum">      89 </span>                :            :    */
+<span class="lineNum">      90 </span>                :            :   template &lt;typename ServiceHandler,
+<span class="lineNum">      91 </span>                :            :             typename AsyncService,
+<span class="lineNum">      92 </span>                :            :             typename RequestType,
+<span class="lineNum">      93 </span>                :            :             typename ResponseType&gt;
+<span class="lineNum">      94 </span>                :            :   class Call : public UntypedCall&lt;ServiceHandler&gt; {
+<span class="lineNum">      95 </span>                :            :    public:
+<span class="lineNum">      96 </span>                :            :     using RpcHandlerType = network::
+<span class="lineNum">      97 </span>                :            :         RpcHandler&lt;ServiceHandler, AsyncService, RequestType, ResponseType&gt;;
+<span class="lineNum">      98 </span>                :            :     using RequestMethodType =
+<span class="lineNum">      99 </span>                :            :         network::RequestMethod&lt;AsyncService, RequestType, ResponseType&gt;;
+<span class="lineNum">     100 </span>                :            :     using CallType =
+<span class="lineNum">     101 </span>                :            :         Call&lt;ServiceHandler, AsyncService, RequestType, ResponseType&gt;;
+<span class="lineNum">     102 </span>                :            :     using UntypedCallType = UntypedCall&lt;ServiceHandler&gt;;
+<a name="103"><span class="lineNum">     103 </span>                :            :     using CallOwnerType = typename UntypedCallType::CallOwner;</a>
+<span class="lineNum">     104 </span>                :            : 
+<span class="lineNum">     105 </span>                :<span class="lineCov">        133 :     Call(RpcHandlerType rpcHandler)</span>
+<a name="106"><span class="lineNum">     106 </span>[<span class="branchCov" title="Branch 4 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 5 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">        133 :         : rpcHandler_(rpcHandler), responder_(&amp;ctx_) {}</span></a>
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 10 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 11 was not taken"> - </span>][<span class="branchCov" title="Branch 13 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 14 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 23 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 24 was not taken"> - </span>][<span class="branchCov" title="Branch 26 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 27 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 29 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 30 was not taken"> - </span>][<span class="branchCov" title="Branch 32 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 33 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 42 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 43 was not taken"> - </span>][<span class="branchCov" title="Branch 45 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 46 was not taken"> - </span>]
+<span class="lineNum">         </span>[<span class="branchCov" title="Branch 48 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 49 was not taken"> - </span>][<span class="branchCov" title="Branch 51 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 52 was not taken"> - </span>]
+<span class="lineNum">     107 </span>                :            : 
+<span class="lineNum">     108 </span>[<span class="branchNoCov" title="Branch 7 was not taken"> - </span><span class="branchCov" title="Branch 8 was taken 34 times"> + </span>][<span class="branchNoCov" title="Branch 17 was not taken"> - </span><span class="branchCov" title="Branch 18 was taken 66 times"> + </span>]:<span class="lineCov">        532 :     virtual ~Call() {}</span>
+<span class="lineNum">         </span>        [<span class="branchNoCov" title="Branch 27 was not taken"> - </span><span class="branchCov" title="Branch 28 was taken 33 times"> + </span>]
+<span class="lineNum">     109 </span>                :            : 
+<span class="lineNum">     110 </span>                :            :     /**
+<span class="lineNum">     111 </span>                :            :      * invokes when state is RequestReceivedTag.
+<span class="lineNum">     112 </span>                :            :      * this method is called by onCompleted() in super class (UntypedCall).
+<span class="lineNum">     113 </span>                :            :      * @param serviceHandler - an instance that has all rpc handlers. e.g.
+<a name="114"><span class="lineNum">     114 </span>                :            :      * CommandService</a>
+<span class="lineNum">     115 </span>                :            :      */
+<span class="lineNum">     116 </span>                :<span class="lineCov">         70 :     void requestReceived(ServiceHandler *serviceHandler) override {</span>
+<span class="lineNum">     117 </span>[<span class="branchCov" title="Branch 0 was taken 12 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 45 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">         70 :       (serviceHandler-&gt;*rpcHandler_)(this);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 13 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     118 </span>                :<span class="lineCov">         70 :     }</span>
+<span class="lineNum">     119 </span>                :            : 
+<span class="lineNum">     120 </span>                :            :     /**
+<span class="lineNum">     121 </span>                :            :      * invokes when state is ResponseSentTag.
+<span class="lineNum">     122 </span>                :            :      * this method is called by onCompleted() in super class (UntypedCall).
+<span class="lineNum">     123 </span>                :            :      * @param serviceHandler - an instance that has all rpc handlers. e.g.
+<a name="124"><span class="lineNum">     124 </span>                :            :      * CommandService</a>
+<span class="lineNum">     125 </span>                :            :      */
+<span class="lineNum">     126 </span>                :<span class="lineCov">        133 :     void responseSent() override {</span>
+<span class="lineNum">     127 </span>                :            :       // response has been sent and delete the Call instance.
+<span class="lineNum">     128 </span>[<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        133 :       delete this;</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     129 </span>                :<span class="lineCov">        133 :     }</span>
+<span class="lineNum">     130 </span>                :            : 
+<span class="lineNum">     131 </span>                :            :     /**
+<span class="lineNum">     132 </span>                :            :      * notifies response and grpc::Status when finishing handling rpc.
+<a name="133"><span class="lineNum">     133 </span>                :            :      * @param status</a>
+<span class="lineNum">     134 </span>                :            :      */
+<span class="lineNum">     135 </span>                :<span class="lineCov">         70 :     void sendResponse(::grpc::Status status) {</span>
+<span class="lineNum">     136 </span>                :<span class="lineCov">         70 :       responder_.Finish(response_, status, &amp;ResponseSentTag);</span>
+<span class="lineNum">     137 </span>                :<span class="lineCov">         70 :     }</span>
+<span class="lineNum">     138 </span>                :            : 
+<span class="lineNum">     139 </span>                :            :     /**
+<span class="lineNum">     140 </span>                :            :      * creates a Call instance for one rpc and enqueues it
+<span class="lineNum">     141 </span>                :            :      * to the completion queue.
+<span class="lineNum">     142 </span>                :            :      * @param serviceHandler
+<span class="lineNum">     143 </span>                :            :      * @param cq
+<span class="lineNum">     144 </span>                :            :      * @param requestMethod
+<a name="145"><span class="lineNum">     145 </span>                :            :      * @param rpcHandler</a>
+<span class="lineNum">     146 </span>                :            :      */
+<span class="lineNum">     147 </span>                :<span class="lineCov">        133 :     static auto *enqueueRequest(AsyncService *asyncService,</span>
+<span class="lineNum">     148 </span>                :            :                                 ::grpc::ServerCompletionQueue *cq,
+<span class="lineNum">     149 </span>                :            :                                 RequestMethodType requestMethod,
+<span class="lineNum">     150 </span>                :            :                                 RpcHandlerType rpcHandler) {
+<span class="lineNum">     151 </span>[<span class="branchCov" title="Branch 2 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>][<span class="branchCov" title="Branch 7 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 8 was not taken"> - </span>]:<span class="lineCov">        133 :       auto call = new CallType(rpcHandler);</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 12 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 13 was not taken"> - </span>]
+<span class="lineNum">     152 </span>                :            : 
+<span class="lineNum">     153 </span>[<span class="branchCov" title="Branch 0 was taken 34 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>][<span class="branchCov" title="Branch 3 was taken 66 times"> + </span><span class="branchNoCov" title="Branch 4 was not taken"> - </span>]:<span class="lineCov">        266 :       (asyncService-&gt;*requestMethod)(&amp;call-&gt;ctx_,</span>
+<span class="lineNum">         </span>        [<span class="branchCov" title="Branch 6 was taken 33 times"> + </span><span class="branchNoCov" title="Branch 7 was not taken"> - </span>]
+<span class="lineNum">     154 </span>                :<span class="lineCov">        133 :                                      &amp;call-&gt;request(),</span>
+<span class="lineNum">     155 </span>                :            :                                      &amp;call-&gt;responder_,
+<span class="lineNum">     156 </span>                :            :                                      cq,
+<span class="lineNum">     157 </span>                :            :                                      cq,
+<span class="lineNum">     158 </span>                :            :                                      &amp;call-&gt;RequestReceivedTag);
+<span class="lineNum">     159 </span>                :            : 
+<span class="lineNum">     160 </span>                :<span class="lineCov">        133 :       return call;</span>
+<span class="lineNum">     161 </span>                :            :     }
+<a name="162"><span class="lineNum">     162 </span>                :            : </a>
+<span class="lineNum">     163 </span>                :            :    public:
+<span class="lineNum">     164 </span>                :<span class="lineCov">        203 :     auto &amp;request() {</span>
+<a name="165"><span class="lineNum">     165 </span>                :<span class="lineCov">        203 :       return request_;</span></a>
+<span class="lineNum">     166 </span>                :            :     }
+<span class="lineNum">     167 </span>                :<span class="lineCov">         70 :     auto &amp;response() {</span>
+<span class="lineNum">     168 </span>                :<span class="lineCov">         70 :       return response_;</span>
+<span class="lineNum">     169 </span>                :            :     }
+<span class="lineNum">     170 </span>                :            : 
+<span class="lineNum">     171 </span>                :            :    private:
+<span class="lineNum">     172 </span>                :            :     CallOwnerType RequestReceivedTag{this,
+<span class="lineNum">     173 </span>                :            :                                      UntypedCallType::State::RequestCreated};
+<span class="lineNum">     174 </span>                :            :     CallOwnerType ResponseSentTag{this, UntypedCallType::State::ResponseSent};
+<span class="lineNum">     175 </span>                :            : 
+<span class="lineNum">     176 </span>                :            :    private:
+<span class="lineNum">     177 </span>                :            :     RpcHandlerType rpcHandler_;
+<span class="lineNum">     178 </span>                :            :     RequestType request_;
+<span class="lineNum">     179 </span>                :            :     ResponseType response_;
+<span class="lineNum">     180 </span>                :            :     ::grpc::ServerContext ctx_;
+<span class="lineNum">     181 </span>                :            :     ::grpc::ServerAsyncResponseWriter&lt;ResponseType&gt; responder_;
+<span class="lineNum">     182 </span>                :            :   };
+<span class="lineNum">     183 </span>                :            : 
+<span class="lineNum">     184 </span>                :            : }  // namespace network
+<span class="lineNum">     185 </span>                :            : 
+<span class="lineNum">     186 </span>                :            : #endif  // NETWORK_GRPC_CALL_HPP
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.12</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
